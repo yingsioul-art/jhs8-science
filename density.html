@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一顆會說謊的銅球｜密度</title>
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px; line-height:1.85; letter-spacing:.01em;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+/* ── 頁首 ── */
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+/* ── 進度 ── */
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin:0 -20px 0;padding:10px 20px}
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ── 區段 ── */
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+strong{font-weight:700}
+code{font-family:"SF Mono",Consolas,monospace;background:#fff;border:1px solid var(--line);
+  padding:1px 6px;border-radius:4px;font-size:.92em}
+
+/* ── 卡片 ── */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+
+/* ── 題目 ── */
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+
+/* ── 鎖 ── */
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.lockmsg{text-align:center;color:var(--ink2);font-size:14px;padding:18px;border:1px dashed var(--line);
+  border-radius:12px;margin:24px 0}
+.lockmsg.hide{display:none}
+
+/* ── 實驗室 ── */
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+@media(max-width:560px){.lab-grid{grid-template-columns:1fr}}
+.readout{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:9px}
+.row .lb{font-size:13.5px;color:var(--ink2)}
+.row .vl{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px}
+.row.hi{background:var(--accent-soft);border-color:#f0c9ae}
+.row.hi .vl{color:var(--accent);font-size:19px}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px}
+.slider-lab{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);margin-bottom:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;
+  cursor:pointer;font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s}
+.chip:hover{border-color:var(--ink2)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+
+/* ── 表 ── */
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:520px}
+
+/* ── 長條 ── */
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:20px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden;position:relative}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+/* ── 結尾 ── */
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+.reset:hover{border-color:var(--ink2)}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+svg{max-width:100%;height:auto;display:block}
+.svg-cap{text-align:center;font-size:13px;color:var(--ink2);margin-top:6px}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-inner">
+  <b id="pnum">0 / 9</b>
+  <div class="track"><div class="fill" id="pfill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">八年級上 · 第一章 基本測量</div>
+  <h1>一顆會說謊的銅球</h1>
+  <p class="sub">這一節不教你背 D＝M/V。<br>我們要查清楚一件事：那顆球，到底騙了誰。</p>
+  <div class="meta">
+    <span class="tag">會考 111-38</span>
+    <span class="tag">全國通過率 30.6%</span>
+    <span class="tag">約 25 分鐘</span>
+  </div>
+</header>
+
+<!-- ══════════ 0 案發 ══════════ -->
+<section>
+  <div class="step">案發現場</div>
+  <h2>所有的儀器都沒壞，數字卻不對</h2>
+
+  <p class="lead">小詩手上有一顆金屬球，成分是<strong>純銅</strong>。這件事沒有爭議。</p>
+  <p>她做了兩件很普通的事：</p>
+  <div class="card">
+    <p style="margin:0 0 10px"><strong>①</strong> 把球放進水裡，球完全沉下去，量出它<em>排開水的體積</em>是 V。</p>
+    <p style="margin:0"><strong>②</strong> 用天平量出球的質量是 M。</p>
+  </div>
+  <p>然後她用課本教的公式算：<code>D = M / V</code>。</p>
+  <p>課本寫著，純銅的密度是 <strong>8.96 g/cm³</strong>。</p>
+
+  <div class="quote">
+    <p>但小詩算出來的數字，<strong>明顯不是 8.96</strong>。</p>
+    <p style="margin-top:10px">她重量了一次。天平是準的，量筒也是準的，計算過程一步都沒錯。</p>
+  </div>
+
+  <p class="big">那麼，是誰在說謊？</p>
+
+  <p class="dim">在往下看之前，先給你一個線索——這顆球，<strong>裡面是空的</strong>，而且空腔裡是真空。</p>
+
+  <div style="margin:26px 0">
+    <svg viewBox="0 0 320 190" role="img" aria-label="空心銅球剖面示意">
+      <defs>
+        <radialGradient id="cu" cx="38%" cy="32%">
+          <stop offset="0" stop-color="#e8c9a8"/><stop offset="1" stop-color="#a9683a"/>
+        </radialGradient>
+      </defs>
+      <circle cx="100" cy="95" r="66" fill="url(#cu)" stroke="#7d4a26" stroke-width="2"/>
+      <text x="100" y="180" text-anchor="middle" font-size="13" fill="#5c5349">從外面看</text>
+      <path d="M175 95 L212 95 M204 88 L212 95 L204 102" stroke="#5c5349" stroke-width="2" fill="none"/>
+      <circle cx="255" cy="95" r="66" fill="url(#cu)" stroke="#7d4a26" stroke-width="2"/>
+      <circle cx="255" cy="95" r="40" fill="#faf7f0" stroke="#7d4a26" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="255" y="100" text-anchor="middle" font-size="13" fill="#5c5349">真空</text>
+      <text x="255" y="180" text-anchor="middle" font-size="13" fill="#5c5349">切開看</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════ 1 先猜 ══════════ -->
+<section>
+  <div class="step">STEP 1　先押注</div>
+  <h2>不要往下捲。先選一個。</h2>
+  <p>你現在知道的，和當年考場上二十幾萬個考生一模一樣。他們有 60 秒，你可以想久一點。</p>
+  <p class="dim">選錯完全沒關係——等一下你會看到，<strong>選錯的人比選對的人還多</strong>。</p>
+
+  <div class="q" id="q0">
+    <div class="q-src">111 年會考自然科 第 38 題（原題）</div>
+    <div class="q-body">
+      圖為一個內部為真空的密閉空心金屬球，其金屬成分為純銅。小詩將此金屬球放入水裡，球會完全沒入水中，測得排開水的體積為 V，再用天平量測其質量為 M。她發現利用密度 D＝M/V 計算出的 D 值與課本上記載的純銅密度 8.96 g/cm³ 明顯不同。<br>
+      若小詩的測量與計算過程<strong>皆無錯誤</strong>，則下列何者最合理？
+    </div>
+    <div class="opts" data-q="0" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>D＜8.96，因為 M 為金屬成分的質量，但 <b>V 大於</b>金屬成分的體積</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>D＜8.96，因為 V 為金屬成分的體積，但 <b>M 小於</b>金屬成分的質量</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>D＞8.96，因為 M 為金屬成分的質量，但 <b>V 小於</b>金屬成分的體積</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>D＞8.96，因為 V 為金屬成分的體積，但 <b>M 大於</b>金屬成分的質量</span></button>
+    </div>
+    <div class="fb" id="fb0"></div>
+  </div>
+</section>
+
+<!-- ══════════ 2 全台 ══════════ -->
+<section class="locked-zone" id="z2">
+  <div class="step">STEP 2　對答案之前，先看看別人</div>
+  <h2>這一題，全國十個人只有三個答對</h2>
+
+  <p>這不是普通的難題。它是那一年<strong>最難的幾題之一</strong>，而它<em>連一次計算都不用做</em>。</p>
+
+  <div class="card">
+    <div class="dist" id="dist"></div>
+    <p class="dim" style="font-size:14px;margin:14px 0 0">
+      資料：國家教育研究院 115 年會考自然科官方試題分析（通過率 0.3059、鑑別度 0.34）。
+      官方僅公布最高誤答選項的百分比，C 與 D 合併呈現。
+    </p>
+  </div>
+
+  <div class="note">
+    <p><b>先看懂這張圖再往下：</b>選 B 的人（32.4%）<strong>比選對的人（30.6%）還多</strong>。</p>
+    <p style="margin-top:10px">當一個錯誤選項比正確答案更受歡迎，代表它不是隨便猜的——它背後有一套<em>聽起來很合理的想法</em>，而且全國有三分之一的人都這樣想。</p>
+    <p style="margin-top:10px">所以真正值得研究的，不是「答案是 A」，而是：<strong>那三分之一的人，腦袋裡發生了什麼事？</strong></p>
+  </div>
+
+  <p>接下來我不會直接告訴你為什麼是 A。我們用三個問題把它逼出來。</p>
+</section>
+
+<!-- ══════════ 3 追問 ══════════ -->
+<section class="locked-zone" id="z3">
+  <div class="step">STEP 3　三個追問</div>
+  <h2>把球拆開來想</h2>
+
+  <h3>追問一：先讓球變實心</h3>
+  <p>把空心的事忘掉。假設現在這顆球<strong>從裡到外都是銅</strong>，你做一模一樣的兩個動作。</p>
+
+  <div class="q" id="q1">
+    <div class="q-body">實心純銅球放入水中完全沉沒，測得排開水的體積 V、質量 M，算出 D＝M/V。這時候 D 會是多少？</div>
+    <div class="opts" data-q="1" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>比 8.96 大，因為球比較重</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>正好是 8.96</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>比 8.96 小，因為排開的水總是比較多</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>要看球有多大才知道</span></button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <h3 class="locked-zone" id="z3b">追問二：現在，開始挖它</h3>
+  <div class="locked-zone" id="z3b2">
+  <p>下面這顆球，<strong>外面那層殼的大小永遠不變</strong>（半徑固定 3 cm），你只能決定把裡面挖掉多少。</p>
+  <p>拉滑桿，然後<em>盯著右邊三個數字，看誰在變、誰不動</em>。</p>
+
+  <div class="lab">
+    <div class="lab-t">實驗室 A ── 挖空一顆銅球</div>
+    <div class="lab-grid">
+      <div>
+        <svg viewBox="0 0 220 220" role="img" aria-label="可調整空腔大小的銅球剖面">
+          <defs>
+            <radialGradient id="cu2" cx="38%" cy="32%">
+              <stop offset="0" stop-color="#e8c9a8"/><stop offset="1" stop-color="#a9683a"/>
+            </radialGradient>
+          </defs>
+          <circle cx="110" cy="105" r="88" fill="url(#cu2)" stroke="#7d4a26" stroke-width="2"/>
+          <circle id="cavity" cx="110" cy="105" r="0" fill="#faf7f0" stroke="#7d4a26" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text id="cavlab" x="110" y="110" text-anchor="middle" font-size="12" fill="#5c5349" opacity="0"></text>
+          <line x1="110" y1="105" x2="198" y2="105" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 2" opacity=".9"/>
+          <text x="152" y="97" text-anchor="middle" font-size="11" fill="#fff" stroke="#7d4a26"
+                stroke-width="2.6" paint-order="stroke" stroke-linejoin="round">外殼半徑 3 cm 固定</text>
+        </svg>
+      </div>
+      <div class="readout">
+        <div class="slider-lab"><span>實心</span><span>挖到快剩一層皮</span></div>
+        <input type="range" id="sl" min="0" max="285" value="0" step="1" aria-label="空腔半徑">
+        <div class="row"><span class="lb">天平量到的 M（金屬）</span><span class="vl" id="vm">1013.5</span></div>
+        <div class="row"><span class="lb">排開水的體積 V</span><span class="vl" id="vv">113.1</span></div>
+        <div class="row hi"><span class="lb">算出來的 D＝M/V</span><span class="vl" id="vd">8.96</span></div>
+      </div>
+    </div>
+    <div class="verdict" id="labv">現在是實心的，算出來正好 8.96。試著把滑桿往右拉。</div>
+  </div>
+
+  <div class="q" id="q2">
+    <div class="q-body">你剛剛親眼看到的：把球挖空之後，<strong>哪一個數字完全沒有動</strong>？</div>
+    <div class="opts" data-q="2" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>質量 M</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>排開水的體積 V</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>算出來的密度 D</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>三個都在變</span></button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+  </div>
+
+  <div class="locked-zone" id="z3c">
+  <h3>追問三：V 到底是「誰」的體積？</h3>
+  <p>這是整題的鑰匙。球泡在水裡的時候，水<strong>不知道</strong>球裡面是空的。水只知道一件事：有個東西擠進來了，佔掉這麼大一塊空間。</p>
+  <p>所以水讓開的量，是<em>整顆球（含空腔）佔的空間</em>——而不是銅本身佔的空間。</p>
+
+  <div class="card">
+    <p style="margin:0 0 14px"><strong>同一顆球，其實有三個不同的體積：</strong></p>
+    <svg viewBox="0 0 340 130" role="img" aria-label="三種體積的關係">
+      <circle cx="55" cy="58" r="42" fill="url(#cu2)" stroke="#7d4a26" stroke-width="2"/>
+      <circle cx="55" cy="58" r="26" fill="#faf7f0" stroke="#7d4a26" stroke-width="1.2" stroke-dasharray="3 2"/>
+      <text x="55" y="118" text-anchor="middle" font-size="12" fill="#2b2622">整顆球</text>
+      <text x="170" y="34" font-size="13" fill="#c2410c">① 外觀體積＝銅＋空腔</text>
+      <text x="170" y="62" font-size="13" fill="#3f6d3a">② 金屬體積＝只有銅</text>
+      <text x="170" y="90" font-size="13" fill="#1d5b79">③ 排開水的體積＝①</text>
+      <text x="170" y="114" font-size="12" fill="#5c5349">→ 水量到的是①，不是②</text>
+    </svg>
+  </div>
+
+  <div class="q" id="q3">
+    <div class="q-body">把上面兩件事接起來：M 是<strong>銅本身</strong>的質量，V 卻是<strong>整顆球（含空腔）</strong>的體積。那麼 D＝M/V 算出來的值，和真正的銅密度 8.96 相比會怎樣？</div>
+    <div class="opts" data-q="3" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>比 8.96 小，因為分母 V 被空腔灌水了</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>比 8.96 大，因為分子 M 沒有變小</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>正好等於 8.96，因為材質沒變</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>不一定，要看空腔多大</span></button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+  </div>
+</section>
+
+<!-- ══════════ 4 命名 ══════════ -->
+<section class="locked-zone" id="z4">
+  <div class="step">STEP 4　現在才輪到定義</div>
+  <h2>你剛剛推出來的東西，課本叫它密度</h2>
+
+  <p>注意順序：我們不是先背 D＝M/V 再套題目，而是<strong>先把球拆開想清楚，最後才給它一個名字</strong>。這兩種順序，考場上的差別很大。</p>
+
+  <div class="card">
+    <p style="margin:0 0 8px;font-size:15px;color:var(--ink2)">密度</p>
+    <p style="margin:0 0 14px;font-size:24px;font-weight:700">D ＝ M ÷ V</p>
+    <p style="margin:0">意思是「<strong>每 1 cm³ 的這個材料，有多重</strong>」。它是<em>材料本身的性質</em>——同一種材料，切成大塊小塊，密度都一樣。所以密度才能拿來認人：算出 8.96，我們就敢說「這是銅」。</p>
+  </div>
+
+  <div class="note">
+    <p><b>會考真正在考的，從來不是這個公式，而是這一行：</b></p>
+    <p style="margin-top:10px;font-size:18px"><strong>你代進去的 M 和 V，真的是同一坨東西的 M 和 V 嗎？</strong></p>
+    <p style="margin-top:10px">空心球這題，M 是銅的、V 是「銅＋空腔」的。兩個數字講的不是同一件事，除出來當然不是銅的密度。</p>
+  </div>
+
+  <h3>回頭看那 32.4% 的人</h3>
+  <p>選 B 的人說：「V 為金屬成分的體積，但 M 小於金屬成分的質量。」</p>
+  <p>翻成白話就是——<strong>他們認為體積量對了，是質量量少了</strong>。這其實很合理：球是空的嘛，感覺「少了一塊」，直覺就把帳算在質量頭上。</p>
+  <div class="quote">
+    <p>但天平不會漏掉任何一克銅。<em>球裡面是真空，真空沒有質量，本來就不該被量到。</em></p>
+    <p style="margin-top:10px">M 從頭到尾都是誠實的。<strong>說謊的是 V。</strong></p>
+  </div>
+
+  <div class="scroll">
+  <table>
+    <tr><th>選項</th><th>它主張</th><th>問題在哪</th></tr>
+    <tr><td><b style="color:var(--green)">A ✓</b></td><td>M 對，V 太大</td><td>正確。空腔灌大了分母</td></tr>
+    <tr><td><b>B</b></td><td>V 對，M 太小</td><td>天平量的就是全部的銅，M 沒有少</td></tr>
+    <tr><td><b>C</b></td><td>V 太小 → D 變大</td><td>方向相反。空腔只會讓 V 變大</td></tr>
+    <tr><td><b>D</b></td><td>M 太大 → D 變大</td><td>球裡是真空，不可能多出質量</td></tr>
+  </table>
+  </div>
+
+  <div class="aside">
+    <p><strong>順手想一個問題：</strong>如果空腔裡不是真空，而是灌滿了水，這題的答案會變嗎？（提示：M 會變大，V 不變。）這種「改一個條件再問一次」的習慣，就是下面 STEP 6 要練的東西。</p>
+  </div>
+</section>
+
+<!-- ══════════ 5 變形 ══════════ -->
+<section class="locked-zone" id="z5">
+  <div class="step">STEP 5　同一招，五種變形</div>
+  <h2>認出套路，比多做一百題有用</h2>
+  <p>下面五題是不同年份的會考題。它們看起來完全不一樣——有圖表、有量筒、有麻油、有試管——但<strong>問的是同一件事</strong>：你搞不搞得清楚 M 和 V 各自屬於誰。</p>
+
+  <!-- 變形1 -->
+  <h3>變形一：一張圖看穿五顆球</h3>
+  <div class="lab">
+    <div class="lab-t">實驗室 B ── M-V 關係圖</div>
+    <div class="chips">
+      <button class="chip on" data-mat="same">五顆都是鐵</button>
+      <button class="chip" data-mat="diff">鐵、鋁、銅、鉛、木</button>
+    </div>
+    <svg viewBox="0 0 300 220" role="img" aria-label="質量與體積關係圖">
+      <line x1="42" y1="182" x2="278" y2="182" stroke="#2b2622" stroke-width="1.5"/>
+      <line x1="42" y1="182" x2="42" y2="20" stroke="#2b2622" stroke-width="1.5"/>
+      <text x="284" y="186" font-size="12" fill="#2b2622" text-anchor="end">M (g)</text>
+      <text x="46" y="16" font-size="12" fill="#2b2622">V (cm³)</text>
+      <text x="36" y="187" font-size="11" fill="#5c5349" text-anchor="end">0</text>
+      <g font-size="10" fill="#5c5349"><line x1="38" y1="144" x2="42" y2="144" stroke="#2b2622"/><text x="34" y="148" text-anchor="end">1</text><line x1="38" y1="106" x2="42" y2="106" stroke="#2b2622"/><text x="34" y="110" text-anchor="end">2</text><line x1="38" y1="68" x2="42" y2="68" stroke="#2b2622"/><text x="34" y="72" text-anchor="end">3</text><line x1="38" y1="30" x2="42" y2="30" stroke="#2b2622"/><text x="34" y="34" text-anchor="end">4</text><line x1="118" y1="182" x2="118" y2="186" stroke="#2b2622"/><text x="118" y="197" text-anchor="middle">10</text><line x1="194" y1="182" x2="194" y2="186" stroke="#2b2622"/><text x="194" y="197" text-anchor="middle">20</text></g>
+      <line id="trend" x1="42" y1="182" x2="42" y2="182" stroke="#c2410c" stroke-width="2" opacity="0"/>
+      <g id="pts"></g>
+    </svg>
+    <div class="verdict" id="mvv">五個點連成一條<strong>通過原點的直線</strong>。直線代表 M 和 V 成正比，通過原點代表沒有測量偏差。</div>
+  </div>
+
+  <div class="q" id="q4">
+    <div class="q-src">104 年會考 第 11 題（原題）</div>
+    <div class="q-body">小莉把五個大小不同的實心金屬球丟入水中，用排水法量體積 V、用天平量質量 M，畫成圖後發現各點恰可連成一條<strong>通過原點的直線</strong>。下列哪個說明最合適？</div>
+    <div class="opts" data-q="4" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>因為這些金屬球的密度相同</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>因為這些金屬球的比熱相同</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>因為這些金屬球的形狀相同</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>因為量測球體積的方法相同</span></button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <!-- 變形2 -->
+  <h3>變形二：量筒只肯告訴你一件事</h3>
+  <div class="lab">
+    <div class="lab-t">實驗室 C ── 兩個量筒</div>
+    <svg viewBox="0 0 300 180" role="img" aria-label="兩個量筒中甲沉底乙懸浮">
+      <g>
+        <rect x="30" y="20" width="70" height="140" rx="4" fill="#fff" stroke="#2b2622" stroke-width="1.5"/>
+        <rect x="31" y="70" width="68" height="89" fill="#dbe9f0"/>
+        <line x1="30" y1="70" x2="100" y2="70" stroke="#1d5b79" stroke-width="1.5"/>
+        <text x="106" y="74" font-size="11" fill="#1d5b79">250 mL</text>
+        <circle cx="65" cy="140" r="15" fill="#6b6b6b" stroke="#3a3a3a"/>
+        <text x="65" y="175" text-anchor="middle" font-size="12">甲（沉底）</text>
+      </g>
+      <g>
+        <rect x="175" y="20" width="70" height="140" rx="4" fill="#fff" stroke="#2b2622" stroke-width="1.5"/>
+        <rect x="176" y="52" width="68" height="107" fill="#dbe9f0"/>
+        <line x1="175" y1="52" x2="245" y2="52" stroke="#1d5b79" stroke-width="1.5"/>
+        <text x="251" y="56" font-size="11" fill="#1d5b79">280 mL</text>
+        <circle cx="210" cy="105" r="15" fill="#9aa3a8" stroke="#3a3a3a"/>
+        <text x="210" y="175" text-anchor="middle" font-size="12">乙（懸浮不動）</text>
+      </g>
+    </svg>
+    <div class="svg-cap">兩個量筒原本都裝水 200 mL。放入物體後的讀數如圖。</div>
+  </div>
+  <p>甲沉到底，液面升到 250；乙停在水中不上不下（懸浮），液面升到 280。</p>
+
+  <div class="q" id="q5">
+    <div class="q-src">改寫自 110 年會考 第 40 題</div>
+    <div class="q-body">水的密度為 1 g/cm³，兩物體都不吸水也不與水反應。從這兩個量筒，你可以直接推出下列哪一組資訊？</div>
+    <div class="opts" data-q="5" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>甲的質量 50 g，乙的質量 80 g</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>甲的質量 50 g，乙的體積 80 cm³</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>甲的體積 50 cm³，乙的體積 80 cm³</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>甲的體積 50 cm³，乙的質量 80 g</span></button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <!-- 變形3 -->
+  <h3>變形三：球浮起來了怎麼辦</h3>
+  <p>排水法有個前提常被忽略：<strong>東西要整個沉下去</strong>。浮著的話，水只讓開了它「泡在水裡的那一半」。</p>
+  <p>小玉的塑膠球會浮。她想了一招：<em>拿一顆金屬球綁住它，一起壓下去</em>。她做了四個步驟：</p>
+  <div class="card" style="font-size:15.5px">
+    <p style="margin:0 0 8px">① 量筒裝水，讀數 <code>X₁</code></p>
+    <p style="margin:0 0 8px">② 只放塑膠球（它浮著），讀數 <code>X₂</code></p>
+    <p style="margin:0 0 8px">③ 塑膠球＋金屬球用細繩綁在一起，<strong>兩個都完全沉入</strong>，讀數 <code>X₃</code></p>
+    <p style="margin:0">④ 把塑膠球解開拿走，<strong>只剩金屬球</strong>沉在水裡，讀數 <code>X₄</code></p>
+  </div>
+
+  <div class="q" id="q6">
+    <div class="q-src">108 年會考 第 42 題（原題）</div>
+    <div class="q-body">塑膠球的體積應該是多少？<span class="dim">（提示：先問自己，X₃ 裡面裝了哪些東西的體積？X₄ 又是哪些？）</span></div>
+    <div class="opts" data-q="6" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>X₃ － X₄</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>X₄ － X₂</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>X₃ － X₄ － X₁</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>X₄ － X₂ － X₁</span></button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <!-- 變形4 -->
+  <h3>變形四：一瓶黑麻油的標示</h3>
+  <p>阿榮在購物網站上看到兩牌黑麻油，覺得其中一牌的標示怪怪的：</p>
+  <div class="lab">
+    <div class="lab-t">商品標示</div>
+    <div class="lab-grid">
+      <div class="card" style="margin:0;text-align:center">
+        <p style="margin:0 0 6px;font-weight:700">甲牌</p>
+        <p style="margin:0;font-size:20px">500 mL ／ 460 g</p>
+      </div>
+      <div class="card" style="margin:0;text-align:center">
+        <p style="margin:0 0 6px;font-weight:700">乙牌</p>
+        <p style="margin:0;font-size:20px">500 mL ／ 540 g</p>
+      </div>
+    </div>
+    <div class="verdict">已知：1 c.c.＝1 mL＝1 cm³，而且<strong>黑麻油會浮在水面上</strong>。水的密度是 1 g/cm³。</div>
+  </div>
+
+  <div class="q" id="q7">
+    <div class="q-src">改寫自 112 年會考 第 30 題</div>
+    <div class="q-body">哪一牌的標示不合理？為什麼？</div>
+    <div class="opts" data-q="7" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>甲牌有誤：mL 與 g 都是質量單位，數值應該相同</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>甲牌有誤：mL 與 g 都是體積單位，數值應該相同</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>乙牌有誤：麻油會浮於水面，所以 mL 的數值應大於 g 的數值</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>乙牌有誤：麻油會浮於水面，所以 g 的數值應大於 mL 的數值</span></button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- 變形5 -->
+  <h3>變形五：三支試管，誰最重</h3>
+  <p>三支<strong>一模一樣</strong>的試管，各裝了 X、Y 兩種互不相溶的液體，總體積都是 10 mL。靜止後的樣子如下：</p>
+  <div class="lab">
+    <div class="lab-t">實驗室 D ── 誰在上面？</div>
+    <svg viewBox="0 0 320 200" role="img" aria-label="三支試管中X與Y的分層與體積">
+      <g>
+        <path d="M22 18 h44 v130 a22 22 0 0 1 -44 0 z" fill="#fff" stroke="#2b2622" stroke-width="1.5"/>
+        <path d="M23 46 h42 v102 a21 21 0 0 1 -42 0 z" fill="#c8d8e0"/>
+        <path d="M23 108 h42 v40 a21 21 0 0 1 -42 0 z" fill="#8a8a8a"/>
+        <text x="44" y="80" text-anchor="middle" font-size="12">Y 7</text>
+        <text x="44" y="132" text-anchor="middle" font-size="12" fill="#fff">X 3</text>
+        <text x="44" y="185" text-anchor="middle" font-size="13">甲</text>
+      </g>
+      <g>
+        <path d="M138 18 h44 v130 a22 22 0 0 1 -44 0 z" fill="#fff" stroke="#2b2622" stroke-width="1.5"/>
+        <path d="M139 46 h42 v102 a21 21 0 0 1 -42 0 z" fill="#c8d8e0"/>
+        <path d="M139 128 h42 v20 a21 21 0 0 1 -42 0 z" fill="#8a8a8a"/>
+        <text x="160" y="90" text-anchor="middle" font-size="12">Y 9</text>
+        <text x="160" y="143" text-anchor="middle" font-size="11" fill="#fff">X 1</text>
+        <text x="160" y="185" text-anchor="middle" font-size="13">乙</text>
+      </g>
+      <g>
+        <path d="M254 18 h44 v130 a22 22 0 0 1 -44 0 z" fill="#fff" stroke="#2b2622" stroke-width="1.5"/>
+        <path d="M255 46 h42 v102 a21 21 0 0 1 -42 0 z" fill="#c8d8e0"/>
+        <path d="M255 88 h42 v60 a21 21 0 0 1 -42 0 z" fill="#8a8a8a"/>
+        <text x="276" y="72" text-anchor="middle" font-size="12">Y 5</text>
+        <text x="276" y="124" text-anchor="middle" font-size="12" fill="#fff">X 5</text>
+        <text x="276" y="185" text-anchor="middle" font-size="13">丙</text>
+      </g>
+    </svg>
+    <div class="svg-cap">數字為各液體的體積（mL）。X 沉在下層、Y 浮在上層。</div>
+  </div>
+
+  <div class="q" id="q8">
+    <div class="q-src">改寫自 114 年會考 第 29 題（原題鑑別度 0.62，全卷最高之一）</div>
+    <div class="q-body">三支試管（連同液體）的總質量分別是 m甲、m乙、m丙，下列關係何者正確？<span class="dim">（提示：X 沉在下面，代表 X 和 Y 誰的密度大？）</span></div>
+    <div class="opts" data-q="8" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>m甲 ＝ m乙 ＝ m丙（因為體積都是 10 mL）</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>m甲 ＞ m丙 ＞ m乙</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>m乙 ＞ m甲 ＞ m丙</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>m丙 ＞ m甲 ＞ m乙</span></button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+</section>
+
+<!-- ══════════ 6 變因 ══════════ -->
+<section class="locked-zone" id="z6">
+  <div class="step">STEP 6　最後一件事，也是最值錢的一件</div>
+  <h2>把實驗拆開來看的能力</h2>
+
+  <p>會考自然有一種題目，<strong>五年 28 題（佔 11%）</strong>，不掛任何課本章節、不用背任何東西，考的是：你看不看得出一個實驗<em>哪裡沒設計好</em>。</p>
+  <p>拿你剛做過的實驗室 B（M-V 圖）來練：</p>
+
+  <div class="card">
+    <p style="margin:0 0 10px"><strong>小莉的實驗：</strong>拿五顆<strong>大小不同</strong>的實心鐵球，逐顆用排水法量體積、用天平量質量，畫成 M-V 圖，想證明「同材質的物體，M 與 V 成正比」。</p>
+    <p style="margin:0;font-size:15px;color:var(--ink2)">操縱變因＝她主動改變的；控制變因＝她刻意固定不變的；應變變因＝她測量得到的結果。</p>
+  </div>
+
+  <div class="q" id="q9">
+    <div class="q-body">在小莉這個實驗裡，<strong>操縱變因</strong>是什麼？</div>
+    <div class="opts" data-q="9" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>鐵球的材質</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>鐵球的大小（體積）</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>量筒裡水的初始量</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>天平的種類</span></button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <div class="locked-zone" id="z6b">
+  <div class="note">
+    <p><b>再往前一步——這才是會考真正的問法：</b></p>
+    <p style="margin-top:10px">如果小莉偷懶，五顆球用了<strong>不同材質</strong>（鐵、鋁、銅、鉛、木），她的結論還成立嗎？</p>
+    <p style="margin-top:10px">回去按一下實驗室 B 的「鐵、鋁、銅、鉛、木」看看點會怎麼散。<em>材質是必須被固定的控制變因</em>——一旦沒控制好，圖上根本連不成一條線，什麼都證明不了。</p>
+  </div>
+
+  <div class="quote">
+    <p><strong>一個可以帶去考場的習慣：</strong></p>
+    <p style="margin-top:10px">看到任何實驗，先問三句話——<br>
+    <em>他在改什麼？他固定了什麼？他量什麼？</em><br>
+    然後再問最後一句：<strong>有沒有哪個該固定的，他忘了固定？</strong></p>
+  </div>
+  </div>
+</section>
+
+<!-- ══════════ 收束 ══════════ -->
+<section class="locked-zone" id="z7">
+  <div class="done">
+    <div class="step">結案</div>
+    <h2>那顆球沒有說謊</h2>
+    <p style="text-align:left">說謊的從來不是球，也不是儀器。是<strong>我們自己代錯了數字</strong>——把「銅的質量」和「銅＋空腔的體積」硬湊成一對，然後怪公式不準。</p>
+    <p style="text-align:left">整個第一章，如果只留一句話帶走，是這句：</p>
+    <p class="big" style="text-align:left">D＝M/V 之前，先確認 M 和 V 講的是同一坨東西。</p>
+    <div style="text-align:left">
+      <div class="aside">
+        <p><strong>下一個單元預告：</strong>一杯糖水裡的科學。<br>
+        115 年會考有一題濃度計算，<strong>32.6% 的人分母寫錯</strong>——他們把「水」當分母，而不是「糖水」。一個字的差別，一題的分數。那題也不難，難的是沒人跟他們講清楚分母是誰。</p>
+      </div>
+    </div>
+    <button class="reset" id="rst">清除進度，重新開始</button>
+  </div>
+</section>
+
+<footer>
+  題目與通過率、選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析。<br>
+  部分題目為配合互動呈現而改寫，均已於題頭標示「改寫自」。圖示全部重繪。<br>
+  <span style="color:#a09789">為自學而做 · 2026</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+const KEY="jhs8-density-v1";
+const TOTAL=10;
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+
+/* ── 每題回饋文案 ── */
+const FB={
+ 0:{ans:"A",
+   A:["你和全國 30.6% 的人一起答對了","<p>而且你是<strong>少數派</strong>。這題選 B 的人比選 A 的還多。</p><p>不過先別急著收下這分——等一下的三個追問，會確認你是真的懂，還是猜中的。兩者在下一題會差很多。</p>"],
+   B:["你和 32.4% 的考生做了同一個選擇","<p>這是這題<strong>最受歡迎的答案</strong>，比正確答案還多人選。</p><p>選 B 的想法是：球是空的，所以「少了一塊」，質量被量少了。這個直覺很強——但它有個漏洞，我們等一下會親手把它挖出來。</p>"],
+   C:["這個方向反了","<p>你認為 V 太小、D 會偏大。先記住你的推論方向，等一下拉滑桿的時候，我們會直接檢查空腔到底讓 V 變大還是變小。</p>"],
+   D:["這裡有個東西被忽略了","<p>你認為 M 太大。但題目說球裡面是<strong>真空</strong>——真空是什麼都沒有。什麼都沒有的東西，能讓天平多讀出重量嗎？</p><p>把這個疑問留著，繼續往下。</p>"]},
+ 1:{ans:"B",
+   A:["再想一次","<p>球比較重，體積也跟著比較大。<strong>兩個一起變大，除出來會變嗎？</strong></p><p>密度是「每 1 cm³ 有多重」，一顆大鐵球和一小塊鐵，每 1 cm³ 的重量是一樣的。</p>"],
+   B:["對，正好 8.96","<p>因為實心球的 M 是整顆銅的質量、V 是整顆銅的體積，<strong>兩個數字講的是同一坨東西</strong>。</p><p>請記住這個「基準狀態」。接下來我們只改一件事——把裡面挖掉。</p>"],
+   C:["排開的水並沒有比較多","<p>物體完全沉入時，它排開多少水，就是它自己佔多大空間，不多不少。這是排水法能成立的原因。</p>"],
+   D:["這正是密度最有價值的地方","<p>密度<strong>不隨大小改變</strong>。大球小球，只要都是純銅，算出來都是 8.96。</p><p>正因為如此，我們才能靠密度去認一個材料是什麼——它是材料的身分證。</p>"]},
+ 2:{ans:"B",
+   A:["再拉一次滑桿，盯著 M 看","<p>挖掉銅之後，球確實變輕了，M 是<strong>會變小</strong>的。</p><p>沒有動的是另一個。</p>"],
+   B:["就是它","<p><strong>V 完全沒動。</strong>因為外殼大小沒變，球佔的空間就沒變，水要讓開的量也就沒變。</p><p>所以在挖空的過程中：M 一直掉、V 動也不動，D＝M/V 只能一路往下掉。</p>"],
+   C:["D 掉得最兇","<p>D 從 8.96 一路往下滑，它變得最明顯。有一個數字是<strong>從頭到尾一動也不動</strong>的。</p>"],
+   D:["有一個是不動的","<p>再拉一次滑桿，這次只盯著中間那一行「排開水的體積 V」。</p>"]},
+ 3:{ans:"A",
+   A:["這就是整題的答案","<p>分子 M 是誠實的銅，分母 V 卻多算了一塊空腔。<strong>分母被灌大，商就變小。</strong></p><p>所以 D＜8.96，原因是「V 大於金屬成分的體積」——這就是選項 A 那句話的意思。你剛剛是自己推出來的，不是背來的。</p>"],
+   B:["方向對，理由反了","<p>D 確實不等於 8.96，但分子 M 沒有出任何問題——天平量到了每一克銅。</p><p>出問題的是分母被空腔灌大了。分母變大，除出來會變大還是變小？</p>"],
+   C:["材質確實沒變，但算出來的數字變了","<p>這正是這題最有意思的地方：<strong>球還是純銅，可是算出來的 D 不是銅的密度。</strong></p><p>因為 D＝M/V 只是一個除法，它不認識銅。你餵給它不匹配的 M 和 V，它就吐出一個不屬於任何材料的數字。</p>"],
+   D:["空腔大小確實會影響數字大小，但不影響方向","<p>空腔越大，D 掉得越多——這你在滑桿上看到了。但無論空腔多大，<strong>方向永遠是往下</strong>，因為 V 只會被灌大、不會變小。</p><p>題目問的是方向，不是數值。</p>"]},
+ 4:{ans:"A",
+   A:["對","<p>M-V 圖上連成<strong>一條通過原點的直線</strong>，代表 M/V 這個比值固定——也就是密度相同。</p><p>順帶一提：這張圖是課本實驗 1-2 的結果圖，會考直接把它搬去出題。<em>課本的實驗頁，就是命題來源。</em></p>"],
+   B:["比熱是第五章的東西","<p>比熱講的是「加熱時溫度升得快不快」，這張圖裡沒有溫度、沒有加熱。<strong>圖上只有 M 和 V 兩個量</strong>，能推出來的東西只跟這兩個有關。</p>"],
+   C:["題目說球「大小不同」","<p>而且形狀相同並不會讓 M 和 V 成正比——把五顆同樣形狀但不同材質的球畫上去，點一樣會散開。</p><p>去按實驗室 B 的第二顆按鈕看看。</p>"],
+   D:["方法相同只保證量得準","<p>用同一種方法量，不會讓不同材質的東西排成一直線。<strong>方法一致是「沒有出錯」，不是「有規律」。</strong></p>"]},
+ 5:{ans:"D",
+   A:["量筒量不到質量","<p>量筒只有一種本事：告訴你液面上升了多少，也就是<strong>排開水的體積</strong>。它對質量一無所知。</p><p>但乙有個特別的地方——它<strong>懸浮</strong>。懸浮這件事額外透露了什麼？</p>"],
+   B:["一半對了","<p>甲的體積 50 cm³ 是對的（250−200）。但乙的部分要再想：乙<strong>懸浮</strong>在水中不上不下。</p><p>懸浮代表乙的密度<strong>剛好等於水</strong>＝1 g/cm³。既然體積是 80 cm³、密度是 1，質量就是 80 g。</p>"],
+   C:["兩個體積都對，但漏掉了乙的秘密","<p>沒錯，甲 50 cm³、乙 80 cm³。但題目問的是「可以推出哪一組」，而乙<strong>懸浮</strong>這個線索，讓我們還能多知道一件事。</p><p>懸浮＝密度和水一樣＝1 g/cm³ → 質量 ＝ 1 × 80 ＝ 80 g。</p>"],
+   D:["你抓到那個隱藏線索了","<p>甲沉底：只能得到<strong>體積</strong> 50 cm³（250−200）。</p><p>乙懸浮：除了體積 80 cm³，<strong>懸浮本身就是情報</strong>——密度剛好等於水的 1 g/cm³，所以質量 ＝ 1 × 80 ＝ 80 g。</p><p>會考很喜歡把線索藏在「浮／沉／懸浮」這三個字裡。</p>"]},
+ 6:{ans:"A",
+   A:["漂亮","<p>X₃ ＝ 水 ＋ 塑膠球 ＋ 金屬球<br>X₄ ＝ 水 ＋ 金屬球</p><p>兩個相減，水和金屬球一起被消掉，<strong>剩下的就是塑膠球</strong>。X₁ 不用扣，因為它已經含在 X₃ 和 X₄ 裡面了，相減時自動抵銷。</p><p>這招叫<strong>沉錘法</strong>：用一個重物把浮的東西壓下去，再把重物的份量減掉。</p>"],
+   B:["X₂ 是張沒用的牌","<p>步驟②的時候塑膠球是<strong>浮著</strong>的，只有一部分泡在水裡，X₂ 量到的不是完整體積——這個數字本身就是壞的，不能用。</p><p>題目故意把它放進來，看你會不會用。回去看 X₃ 和 X₄ 各裝了什麼。</p>"],
+   C:["X₁ 不用再扣一次","<p>方向對了！X₃ − X₄ 確實是塑膠球。但要注意：X₃ 和 X₄ <strong>都已經包含了那杯水</strong>，相減的時候水就抵銷掉了。</p><p>再扣一次 X₁ 等於把水扣了兩次。</p>"],
+   D:["這裡用到了壞掉的 X₂","<p>X₂ 是塑膠球浮著時的讀數，它量到的只是「泡在水裡的那一部分」，不是整顆球。<strong>浮著量出來的體積不能用。</strong></p><p>這正是小玉為什麼要多綁一顆金屬球。</p>"]},
+ 7:{ans:"C",
+   A:["mL 和 g 不是同一種單位","<p>mL 量的是<strong>體積</strong>（佔多大空間），g 量的是<strong>質量</strong>（有多重）。它們是兩件不同的事，數值本來就不必相同。</p>"],
+   B:["g 不是體積單位","<p>g 是質量。這一題最基本的門檻，就是分清楚 mL 管空間、g 管重量。</p>"],
+   C:["對，而且理由要說得出來","<p>麻油會浮在水上 → 麻油密度<strong>小於</strong> 1 g/cm³ → 每 1 mL 不到 1 g → <strong>mL 的數值一定大於 g 的數值</strong>。</p><p>甲牌 500 mL／460 g：合理（500 &gt; 460）。<br>乙牌 500 mL／540 g：500 &lt; 540，等於密度大於 1，那它應該沉下去才對。<strong>矛盾。</strong></p><p>這題的價值在於：密度不只是公式，它可以拿來<em>驗證別人給你的數字是不是唬爛</em>。</p>"],
+   D:["方向反了，這是 16.9% 的人掉的坑","<p>再推一次：浮起來 → 密度小於水 → 每 1 mL 不到 1 g。</p><p>假設 500 mL 的麻油重 460 g，那麼 mL 的數值（500）<strong>大於</strong> g 的數值（460）。所以是「mL 應大於 g」，不是反過來。</p>"]},
+ 8:{ans:"D",
+   A:["體積一樣，重量不一定一樣","<p>這就是密度存在的意義：<strong>一樣大不代表一樣重。</strong></p><p>三支管子的總體積都是 10 mL，但裝的 X 和 Y 比例不同。X 沉在下層代表 X 比較重（密度大）。所以 X 越多的那支，就越重。</p>"],
+   B:["排序要照 X 的量","<p>X 沉在下層 → X 密度大於 Y → <strong>X 越多越重</strong>。</p><p>X 的量：甲 3、乙 1、丙 5。照這個排序試試看。</p>"],
+   C:["乙的 X 最少","<p>乙只有 1 mL 的 X，其餘 9 mL 都是比較輕的 Y，所以乙應該是<strong>最輕</strong>的那支。</p><p>X 的量：丙 5 ＞ 甲 3 ＞ 乙 1。</p>"],
+   D:["完全正確","<p>X 沉在下層 → X 的密度比 Y 大 → 誰的 X 多，誰就重。</p><p>X 的量：丙 5 mL ＞ 甲 3 mL ＞ 乙 1 mL，所以 <strong>m丙 ＞ m甲 ＞ m乙</strong>。</p><p>這題的鑑別度 0.62，是全卷最高的幾題之一——意思是<em>它非常能區分「真懂」和「背公式」的人</em>。而你從頭到尾一個數字都沒算。</p>"]},
+ 9:{ans:"B",
+   A:["材質是要被固定的那一個","<p>如果她連材質都換來換去，就沒辦法說「同材質時 M 與 V 成正比」了。<strong>材質是控制變因。</strong></p><p>她主動改變的是另一件事。</p>"],
+   B:["對","<p><strong>操縱變因＝球的大小（體積）</strong>——她刻意挑了五顆大小不同的球。<br><strong>控制變因＝材質全部都是鐵</strong>、量法一致。<br><strong>應變變因＝量到的質量</strong>。</p><p>會考的緒論題（五年 28 題）幾乎都在問這三個角色誰是誰，以及「有沒有哪個該固定的沒固定」。</p>"],
+   C:["這是要固定的","<p>水的初始量應該每次一樣，避免造成差異——它是控制變因。</p>"],
+   D:["天平不換","<p>換天平只會引入誤差，不是她要研究的東西。它是控制變因。</p>"]}
+};
+
+/* ── 進度 ── */
+function done(){return Object.keys(state).filter(k=>/^q\d+$/.test(k)).length}
+function paint(){
+  const d=done();
+  document.getElementById("pnum").textContent=d+" / "+TOTAL;
+  document.getElementById("pfill").style.width=(d/TOTAL*100)+"%";
+}
+function unlock(id){
+  const el=document.getElementById(id);
+  if(el&&el.classList.contains("locked-zone")){
+    el.classList.remove("locked-zone");
+    el.classList.add("revealed");
+    /* 動畫結束即拿掉，避免長區段留下合成圖層 */
+    setTimeout(()=>el.classList.remove("revealed"),700);
+  }
+}
+/* 依已答題數解鎖區段 */
+function gate(){
+  if(state.q0!==undefined){unlock("z2");unlock("z3");drawDist()}
+  if(state.q1!==undefined){unlock("z3b");unlock("z3b2")}
+  if(state.q2!==undefined){unlock("z3c")}
+  if(state.q3!==undefined){unlock("z4");unlock("z5")}
+  if(state.q8!==undefined){unlock("z6")}
+  if(state.q9!==undefined){unlock("z6b");unlock("z7")}
+  paint();
+}
+
+/* ── 作答 ── */
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, ans=box.dataset.ans;
+  box.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(box.dataset.locked)return;
+      const k=btn.dataset.k;
+      state["q"+qi]=k;
+      try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+      reveal(qi,k,ans,box,true);
+      gate();
+    });
+  });
+});
+
+function reveal(qi,k,ans,box,scroll){
+  box.dataset.locked="1";
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+    /* 第 0 題額外顯示全國選答比例 */
+    if(qi==="0"){
+      const p={A:"30.6%",B:"32.4%",C:"—",D:"—"}[b.dataset.k];
+      if(p!=="—"&&!b.querySelector(".pct")){
+        const s=document.createElement("span");s.className="pct";s.textContent=p;b.appendChild(s);
+      }
+    }
+  });
+  const f=FB[qi][k], fb=document.getElementById("fb"+qi);
+  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+f[1];
+  fb.classList.add("show");
+  if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
+}
+
+/* ── 全國分布長條 ── */
+let distDone=false;
+function drawDist(){
+  if(distDone)return;distDone=true;
+  const box=document.getElementById("dist");
+  const rows=[
+    {k:"A",v:30.6,c:"#3f6d3a",t:"正確答案"},
+    {k:"B",v:32.4,c:"#c2410c",t:"最多人選"},
+    {k:"C+D",v:37.0,c:"#b8ab93",t:"合計"}
+  ];
+  box.innerHTML=rows.map(r=>
+    '<div class="dbar"><span class="dk">'+r.k+'</span>'+
+    '<div class="dtrack"><div class="dfill" data-w="'+r.v+'" style="background:'+r.c+'"></div></div>'+
+    '<span class="dv">'+r.v.toFixed(1)+'%</span></div>'+
+    '<div style="font-size:12px;color:var(--ink2);margin:-4px 0 10px 30px">'+r.t+'</div>'
+  ).join("");
+  setTimeout(()=>{box.querySelectorAll(".dfill").forEach(d=>d.style.width=d.dataset.w+"%")},80);
+}
+
+/* ── 實驗室 A：挖空銅球 ── */
+const R=3, CU=8.96, Vout=4/3*Math.PI*R*R*R;
+const sl=document.getElementById("sl");
+function lab(){
+  const c=sl.value/100;                    /* 空腔半徑 cm，0 ~ 2.85 */
+  const Vc=4/3*Math.PI*c*c*c;
+  const Vm=Vout-Vc;
+  const M=CU*Vm;
+  const D=M/Vout;
+  document.getElementById("vm").textContent=M.toFixed(1);
+  document.getElementById("vv").textContent=Vout.toFixed(1);
+  document.getElementById("vd").textContent=D.toFixed(2);
+  const px=c/R*88;
+  document.getElementById("cavity").setAttribute("r",px.toFixed(1));
+  const lab2=document.getElementById("cavlab");
+  lab2.setAttribute("opacity",px>26?"1":"0");
+  lab2.textContent="真空";
+  const v=document.getElementById("labv");
+  if(c<0.05){v.className="verdict";v.innerHTML="現在是實心的，算出來正好 8.96。試著把滑桿往右拉。"}
+  else if(D>6){v.className="verdict";v.innerHTML="M 開始掉了，但 <strong>V 一動也不動</strong>——你看到分母卡住不動了嗎？"}
+  else if(D>3){v.className="verdict bad";v.innerHTML="D 已經掉到 <strong>"+D.toFixed(2)+"</strong>。這顆球明明還是純銅，算出來卻像另一種金屬。"}
+  else{v.className="verdict bad";v.innerHTML="D 只剩 <strong>"+D.toFixed(2)+"</strong>，比鋁（2.70）還輕。<strong>但它從頭到尾都是純銅。</strong>"}
+}
+sl.addEventListener("input",lab);lab();
+
+/* ── 實驗室 B：M-V 圖 ── */
+const DATA={
+  same:[[4,.51],[8,1.02],[13,1.66],[16,2.04],[24,3.06]],           /* 同材質：過原點直線 */
+  diff:[[4,.51],[8,2.96],[13,1.45],[16,1.41],[24,48]]              /* 鐵4/鋁8/銅13/鉛16/木24 g：散開 */
+};
+const MMAX=28, VMAX=4;
+function drawPts(mode){
+  const g=document.getElementById("pts"), tr=document.getElementById("trend");
+  const X=m=>42+m/MMAX*228, Y=v=>182-Math.min(v,VMAX)/VMAX*152;
+  g.innerHTML=DATA[mode].map(p=>{
+    const cl=p[1]>VMAX;
+    return '<circle cx="'+X(p[0]).toFixed(1)+'" cy="'+Y(p[1]).toFixed(1)+'" r="4.5" fill="'+
+      (cl?"#b8ab93":"#2b2622")+'"/>'+(cl?'<text x="'+X(p[0])+'" y="18" font-size="10" fill="#5c5349" text-anchor="middle">↑爆表</text>':'');
+  }).join("");
+  if(mode==="same"){
+    tr.setAttribute("x2",X(26));tr.setAttribute("y2",Y(3.31));tr.setAttribute("opacity","1");
+  }else{tr.setAttribute("opacity","0")}
+  const v=document.getElementById("mvv");
+  if(mode==="same"){
+    v.className="verdict good";
+    v.innerHTML="五個點連成一條<strong>通過原點的直線</strong>。直線代表 M 與 V 成正比，通過原點代表沒有系統性偏差——這就是「密度相同」長的樣子。";
+  }else{
+    v.className="verdict bad";
+    v.innerHTML="點<strong>散掉了</strong>，連不成線（木球的體積大到爆表）。材質一換，M 和 V 就沒有固定的比值——因為每種材質有自己的密度。";
+  }
+}
+document.querySelectorAll(".chip").forEach(c=>{
+  c.addEventListener("click",()=>{
+    document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+    c.classList.add("on");drawPts(c.dataset.mat);
+  });
+});
+drawPts("same");
+
+/* ── 還原進度 ── */
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, saved=state["q"+qi];
+  if(saved!==undefined)reveal(qi,saved,box.dataset.ans,box,false);
+});
+gate();
+
+document.getElementById("rst").addEventListener("click",()=>{
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+</body>
+</html>
