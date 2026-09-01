@@ -130,6 +130,26 @@ tr:last-child td{border-bottom:none}
 .reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
   border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
 footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+
+/* ── 開始之前 ── */
+.flow{counter-reset:s;list-style:none;padding:0;margin:14px 0 0}
+.flow li{counter-increment:s;position:relative;padding:7px 0 7px 40px;font-size:15.5px;line-height:1.7}
+.flow li::before{content:counter(s);position:absolute;left:0;top:8px;width:25px;height:25px;
+  background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12.5px;font-weight:700}
+details.pre{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;overflow:hidden}
+details.pre summary{padding:13px 16px;cursor:pointer;font-size:16px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:10px}
+details.pre summary::-webkit-details-marker{display:none}
+details.pre summary::before{content:"?";flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700}
+details.pre[open] summary::before{content:"¹3";background:var(--green);color:#fff}
+details.pre[open] summary{border-bottom:1px solid var(--line)}
+details.pre .bd{padding:14px 16px;font-size:15.5px;line-height:1.8;color:var(--ink2)}
+details.pre .bd strong{color:var(--ink)}
+details.pre .bd p{margin:0 0 10px}
+details.pre .bd p:last-child{margin:0}
 </style>
 </head>
 <body>
@@ -152,6 +172,39 @@ footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-alig
     <span class="tag">零背誦</span>
   </div>
 </header>
+
+<!-- ══ 開始之前 ══ -->
+<section>
+  <div class="step">開始之前</div>
+  <h2>這一課不是考試，是一場推理</h2>
+
+  <p class="lead">等一下你會先看到一題會考題。<strong>那不是要考你</strong>——是想讓你先猜一次，然後我們一起看看全國的人怎麼想。</p>
+
+  <div class="card">
+    <p style="margin:0 0 4px"><strong>這一課會這樣走：</strong></p>
+    <ol class="flow">
+      <li>先看一個網路上的說法：「加食鹽的熱水拖地比較快乾」</li>
+      <li><strong>你先猜</strong>一個答案（猜錯完全沒關係）</li>
+      <li>看看全國二十幾萬個考生怎麼選</li>
+      <li>自己動手配對四桶水，答案會自己浮出來</li>
+      <li>這時候才給那三個名字：操縱、控制、應變</li>
+      <li>換兩個場景再看一次</li>
+      <li>最後：這套方法是誰想出來的</li>
+    </ol>
+  </div>
+
+  <h3>先確認你知道這些</h3>
+  <p>下面每一項點開來看，幾十秒就能確認。<strong>如果都很熟，直接往下開始。</strong></p>
+  <details class="pre"><summary>我需要先學過什麼嗎？</summary><div class="bd"><p><strong>幾乎不用。</strong>這一課不考任何課本內容，也不用背公式。</p><p>你只要知道一件事：<strong>做實驗是為了找出「是什麼造成的」</strong>。就這樣。</p><p>所以這一課很適合當自然科的第一課——它教的是<em>看懂實驗</em>的方法，而這個方法在後面每一章都用得到。</p></div></details>
+  <details class="pre"><summary>「變因」是什麼意思？</summary><div class="bd"><p>變因＝<strong>實驗裡「可能會變」的東西</strong>。</p><p>例如拖地這件事，可能影響地板乾得快不快的有：水的溫度、有沒有加鹽、拖地的力道、房間的濕度⋯⋯這些全都是變因。</p><p>這一課要做的，就是把這些變因分成三種角色。<em>現在不用先懂，等一下會慢慢帶你看。</em></p></div></details>
+
+  <div class="note">
+    <p><b>三個提醒</b></p>
+    <p style="margin-top:10px">① <strong>一開始那題，全國有四成的人答錯</strong>。你答錯很正常，而且答錯反而更有得學。</p>
+    <p style="margin-top:8px">② 每一段都要<strong>先答完才會解鎖下一段</strong>。這不是在考你，是不想讓你跳過「自己想一想」那一步。</p>
+    <p style="margin-top:8px">③ 你可以隨時停下來，進度會自己存著。下次打開還在原地。</p>
+  </div>
+</section>
 
 <!-- ══ 0 案發 ══ -->
 <section>

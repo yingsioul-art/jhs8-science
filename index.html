@@ -32,6 +32,17 @@ a.unit:hover{border-color:var(--ink);transform:translateY(-2px)}
 .why{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:30px 0}
 .why p:last-child{margin:0}
 footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-top:1px solid var(--line);margin-top:44px}
+
+.howto{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:30px 0}
+.howto h3{font-size:19px;margin:0 0 12px;line-height:1.4}
+.howto h4{font-size:15.5px;margin:24px 0 8px;color:var(--accent);letter-spacing:.02em}
+.howto p{font-size:15.5px;line-height:1.8;margin:0 0 14px}
+.howto p:last-child{margin:0}
+.steps{counter-reset:t;list-style:none;padding:0;margin:0 0 8px}
+.steps li{counter-increment:t;position:relative;padding:6px 0 6px 38px;font-size:15px;line-height:1.65}
+.steps li::before{content:counter(t);position:absolute;left:0;top:7px;width:24px;height:24px;
+  background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700}
 </style>
 </head>
 <body>
@@ -42,6 +53,36 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
   <h1>不背重點，<br>把每個現象查清楚</h1>
   <p class="dim">這裡的每一節都從<em>一個怪事</em>開始：某個數字對不上、某個結果跟你想的不一樣。你先猜，再拆，最後才會看到課本上那個公式——而那時候它已經是你自己推出來的了。</p>
 </header>
+
+<div class="howto">
+  <h3>這個網站怎麼用</h3>
+  <p><strong>它不是題庫。</strong>每一課都是一條完整的路，從一個問題走到一個答案，中間有很多可以自己動手拉、拖、拆的地方。一課大約 20–30 分鐘。</p>
+
+  <h4>每一課都這樣走</h4>
+  <ol class="steps">
+    <li><strong>開始之前</strong>：先確認這一課會用到什麼（都很熟就直接跳過）</li>
+    <li>看一個怪事——某個數字對不上，或結果跟你想的不一樣</li>
+    <li><strong>你先猜一個答案</strong>（這不是考試）</li>
+    <li>看看全國二十幾萬個考生怎麼選</li>
+    <li>自己動手把它拆開，答案會慢慢浮出來</li>
+    <li><strong>這時候才給名字和公式</strong></li>
+    <li>同一招的幾種變化 → 最後：這東西是誰想出來的</li>
+  </ol>
+
+  <h4>為什麼一開始就丟題目給你？</h4>
+  <p>因為<em>先有困惑，學到的才留得住</em>。<br>
+  如果先把公式講完再考你，你會記住「要套哪一條」；<br>
+  但如果先讓你撞一次牆，你會記住「<strong>為什麼會有這一條</strong>」。</p>
+  <p><strong>所以那一題不是在評分，是在幫你把問題變成你自己的。</strong></p>
+
+  <h4>答錯完全沒關係</h4>
+  <p>這裡挑的題目，全國有三成到六成的人答錯——<strong>它們本來就是難題</strong>。<br>
+  而且錯的選項不是隨便設的：每一個背後都是一種很多人共有的想法。你猜錯的那一刻，剛好是最好的學習時機。</p>
+
+  <h4>兩個小規則</h4>
+  <p>· 每一段<strong>要答完才會解鎖下一段</strong>。不是要卡你，是不想讓你跳過「自己想一想」那一步。<br>
+  · 進度會自己存著，隨時可以關掉，下次打開還在原地。</p>
+</div>
 
 <div class="why">
   <p style="font-size:15px;color:var(--ink2);margin-bottom:12px"><strong style="color:var(--ink)">為什麼題目都附「全國有多少人選錯」？</strong></p>

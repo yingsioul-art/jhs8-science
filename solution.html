@@ -139,6 +139,26 @@ tr:last-child td{border-bottom:none}
   border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
 footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
 svg{max-width:100%;height:auto;display:block}
+
+/* ── 開始之前 ── */
+.flow{counter-reset:s;list-style:none;padding:0;margin:14px 0 0}
+.flow li{counter-increment:s;position:relative;padding:7px 0 7px 40px;font-size:15.5px;line-height:1.7}
+.flow li::before{content:counter(s);position:absolute;left:0;top:8px;width:25px;height:25px;
+  background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12.5px;font-weight:700}
+details.pre{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;overflow:hidden}
+details.pre summary{padding:13px 16px;cursor:pointer;font-size:16px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:10px}
+details.pre summary::-webkit-details-marker{display:none}
+details.pre summary::before{content:"?";flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700}
+details.pre[open] summary::before{content:"¹3";background:var(--green);color:#fff}
+details.pre[open] summary{border-bottom:1px solid var(--line)}
+details.pre .bd{padding:14px 16px;font-size:15.5px;line-height:1.8;color:var(--ink2)}
+details.pre .bd strong{color:var(--ink)}
+details.pre .bd p{margin:0 0 10px}
+details.pre .bd p:last-child{margin:0}
 </style>
 </head>
 <body>
@@ -160,6 +180,41 @@ svg{max-width:100%;height:auto;display:block}
     <span class="tag">鑑別度 0.69　全卷最高</span>
   </div>
 </header>
+
+<!-- ══ 開始之前 ══ -->
+<section>
+  <div class="step">開始之前</div>
+  <h2>這一課只考你一個字</h2>
+
+  <p class="lead">等一下你會先看到一題會考題。<strong>那不是要考你</strong>——是想讓你先算一次。<br>這一題不難，但全國有三分之一的人算錯，而且都錯在同一個地方。</p>
+
+  <div class="card">
+    <p style="margin:0 0 4px"><strong>這一課會這樣走：</strong></p>
+    <ol class="flow">
+      <li>先看兩杯糖水，想想哪一杯比較甜</li>
+      <li><strong>你先算</strong>一次（算錯完全沒關係）</li>
+      <li>看看全國的考生怎麼選</li>
+      <li>把那杯糖水攤開來看，問題出在哪就很清楚了</li>
+      <li>這時候才給公式</li>
+      <li>同一個道理的三種變化（包括「一座游泳池裡有多少尿」）</li>
+      <li>溫度會改變什麼</li>
+      <li>最後：幾千年前的人怎麼玩濃度</li>
+    </ol>
+  </div>
+
+  <h3>先確認你知道這些</h3>
+  <p>下面每一項點開來看，幾十秒就能確認。<strong>如果都很熟，直接往下開始。</strong></p>
+  <details class="pre"><summary>百分比我還記得嗎？</summary><div class="bd"><p>應該記得——國小就學過了。<strong>50% 就是一半、25% 就是四分之一。</strong></p><p>算法是：<strong>（部分 ÷ 全部）× 100%</strong>。</p><p>例如班上 40 人有 10 人戴眼鏡 → 10 ÷ 40 × 100% ＝ 25%。</p><p>📌 這一課全部的關鍵，就在那個「<strong>全部</strong>」到底指的是什麼。</p></div></details>
+  <details class="pre"><summary>「溶解」是怎麼回事？</summary><div class="bd"><p>糖放進水裡攪一攪，就看不見了——這叫<strong>溶解</strong>。</p><p>但很重要的一點：<strong>糖只是散開到水裡，它沒有消失，重量一克都沒有少。</strong></p><p>如果把水蒸乾，那些糖會原封不動地跑回來（這正是曬鹽的原理，最後一段會講）。</p></div></details>
+  <details class="pre"><summary>這一課會出現哪些新的詞？</summary><div class="bd"><p><strong>溶質、溶劑、溶液</strong>——三個長得很像的詞，第一次看很容易搞混：</p><p>糖水裡面，<strong>糖是溶質</strong>（被溶解的）、<strong>水是溶劑</strong>（負責溶解的）、<strong>整杯糖水是溶液</strong>。</p><p>這一課有一個互動會把整杯糖水攤成一長條，讓你一眼看出誰是誰。</p></div></details>
+
+  <div class="note">
+    <p><b>三個提醒</b></p>
+    <p style="margin-top:10px">① 一開始那題全國只有 45% 的人答對，而且錯的人幾乎都錯在同一個字。</p>
+    <p style="margin-top:8px">② 這題<strong>只需要一個除法</strong>。難的不是計算，是知道要除以誰。</p>
+    <p style="margin-top:8px">③ 每一段要答完才解鎖下一段，不是要考你，是不想讓你跳過思考。進度會自己存著。</p>
+  </div>
+</section>
 
 <!-- ══ 0 案發 ══ -->
 <section>
