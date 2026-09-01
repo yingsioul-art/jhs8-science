@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>找出沒被固定的那一項｜科學方法</title>
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px;line-height:1.85;letter-spacing:.01em}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);
+  border-bottom:1px solid var(--line);margin:0 -20px 0;padding:10px 20px}
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:center;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+
+/* 四組水 */
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.grp{border:2px solid var(--line);border-radius:12px;padding:14px;background:#fff;cursor:pointer;
+  transition:all .18s;text-align:center;font-family:inherit;color:inherit}
+.grp:hover{border-color:var(--ink2)}
+.grp.sel{border-color:var(--accent);background:var(--accent-soft);border-width:2.5px}
+.grp .gn{font-size:13px;color:var(--ink2);font-weight:700;letter-spacing:.1em;margin-bottom:6px}
+.grp .gd{font-size:16.5px;font-weight:700;line-height:1.5}
+.grp .gt{font-size:12.5px;color:var(--ink2);margin-top:6px}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+
+/* 角色歸位 */
+.role{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.role .rq{font-size:16px;margin-bottom:12px;font-weight:600}
+.rbtns{display:flex;gap:8px;flex-wrap:wrap}
+.rb{padding:8px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;
+  cursor:pointer;font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s}
+.rb:hover:not(:disabled){border-color:var(--ink2)}
+.rb.ok{background:var(--green-soft);border-color:var(--green);color:var(--green);font-weight:700}
+.rb.no{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.rb:disabled{cursor:default}
+.rfb{margin-top:10px;font-size:14.5px;line-height:1.65;color:var(--ink2);display:none}
+.rfb.show{display:block}
+
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:20px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:500px}
+
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-inner">
+  <b id="pnum">0 / 6</b>
+  <div class="track"><div class="fill" id="pfill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">會考自然 · 探究能力（不掛任何課本章節）</div>
+  <h1>找出沒被固定的那一項</h1>
+  <p class="sub">這一節<strong>沒有任何東西要背</strong>。<br>但它是會考自然佔比最高的一塊：五年 28 題，佔全卷 11%。</p>
+  <div class="meta">
+    <span class="tag">會考 115-23</span>
+    <span class="tag">5 年 28 題</span>
+    <span class="tag">佔全卷 11%</span>
+    <span class="tag">零背誦</span>
+  </div>
+</header>
+
+<!-- ══ 0 案發 ══ -->
+<section>
+  <div class="step">案發現場</div>
+  <h2>網路上說：「加食鹽的熱水拖地，地板比較快乾。」</h2>
+
+  <p class="lead">這句話聽起來有點道理，也有點可疑。<br><strong>問題是——你要怎麼證明它是真的還是假的？</strong></p>
+
+  <p>小綺決定自己試。她準備了<strong>四桶水</strong>：</p>
+
+  <div class="card">
+    <div class="scroll" style="margin:0">
+    <table style="margin:0">
+      <tr><th>組別</th><th>拖地的水</th></tr>
+      <tr><td><b>一</b></td><td>熱水 ＋ 加食鹽</td></tr>
+      <tr><td><b>二</b></td><td>熱水 ＋ 沒加食鹽</td></tr>
+      <tr><td><b>三</b></td><td>冷水 ＋ 加食鹽</td></tr>
+      <tr><td><b>四</b></td><td>冷水 ＋ 沒加食鹽</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <p>她想知道：<em>到底是「熱」讓地板快乾，還是「鹽」讓地板快乾？</em></p>
+  <p class="dim">注意這裡有兩個東西在變：<strong>水溫</strong>（熱／冷）和<strong>食鹽</strong>（有／無）。四桶水剛好把兩兩組合都湊齊了。</p>
+
+  <p class="big">她該拿哪兩組來比？</p>
+</section>
+
+<!-- ══ 1 押注 ══ -->
+<section>
+  <div class="step">STEP 1　先押注</div>
+  <h2>這題問的是「不能比」的那一組</h2>
+
+  <div class="q" id="q0">
+    <div class="q-src">115 年會考自然科 第 23 題（原題）</div>
+    <div class="q-body">小綺想要找出影響地板乾燥速率的變因，使用上表中四組的水來拖地。當中的哪兩組相互比較，<strong>最不可能</strong>達到她的目的？</div>
+    <div class="opts" data-q="0" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>第一組和第二組</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>第一組和第三組</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>第二組和第三組</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>第二組和第四組</span></button>
+    </div>
+    <div class="fb" id="fb0"></div>
+  </div>
+</section>
+
+<!-- ══ 2 全台 ══ -->
+<section class="locked-zone" id="z2">
+  <div class="step">STEP 2　全國怎麼選</div>
+  <h2>三成的人選了 D</h2>
+
+  <div class="card">
+    <div class="dist" id="dist"></div>
+    <p class="dim" style="font-size:14px;margin:14px 0 0">
+      資料：國家教育研究院 115 年會考自然科官方試題分析（通過率 0.6024、鑑別度 0.51）。官方僅公布最高誤答選項的百分比。
+    </p>
+  </div>
+
+  <div class="note">
+    <p><b>選 D（二和四）的人，多半是這樣想的：</b>「兩組都沒加鹽，那有什麼好比的？」</p>
+    <p style="margin-top:10px">但這正好想反了。<em>「兩組都沒加鹽」不是缺點，那叫做<strong>把鹽固定住</strong></em>——正因為鹽被固定了，如果乾燥速率有差，就一定是溫度造成的。</p>
+    <p style="margin-top:10px">下面這個工具會讓你看清楚每一組配對到底在測什麼。</p>
+  </div>
+</section>
+
+<!-- ══ 3 配對器 ══ -->
+<section class="locked-zone" id="z3">
+  <div class="step">STEP 3　自己配對看看</div>
+  <h2>點兩組，看它們差在哪</h2>
+
+  <p>下面四張卡片，<strong>點選任兩張</strong>。我會告訴你這樣比能不能得出結論。</p>
+
+  <div class="lab">
+    <div class="lab-t">配對器 ── 一次只能有一個東西不一樣</div>
+    <div class="grid4" id="grid"></div>
+    <div class="verdict" id="pairv">選兩張卡片試試看。</div>
+  </div>
+
+  <div class="q" id="q1">
+    <div class="q-body">把六種配對都試過之後——為什麼「<strong>第二組和第三組</strong>」（熱水沒鹽 vs 冷水加鹽）沒辦法得到結論？</div>
+    <div class="opts" data-q="1" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>因為熱水和冷水本來就不能比</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>因為其中一組沒加鹽，資料不完整</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>因為溫度和鹽<strong>同時都不一樣</strong>，就算有差也不知道是誰造成的</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>因為只比兩組太少了，至少要比三組</span></button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+</section>
+
+<!-- ══ 4 命名 ══ -->
+<section class="locked-zone" id="z4">
+  <div class="step">STEP 4　現在給這三個角色名字</div>
+  <h2>操縱、控制、應變</h2>
+
+  <div class="scroll">
+  <table>
+    <tr><th>角色</th><th>它是什麼</th><th>在小綺的實驗裡</th></tr>
+    <tr><td><b style="color:var(--accent)">操縱變因</b></td><td>你<strong>刻意去改</strong>的那一個</td><td>水溫（或鹽）—— 一次只能挑一個</td></tr>
+    <tr><td><b style="color:var(--blue)">控制變因</b></td><td>你<strong>刻意固定不動</strong>的所有東西</td><td>鹽（若在測溫度）、拖地力道、地板材質、房間濕度⋯⋯</td></tr>
+    <tr><td><b style="color:var(--green)">應變變因</b></td><td>你<strong>去量</strong>的結果</td><td>地板乾掉所需的時間</td></tr>
+  </table>
+  </div>
+
+  <div class="note">
+    <p><b>整個實驗設計只有一條鐵律：</b></p>
+    <p style="margin-top:10px;font-size:19px"><strong>一次只能改一個東西。</strong></p>
+    <p style="margin-top:10px">因為如果你同時改了兩個，結果變了，你就<em>永遠分不出是誰造成的</em>——這就是二和三不能比的原因。</p>
+  </div>
+
+  <h3>換你分角色</h3>
+  <p>小綺最後決定測「溫度」的效果，用第二組和第四組比較。下面每一項，你覺得是哪個角色？</p>
+
+  <div class="lab">
+    <div class="lab-t">角色歸位</div>
+    <div id="roles"></div>
+    <div class="verdict" id="rolev">三題都答對就過關。</div>
+  </div>
+
+  <div class="q" id="q2">
+    <div class="q-body">如果小綺拖第二組（熱水）用了很大的力氣、拖第四組（冷水）只輕輕帶過，結果會怎樣？</div>
+    <div class="opts" data-q="2" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>沒關係，反正她測的是溫度</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>實驗毀了——她多改了一個東西，乾得快可能是因為水抹得少</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>只要記得把力氣的差別寫進報告就好</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>力氣不是變因，不影響結果</span></button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+</section>
+
+<!-- ══ 5 變形 ══ -->
+<section class="locked-zone" id="z5">
+  <div class="step">STEP 5　變形</div>
+  <h2>換個場景，還是問同一件事</h2>
+
+  <h3>變形一：節能標章怎麼測電扇</h3>
+  <p>這題是那五年<strong>探究題裡最難的一題</strong>，通過率只有 0.4063。</p>
+
+  <div class="card">
+    <p style="margin:0 0 12px">政府核發節能標章前，要檢測不同<strong>品牌、型號</strong>的電扇風速。檢測規定隨年代改變：</p>
+    <div class="scroll" style="margin:0">
+    <table style="margin:0">
+      <tr><th>年份</th><th>對「電扇樣品位置」的規定</th></tr>
+      <tr><td><b>81 年</b></td><td>沒有規定</td></tr>
+      <tr><td><b>105 年</b></td><td>扇葉中心距地面 1.5 m、與左右牆面距離對稱、扇葉前緣距背牆 1.2 m 以上</td></tr>
+      <tr><td><b>106 年</b></td><td>以上皆同，<strong>再加上</strong>「扇葉中心軸線與地面平行」</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="q" id="q3">
+    <div class="q-src">114 年會考自然科 第 38 題（原題）</div>
+    <div class="q-body">關於這項改變的目的，最可能為下列何者？<span class="dim">（提示：先問自己——這個檢測要比的是什麼？電扇的位置又扮演什麼角色？）</span></div>
+    <div class="opts" data-q="3" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>設立可觀察的對照組</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>增加不同變因的實驗組</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>增加電扇樣品位置的<strong>控制</strong>變因</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>訂立電扇樣品位置的<strong>操縱</strong>變因</span></button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="locked-zone" id="z5b">
+  <h3>變形二：讀圖，不要讀你的印象</h3>
+  <p>探究題的另一半是<strong>圖表判讀</strong>。這題給你蒜頭在不同溫度下變綠的實驗結果：</p>
+  <div class="card">
+    <p style="margin:0">實驗把蒜頭分成幾組，有的<strong>全程放 10°C</strong>，有的<strong>全程放 25°C</strong>，有的<strong>先低溫處理一段時間，再改放 25°C</strong>。結果發現：<em>先低溫、再回到 25°C 的那一組，變綠的速率明顯比其他組快。</em></p>
+  </div>
+
+  <div class="q" id="q4">
+    <div class="q-src">114 年會考自然科 第 43 題（原題）</div>
+    <div class="q-body">根據實驗結果，關於不同溫度對蒜頭變綠色的影響，下列說明何者最合理？</div>
+    <div class="opts" data-q="4" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>全程在 10°C，變色的速率最快</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>全程在 25°C，變色的速率最快</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>先低溫處理，接著改在 25°C 放置會<strong>減緩</strong>變色的速率</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>先低溫處理，接著改在 25°C 放置會<strong>加快</strong>變色的速率</span></button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+  </div>
+</section>
+
+<!-- ══ 6 來源 ══ -->
+<section class="locked-zone" id="z6">
+  <div class="step">STEP 6　這套方法從哪裡來</div>
+  <h2>1747 年，一艘船上的十二個病人</h2>
+
+  <p class="lead">「一次只改一個東西」這句話，聽起來像常識。<br>但人類真正把它<strong>做出來</strong>，是在一艘英國軍艦上。</p>
+
+  <div class="card">
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.14em;color:var(--accent)">1747 年 · HMS Salisbury 號</p>
+    <p style="margin:0 0 6px;font-size:18px;font-weight:700">殺死水手最多的不是戰爭，是壞血病</p>
+    <p style="margin:0">長期航海的水手會牙齦出血、傷口不癒、全身疼痛，最後死去。當時的人提出過各式各樣的療法，每一種都有人信誓旦旦說有效。</p>
+    <p style="margin:10px 0 0"><strong>問題是：沒有人能證明。</strong>因為每個病人的年齡、體力、病程、吃的東西都不一樣，好了不知道是藥的功勞，沒好也不知道是誰的錯。</p>
+  </div>
+
+  <div class="card">
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.14em;color:var(--accent)">船醫 James Lind 做了一件事</p>
+    <p style="margin:0 0 6px;font-size:18px;font-weight:700">他把其他東西全部固定住</p>
+    <p style="margin:0 0 12px">他挑了 <strong>12 個症狀相近的病人</strong>，安排他們住同一個艙間、吃同樣的基本伙食、作息一樣——<em>然後只分成 6 組，每組多給一種不同的東西</em>：</p>
+    <div class="scroll" style="margin:0">
+    <table style="margin:0">
+      <tr><th>組別</th><th>額外給的東西</th><th>結果</th></tr>
+      <tr><td>1</td><td>蘋果酒</td><td>沒什麼改善</td></tr>
+      <tr><td>2</td><td>稀硫酸</td><td>沒什麼改善</td></tr>
+      <tr><td>3</td><td>醋</td><td>沒什麼改善</td></tr>
+      <tr><td>4</td><td>海水</td><td>沒什麼改善</td></tr>
+      <tr><td><b style="color:var(--green)">5</b></td><td><b style="color:var(--green)">兩顆柳橙、一顆檸檬</b></td><td><b style="color:var(--green)">六天內幾乎痊癒，還能去照顧別人</b></td></tr>
+      <tr><td>6</td><td>藥膏</td><td>沒什麼改善</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p><strong>他的貢獻不是發現了維生素 C</strong>——那要再過 180 年才被分離出來。</p>
+    <p style="margin-top:10px">他的貢獻是<em>把住處、伙食、作息、病情全部固定住，只留一個東西不一樣</em>。因為這樣，柳橙有效這件事才第一次<strong>指得出原因</strong>。</p>
+    <p style="margin-top:10px">這被視為醫學史上第一個有對照組的臨床試驗。你今天在做的「控制變因」，就是他當年在船上做的那件事。</p>
+  </div>
+
+  <div class="note">
+    <p><b>故事還有一段不太光彩的結尾：</b></p>
+    <p style="margin-top:10px">英國海軍<strong>過了四十多年（1795 年）</strong>才正式規定船上配發檸檬汁。這四十年間，還有無數水手死於壞血病。</p>
+    <p style="margin-top:10px">因為 Lind 的實驗只有 12 個人、當時沒有統計方法，而且他自己也不太確定原因，在書裡把柑橘和其他療法並列。<em>證據做出來了，卻沒有被相信。</em></p>
+  </div>
+
+  <div class="q" id="q5">
+    <div class="q-body">回到網路上那句「加食鹽的熱水拖地比較快乾」——為什麼這種說法特別需要小綺那樣的實驗？</div>
+    <div class="opts" data-q="5" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>因為網路上的說法一定都是錯的</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>因為它同時提到了「鹽」和「熱」，如果不拆開來測，就算真的比較快乾，也不知道功勞是誰的</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>因為食鹽有危險性，需要先做安全測試</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>因為拖地是家事，不算科學問題</span></button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+</section>
+
+<!-- ══ 收束 ══ -->
+<section class="locked-zone" id="z7">
+  <div class="done">
+    <div class="step">結案</div>
+    <h2>看到任何實驗，先問四句話</h2>
+    <div style="text-align:left">
+      <div class="card">
+        <p style="margin:0 0 8px">① 他<strong>改</strong>了什麼？　<span class="dim">（操縱變因）</span></p>
+        <p style="margin:0 0 8px">② 他<strong>固定</strong>了什麼？　<span class="dim">（控制變因）</span></p>
+        <p style="margin:0 0 8px">③ 他<strong>量</strong>了什麼？　<span class="dim">（應變變因）</span></p>
+        <p style="margin:0;color:var(--accent)"><strong>④ 有沒有哪個該固定的，他忘了固定？</strong></p>
+      </div>
+    </div>
+    <p style="text-align:left">前三句是分類，第四句才是會考真正在考的東西——而且它<strong>一個字都不用背</strong>。</p>
+    <p style="text-align:left">五年 28 題，佔全卷 11%。這是整份考卷 CP 值最高的一塊。</p>
+    <p class="big" style="text-align:left">同時改兩個東西，就等於什麼都沒測到。</p>
+    <button class="reset" id="rst">清除進度，重新開始</button>
+  </div>
+</section>
+
+<footer>
+  題目、通過率、鑑別度與選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析。<br>
+  114-43 為配合閱讀而將原題圖表結果改以文字敘述呈現。所有表格重繪，未使用課本內容。<br>
+  <span style="color:#a09789">為自學而做 · 2026</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+const KEY="jhs8-variables-v1", TOTAL=6;
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+
+const FB={
+ 0:{ans:"C",
+  A:["一和二是可以比的","<p>一（熱水加鹽）和二（熱水沒加鹽）：<strong>兩組都是熱水</strong>，只差在鹽。</p><p>所以如果乾燥速率有差，一定是鹽造成的——<em>這正是一個乾淨的比較</em>。</p><p>往下用配對器實際點一次，你會看得更清楚。</p>"],
+  B:["一和三也可以比","<p>一（熱水加鹽）和三（冷水加鹽）：<strong>兩組都有加鹽</strong>，只差在溫度。</p><p>這組在測「溫度」的效果，設計沒有問題。</p>"],
+  C:["答對了","<p>二（熱水<em>沒</em>加鹽）和三（冷水<em>有</em>加鹽）：<strong>溫度不同，鹽也不同</strong>。</p><p>兩個東西同時改了，就算兩組乾燥速率有差，你也<em>指不出是誰造成的</em>。</p><p>先別走——三成的人選了 D，他們的想法很值得看。</p>"],
+  D:["你和 30.51% 的人選了同一個","<p>選 D 的想法通常是：「二和四<strong>都沒加鹽</strong>，那有什麼好比的？」</p><p>但這剛好想反了。<em>「都沒加鹽」不是缺點，那叫做把鹽<strong>固定住</strong></em>——正因為鹽被固定，如果乾燥速率有差，就一定是溫度造成的。</p><p>真正不能比的，是<strong>兩個東西同時都不一樣</strong>的那一組。往下拉，配對器會讓你一眼看出是哪一組。</p>"]},
+ 1:{ans:"C",
+  A:["熱水和冷水當然能比","<p>比溫度正是這個實驗的目的之一。二和四就是在比熱水和冷水，完全合理。</p><p>問題不在「熱冷」，在於<em>除了溫度以外，還有沒有別的東西也跟著變</em>。</p>"],
+  B:["沒加鹽不是資料不完整","<p>沒加鹽是一種<strong>合法的狀態</strong>——它就是「鹽 ＝ 無」。</p><p>問題出在二和三之間<em>同時</em>差了兩個東西。</p>"],
+  C:["對","<p>二是<strong>熱＋無鹽</strong>，三是<strong>冷＋有鹽</strong>。溫度變了、鹽也變了。</p><p>假設三號比較快乾，你要說是「冷水比較好」還是「鹽有效」？<strong>兩個都說得通，所以什麼都證明不了。</strong></p><p>這在科學上叫<em>變因糾纏</em>——兩個原因綁在一起，拆不開。</p>"],
+  D:["和組數無關","<p>兩組就夠了，只要它們<strong>只差一個東西</strong>。一和二、一和三、二和四都只差一個，都能得出結論。</p><p>比再多組，只要每次都同時改兩個，一樣什麼都測不到。</p>"]},
+ 2:{ans:"B",
+  A:["這正是實驗會毀掉的方式","<p>她測的確實是溫度——但如果拖地力道也跟著變了，那就<strong>同時改了兩個東西</strong>，和二比三是一樣的問題。</p><p>乾得比較快，可能是因為熱水，也可能只是因為她抹的水比較少。</p>"],
+  B:["對","<p>拖地力道是<strong>控制變因</strong>——它必須固定。一旦它跟著變，就等於同時改了兩個東西，結果就沒辦法歸因。</p><p><em>會考最愛考的就是這一步</em>：給你一個看起來很正常的實驗，要你找出「哪個該固定的沒固定」。</p>"],
+  C:["寫進報告救不回來","<p>誠實記錄是好習慣，但<strong>資料本身已經沒辦法回答問題了</strong>。實驗設計的錯誤，不能靠事後說明來修補。</p><p>正確的做法是重做一次，這次把力道固定。</p>"],
+  D:["力氣絕對是變因","<p>拖得越用力，地板上留下的水越少（或越多），當然影響乾燥時間。</p><p><strong>任何可能影響結果的東西，都是變因</strong>——你要嘛拿它當操縱變因，要嘛把它固定住。沒有第三條路。</p>"]},
+ 3:{ans:"C",
+  A:["這裡沒有設對照組的意思","<p>對照組是「不做處理」的那一組。而這項改變是<strong>對所有樣品一律要求同樣的擺放位置</strong>，不是分出一組來對照。</p>"],
+  B:["方向相反","<p>如果「增加不同變因的實驗組」，那是讓變動的東西<em>變多</em>。但這項規定是把電扇位置<strong>統一起來</strong>，讓它不再變動。</p>"],
+  C:["正確，而且這題是那五年最難的一題","<p>先釐清這個檢測在比什麼：<strong>不同品牌、型號</strong>的電扇（操縱變因），量的是<strong>風速</strong>（應變變因）。</p><p>那電扇擺哪裡呢？它會影響風速，但<em>不是我們想研究的東西</em>——所以必須固定，它是<strong>控制變因</strong>。</p><p>81 年「沒有規定」→ 105 年訂了三項 → 106 年再加一項「軸線與地面平行」。每一次都是<strong>把更多可能干擾的條件鎖死</strong>。</p><p>通過率 0.4063，26.31% 的人選了 D。</p>"],
+  D:["這是 26.31% 的人選的","<p>關鍵問題：這個檢測想研究的是「位置對風速的影響」嗎？<strong>不是</strong>——它想比的是不同品牌電扇誰比較省電。</p><p>位置只是一個會干擾結果、必須被排除的東西。<em>被規定「必須固定」的東西是控制變因，不是操縱變因。</em></p><p>操縱變因是你<strong>刻意去改</strong>的那個；這裡刻意在改的是「品牌／型號」。</p>"]},
+ 4:{ans:"D",
+  A:["題目沒有這樣說","<p>敘述裡明確寫著：<strong>先低溫、再回到 25°C 的那一組變綠最快</strong>。全程 10°C 不是最快的。</p><p>探究題的第一原則：<em>答案要從給你的資料裡找，不是從印象裡找。</em></p>"],
+  B:["全程 25°C 也不是最快的","<p>最快的是<strong>先低溫、再回到 25°C</strong> 那一組。</p><p>這正是這題有趣的地方：不是溫度越高越快，而是<em>經歷過低溫再回溫</em>這個「順序」才快。</p>"],
+  C:["方向反了","<p>敘述說那一組變綠<strong>明顯比其他組快</strong>，所以是「加快」不是「減緩」。</p><p>C 和 D 只差一個字，這種題目要回頭把敘述再讀一次才選。</p>"],
+  D:["正確","<p>資料說得很直接：先低溫處理、再改放 25°C 的那組，<strong>變綠速率明顯比其他組快</strong>。</p><p>注意這題的設計：它不是問「幾度最快」，而是問<em>「一個溫度變化的過程」造成什麼影響</em>。所以「先⋯⋯接著⋯⋯」這種敘述才是對的形式。</p><p><strong>探究題的鐵律：只說資料支持的話，一個字都不要多加。</strong></p>"]},
+ 5:{ans:"B",
+  A:["不是因為它在網路上","<p>說法對不對，和它出現在哪裡無關。判斷的方式是<strong>看它有沒有辦法被拆開來測</strong>。</p>"],
+  B:["對，這正是重點","<p>「加食鹽的<strong>熱水</strong>」把兩個東西綁在一起了。就算它真的比較快乾，你也不知道功勞是鹽的、是熱的，還是兩個都有。</p><p>要拆開它，就得像小綺那樣做四桶水——<em>或者像 Lind 那樣，把其他東西全部固定住</em>。</p><p>這個習慣不只用在考試：任何「A 加 B 有效」的說法，都值得先問一句<strong>「那只有 A 呢？」</strong></p>"],
+  C:["安全不是這題的重點","<p>食鹽水拖地沒什麼危險。這句話的問題在<strong>它沒辦法告訴你原因是什麼</strong>。</p>"],
+  D:["家事一樣可以用科學方法","<p>Lind 研究的是水手吃什麼，小綺研究的是拖地的水——<strong>問題大小不影響方法</strong>。</p><p>只要你想知道「是什麼造成的」，就需要一次只改一個東西。</p>"]}
+};
+
+function done(){return Object.keys(state).filter(k=>/^q\d+$/.test(k)).length}
+function paint(){
+  document.getElementById("pnum").textContent=done()+" / "+TOTAL;
+  document.getElementById("pfill").style.width=(done()/TOTAL*100)+"%";
+}
+function unlock(id){
+  const el=document.getElementById(id);
+  if(el&&el.classList.contains("locked-zone")){
+    el.classList.remove("locked-zone");el.classList.add("revealed");
+    setTimeout(()=>el.classList.remove("revealed"),700);
+  }
+}
+function gate(){
+  if(state.q0!==undefined){unlock("z2");unlock("z3");drawDist()}
+  if(state.q1!==undefined){unlock("z4")}
+  if(state.q2!==undefined){unlock("z5")}
+  if(state.q3!==undefined){unlock("z5b")}
+  if(state.q4!==undefined){unlock("z6")}
+  if(state.q5!==undefined){unlock("z7")}
+  paint();
+}
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, ans=box.dataset.ans;
+  box.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(box.dataset.locked)return;
+      const k=btn.dataset.k;
+      state["q"+qi]=k;
+      try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+      reveal(qi,k,ans,box,true);gate();
+    });
+  });
+});
+
+function reveal(qi,k,ans,box,scroll){
+  box.dataset.locked="1";
+  const PCT={A:"—",B:"—",C:"60.24%",D:"30.51%"};
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+    if(qi==="0"&&PCT[b.dataset.k]!=="—"&&!b.querySelector(".pct")){
+      const s=document.createElement("span");s.className="pct";s.textContent=PCT[b.dataset.k];b.appendChild(s);
+    }
+  });
+  const f=FB[qi][k], fb=document.getElementById("fb"+qi);
+  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+f[1];
+  fb.classList.add("show");
+  if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
+}
+
+let distDone=false;
+function drawDist(){
+  if(distDone)return;distDone=true;
+  const box=document.getElementById("dist");
+  const rows=[
+    {k:"C",v:60.24,c:"#3f6d3a",t:"正確答案（溫度和鹽同時都不一樣）"},
+    {k:"D",v:30.51,c:"#c2410c",t:"最多人選錯 ── 以為「都沒加鹽就沒得比」"},
+    {k:"A+B",v:9.25,c:"#b8ab93",t:"其餘合計"}
+  ];
+  box.innerHTML=rows.map(r=>
+    '<div class="dbar"><span class="dk">'+r.k+'</span>'+
+    '<div class="dtrack"><div class="dfill" data-w="'+r.v+'" style="background:'+r.c+'"></div></div>'+
+    '<span class="dv">'+r.v.toFixed(2)+'%</span></div>'+
+    '<div style="font-size:12px;color:var(--ink2);margin:-4px 0 10px 30px">'+r.t+'</div>'
+  ).join("");
+  setTimeout(()=>{box.querySelectorAll(".dfill").forEach(d=>d.style.width=d.dataset.w+"%")},80);
+}
+
+/* ── 配對器 ── */
+const G=[
+  {n:"第一組", hot:1, salt:1, d:"熱水 ＋ 加鹽"},
+  {n:"第二組", hot:1, salt:0, d:"熱水 ＋ 沒加鹽"},
+  {n:"第三組", hot:0, salt:1, d:"冷水 ＋ 加鹽"},
+  {n:"第四組", hot:0, salt:0, d:"冷水 ＋ 沒加鹽"}
+];
+let sel=[];
+const grid=document.getElementById("grid");
+grid.innerHTML=G.map((g,i)=>
+  '<button class="grp" data-i="'+i+'"><div class="gn">'+g.n+'</div><div class="gd">'+g.d+'</div>'+
+  '<div class="gt">'+(g.hot?"熱":"冷")+'　·　'+(g.salt?"有鹽":"無鹽")+'</div></button>').join("");
+
+function pairView(){
+  document.querySelectorAll(".grp").forEach((b,i)=>b.classList.toggle("sel",sel.includes(i)));
+  const v=document.getElementById("pairv");
+  if(sel.length<2){v.className="verdict";v.innerHTML=sel.length===0?"選兩張卡片試試看。":"再選一張。";return}
+  const [a,b]=sel.map(i=>G[i]);
+  const dh=a.hot!==b.hot, ds=a.salt!==b.salt;
+  if(dh&&ds){
+    v.className="verdict bad";
+    v.innerHTML="<strong>✗ 這樣比不出東西。</strong><br>"+a.n+"是「"+a.d+"」、"+b.n+"是「"+b.d+"」——<em>溫度不一樣，鹽也不一樣</em>。<br>就算兩邊乾燥速率有差，你也說不出是誰造成的。";
+  }else if(dh){
+    v.className="verdict good";
+    v.innerHTML="<strong>✓ 這組在測「溫度」。</strong><br>兩組的鹽都是「"+(a.salt?"有":"無")+"」——<em>鹽被固定住了</em>，所以唯一的差別是溫度。有差就是溫度造成的。";
+  }else if(ds){
+    v.className="verdict good";
+    v.innerHTML="<strong>✓ 這組在測「鹽」。</strong><br>兩組都是"+(a.hot?"熱":"冷")+"水——<em>溫度被固定住了</em>，所以唯一的差別是鹽。有差就是鹽造成的。";
+  }
+}
+document.querySelectorAll(".grp").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const i=+btn.dataset.i;
+    if(sel.includes(i)) sel=sel.filter(x=>x!==i);
+    else {sel.push(i); if(sel.length>2) sel.shift()}
+    pairView();
+  });
+});
+pairView();
+
+/* ── 角色歸位 ── */
+const ROLES=[
+  {q:"拖地的水是熱的還是冷的", a:"操縱", w:"這是小綺<strong>刻意去改</strong>的東西——第二組熱、第四組冷。"},
+  {q:"地板乾掉所需要的時間", a:"應變", w:"這是她<strong>去量</strong>的結果，用來判斷有沒有差。"},
+  {q:"兩次都用同一塊拖把、同樣的力道", a:"控制", w:"這是她<strong>刻意固定</strong>的東西。一旦跟著變，實驗就毀了。"}
+];
+const rolesBox=document.getElementById("roles");
+rolesBox.innerHTML=ROLES.map((r,i)=>
+  '<div class="role"><div class="rq">'+(i+1)+'. '+r.q+'</div><div class="rbtns">'+
+  ["操縱","控制","應變"].map(t=>'<button class="rb" data-i="'+i+'" data-t="'+t+'">'+t+'變因</button>').join("")+
+  '</div><div class="rfb" id="rfb'+i+'"></div></div>').join("");
+let roleHit=0;
+document.querySelectorAll(".rb").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const i=+btn.dataset.i, r=ROLES[i];
+    const box=btn.closest(".role");
+    if(box.dataset.done)return;
+    const ok=btn.dataset.t===r.a;
+    if(ok){
+      box.dataset.done="1";roleHit++;
+      box.querySelectorAll(".rb").forEach(b=>{b.disabled=true;if(b.dataset.t===r.a)b.classList.add("ok")});
+      const f=document.getElementById("rfb"+i);
+      f.className="rfb show";f.innerHTML="✓ "+r.w;
+      const v=document.getElementById("rolev");
+      if(roleHit===ROLES.length){v.className="verdict good";
+        v.innerHTML="<strong>三個角色都歸位了。</strong>接下來只剩最後一個問題，也是會考真正在問的那個——<em>有沒有哪個該固定的，被忘記了？</em>";}
+      else{v.className="verdict";v.innerHTML="答對 "+roleHit+" / 3，繼續。";}
+    }else{
+      btn.classList.add("no");
+      setTimeout(()=>btn.classList.remove("no"),700);
+      const f=document.getElementById("rfb"+i);
+      f.className="rfb show";
+      f.innerHTML="這個不是。再想一次：她是<em>刻意改了它</em>、<em>刻意固定它</em>、還是<em>去量它</em>？";
+    }
+  });
+});
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, saved=state["q"+qi];
+  if(saved!==undefined)reveal(qi,saved,box.dataset.ans,box,false);
+});
+gate();
+
+document.getElementById("rst").addEventListener("click",()=>{
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+</body>
+</html>
