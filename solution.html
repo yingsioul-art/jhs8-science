@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一杯糖水裡的科學｜濃度</title>
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px;line-height:1.85;letter-spacing:.01em}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);
+  border-bottom:1px solid var(--line);margin:0 -20px 0;padding:10px 20px}
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+code{font-family:"SF Mono",Consolas,monospace;background:#fff;border:1px solid var(--line);
+  padding:1px 6px;border-radius:4px;font-size:.92em}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;
+  font-size:.86em;line-height:1.2;margin:0 3px}
+.frac span:first-child{border-bottom:1.4px solid currentColor;padding:0 5px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:center;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px}
+.slider-lab{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);margin:10px 0 0}
+.readout{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.pill{flex:1;min-width:104px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.pill .lb{font-size:12.5px;color:var(--ink2)}
+.pill .vl{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.pill.ok{background:var(--green-soft);border-color:#c8dcc4}
+.pill.ok .vl{color:var(--green)}
+.pill.bad{background:var(--accent-soft);border-color:#f0c9ae}
+.pill.bad .vl{color:var(--accent)}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+
+/* 溶液長條 */
+.mixbar{display:flex;height:44px;border-radius:9px;overflow:hidden;border:1.5px solid var(--ink);margin:6px 0 4px}
+.seg{display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700;
+  transition:width .35s cubic-bezier(.4,0,.2,1);white-space:nowrap;overflow:hidden}
+.seg.sugar{background:#e8a33d;color:#3d2a08}
+.seg.water{background:#bcd9e6;color:#123a4a}
+.brace{display:flex;font-size:12.5px;color:var(--ink2);margin-bottom:12px}
+.brace .b1,.brace .b2{border-top:2px solid var(--ink2);padding-top:3px;text-align:center;
+  transition:width .35s cubic-bezier(.4,0,.2,1)}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+.chip{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;
+  cursor:pointer;font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s}
+.chip:hover{border-color:var(--ink2)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:20px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:500px}
+
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+svg{max-width:100%;height:auto;display:block}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-inner">
+  <b id="pnum">0 / 6</b>
+  <div class="track"><div class="fill" id="pfill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">八年級上 · 第二章 2-2 水溶液</div>
+  <h1>一杯糖水裡的科學</h1>
+  <p class="sub">這一題只有一個字會決定你對還是錯。<br>而 32.64% 的考生，寫錯了那個字。</p>
+  <div class="meta">
+    <span class="tag">會考 115-36</span>
+    <span class="tag">通過率 45.5%</span>
+    <span class="tag">鑑別度 0.69　全卷最高</span>
+  </div>
+</header>
+
+<!-- ══ 0 案發 ══ -->
+<section>
+  <div class="step">案發現場</div>
+  <h2>兩杯糖水，哪一杯比較甜？</h2>
+
+  <p class="lead">桌上有兩個杯子。</p>
+
+  <div class="card">
+    <p style="margin:0 0 10px"><strong>甲杯</strong>：<span style="color:#a06a10">20 g 蔗糖</span> ＋ <span style="color:#1d5b79">20 g 水</span></p>
+    <p style="margin:0"><strong>乙杯</strong>：<span style="color:#a06a10">30 g 蔗糖</span> ＋ <span style="color:#1d5b79">20 g 水</span></p>
+    <p style="margin:14px 0 0;font-size:15px;color:var(--ink2)">糖都完全溶解了，看不見任何顆粒。</p>
+  </div>
+
+  <p>「哪一杯比較甜」很好答——乙杯，因為水一樣多、糖比較多。</p>
+  <p>但會考問的不是這個。它問：<strong>甲和乙的「重量百分濃度」，比是多少？</strong></p>
+
+  <div class="quote">
+    <p>這題不難。它<em>只需要一個除法</em>。</p>
+    <p style="margin-top:10px">但全國有 <strong>32.64%</strong> 的人算錯——而他們錯的地方，是<strong>那個除法的分母</strong>。</p>
+  </div>
+
+  <p class="big">分母應該是什麼？</p>
+</section>
+
+<!-- ══ 1 押注 ══ -->
+<section>
+  <div class="step">STEP 1　先押注</div>
+  <h2>算算看，然後選一個</h2>
+
+  <div class="q" id="q0">
+    <div class="q-src">115 年會考自然科 第 36 題（原題）</div>
+    <div class="q-body">取 20 g 蔗糖置入 20 g 水中，攪拌均勻後得到甲杯水溶液；另取 30 g 蔗糖置入 20 g 水中，攪拌均勻後得到乙杯水溶液。已知蔗糖均完全溶解，則甲和乙兩杯蔗糖水溶液的<strong>重量百分率濃度比</strong>是多少？</div>
+    <div class="opts" data-q="0" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>1：1</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>2：3</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>4：5</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>5：6</span></button>
+    </div>
+    <div class="fb" id="fb0"></div>
+  </div>
+</section>
+
+<!-- ══ 2 全台 ══ -->
+<section class="locked-zone" id="z2">
+  <div class="step">STEP 2　全國怎麼選</div>
+  <h2>鑑別度 0.69 —— 這是那年最會「分人」的一題</h2>
+
+  <div class="card">
+    <div class="dist" id="dist"></div>
+    <p class="dim" style="font-size:14px;margin:14px 0 0">
+      資料：國家教育研究院 115 年會考自然科官方試題分析（通過率 0.4549、鑑別度 0.69）。官方僅公布最高誤答選項的百分比，其餘合併呈現。
+    </p>
+  </div>
+
+  <div class="note">
+    <p><b>0.69 的鑑別度是什麼概念？</b>那一年全卷最高的幾題之一。</p>
+    <p style="margin-top:10px">意思是：這題幾乎<em>完美地</em>把「真的懂濃度」和「不懂」的人分成兩堆——沒有人是猜對的，也沒有人是不小心錯的。</p>
+    <p style="margin-top:10px">而它考的東西，只有<strong>一個字</strong>：分母到底是「<span style="color:#1d5b79">水</span>」還是「<span style="color:#a06a10">糖水</span>」。</p>
+  </div>
+
+  <p>先不要看答案。我們把那杯糖水攤開來看。</p>
+</section>
+
+<!-- ══ 3 追問 ══ -->
+<section class="locked-zone" id="z3">
+  <div class="step">STEP 3　把糖水攤開</div>
+  <h2>糖溶掉了，但它沒有消失</h2>
+
+  <p>糖溶進水裡以後看不見了。<strong>但它還在杯子裡，而且還有重量。</strong></p>
+
+  <div class="q" id="q1">
+    <div class="q-body">甲杯放上天平（扣掉杯子的重量），指針會停在幾克？</div>
+    <div class="opts" data-q="1" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>20 g（只有水的重量，糖溶掉了）</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>比 40 g 少一點（溶解會損失一些）</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>40 g（糖 20 ＋ 水 20）</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>要看糖溶得多完全才知道</span></button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="locked-zone" id="z3b">
+  <p>所以一杯糖水裡面有<strong>三個</strong>不同的重量，別搞混：</p>
+
+  <div class="lab">
+    <div class="lab-t">實驗室 A ── 你的分母是哪一段</div>
+    <div class="mixbar" id="mix">
+      <div class="seg sugar" id="segS" style="width:50%">糖 20 g</div>
+      <div class="seg water" id="segW" style="width:50%">水 20 g</div>
+    </div>
+    <div class="brace">
+      <div class="b1" id="brS" style="width:50%">溶質</div>
+      <div class="b2" id="brW" style="width:50%">溶劑</div>
+    </div>
+    <div style="border-top:2px solid var(--ink);padding-top:4px;text-align:center;font-size:12.5px;color:var(--ink2);margin-bottom:14px">
+      整條 ＝ <strong>溶液</strong>（糖水）
+    </div>
+
+    <div class="slider-lab"><span>糖 5 g</span><span>加糖 →</span><span>糖 60 g</span></div>
+    <input type="range" id="slS" min="5" max="60" value="20" aria-label="糖的克數">
+    <div class="slider-lab"><span>水 10 g</span><span>加水 →</span><span>水 80 g</span></div>
+    <input type="range" id="slW" min="10" max="80" value="20" aria-label="水的克數">
+
+    <div class="readout">
+      <div class="pill ok"><div class="lb">除以<strong>糖水</strong>（正確）</div><div class="vl" id="vOK">50.00%</div></div>
+      <div class="pill bad"><div class="lb">除以<strong>水</strong>（32.64% 的人）</div><div class="vl" id="vNG">100.00%</div></div>
+    </div>
+    <div class="chips">
+      <button class="chip" data-preset="36">回到題目：甲杯</button>
+      <button class="chip" data-preset="ex">試試 100 g 糖 ＋ 5 g 水</button>
+    </div>
+    <div class="verdict" id="labv"></div>
+  </div>
+
+  <div class="q" id="q2">
+    <div class="q-body">剛剛把糖拉到很多、水拉到很少的時候，「除以水」那一欄出現了什麼問題？</div>
+    <div class="opts" data-q="2" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>它變成負數了</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>它超過 100%，可是一杯糖水不可能有「超過整杯」的糖</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>它變成 0</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>沒有問題，只是數字比較大而已</span></button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+  </div>
+</section>
+
+<!-- ══ 4 命名 ══ -->
+<section class="locked-zone" id="z4">
+  <div class="step">STEP 4　現在才輪到公式</div>
+  <h2>分母是整杯，不是水</h2>
+
+  <div class="card">
+    <p style="margin:0 0 8px;font-size:15px;color:var(--ink2)">重量百分濃度</p>
+    <p style="margin:0 0 14px;font-size:20px;font-weight:700;text-align:center">
+      <span class="frac"><span>溶質質量</span><span>溶液質量</span></span> × 100%
+      　＝
+      <span class="frac"><span>糖</span><span>糖 ＋ 水</span></span> × 100%
+    </p>
+    <p style="margin:0">它回答的是：「<strong>整杯東西裡面，有百分之幾是糖</strong>」。既然是「整杯裡面的百分之幾」，分母當然是<em>整杯</em>。</p>
+  </div>
+
+  <div class="scroll">
+  <table>
+    <tr><th></th><th>溶質（糖）</th><th>溶液（糖水）</th><th>濃度</th></tr>
+    <tr><td><b>甲</b></td><td>20 g</td><td>20＋20 ＝ <b>40 g</b></td><td>20 ÷ 40 ＝ <b>50%</b></td></tr>
+    <tr><td><b>乙</b></td><td>30 g</td><td>30＋20 ＝ <b>50 g</b></td><td>30 ÷ 50 ＝ <b>60%</b></td></tr>
+  </table>
+  </div>
+  <p>甲：乙 ＝ 50：60 ＝ <strong>5：6</strong>　→　答案 <strong>D</strong>。</p>
+
+  <div class="quote">
+    <p><strong>那 32.64% 選 B 的人，做了什麼？</strong></p>
+    <p style="margin-top:10px">他們把分母寫成水：<br>
+    甲 ＝ 20 ÷ 20 ＝ 100%　　乙 ＝ 30 ÷ 20 ＝ 150%<br>
+    100：150 ＝ <strong>2：3</strong> —— 就是選項 B。</p>
+    <p style="margin-top:10px">注意他們算出了「<em>150% 的糖水</em>」，卻沒有停下來覺得奇怪。<strong>算到超過 100% 還往下寫，就是分母錯了的警報。</strong></p>
+  </div>
+
+  <h3>🔴 這裡有個一定要分清楚的地方</h3>
+  <p>課本在同一章還會教<strong>溶解度</strong>。它長得很像濃度，但<em>分母不一樣</em>：</p>
+  <div class="scroll">
+  <table>
+    <tr><th></th><th>分母是誰</th><th>單位</th><th>在問什麼</th></tr>
+    <tr><td><b>重量百分濃度</b></td><td><span style="color:#a06a10"><b>溶液</b></span>（糖＋水）</td><td>%</td><td>整杯裡有幾成是糖</td></tr>
+    <tr><td><b>溶解度</b></td><td><span style="color:#1d5b79"><b>溶劑</b></span>（只有水）</td><td>g / 100 g 水</td><td>100 g 水最多能溶多少</td></tr>
+  </table>
+  </div>
+  <div class="aside">
+    <p><strong>記法：</strong>濃度在描述「<em>這一杯</em>」，所以分母是這一杯。溶解度在描述「<em>水的本事</em>」，所以分母是水。<br>
+    兩個都要用，但它們回答的不是同一個問題——這就是為什麼分母不同。</p>
+  </div>
+</section>
+
+<!-- ══ 5 變形 ══ -->
+<section class="locked-zone" id="z5">
+  <div class="step">STEP 5　變形</div>
+  <h2>同一個三角關係，換三種問法</h2>
+
+  <p>濃度題的骨架永遠是這個三角：</p>
+  <div class="card" style="text-align:center">
+    <p style="margin:0;font-size:19px;font-weight:700">濃度　×　總量　＝　某成分的量</p>
+    <p style="margin:10px 0 0;font-size:15px;color:var(--ink2)">知道任兩個，就能求第三個。<strong>會考最愛問的是：你少的是哪一個。</strong></p>
+  </div>
+
+  <h3>變形一：一座游泳池裡有多少尿</h3>
+  <div class="card">
+    <p style="margin:0 0 10px;font-weight:700">一座游泳池裡有多少的尿？</p>
+    <p style="margin:0;font-size:15.5px">安賽蜜是優酪乳中的甜味劑，不易被人體消化，會由尿液排出體外。研究團隊檢測加拿大游泳池的安賽蜜濃度，一座 <strong>84 萬公升</strong>游泳池的安賽蜜濃度為 <strong>2.1×10⁻⁷ g/L</strong>，再參考「<strong>⋯⋯</strong>」，經換算後，可知該游泳池約含有 <strong>75 公升</strong>的尿液。</p>
+  </div>
+
+  <div class="q" id="q3">
+    <div class="q-src">113 年會考自然科 第 32 題（原題）</div>
+    <div class="q-body">上述「⋯⋯」所指的最可能為下列何者？<span class="dim">（提示：用上面的三角想——已經有濃度和總量了，還缺哪一角才能換算出「尿」？）</span></div>
+    <div class="opts" data-q="3" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>該游泳池池水的密度</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>加拿大人尿液的平均密度</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>該游泳池含有安賽蜜的總質量</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>加拿大人尿液中安賽蜜的平均濃度</span></button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="locked-zone" id="z5b">
+  <h3>變形二：苦到讓人吐出來的濃度</h3>
+  <div class="q" id="q4">
+    <div class="q-src">114 年會考自然科 第 11 題（原題）</div>
+    <div class="q-body">某電玩公司為了防止兒童誤吞遊戲卡，在遊戲卡上塗了苯甲地那銨——非常苦的物質。其濃度只要達到 <strong>______</strong>，也就是<strong>每 1000 g 的溶液中含有 30 mg</strong>，便會苦到讓人難以忍受。空格最適合填入下列何者？</div>
+    <div class="opts" data-q="4" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>30%</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>30 mg</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>30 ppm</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>30 g/cm³</span></button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+  </div>
+</section>
+
+<!-- ══ 6 溶解度 ══ -->
+<section class="locked-zone" id="z6">
+  <div class="step">STEP 6　水的本事會隨溫度改變</div>
+  <h2>為什麼熱可可比冰可可容易泡開</h2>
+
+  <p>糖不是無限量溶得下去的。每一種物質在<strong>某個溫度</strong>下，100 g 水最多能溶多少，是固定的——這就是<em>溶解度</em>。</p>
+  <p>下面兩杯各裝 <strong>10 g 水</strong>，各加入 <strong>5 g</strong> 的甲、乙兩種物質。拉溫度看看會發生什麼。</p>
+
+  <div class="lab">
+    <div class="lab-t">實驗室 B ── 溫度與溶解度</div>
+    <svg viewBox="-40 -18 340 210" role="img" aria-label="甲乙兩種物質的溶解度曲線">
+      <line x1="0" y1="160" x2="300" y2="160" stroke="#2b2622" stroke-width="1.5"/>
+      <line x1="0" y1="160" x2="0" y2="6" stroke="#2b2622" stroke-width="1.5"/>
+      <text x="150" y="186" text-anchor="middle" font-size="12" fill="#5c5349">溫度（°C）</text>
+      <text x="-34" y="80" font-size="12" fill="#5c5349" transform="rotate(-90,-34,80)">溶解度 g/100g 水</text>
+      <g font-size="10.5" fill="#5c5349" text-anchor="middle">
+        <text x="0" y="176">0</text><text x="75" y="176">20</text>
+        <text x="150" y="176">40</text><text x="225" y="176">60</text><text x="300" y="176">80</text>
+      </g>
+      <g font-size="10.5" fill="#5c5349" text-anchor="end">
+        <text x="-5" y="124">40</text><text x="-5" y="88">80</text><text x="-5" y="52">120</text>
+      </g>
+      <!-- 甲：20→20, 80→80 -->
+      <line x1="0" y1="160" x2="300" y2="88" stroke="#c2410c" stroke-width="2.2"/>
+      <text x="250" y="104" font-size="12" font-weight="700" fill="#c2410c">甲</text>
+      <!-- 乙：20→90, 80→120 -->
+      <line x1="0" y1="88" x2="300" y2="52" stroke="#1d5b79" stroke-width="2.2"/>
+      <text x="250" y="42" font-size="12" font-weight="700" fill="#1d5b79">乙</text>
+      <line id="tline" x1="150" y1="6" x2="150" y2="160" stroke="#5c5349" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <circle id="dotA" cx="150" cy="124" r="4.5" fill="#c2410c"/>
+      <circle id="dotB" cx="150" cy="70" r="4.5" fill="#1d5b79"/>
+    </svg>
+    <div class="slider-lab"><span>0°C</span><span>溫度</span><span>80°C</span></div>
+    <input type="range" id="slT" min="0" max="80" value="40" aria-label="溫度">
+    <div class="readout">
+      <div class="pill"><div class="lb">溫度</div><div class="vl" id="vT">40 °C</div></div>
+      <div class="pill"><div class="lb">甲：10 g 水最多溶</div><div class="vl" id="vA">4.0 g</div></div>
+      <div class="pill"><div class="lb">乙：10 g 水最多溶</div><div class="vl" id="vB">10.0 g</div></div>
+    </div>
+    <div class="verdict" id="labv2"></div>
+  </div>
+
+  <div class="q" id="q5">
+    <div class="q-src">改寫自 106 年會考 第 45 題</div>
+    <div class="q-body">換個問法。有一杯<strong>重量百分濃度 40%</strong> 的檸檬酸水溶液 150 g，再加入 65 g 檸檬酸攪拌、過濾，發現有 <strong>5 g 沒溶掉</strong>。此時檸檬酸的溶解度最接近多少？
+      <span class="dim" style="font-size:15px">（提示：先算原本那杯裡，糖⋯⋯不對，是檸檬酸和水各多少。別忘了溶解度的分母是<strong>水</strong>。）</span>
+    </div>
+    <div class="opts" data-q="5" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>45 g / 100 g 水</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>80 g / 100 g 水</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>91 g / 100 g 水</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>133 g / 100 g 水</span></button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+</section>
+
+<!-- ══ 7 來源 ══ -->
+<section class="locked-zone" id="z7">
+  <div class="step">STEP 7　這個概念從哪裡來</div>
+  <h2>人類操作「濃度」的時間，比這個詞早了幾千年</h2>
+
+  <p class="lead">「重量百分濃度」聽起來像實驗室的東西。<br>但第一批把它用到出神入化的人，是<strong>曬鹽的人</strong>。</p>
+
+  <div class="card">
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.14em;color:var(--accent)">幾千年前 · 鹽田</p>
+    <p style="margin:0 0 6px;font-size:18px;font-weight:700">把海水濃縮到「裝不下」為止</p>
+    <p style="margin:0">曬鹽的原理，正好就是你這一節學的東西<em>反過來做</em>：海水的鹽濃度只有約 3.5%，太稀了。<br>
+    把它引進一格一格的鹽田，讓太陽把水蒸發掉——<strong>鹽沒有減少，水一直變少，所以濃度一直升高</strong>。<br>
+    升到<strong>飽和</strong>那一刻，水再也裝不下更多的鹽，鹽就開始<em>結晶析出</em>。這一步在鹽田叫「成鹽」。</p>
+  </div>
+
+  <div class="card">
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.14em;color:var(--accent)">鹽工怎麼知道濃度到了</p>
+    <p style="margin:0 0 6px;font-size:18px;font-weight:700">他們不算百分比，他們看一根棒子浮多高</p>
+    <p style="margin:0">鹽田用的工具是<strong>比重計</strong>（波美計）——一根有刻度的浮棒，丟進鹵水裡看它浮起來多少。</p>
+    <p style="margin:10px 0 0"><em>鹽水越濃 → 密度越大 → 棒子浮得越高。</em></p>
+    <p style="margin:10px 0 0">你上個單元學的<strong>密度</strong>，和這個單元學的<strong>濃度</strong>，在鹽田裡是同一件事的兩種說法。鹽工不需要天平也不需要算式，看一眼浮標就知道今天能不能收鹽。</p>
+  </div>
+
+  <div class="quote">
+    <p><strong>順帶一個字的身世：</strong></p>
+    <p style="margin-top:10px">英文的「薪水」是 <strong>salary</strong>，這個字來自拉丁文 <em>salarium</em>——而 <em>sal</em> 就是<strong>鹽</strong>。</p>
+    <p style="margin-top:10px">在冷藏發明以前，鹽是唯一能讓食物撐過冬天的東西，貴到可以當錢用。人類為了把 3.5% 濃縮到飽和，蓋了整片海岸的鹽田。</p>
+  </div>
+
+  <div class="note">
+    <p><b>那 ppm 又是什麼時候出現的？</b></p>
+    <p style="margin-top:10px">當人類開始關心<strong>非常稀的東西</strong>的時候——水裡的重金屬、空氣裡的污染物、遊戲卡上的苦味劑。</p>
+    <p style="margin-top:10px">這些東西用 % 表示會變成 0.000003%，難唸又容易數錯零。所以改用「百萬分之幾」＝ ppm。<em>它不是新的概念，只是同一個分數換一個好唸的單位。</em></p>
+    <p style="margin-top:10px">回頭看那座游泳池：<span class="dim">2.1×10⁻⁷ g/L 這種數字，正是因為我們有能力測到「一百萬分之一」以下，才有辦法拿來算池子裡有多少尿。</span></p>
+  </div>
+</section>
+
+<!-- ══ 收束 ══ -->
+<section class="locked-zone" id="z8">
+  <div class="done">
+    <div class="step">結案</div>
+    <h2>糖溶掉了，但它還在分母裡</h2>
+    <p style="text-align:left">這一節從頭到尾只有一個關鍵：<strong>看不見不等於不存在</strong>。糖溶進水裡就看不見了，但它的重量還在杯子裡，所以它必須留在分母。</p>
+    <p style="text-align:left">如果只留一句話帶走：</p>
+    <p class="big" style="text-align:left">算完先看一眼：如果超過 100%，你的分母寫錯了。</p>
+    <p style="text-align:left" class="dim">鹽田的工人不需要這個檢查——他們看浮標。你有算式，那就用算式檢查自己。</p>
+    <div style="text-align:left">
+      <div class="aside">
+        <p><strong>下一個單元預告：</strong>找出實驗裡沒被固定的那一項。<br>
+        會考自然有 <strong>28 題（佔全卷 11%）不掛任何課本章節</strong>，什麼都不用背——只考你看不看得出一個實驗哪裡沒設計好。那是全科 CP 值最高的一塊。</p>
+      </div>
+    </div>
+    <button class="reset" id="rst">清除進度，重新開始</button>
+  </div>
+</section>
+
+<footer>
+  題目、通過率、鑑別度與選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析。<br>
+  改寫題已於題頭標示。所有圖示重繪，未使用課本內容。<br>
+  <span style="color:#a09789">為自學而做 · 2026</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+const KEY="jhs8-solution-v1", TOTAL=6;
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+
+const FB={
+ 0:{ans:"D",
+  A:["1：1 是「一樣甜」的意思","<p>但甲和乙的水一樣多、糖不一樣多，喝起來當然不同甜度，濃度不可能相等。</p><p>會答 1：1 通常是把「兩杯都是 20 g 水」當成了共同點——<strong>但濃度比的是糖佔整杯的比例，不是水。</strong></p>"],
+  B:["你和 32.64% 的考生選了同一個","<p>2：3 是這題<strong>最受歡迎的錯誤答案</strong>。它是這樣算出來的：</p><p>甲 ＝ 20 ÷ <span style='color:#1d5b79'><b>20</b></span> ＝ 100%　　乙 ＝ 30 ÷ <span style='color:#1d5b79'><b>20</b></span> ＝ 150%<br>100：150 ＝ 2：3</p><p>看出問題了嗎？<em>分母寫成「水」了。</em>而且算出了一杯「150% 的糖水」——這種東西不存在。</p><p>往下拉，我們把那杯糖水攤開來看。</p>"],
+  C:["4：5 很接近了","<p>你的方向是對的（分母有含糖），但其中一杯算錯了。</p><p>甲 ＝ 20 ÷ (20＋20) ＝ 50%<br>乙 ＝ 30 ÷ (30＋20) ＝ 60%<br>50：60 ＝ 5：6</p><p>4：5 會出現，通常是乙杯的分母寫成了 40 或 20＋20。<strong>每一杯的分母要各自加自己的糖。</strong></p>"],
+  D:["答對了，而且你避開了最大的坑","<p>甲 ＝ 20 ÷ 40 ＝ 50%、乙 ＝ 30 ÷ 50 ＝ 60%，比 5：6。</p><p>先別走——這題的鑑別度是 <strong>0.69</strong>，那年全卷最高的幾題之一。等一下你會看到，超過三成的人在同一個地方翻車。<em>知道別人錯在哪，比自己答對更有價值。</em></p>"]},
+ 1:{ans:"C",
+  A:["糖沒有不見","<p>「溶解」是糖的顆粒散開到水分子之間，散到眼睛看不到——<strong>但它一顆都沒有少</strong>。</p><p>如果把這杯糖水的水蒸乾，那 20 g 糖會原封不動地回來（這正是曬鹽的原理，最後一段會講）。</p>"],
+  B:["溶解不會讓質量減少","<p>這是物理變化，沒有生成新物質，也沒有東西跑掉。<strong>質量守恆</strong>：放進去多少，杯子裡就有多少。</p>"],
+  C:["對，40 g","<p>糖 20 g ＋ 水 20 g ＝ <strong>40 g</strong>。糖看不見了，但天平看得見它。</p><p>這 40 g 就是<em>溶液</em>的質量——也就是那個該當分母的數字。</p>"],
+  D:["題目說「完全溶解」","<p>而且就算沒完全溶解，沒溶的糖還是沉在杯底，總重量一樣是 40 g。<strong>溶不溶得掉，不影響天平。</strong></p>"]},
+ 2:{ans:"B",
+  A:["不會變成負數","<p>糖和水都是正的，除出來不會是負的。問題出在<strong>它可以大到沒有意義</strong>。</p><p>回去把糖拉到 100 g、水拉到 5 g 再看一次那一欄。</p>"],
+  B:["就是它","<p>100 g 糖 ÷ 5 g 水 ＝ <strong>2000%</strong>。</p><p>但「百分濃度」的意思是<em>整杯裡面有幾成是糖</em>——不管你怎麼調，糖最多就是「整杯都是糖」，也就是 100%。<strong>永遠不可能超過。</strong></p><p>所以只要你算出超過 100% 的濃度，不必檢查計算，直接看分母——<em>你一定是拿水在除。</em></p>"],
+  C:["它是變得很大，不是變成 0","<p>再拉一次滑桿，注意「除以水」那一格的數字往哪個方向跑。</p>"],
+  D:["這正是 32.64% 的人踩到的地方","<p>他們也覺得「只是數字比較大而已」，於是算出 150% 的糖水還繼續往下寫。</p><p>但濃度有物理上限：<strong>整杯都是糖，也只有 100%</strong>。超過就是不可能。這是一個免費的自我檢查，而且不用花任何時間。</p>"]},
+ 3:{ans:"D",
+  A:["池水密度幫不上忙","<p>密度是「每 1 mL 有多重」。就算知道池水多重，也算不出裡面有多少是尿——<strong>尿和水的密度幾乎一樣</strong>，秤重分不出來。</p><p>要把「安賽蜜」換算成「尿」，需要的是它們之間的<em>換算率</em>。</p>"],
+  B:["尿的密度也不行","<p>同樣的問題：密度連結的是「體積↔質量」，不是「安賽蜜↔尿」。</p><p>我們手上有的是安賽蜜的量，要求的是尿的量。中間缺的那一環，必須是<strong>「每公升尿裡有多少安賽蜜」</strong>。</p>"],
+  C:["這個其實已經算得出來了","<p>84 萬公升 × 2.1×10⁻⁷ g/L ＝ 約 <strong>0.18 g</strong>。這是題目給的兩個數字直接相乘就有的，<em>不需要另外參考</em>。</p><p>問題是：知道池子裡有 0.18 g 安賽蜜，還是不知道有幾公升尿。<strong>還缺一個把安賽蜜換成尿的比率。</strong></p>"],
+  D:["正確——你抓到缺的那一角了","<p>完整的推理鏈是：</p><p>① 池子裡的安賽蜜 ＝ 84 萬 L × 2.1×10⁻⁷ g/L ≈ <strong>0.18 g</strong><br>② 假設尿液中安賽蜜的平均濃度是 <span class='eq'>C</span> g/L<br>③ 尿的體積 ＝ 0.18 ÷ <span class='eq'>C</span> ＝ 75 L</p><p>沒有②，②就永遠算不到③。<strong>濃度 × 總量 ＝ 某成分的量</strong>——這題缺的就是那個「濃度」。</p><p>順帶一提：這題通過率 0.3911，是那年最難的幾題之一，而它連一次乘法都不必真的算出來。</p>"]},
+ 4:{ans:"C",
+  A:["30% 差了一萬倍","<p>30% 是「每 100 g 溶液含 30 g」。但題目說的是每 1000 g 含 <strong>30 mg</strong>。</p><p>30 mg ＝ 0.03 g。0.03 ÷ 1000 ＝ 0.003% —— 和 30% 差了一萬倍。</p>"],
+  B:["mg 是重量，不是濃度","<p>「30 mg」只說了有多少，沒說<em>在多少東西裡面</em>。30 mg 撒在一滴水裡和撒在一個游泳池裡，苦度天差地遠。</p><p><strong>濃度一定要有分母。</strong></p>"],
+  C:["對，30 ppm","<p>ppm ＝ parts per million ＝ <strong>百萬分之一</strong>。</p><p>每 1000 g 溶液含 30 mg ＝ 0.03 g<br>換成每 100 萬 g（＝1000 kg）：0.03 × 1000 ＝ <strong>30 g</strong><br>也就是<em>百萬分之三十</em> ＝ 30 ppm ✓</p><p>好記的換算：<strong>1 ppm ＝ 1 mg / 1 kg ＝ 1 mg/L（稀水溶液）</strong>。所以「每 1000 g 含 30 mg」直接就是 30 ppm。</p>"],
+  D:["g/cm³ 是密度的單位","<p>那是「每 1 立方公分有多重」，講的是物質本身有多密，不是溶液裡摻了多少東西。</p><p>而且 30 g/cm³ 比黃金（19.3）還重——遊戲卡不可能是這種東西。<em>單位不對的時候，用常識檢查一下數量級。</em></p>"]},
+ 5:{ans:"D",
+  A:["這是加進去之前的比例","<p>先把原本那杯拆開：150 g 的 40% 是檸檬酸 → <strong>檸檬酸 60 g、水 90 g</strong>。</p><p>60 ÷ 90 × 100 ≈ 67，還不是 45。再想想加進去的 65 g 溶了多少。</p>"],
+  B:["再檢查一次分母","<p>溶解度的分母是<strong>水</strong>，而水從頭到尾都是 <strong>90 g</strong>（沒有再加水）。</p><p>溶掉的檸檬酸總共是 60 ＋ 60 ＝ 120 g。120 ÷ 90 × 100 ＝ ?</p>"],
+  C:["接近了，但分母可能拿錯了","<p>如果你算的是 120 ÷ (90＋40) 或除以某個含檸檬酸的數字，那是<em>濃度</em>的算法。</p><p><strong>溶解度只除水</strong>：120 g 檸檬酸溶在 90 g 水裡 → 120 ÷ 90 × 100 ＝ 133。</p>"],
+  D:["完全正確","<p>① 原本那杯：150 × 40% ＝ 檸檬酸 <strong>60 g</strong>，水 <strong>90 g</strong><br>② 加入 65 g，剩 5 g 沒溶 → 又溶進 <strong>60 g</strong><br>③ 水還是 90 g（沒加水），溶掉的檸檬酸共 <strong>120 g</strong><br>④ 溶解度 ＝ 120 ÷ 90 × 100 ＝ <strong>133 g / 100 g 水</strong></p><p>而且「有 5 g 溶不下去」正好告訴你：<em>這杯已經飽和了</em>——所以這個數字就是這個溫度下的溶解度上限。</p><p>注意這題和第一題用了<strong>兩種不同的分母</strong>：算原本那杯用「溶液」，算溶解度用「水」。分得清楚，這題就是送分。</p>"]}
+};
+
+function done(){return Object.keys(state).filter(k=>/^q\d+$/.test(k)).length}
+function paint(){
+  document.getElementById("pnum").textContent=done()+" / "+TOTAL;
+  document.getElementById("pfill").style.width=(done()/TOTAL*100)+"%";
+}
+function unlock(id){
+  const el=document.getElementById(id);
+  if(el&&el.classList.contains("locked-zone")){
+    el.classList.remove("locked-zone");el.classList.add("revealed");
+    setTimeout(()=>el.classList.remove("revealed"),700);
+  }
+}
+function gate(){
+  if(state.q0!==undefined){unlock("z2");unlock("z3");drawDist()}
+  if(state.q1!==undefined){unlock("z3b")}
+  if(state.q2!==undefined){unlock("z4");unlock("z5")}
+  if(state.q3!==undefined){unlock("z5b")}
+  if(state.q4!==undefined){unlock("z6")}
+  if(state.q5!==undefined){unlock("z7");unlock("z8")}
+  paint();
+}
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, ans=box.dataset.ans;
+  box.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(box.dataset.locked)return;
+      const k=btn.dataset.k;
+      state["q"+qi]=k;
+      try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+      reveal(qi,k,ans,box,true);gate();
+    });
+  });
+});
+
+function reveal(qi,k,ans,box,scroll){
+  box.dataset.locked="1";
+  const PCT={A:"—",B:"32.64%",C:"—",D:"45.49%"};
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+    if(qi==="0"&&PCT[b.dataset.k]!=="—"&&!b.querySelector(".pct")){
+      const s=document.createElement("span");s.className="pct";s.textContent=PCT[b.dataset.k];b.appendChild(s);
+    }
+  });
+  const f=FB[qi][k], fb=document.getElementById("fb"+qi);
+  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+f[1];
+  fb.classList.add("show");
+  if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
+}
+
+let distDone=false;
+function drawDist(){
+  if(distDone)return;distDone=true;
+  const box=document.getElementById("dist");
+  const rows=[
+    {k:"D",v:45.49,c:"#3f6d3a",t:"正確答案（5：6）"},
+    {k:"B",v:32.64,c:"#c2410c",t:"分母寫成「水」的人（2：3）"},
+    {k:"A+C",v:21.87,c:"#b8ab93",t:"其餘合計"}
+  ];
+  box.innerHTML=rows.map(r=>
+    '<div class="dbar"><span class="dk">'+r.k+'</span>'+
+    '<div class="dtrack"><div class="dfill" data-w="'+r.v+'" style="background:'+r.c+'"></div></div>'+
+    '<span class="dv">'+r.v.toFixed(2)+'%</span></div>'+
+    '<div style="font-size:12px;color:var(--ink2);margin:-4px 0 10px 34px">'+r.t+'</div>'
+  ).join("");
+  setTimeout(()=>{box.querySelectorAll(".dfill").forEach(d=>d.style.width=d.dataset.w+"%")},80);
+}
+
+/* ── 實驗室 A：糖水條 ── */
+const slS=document.getElementById("slS"), slW=document.getElementById("slW");
+function labA(){
+  const s=+slS.value, w=+slW.value, tot=s+w;
+  const pS=s/tot*100;
+  document.getElementById("segS").style.width=pS+"%";
+  document.getElementById("segW").style.width=(100-pS)+"%";
+  document.getElementById("segS").textContent="糖 "+s+" g";
+  document.getElementById("segW").textContent="水 "+w+" g";
+  document.getElementById("brS").style.width=pS+"%";
+  document.getElementById("brW").style.width=(100-pS)+"%";
+  const ok=s/tot*100, ng=s/w*100;
+  document.getElementById("vOK").textContent=ok.toFixed(2)+"%";
+  document.getElementById("vNG").textContent=ng.toFixed(2)+"%";
+  const v=document.getElementById("labv");
+  if(ng>100){
+    v.className="verdict bad";
+    v.innerHTML="看右邊那格：<strong>"+ng.toFixed(0)+"%</strong>。<em>一杯糖水裡不可能有超過整杯的糖。</em><br>只要算出超過 100%，不必檢查計算——直接看分母，你一定是拿水在除。";
+  }else if(s===20&&w===20){
+    v.className="verdict good";
+    v.innerHTML="這就是題目的甲杯：正確算法 <strong>50%</strong>（20÷40），錯誤算法 <strong>100%</strong>（20÷20）。<br>兩個數字都「算得出來」，但只有一個有意義。";
+  }else{
+    v.className="verdict";
+    v.innerHTML="整條是 <strong>"+tot+" g</strong> 的糖水，其中橘色那段是糖。<br>濃度問的是<em>橘色佔整條的幾成</em> ＝ "+ok.toFixed(1)+"%。";
+  }
+}
+slS.addEventListener("input",labA); slW.addEventListener("input",labA);
+document.querySelectorAll(".chip[data-preset]").forEach(c=>{
+  c.addEventListener("click",()=>{
+    if(c.dataset.preset==="36"){slS.value=20;slW.value=20}
+    else{slS.value=60;slW.value=10}
+    labA();
+  });
+});
+labA();
+
+/* ── 實驗室 B：溶解度 ── */
+const slT=document.getElementById("slT");
+const solA=t=>t;               /* 甲：0°C→0、80°C→80（與圖上直線一致） */
+const solB=t=>80+t*0.5;        /* 乙：20°C→90, 80°C→120 */
+function labB(){
+  const t=+slT.value;
+  const a=solA(t)/10, b=solB(t)/10;      /* 10 g 水能溶多少 g */
+  document.getElementById("vT").textContent=t+" °C";
+  document.getElementById("vA").textContent=a.toFixed(1)+" g";
+  document.getElementById("vB").textContent=b.toFixed(1)+" g";
+  const x=t/80*300;
+  document.getElementById("tline").setAttribute("x1",x);
+  document.getElementById("tline").setAttribute("x2",x);
+  const yA=160-(solA(t)/160)*144, yB=160-(solB(t)/160)*144;
+  document.getElementById("dotA").setAttribute("cx",x);
+  document.getElementById("dotA").setAttribute("cy",yA);
+  document.getElementById("dotB").setAttribute("cx",x);
+  document.getElementById("dotB").setAttribute("cy",yB);
+  const v=document.getElementById("labv2");
+  if(a<5){
+    v.className="verdict bad";
+    v.innerHTML="<strong>甲杯有沉澱。</strong>這個溫度下 10 g 水只溶得下 "+a.toFixed(1)+" g，但你加了 5 g → 有 <strong>"+(5-a).toFixed(1)+" g 溶不進去</strong>，沉在杯底。<br>乙杯溶得下 "+b.toFixed(1)+" g，5 g 全溶，看起來清澈。";
+  }else if(a<5.3){
+    v.className="verdict good";
+    v.innerHTML="<strong>剛剛好。</strong>加熱到 "+t+"°C，甲杯的 5 g 正好全部溶完——這一刻叫做<em>飽和</em>：再多一粒都溶不下去。";
+  }else{
+    v.className="verdict good";
+    v.innerHTML="兩杯都清澈。溫度升高後甲杯溶得下 "+a.toFixed(1)+" g，5 g 綽綽有餘。<br><em>這就是為什麼熱可可比冰可可容易泡開。</em>";
+  }
+}
+slT.addEventListener("input",labB);
+labB();
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, saved=state["q"+qi];
+  if(saved!==undefined)reveal(qi,saved,box.dataset.ans,box,false);
+});
+gate();
+
+document.getElementById("rst").addEventListener("click",()=>{
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+</body>
+</html>
