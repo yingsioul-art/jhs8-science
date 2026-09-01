@@ -144,7 +144,7 @@ footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-alig
 <header>
   <div class="kicker">會考自然 · 探究能力（不掛任何課本章節）</div>
   <h1>找出沒被固定的那一項</h1>
-  <p class="sub">這一節<strong>沒有任何東西要背</strong>。<br>但它是會考自然佔比最高的一塊：五年 28 題，佔全卷 11%。</p>
+  <p class="sub">這一節<strong>沒有任何東西要背</strong>。<br>但它是會考自然考最多題的一塊：五年 28 題，佔全卷 11%。</p>
   <div class="meta">
     <span class="tag">會考 115-23</span>
     <span class="tag">5 年 28 題</span>
@@ -207,7 +207,7 @@ footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-alig
     <div class="dist" id="dist"></div>
     <p class="dim" style="font-size:14px;margin:14px 0 0">
       資料：國家教育研究院 115 年會考自然科官方試題分析（通過率 0.6024、鑑別度 0.51）。官方僅公布最高誤答選項的百分比。
-    </p>
+    <br><span style="color:var(--ink2)">「鑑別度」是官方算出來的一個數字：<strong>越高，代表這題越能分出「真的懂」和「只是猜對」的人</strong>。</span></p>
   </div>
 
   <div class="note">
@@ -407,6 +407,12 @@ footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-alig
     <p style="text-align:left">前三句是分類，第四句才是會考真正在考的東西——而且它<strong>一個字都不用背</strong>。</p>
     <p style="text-align:left">五年 28 題，佔全卷 11%。這是整份考卷 CP 值最高的一塊。</p>
     <p class="big" style="text-align:left">同時改兩個東西，就等於什麼都沒測到。</p>
+    <div style="text-align:left">
+      <div class="aside">
+        <p><strong>下一課（照課本順序）：</strong><a href="density.html" style="color:var(--accent);font-weight:700">一顆會說謊的銅球</a>（第 1 章 基本測量）<br>
+        一顆純銅做的球、一台準的天平、一次正確的計算——算出來的答案卻不對。<strong>那是誰在說謊？</strong></p>
+      </div>
+    </div>
     <button class="reset" id="rst">清除進度，重新開始</button>
   </div>
 </section>
@@ -435,11 +441,11 @@ const FB={
  1:{ans:"C",
   A:["熱水和冷水當然能比","<p>比溫度正是這個實驗的目的之一。二和四就是在比熱水和冷水，完全合理。</p><p>問題不在「熱冷」，在於<em>除了溫度以外，還有沒有別的東西也跟著變</em>。</p>"],
   B:["沒加鹽不是資料不完整","<p>沒加鹽是一種<strong>合法的狀態</strong>——它就是「鹽 ＝ 無」。</p><p>問題出在二和三之間<em>同時</em>差了兩個東西。</p>"],
-  C:["對","<p>二是<strong>熱＋無鹽</strong>，三是<strong>冷＋有鹽</strong>。溫度變了、鹽也變了。</p><p>假設三號比較快乾，你要說是「冷水比較好」還是「鹽有效」？<strong>兩個都說得通，所以什麼都證明不了。</strong></p><p>這在科學上叫<em>變因糾纏</em>——兩個原因綁在一起，拆不開。</p>"],
+  C:["對","<p>二是<strong>熱＋無鹽</strong>，三是<strong>冷＋有鹽</strong>。溫度變了、鹽也變了。</p><p>假設三號比較快乾，你要說是「冷水比較好」還是「鹽有效」？<strong>兩個都說得通，所以什麼都證明不了。</strong></p><p>這種情況叫做<em>兩個原因綁在一起</em>，拆不開。</p>"],
   D:["和組數無關","<p>兩組就夠了，只要它們<strong>只差一個東西</strong>。一和二、一和三、二和四都只差一個，都能得出結論。</p><p>比再多組，只要每次都同時改兩個，一樣什麼都測不到。</p>"]},
  2:{ans:"B",
   A:["這正是實驗會毀掉的方式","<p>她測的確實是溫度——但如果拖地力道也跟著變了，那就<strong>同時改了兩個東西</strong>，和二比三是一樣的問題。</p><p>乾得比較快，可能是因為熱水，也可能只是因為她抹的水比較少。</p>"],
-  B:["對","<p>拖地力道是<strong>控制變因</strong>——它必須固定。一旦它跟著變，就等於同時改了兩個東西，結果就沒辦法歸因。</p><p><em>會考最愛考的就是這一步</em>：給你一個看起來很正常的實驗，要你找出「哪個該固定的沒固定」。</p>"],
+  B:["對","<p>拖地力道是<strong>控制變因</strong>——它必須固定。一旦它跟著變，就等於同時改了兩個東西，結果就沒辦法知道是誰造成的。</p><p><em>會考最愛考的就是這一步</em>：給你一個看起來很正常的實驗，要你找出「哪個該固定的沒固定」。</p>"],
   C:["寫進報告救不回來","<p>誠實記錄是好習慣，但<strong>資料本身已經沒辦法回答問題了</strong>。實驗設計的錯誤，不能靠事後說明來修補。</p><p>正確的做法是重做一次，這次把力道固定。</p>"],
   D:["力氣絕對是變因","<p>拖得越用力，地板上留下的水越少（或越多），當然影響乾燥時間。</p><p><strong>任何可能影響結果的東西，都是變因</strong>——你要嘛拿它當操縱變因，要嘛把它固定住。沒有第三條路。</p>"]},
  3:{ans:"C",
