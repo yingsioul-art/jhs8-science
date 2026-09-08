@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大聲和高音不是同一件事｜波動與聲音</title>
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px; line-height:1.85; letter-spacing:.01em;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+/* -- 頁首 -- */
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+/* -- 進度 -- */
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin:0 -20px 0;padding:10px 20px}
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* -- 區段 -- */
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+strong{font-weight:700}
+code{font-family:"SF Mono",Consolas,monospace;background:#fff;border:1px solid var(--line);
+  padding:1px 6px;border-radius:4px;font-size:.92em}
+
+/* -- 卡片 -- */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+
+/* -- 題目 -- */
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+
+/* -- 鎖 -- */
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* -- 實驗室 -- */
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+.readout{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:9px}
+.row .lb{font-size:13.5px;color:var(--ink2)}
+.row .vl{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px}
+.row.hi{background:var(--accent-soft);border-color:#f0c9ae}
+.row.hi .vl{color:var(--accent);font-size:19px}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px}
+.slider-lab{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);margin-bottom:2px}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+
+/* 三選一配對 */
+.role{background:#fff;border:1px solid var(--line);border-radius:11px;padding:15px 16px;margin-bottom:10px}
+.rq{font-size:15.5px;margin-bottom:10px;line-height:1.7}
+.rbtns{display:flex;gap:7px;flex-wrap:wrap}
+.rb{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;cursor:pointer;
+  font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s}
+.rb:hover:not(:disabled){border-color:var(--ink2)}
+.rb.ok{background:var(--green);border-color:var(--green);color:#fff}
+.rb.no{border-color:var(--accent);color:var(--accent);animation:shake .35s}
+.rb:disabled{cursor:default}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.rfb{display:none;margin-top:9px;font-size:14.5px;line-height:1.7;color:var(--ink2)}
+.rfb.show{display:block}
+
+/* -- 表 -- */
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:520px}
+
+/* -- 長條 -- */
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:26px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden;position:relative}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+/* -- 結尾 -- */
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+.reset:hover{border-color:var(--ink2)}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+svg{max-width:100%;height:auto;display:block}
+.svg-cap{text-align:center;font-size:13px;color:var(--ink2);margin-top:6px}
+
+/* -- 開始之前 -- */
+details.pre{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;overflow:hidden}
+details.pre summary{padding:13px 16px;cursor:pointer;font-size:16px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:10px}
+details.pre summary::-webkit-details-marker{display:none}
+details.pre summary::before{content:"?";flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700}
+details.pre[open] summary::before{content:"✓";background:var(--green);color:#fff}
+details.pre[open] summary{border-bottom:1px solid var(--line)}
+details.pre .bd{padding:14px 16px;font-size:15.5px;line-height:1.8;color:var(--ink2)}
+details.pre .bd strong{color:var(--ink)}
+details.pre .bd p{margin:0 0 10px}
+details.pre .bd p:last-child{margin:0}
+
+.dl{background:#fff;border:2px solid var(--accent);border-radius:14px;padding:20px 22px;margin:24px 0;text-align:left}
+.dl h4{margin:0 0 8px;font-size:17px;color:var(--ink)}
+.dl p{font-size:15px;line-height:1.8;margin:0 0 14px;color:var(--ink2)}
+.dl a.get{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;
+  text-decoration:none;padding:11px 20px;border-radius:99px;font-size:15px;font-weight:700;transition:opacity .15s}
+.dl a.get:hover{opacity:.86}
+.dl .meta{font-size:13px;color:var(--ink2);margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-inner">
+  <b id="pnum">0 / 6</b>
+  <div class="track"><div class="fill" id="pfill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">八年級上 · 第三章 波動與聲音</div>
+  <h1>「大聲」和「高音」<br>不是同一件事</h1>
+  <p class="sub">這一節不從「波速 ＝ 波長 × 頻率」開始。<br>我們先查清楚一件事：室友說你打鼾沒那麼吵，你要拿<strong>哪一個數字</strong>反駁他？</p>
+  <div class="meta">
+    <span class="tag">6 題</span>
+    <span class="tag">波形調整器</span>
+    <span class="tag">會考 115-16</span>
+    <span class="tag">全國兩成人答錯同一個地方</span>
+    <span class="tag">約 25 分鐘</span>
+  </div>
+</header>
+
+<!-- ═══ 開始之前 ═══ -->
+<section>
+  <div class="step">開始之前</div>
+  <h2>這一課會用到的，只有這三件事</h2>
+  <p class="dim">都很熟就直接往下跳。有一個卡住，先點開看一眼再走。</p>
+
+  <details class="pre">
+    <summary>① 聲音是「振動」傳出去的</summary>
+    <div class="bd">
+      <p>敲鼓的時候鼓面在抖，抖動推擠旁邊的空氣，空氣再推下一層空氣——<strong>一路推到你的耳膜</strong>，耳膜跟著抖，你就聽見了。</p>
+      <p>所以聲音<em>不是一個東西飛過來</em>，是一個「抖動」被一層一層傳過來。課本上那張鼓面撒粉的照片，粉會彈起來，就是在讓你看見那個抖動。</p>
+    </div>
+  </details>
+
+  <details class="pre">
+    <summary>② 一秒鐘振動幾次，叫做頻率</summary>
+    <div class="bd">
+      <p>一秒抖 250 下，就說頻率是 <strong>250 赫茲（Hz）</strong>。</p>
+      <p>反過來，抖一下要花多少秒，叫做<strong>週期</strong>。兩個互為倒數：頻率 250 Hz，週期就是 1 ÷ 250 ＝ 0.004 秒。</p>
+    </div>
+  </details>
+
+  <details class="pre">
+    <summary>③ 聲音在空氣中大約每秒跑 340 公尺</summary>
+    <div class="bd">
+      <p>這個數字要記，因為它幾乎每年都出現。</p>
+      <p>先放一件之後會用到的事：<strong>這個速度和你叫得多大聲、多尖銳完全無關</strong>。同一個房間裡，男低音和女高音的聲音是<em>同時</em>抵達你耳朵的。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═══ ① 案發 ═══ -->
+<section>
+  <div class="step"><span>①</span>　案發</div>
+  <h2>室友說：「有這麼誇張？戴耳塞就可以了啦！」</h2>
+
+  <p>小忠被室友大勇的打鼾聲吵得整晚睡不著。</p>
+  <p>他問大勇：「你知道你的打鼾聲音量很大嗎？」大勇說：「會嗎？還好吧！」</p>
+  <p>隔天晚上，小忠<strong>用手機把大勇睡著時的打鼾聲量了下來</strong>，隔天拿數據給他看：「＿＿＿＿＿，很大聲耶！你知道嗎？」</p>
+
+  <div class="quote">
+    <p>小忠手上其實有一堆數字可以用。<br>
+    但他想證明的只有一件事：<em>你很吵</em>。<strong>哪一個數字才在講「吵」？</strong></p>
+  </div>
+
+  <div class="q" id="q0">
+    <div class="q-src">115 年會考自然科 第 16 題（原題，漫畫對話改以文字呈現）</div>
+    <div class="q-body">以上對話中「……」處，小忠說出下列哪一句話，<strong>最符合他想呈現的問題</strong>？</div>
+    <div class="opts" data-q="0" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>你發出 70 dB 的打鼾聲</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>你發出 250 Hz 的打鼾聲</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>你發出的打鼾聲每秒傳播 340 m</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>你發出的打鼾聲振動一次只要 0.004 秒</span></button>
+    </div>
+    <div class="fb" id="fb0"></div>
+  </div>
+</section>
+
+<!-- ═══ ② 分布 ═══ -->
+<section class="locked-zone" id="z2">
+  <div class="step"><span>②</span>　全國怎麼選</div>
+  <h2>兩成的人拿 Hz 去講吵不吵</h2>
+  <div class="card">
+    <div class="dist" id="dist"></div>
+    <p class="dim" style="font-size:14px;margin:14px 0 0">
+      資料：國家教育研究院 115 年會考自然科官方試題分析（通過率 0.6978、鑑別度 0.57）。</p>
+  </div>
+  <p>選 B 的人不是不會，是<strong>把「音量」和「音調」混在一起了</strong>——這兩個字在中文裡都可以說成「高」。</p>
+  <p class="big">音量大 ≠ 音調高。<br>它們甚至不是同一個東西造成的。</p>
+  <p>接下來這個工具，可以讓你把它們<em>分開來拉</em>。</p>
+</section>
+
+<!-- ═══ ③ 實驗室 ═══ -->
+<section class="locked-zone" id="z3">
+  <div class="step"><span>③</span>　自己拉拉看</div>
+  <h2>兩根滑桿，兩件不同的事</h2>
+  <p>下面畫的是聲波的波形圖。<strong>左右拉拉看</strong>，注意兩件事：形狀怎麼變、下面的數字哪一個跟著動。</p>
+
+  <div class="lab">
+    <div class="lab-t">波形調整器</div>
+    <svg id="wv" viewBox="0 0 640 190" role="img" aria-label="聲波波形">
+      <line x1="20" y1="95" x2="620" y2="95" stroke="#ded5c6" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <path id="wpath" fill="none" stroke="#c2410c" stroke-width="3" stroke-linecap="round"/>
+      <g id="ampmark"></g>
+    </svg>
+    <div class="svg-cap">橫軸＝時間，縱軸＝空氣被推擠的程度</div>
+
+    <div style="margin-top:20px">
+      <div class="slider-lab"><span>振幅（抖得多用力）</span><span id="ampv">中</span></div>
+      <input type="range" id="amp" min="1" max="10" value="5">
+      <div class="slider-lab" style="margin-top:12px"><span>頻率（一秒抖幾下）</span><span id="frqv">中</span></div>
+      <input type="range" id="frq" min="1" max="10" value="5">
+    </div>
+
+    <div class="readout">
+      <div class="row" id="r-db"><span class="lb">響度（你覺得多吵）</span><span class="vl" id="v-db">60 dB</span></div>
+      <div class="row" id="r-hz"><span class="lb">音調（你覺得多高）</span><span class="vl" id="v-hz">330 Hz</span></div>
+      <div class="row"><span class="lb">波速（聲音跑多快）</span><span class="vl" id="v-sp">340 m/s</span></div>
+      <div class="row"><span class="lb">波長 ＝ 波速 ÷ 頻率</span><span class="vl" id="v-wl">1.03 m</span></div>
+    </div>
+    <div class="verdict" id="wverd">拉拉看上面兩根滑桿。</div>
+  </div>
+
+  <div class="note">
+    <p><b>拉完之後最該注意的那一行</b>——<strong>波速那一行從頭到尾沒有動過。</strong></p>
+    <p style="margin-top:10px">不管你把振幅拉到最大、頻率拉到最高，聲音在空氣裡永遠是每秒 340 公尺。
+    <em>波速是「路」決定的，不是「喊的人」決定的。</em></p>
+  </div>
+
+  <div class="q" id="q1">
+    <div class="q-src">109 年會考自然科 第 10 題（原題）</div>
+    <div class="q-body">樂譜上常用 <code>f</code>、<code>p</code> 等力度記號，來表示樂曲在此處的<strong>音量（響度）</strong>大小應該如何變化。此類力度記號與聲波的下列何種特性最相關？</div>
+    <div class="opts" data-q="1" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>波長</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>波速</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>頻率</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>振幅</span></button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+</section>
+
+<!-- ═══ ④ 命名 ═══ -->
+<section class="locked-zone" id="z4">
+  <div class="step"><span>④</span>　這時候才給名字</div>
+  <h2>三個名字，三個單位，三件事</h2>
+
+  <div class="scroll">
+  <table>
+    <tr><th>你聽到的</th><th>物理上叫</th><th>由什麼決定</th><th>單位</th></tr>
+    <tr><td><b>多吵</b></td><td>響度</td><td><strong>振幅</strong>（抖多大）</td><td>分貝 dB</td></tr>
+    <tr><td><b>多高</b>（尖或低沉）</td><td>音調</td><td><strong>頻率</strong>（一秒抖幾下）</td><td>赫茲 Hz</td></tr>
+    <tr><td><b>是誰在發聲</b></td><td>音色</td><td><strong>波形</strong>（抖的形狀）</td><td>沒有單位</td></tr>
+  </table>
+  </div>
+
+  <p>音色是最容易被忽略、卻最好懂的一個：小提琴和長笛可以吹出<em>一模一樣的音高、一模一樣的音量</em>，你還是一聽就知道誰是誰——差別只在波形的形狀。</p>
+
+  <h3>換你分分看</h3>
+  <p class="dim">下面三句話，各自在講哪一件事？三題都答對就過關。</p>
+  <div class="card">
+    <div id="roles"></div>
+    <div class="verdict" id="rolev">三題都答對就過關。</div>
+  </div>
+
+  <h3>那波速呢？</h3>
+  <p>波速不在上面那張表裡，因為<strong>它根本不是「聲音的特性」，是「介質的特性」</strong>。同一個聲音，在空氣、水、鋼裡跑得完全不一樣快。</p>
+  <div class="scroll">
+  <table>
+    <tr><th>介質</th><th>聲速（約）</th><th>為什麼</th></tr>
+    <tr><td>空氣（15°C）</td><td>340 m/s</td><td>粒子最鬆，推擠傳得最慢</td></tr>
+    <tr><td>水</td><td>1500 m/s</td><td>粒子較密</td></tr>
+    <tr><td>鋼</td><td>約 5000 m/s</td><td>粒子最緊，一推整排就動</td></tr>
+    <tr><td>真空</td><td><b>不傳</b></td><td>沒有粒子可以推</td></tr>
+  </table>
+  </div>
+  <p class="big">聲音需要介質。<br>這一句話，是下一題整題的答案。</p>
+
+  <div class="q" id="q2">
+    <div class="q-src">113 年會考自然科 第 18 題（原題）</div>
+    <div class="q-body">某篇報導提到<strong>重力波</strong>：它由劇烈的天體運動產生，能在<em>宇宙的真空中</em>傳播，並以光速前進。<br>根據上述資訊，下列有關重力波的敘述何者最合理？</div>
+    <div class="opts" data-q="2" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>與水波一樣，都屬於力學波</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>與電磁波一樣，都屬於力學波</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>與光波一樣，都不屬於力學波</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>與超聲波一樣，都不屬於力學波</span></button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+</section>
+
+<!-- ═══ ⑤ 變化 ═══ -->
+<section class="locked-zone" id="z5">
+  <div class="step"><span>⑤</span>　同一招，換個場景</div>
+  <h2>變形一：先算頻率，再去查表</h2>
+
+  <p>到目前為止我們一直沒用到那條公式。現在用一次——而且你會發現，它只是把三個數字綁在一起而已。</p>
+  <div class="card" style="text-align:center">
+    <p class="big" style="margin:6px 0">波速 ＝ 波長 × 頻率</p>
+    <p class="dim" style="margin:0;font-size:15px">v ＝ λ × f　　（想求頻率，就把波速除以波長）</p>
+  </div>
+
+  <div class="q" id="q3">
+    <div class="q-src">107 年會考自然科 第 32 題（原題，表格重繪）</div>
+    <div class="q-body">
+      下表為兩種動物所能聽見聲音的頻率範圍。
+      <div class="scroll" style="margin:14px -20px">
+      <table>
+        <tr><th>動物</th><th>聽覺頻率範圍（Hz）</th></tr>
+        <tr><td>大象</td><td>16 ～ 12000</td></tr>
+        <tr><td>兔子</td><td>360 ～ 42000</td></tr>
+      </table>
+      </div>
+      在空氣溫度 15°C、聲波波速為 <strong>34000 cm/s</strong> 的環境下，若發出<strong>波長為 1000 cm</strong>、且音量足夠大的聲波，則下列敘述何者最合理？
+    </div>
+    <div class="opts" data-q="3" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>兩種動物都聽得到此聲波</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>兩種動物都聽不到此聲波</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>此聲波大象聽得到，而兔子聽不到</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>此聲波兔子聽得到，而大象聽不到</span></button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="locked-zone" id="z5b">
+  <h3>變形二：那「聽不到」到底是哪一種聽不到？</h3>
+  <p>上一題的兔子聽不到，是因為<strong>頻率太低</strong>。反過來，也有一種聲音是因為<em>頻率太高</em>而聽不到——它每年都考。</p>
+
+  <div class="q" id="q4">
+    <div class="q-src">114 年會考自然科 第 1 題（原題）</div>
+    <div class="q-body">孕婦產檢時常使用<strong>超聲波</strong>來檢查腹中胎兒的生長情形。當醫生使用超聲波進行檢查時，孕婦對超聲波的聽覺感受，下列說明何者最合理？</div>
+    <div class="opts" data-q="4" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>孕婦會聽見低沉的轟隆聲</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>孕婦會聽見尖銳刺耳的聲音</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>因頻率過高，故孕婦聽不見超聲波</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>因波速過快，故孕婦聽不見超聲波</span></button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+  </div>
+</section>
+
+<!-- ═══ ⑥ 歷史 ═══ -->
+<section class="locked-zone" id="z6">
+  <div class="step"><span>⑥</span>　這件事是誰查出來的</div>
+  <h2>1660 年，一個玻璃罩裡的鬧鐘</h2>
+
+  <p>「聲音需要介質」這句話，現在寫在課本上只有八個字。但在十七世紀，這是一個<em>沒有人能確定</em>的問題——因為地球上根本找不到真空。</p>
+
+  <p>1660 年，愛爾蘭人 <strong>Robert Boyle</strong> 用當時剛做出來的抽氣機做了一個實驗：</p>
+
+  <div class="card">
+    <p style="margin:0 0 10px"><strong>他把一個正在響的鬧鐘，用線吊在玻璃罩裡。</strong></p>
+    <p style="margin:0 0 10px">吊著，是為了不讓鬧鐘碰到罩子——<em>否則聲音會從玻璃傳出來</em>。</p>
+    <p style="margin:0">然後開始抽氣。</p>
+  </div>
+
+  <p>隨著罩內的空氣愈來愈少，鈴聲愈來愈小。到最後，他<strong>看得見鈴槌在動，卻聽不見任何聲音</strong>。</p>
+
+  <div class="quote">
+    <p>注意他做了什麼：<em>他沒有辦法「證明真空不傳聲」</em>，因為他抽不到完全的真空。</p>
+    <p style="margin-top:10px">他做的是——<strong>把空氣一點一點拿掉，看聲音一點一點消失</strong>。趨勢本身就是證據。</p>
+  </div>
+
+  <p>那條「吊著」的細線，才是這個實驗真正精巧的地方。如果鬧鐘直接放在罩底，抽完氣你還是聽得見——然後你會得到完全相反的結論。</p>
+  <p class="dim">（這就是緒論那一課在講的事：<a href="variables.html" style="color:var(--accent)">有沒有哪個該固定的，你忘了固定？</a>）</p>
+
+  <div class="q" id="q5">
+    <div class="q-src">收尾題</div>
+    <div class="q-body">如果 Boyle 沒有把鬧鐘吊起來，而是直接擺在玻璃罩的底座上，抽完氣後他最可能得到什麼結果？</div>
+    <div class="opts" data-q="5" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>一樣聽不見，因為罩子裡已經沒有空氣了</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>仍然聽得見，因為振動會沿著底座和玻璃傳到外面</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>聽見的聲音會變得更高，因為真空讓頻率上升</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>鬧鐘會停止振動，因為沒有空氣就無法振動</span></button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+</section>
+
+<!-- ═══ 結案 ═══ -->
+<section class="locked-zone" id="z7">
+  <div class="done">
+    <div class="step">結案</div>
+    <h2>聽到一個聲音，先問三句話</h2>
+
+    <div style="text-align:left">
+      <div class="card">
+        <p style="margin:0 0 8px">① 這句話在講<strong>多吵</strong>嗎？　<span class="dim">→ 振幅、dB</span></p>
+        <p style="margin:0 0 8px">② 這句話在講<strong>多高</strong>嗎？　<span class="dim">→ 頻率、Hz</span></p>
+        <p style="margin:0 0 8px">③ 這句話在講<strong>跑多快</strong>嗎？　<span class="dim">→ 波速，看的是介質不是聲音</span></p>
+        <p style="margin:0;color:var(--accent)"><strong>④ 這個波，需不需要介質？</strong>　<span class="dim">→ 需要＝力學波（聲波、水波、繩波）；不需要＝光波、電磁波、重力波</span></p>
+      </div>
+    </div>
+
+    <p style="text-align:left">會考在這一章幾乎只考這四句話的排列組合。<em>它不會叫你算，它會給你一個生活情境，看你有沒有把單位放對地方。</em></p>
+    <p class="big" style="text-align:left">單位就是答案。<br>看到 dB 就是在講吵，看到 Hz 就是在講高低。</p>
+
+    <div class="dl">
+      <h4>整張段考卷做一次</h4>
+      <p>這一章是<strong>第 2 次段考</strong>的範圍。站上收了 112～114 學年度共 9 份原卷，
+      原始排版、原始附圖，線上作答、當場對答案。</p>
+      <a class="get" href="exam.html">去做整卷模擬 →</a>
+      <p class="meta">第 3 章對應：112-1-2、113-1-2、114-1-2 三份</p>
+    </div>
+
+    <div style="text-align:left">
+      <div class="aside">
+        <p><strong>下一課（照課本順序）：</strong><a href="light.html" style="color:var(--accent);font-weight:700">你為什麼看得見這本書？</a>（第 4 章 光）<br>
+        一個人類想錯了兩千年的問題——而且會考有一個選項，寫的就是那個錯了兩千年的答案。</p>
+      </div>
+    </div>
+    <button class="reset" id="rst">清除進度，重新開始</button>
+  </div>
+</section>
+
+<!-- == EXAM-BLOCK BEGIN（自動產生，勿手改；改 _add_exam_block.py） == -->
+<style>
+/* -- 段考實戰區塊 -- */
+.mx-wrap{margin:56px 0 0;padding-top:38px;border-top:3px double var(--line)}
+.mx-kick{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+.mx-h{font-size:24px;line-height:1.4;margin:0 0 14px;font-weight:700;letter-spacing:0;color:var(--ink)}
+.mx-intro{font-size:15.5px;line-height:1.85;color:var(--ink2);margin:0 0 6px}
+.mx-bar{display:flex;align-items:center;gap:10px;margin:22px 0 4px;font-size:13px;color:var(--ink2)}
+.mx-bar .mx-track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.mx-bar .mx-fill{height:100%;width:0;background:var(--accent);transition:width .4s}
+.mx-src{font-size:12px;letter-spacing:.06em;color:var(--ink2);margin-bottom:12px;
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mx-tag{border:1px solid var(--line);border-radius:99px;padding:2px 9px}
+.mx-own{border-color:#d8b46a;background:#fdf6e6;color:#8a6a1e}
+.mx-tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+.mx-tbl td{border:1px solid var(--line);padding:7px 9px;text-align:center;white-space:nowrap}
+.mx-tbl tr:first-child td{background:#f6f2ea;font-weight:600}
+.mx-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mx-pt{border-left:3px solid var(--accent);padding-left:12px;margin-top:14px !important;color:var(--ink2)}
+.mx-reset{margin-top:26px;background:none;border:1px solid var(--line);color:var(--ink2);
+  border-radius:99px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit}
+.mx-reset:hover{border-color:var(--ink);color:var(--ink)}
+.mx-more{display:block;text-decoration:none;color:inherit;background:#fff;border:2px solid var(--ink);
+  border-radius:14px;padding:20px;margin:28px 0 0}
+.mx-more:hover{background:var(--accent-soft)}
+.mx-more b{display:block;font-size:18px;margin-bottom:6px}
+.mx-more span{font-size:14.5px;color:var(--ink2);line-height:1.75}
+</style>
+<section class="mx-wrap">
+  <div class="mx-kick">段考實戰　·　丹鳳高中 八年級上學期</div>
+  <h2 class="mx-h">這一章，段考就考在單位上</h2>
+  <p class="mx-intro">第 3 章是<strong>第 2 次段考</strong>的主場。下面八題全部來自你們學校的段考卷，你會發現它們幾乎都在問同一件事：<em>這句話裡的那個數字，到底在講哪一個性質。</em></p>
+  <div class="mx-bar"><b id="mxnum">0 / 8</b><div class="mx-track"><div class="mx-fill" id="mxfill"></div></div></div>
+<div class="q" id="mxq0"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 是非題 第 6 題</span></div><div class="q-body">判斷這句話是對是錯：<strong>用槌子敲擊音叉，敲擊越上方則音調越高。</strong></div><div class="opts mx-opts" data-i="0" data-ans="D"><button class="opt" data-k="A"><span class="k">A</span><span>是（這句話正確）</span></button><button class="opt" data-k="D"><span class="k">D</span><span>否（這句話錯誤）</span></button></div><div class="fb" id="mxfb0"></div></div>
+<div class="q" id="mxq1"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 11 題</span></div><div class="q-body">在曠野中呼喊，聲音因傳遠而變小聲，則下列何者也隨之變小？</div><div class="opts mx-opts" data-i="1" data-ans="C"><button class="opt" data-k="A"><span class="k">A</span><span>聲音的速率</span></button><button class="opt" data-k="B"><span class="k">B</span><span>聲音的波長</span></button><button class="opt" data-k="C"><span class="k">C</span><span>聲音的振幅</span></button><button class="opt" data-k="D"><span class="k">D</span><span>聲音的頻率</span></button></div><div class="fb" id="mxfb1"></div></div>
+<div class="q" id="mxq2"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 24 題</span></div><div class="q-body">平日描述聲音時，同樣一個「高」字，意義常常不同：<br>甲生：我情緒好的時候會引吭「高」歌<br>乙生：她講話時常常聲音「高」到令人刺耳<br>丙生：這首歌音太「高」，我唱不上去<br>丁生：我「高」聲宣揚我通過第一階段甄試<br>請問下列哪一項敘述是正確的？</div><div class="opts mx-opts" data-i="2" data-ans="A"><button class="opt" data-k="A"><span class="k">A</span><span>甲生所謂的「高」指的是<strong>響度</strong>，單位是<strong>分貝</strong></span></button><button class="opt" data-k="B"><span class="k">B</span><span>乙生所謂的「高」指的是<strong>振幅</strong>，單位是<strong>公尺</strong></span></button><button class="opt" data-k="C"><span class="k">C</span><span>丙生所謂的「高」指的是<strong>波速</strong>，單位是<strong>公尺/秒</strong></span></button><button class="opt" data-k="D"><span class="k">D</span><span>丁生所謂的「高」指的是<strong>頻率</strong>，單位是<strong>赫茲</strong></span></button></div><div class="fb" id="mxfb2"></div></div>
+<div class="q" id="mxq3"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 23 題</span></div><div class="q-body">在演奏管絃樂時，小提琴的旋律輕快流暢、長笛的音色清純、伸縮喇叭的聲音宏亮。有關這些樂器的聲音<strong>在空氣中的傳播速率</strong>，下列敘述何者正確？</div><div class="opts mx-opts" data-i="3" data-ans="D"><button class="opt" data-k="A"><span class="k">A</span><span>小提琴的聲音傳得最快</span></button><button class="opt" data-k="B"><span class="k">B</span><span>長笛的聲音傳得最快</span></button><button class="opt" data-k="C"><span class="k">C</span><span>伸縮喇叭的聲音傳得最快</span></button><button class="opt" data-k="D"><span class="k">D</span><span>三件樂器的聲音傳得一樣快</span></button></div><div class="fb" id="mxfb3"></div></div>
+<div class="q" id="mxq4"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 34 題</span></div><div class="q-body">當人在情緒緊張時，聲音的<strong>音調會不自覺地升高</strong>。則關於音調升高時聲音的波長與頻率的變化，下列何者正確？</div><div class="opts mx-opts" data-i="4" data-ans="D"><button class="opt" data-k="A"><span class="k">A</span><span>波長與頻率均變大</span></button><button class="opt" data-k="B"><span class="k">B</span><span>波長與頻率均變小</span></button><button class="opt" data-k="C"><span class="k">C</span><span>波長不變、頻率變大</span></button><button class="opt" data-k="D"><span class="k">D</span><span>波長變小、頻率變大</span></button></div><div class="fb" id="mxfb4"></div></div>
+<div class="q" id="mxq5"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 31 題</span></div><div class="q-body">關於「超聲波」的敘述，下列何者正確？</div><div class="opts mx-opts" data-i="5" data-ans="B"><button class="opt" data-k="A"><span class="k">A</span><span>屬於能量很強的聲波</span></button><button class="opt" data-k="B"><span class="k">B</span><span>頻率高於 20000 Hz 的聲波，稱為超聲波</span></button><button class="opt" data-k="C"><span class="k">C</span><span>波速大於 340 m/s 的聲波，稱為超聲波</span></button><button class="opt" data-k="D"><span class="k">D</span><span>與波源距離 17 m 以上所反射回來的聲波，稱為超聲波</span></button></div><div class="fb" id="mxfb5"></div></div>
+<div class="q" id="mxq6"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 32 題</span></div><div class="q-body">海研船以聲納向下發射聲波，<strong>經過 4 秒後接收到回聲</strong>。已知該地海水的傳聲速率為 1500 公尺/秒，則應將漁網撒在深度多少公尺處捕撈魚群？</div><div class="opts mx-opts" data-i="6" data-ans="B"><button class="opt" data-k="A"><span class="k">A</span><span>1500</span></button><button class="opt" data-k="B"><span class="k">B</span><span>3000</span></button><button class="opt" data-k="C"><span class="k">C</span><span>4500</span></button><button class="opt" data-k="D"><span class="k">D</span><span>6000</span></button></div><div class="fb" id="mxfb6"></div></div>
+<div class="q" id="mxq7"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 33 題</span></div><div class="q-body">警察常用「聲紋比對」來鑑定罪犯。「聲紋比對」主要是比對聲音的哪一種特性？</div><div class="opts mx-opts" data-i="7" data-ans="B"><button class="opt" data-k="A"><span class="k">A</span><span>頻率</span></button><button class="opt" data-k="B"><span class="k">B</span><span>波形</span></button><button class="opt" data-k="C"><span class="k">C</span><span>週期</span></button><button class="opt" data-k="D"><span class="k">D</span><span>振幅</span></button></div><div class="fb" id="mxfb7"></div></div>
+  <a class="mx-more" href="exam.html">
+    <b>整卷模擬 →</b>
+    <span>112～114 學年度、三次段考共 9 份原卷，線上作答、當場對答案。<br>
+    這裡挑的是和本單元有關的題；那裡是<strong>整張考卷</strong>。</span>
+  </a>
+  <button class="mx-reset" id="mxrst">清除這一區的作答</button>
+</section>
+<script>
+(function(){
+"use strict";
+var KEY="jhs8-wave-exam-v1", D=[{"ans": "D", "sol": "<p>錯。<strong>音調只由音叉本身的固有頻率決定</strong>——那是音叉的長度、粗細、材質決定的，刻在音叉上的那個「440 Hz」不會因為你敲哪裡而改變。</p><p>敲上方或敲下方、敲用力或敲輕，改變的是<em>振幅</em>，也就是<strong>響度</strong>。</p><p class='mx-pt'>是非題把「音調」換成「響度」就會變成對的。<strong>看到是非題，先找出那個可以被替換掉的關鍵詞</strong>——出題老師動的就是那個字。</p>"}, {"ans": "C", "sol": "<p>「變小聲」＝<strong>響度變小</strong> → 對應<strong>振幅</strong>變小。</p><p>其他三個為什麼不會變？<br>· 速率：由空氣決定，和你喊多遠無關（都是 340 m/s）<br>· 頻率：由聲帶決定，傳遠了音也不會變低沉<br>· 波長：波長 ＝ 波速 ÷ 頻率，上面兩個都沒變，它自然也沒變</p><p class='mx-pt'>聲音傳遠了會變小聲，是因為能量散開到愈來愈大的範圍。<em>散開的是能量，不是音高。</em></p>"}, {"ans": "A", "sol": "<p>先把四句話翻譯成物理：<br>甲「引吭高歌」＝大聲唱 → <strong>響度</strong> ✓<br>乙「高到令人刺耳」＝聲音很尖 → 音調（不是振幅）<br>丙「音太高唱不上去」＝音高 → 音調（不是波速）<br>丁「高聲宣揚」＝大聲說 → 響度（不是頻率）</p><p>只有 (A) 的判讀和單位都對。</p><p class='mx-pt'>這題就是這一章的縮影：<strong>中文的「高」是一個字，物理上是兩件事。</strong>判斷方法是問「這句話在描述<em>音量</em>還是<em>音高</em>」，再去配單位。</p>"}, {"ans": "D", "sol": "<p><strong>波速由介質決定，不由聲源決定。</strong>三件樂器都在同一個空氣裡，所以都是每秒 340 公尺。</p><p>可以用一個生活經驗檢查：如果不同樂器的聲音跑得不一樣快，<em>整個樂團從第一排聽起來就會變成一團爛泥</em>——低音先到、高音後到。但實際上不會，所以速度一定一樣。</p><p class='mx-pt'>題目故意把「輕快、清純、宏亮」三個形容詞塞給你，那些講的是音調、音色、響度——<strong>沒有一個和速度有關</strong>。</p>"}, {"ans": "D", "sol": "<p>音調升高 → <strong>頻率變大</strong>。</p><p>再看波長：<span style='white-space:nowrap'>波長 ＝ 波速 ÷ 頻率</span>。波速在同一個空氣裡<em>不會變</em>，分母的頻率變大 → <strong>波長變小</strong>。</p><p>(C) 錯在以為波長是獨立的。<em>只要波速固定，波長和頻率就是綁死的一對，一個變大另一個一定變小。</em></p>"}, {"ans": "B", "sol": "<p>「超」指的是<strong>超出人耳可聽範圍的上限</strong>（約 20000 Hz），定義完全建立在<em>頻率</em>上。</p><p>(A) 能量強弱是響度的事，和超不超聲無關。<br>(C) 波速由介質決定，不會因為頻率高就變快。<br>(D) 17 公尺那個數字講的是<strong>回聲</strong>——聲音來回 34 公尺約 0.1 秒，人耳才分得出是兩個聲音。那是另一個概念。</p><p class='mx-pt'>(D) 是很漂亮的誘餌：它把一個<em>真的、但屬於別題</em>的知識放進來。段考很愛這樣考。</p>"}, {"ans": "B", "sol": "<p>4 秒是<strong>來回</strong>的時間，單程只有 <strong>2 秒</strong>。</p><p>深度 ＝ 1500 × 2 ＝ <strong>3000 公尺</strong>。</p><p>(D) 6000 就是忘了除以 2 的答案——這是回聲測距題最大的坑，<em>幾乎每次都有人踩</em>。</p><p class='mx-pt'>看到「發射→接收」「回聲」「聲納」「雷達」，第一個動作永遠是<strong>先把時間砍一半</strong>。</p>"}, {"ans": "B", "sol": "<p>頻率、振幅都可以模仿——<em>你可以講得跟別人一樣高、一樣大聲</em>。</p><p>但<strong>波形</strong>是由發音器官的形狀決定的（聲帶、口腔、鼻腔），那是天生的、模仿不來的，所以才拿它來當「聲音的指紋」。</p><p>波形對應的就是<strong>音色</strong>——這一章三個名字裡最少被考、但最有意思的一個。</p>"}], st={};
+try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
+function paint(){
+  var n=Object.keys(st).length;
+  document.getElementById("mxnum").textContent=n+" / "+D.length;
+  document.getElementById("mxfill").style.width=(n/D.length*100)+"%";
+}
+function reveal(i,k,box,scroll){
+  box.dataset.locked="1";
+  var ans=D[i].ans;
+  box.querySelectorAll(".opt").forEach(function(b){
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+  });
+  var head=(k===ans)
+    ? "<h4 style='color:var(--green)'>答對了</h4>"
+    : "<h4 style='color:var(--accent)'>你選了 "+k+"，正解是 "+ans+"</h4>";
+  var fb=document.getElementById("mxfb"+i);
+  fb.innerHTML=head+D[i].sol;
+  fb.classList.add("show");
+  if(scroll)setTimeout(function(){fb.scrollIntoView({behavior:"smooth",block:"nearest"})},120);
+}
+document.querySelectorAll(".mx-opts").forEach(function(box){
+  var i=+box.dataset.i;
+  box.querySelectorAll(".opt").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      if(box.dataset.locked)return;
+      st[i]=btn.dataset.k;
+      try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}
+      reveal(i,btn.dataset.k,box,true);paint();
+    });
+  });
+  if(st[i]!==undefined)reveal(i,st[i],box,false);
+});
+paint();
+document.getElementById("mxrst").addEventListener("click",function(){
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+<!-- == EXAM-BLOCK END == -->
+
+<footer>
+  題目、通過率與選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析。<br>
+  115-16 原題為四格漫畫，此處改以文字敘述呈現；107-32 表格重繪。所有圖示重繪，未使用課本內容。<br>
+  <a href="index.html" style="color:#1d5b79">← 回自學站首頁</a>　·　<span style="color:#a09789">為自學而做 · 2026</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+const KEY="jhs8-wave-v1", TOTAL=6;
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+
+/* 只有 q0 有官方選項百分比 */
+const PCT={0:{A:"69.78%",B:"21.26%",C:"—",D:"—"}};
+
+const FB={
+ 0:{A:["答對了","<p><strong>dB（分貝）是音量的單位。</strong>小忠想證明的是「你很吵」，那就只有 dB 這個數字在講吵。</p><p>其他三個都是真的、也都量得到，但<em>它們回答的是別的問題</em>：250 Hz 在講聲音多低沉、340 m/s 在講聲音跑多快、0.004 秒在講抖一下要多久。</p><p>先別走——全國有 21.26% 的人選了 B，他們的想法很值得看。</p>"],
+    B:["你和 21.26% 的人選了同一個","<p>250 Hz 講的是<strong>音調</strong>——大勇的鼾聲是低沉的還是尖的。</p><p>問題是，<em>低沉的聲音也可以很小聲，尖的聲音也可以很小聲</em>。Hz 這個數字完全不能拿來吵架。</p><p>會混在一起是有原因的：中文說「聲音很高」，可能是說很大聲，也可能是說音很尖。<strong>但物理上這是兩個東西、兩個單位。</strong></p><p>往下拉，那兩根滑桿會讓你把它們分開。</p>"],
+    C:["這是在講波速","<p>340 m/s 是聲音在空氣中的速度。它幾乎是個<strong>常數</strong>——大勇打鼾是 340，小忠說話也是 340。</p><p>拿一個誰都一樣的數字，證明不了「你特別吵」。</p>"],
+    D:["這是週期，還是在講音調","<p>0.004 秒是<strong>週期</strong>：抖一下要多久。它和頻率互為倒數（1 ÷ 0.004 ＝ 250 Hz）——所以這個選項其實和 B 在講同一件事，只是換個說法。</p><p>兩個都在講音調，都不在講吵不吵。</p>"]},
+ 1:{A:["波長不決定音量","<p>波長和頻率是綁在一起的（波長 ＝ 波速 ÷ 頻率），所以波長講的還是<strong>音調</strong>那一路。</p><p>把琴弦撥得用力一點，波長不會變，變的是<em>抖動的幅度</em>。</p>"],
+    B:["波速和演奏方式無關","<p>不管樂手多用力，聲音在音樂廳裡都是每秒 340 公尺。<em>如果波速會隨力度改變，樂團就永遠合不起來了</em>——大聲的樂器會先到，小聲的後到。</p>"],
+    C:["頻率是音高，不是音量","<p>頻率變了，音就變高或變低——但<strong>不會變大聲</strong>。</p><p><code>f</code>（forte，強）和 <code>p</code>（piano，弱）只叫你改力度，沒有叫你改音符。<em>音符沒變，頻率就沒變。</em></p>"],
+    D:["對","<p>力度記號叫演奏者<strong>用力一點或輕一點</strong>——用力，弦或鼓面就抖得幅度更大，<strong>振幅</strong>變大，響度就大。</p><p>回頭看剛剛那兩根滑桿：你拉「振幅」的時候，只有 dB 那一行在動。</p><p class='dim' style='font-size:15px'>順帶一提：鋼琴的原名 pianoforte，意思就是「可以彈弱、也可以彈強」——那是它剛發明時最了不起的功能。</p>"]},
+ 2:{A:["水波是力學波，但重力波不是","<p>水波確實需要水才能傳，是<strong>力學波</strong>。但題目說重力波能在<em>宇宙的真空中</em>傳播——真空裡沒有介質。</p><p>兩者剛好相反，不能說「一樣」。</p>"],
+    B:["電磁波不是力學波","<p>這個選項有兩個錯：電磁波<strong>本來就不是</strong>力學波（陽光穿過太空來到地球，中間是真空）。</p><p>全國有 18.75% 的人選了這個——多半是抓到了「重力波和電磁波很像」這一半，卻把電磁波的身分記反了。</p>"],
+    C:["答對了","<p>判斷力學波只有一個標準：<strong>需不需要介質</strong>。</p><p>題目已經把答案寫在裡面了——「能在<em>真空</em>中傳播」。真空沒有介質，所以重力波<strong>不是</strong>力學波。光波也一樣（不然我們看不到太陽）。</p><p>通過率 0.5409，全國近一半的人答錯。</p><p class='dim' style='font-size:15px'>閱讀題的鐵律：<strong>答案通常就藏在題目給你的那段敘述裡</strong>，不在你的記憶裡。先把敘述裡的關鍵字圈出來。</p>"],
+    D:["超聲波是聲波","<p>超聲波只是<em>頻率太高、人耳聽不到</em>的聲波，它仍然是聲波——<strong>照樣需要介質</strong>。</p><p>做超音波檢查時醫生要在肚子上塗凝膠，就是為了把探頭和皮膚之間的空氣趕走，讓聲波有路可走。</p>"]},
+ 3:{A:["先算出頻率再說","<p>還沒算頻率就不能查表。<br>頻率 ＝ 波速 ÷ 波長 ＝ 34000 ÷ 1000 ＝ <strong>34 Hz</strong>。</p><p>34 落在兔子的 360～42000 之外，兔子聽不到。</p>"],
+    B:["大象聽得到","<p>34 Hz 落在大象的 <strong>16～12000</strong> 之內。</p><p>大象的下限特別低（16 Hz），這是真的——牠們用人耳聽不見的次聲波在幾公里外互相溝通。</p>"],
+    C:["答對了","<p><strong>頻率 ＝ 波速 ÷ 波長 ＝ 34000 ÷ 1000 ＝ 34 Hz</strong>（單位都用公分，可以直接除）。</p><p>大象 16～12000：34 在範圍內 → <em>聽得到</em><br>兔子 360～42000：34 太低了 → <em>聽不到</em></p><p>這題最漂亮的地方是：它給你的兩個數字（波速、波長）<strong>一個都不能直接查表</strong>，你必須先把它們變成頻率。<em>會考很愛先塞給你「不能直接用」的數字。</em></p>"],
+    D:["方向反了","<p>算出來是 34 Hz——這是很<strong>低</strong>的頻率。</p><p>兔子的範圍從 360 起跳，它擅長的是<em>高頻</em>（一直到 42000）。低頻反而是大象的專長。</p><p>看表格時先確認自己算出來的數字是「太大」還是「太小」，再去比對範圍。</p>"]},
+ 4:{A:["聽不見就是聽不見","<p>如果聽得見轟隆聲，那就不叫超聲波了。</p><p>「超」的意思是<strong>超出人耳的可聽範圍（20～20000 Hz）</strong>——超過上限的叫超聲波，低於下限的叫次聲波。</p>"],
+    B:["尖銳刺耳仍然是聽得見","<p>「尖銳刺耳」表示頻率高、但<em>還在可聽範圍內</em>。超聲波已經高到耳朵完全接收不到了。</p>"],
+    C:["對","<p>人耳的可聽範圍大約是 <strong>20 Hz ～ 20000 Hz</strong>。超聲波的頻率高於 20000 Hz，<em>超出上限</em>，所以聽不見。</p><p>醫用超聲波常用到 2～15 MHz（百萬赫茲），比上限高好幾百倍。</p><p>通過率 0.8147，是這一章最好拿的一題——因為它只考「超」這個字是什麼意思。</p>"],
+    D:["波速沒有變快","<p>超聲波在人體組織裡的速度大約 1500 m/s，和一般聲波在同樣介質中是<strong>一樣的</strong>——<em>波速由介質決定，不由頻率決定</em>。</p><p>全國有 9.36% 的人選這個。它聽起來很有道理，但把「頻率高」誤讀成「跑得快」了。</p>"]},
+ 5:{A:["罩子空了，但路還在","<p>空氣確實抽掉了——但聲音還有<strong>第二條路</strong>：鬧鐘 → 底座 → 玻璃 → 外面的空氣。</p><p>固體傳聲比空氣還快，這條路完全暢通。</p>"],
+    B:["對，這就是那條線的意義","<p>振動會沿著<strong>底座和玻璃</strong>傳出去——固體是很好的介質，傳得比空氣還快。</p><p>所以 Boyle 必須把鬧鐘<em>吊起來</em>，切斷這條路，只留下「空氣」這一條。這樣抽掉空氣以後，才是真的沒有路。</p><p><strong>這一步不是實驗技巧，是實驗設計</strong>：他要固定住「除了空氣以外的所有傳聲途徑」，否則測到的結果不能回答他的問題。</p>"],
+    C:["真空不會改變頻率","<p>頻率是鈴槌自己的振動快慢，跟外面有沒有空氣無關。</p><p>而且如果真的沒有路可以傳，你連聽都聽不到，更談不上「變高」。</p>"],
+    D:["振動不需要空氣","<p>鈴槌照樣會動——Boyle 就是<strong>看得見它在動、卻聽不見聲音</strong>，這個對比才是整個實驗最有說服力的地方。</p><p>需要介質的是<em>「把振動傳出去」</em>這件事，不是振動本身。</p>"]}
+};
+
+function done(){return Object.keys(state).filter(k=>/^q\d+$/.test(k)).length}
+function paint(){
+  document.getElementById("pnum").textContent=done()+" / "+TOTAL;
+  document.getElementById("pfill").style.width=(done()/TOTAL*100)+"%";
+}
+function unlock(id){
+  const el=document.getElementById(id);
+  if(el&&el.classList.contains("locked-zone")){
+    el.classList.remove("locked-zone");el.classList.add("revealed");
+    setTimeout(()=>el.classList.remove("revealed"),700);
+  }
+}
+function gate(){
+  if(state.q0!==undefined){unlock("z2");unlock("z3");drawDist()}
+  if(state.q1!==undefined){unlock("z4")}
+  if(state.q2!==undefined){unlock("z5")}
+  if(state.q3!==undefined){unlock("z5b")}
+  if(state.q4!==undefined){unlock("z6")}
+  if(state.q5!==undefined){unlock("z7")}
+  paint();
+}
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, ans=box.dataset.ans;
+  box.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(box.dataset.locked)return;
+      const k=btn.dataset.k;
+      state["q"+qi]=k;
+      try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+      reveal(qi,k,ans,box,true);gate();
+    });
+  });
+});
+
+function reveal(qi,k,ans,box,scroll){
+  box.dataset.locked="1";
+  const P=PCT[qi];
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+    if(P&&P[b.dataset.k]&&P[b.dataset.k]!=="—"&&!b.querySelector(".pct")){
+      const s=document.createElement("span");s.className="pct";s.textContent=P[b.dataset.k];b.appendChild(s);
+    }
+  });
+  const f=FB[qi][k], fb=document.getElementById("fb"+qi);
+  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+f[1];
+  fb.classList.add("show");
+  if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
+}
+
+let distDone=false;
+function drawDist(){
+  if(distDone)return;distDone=true;
+  const box=document.getElementById("dist");
+  const rows=[
+    {k:"A",v:69.78,c:"#3f6d3a",t:"正確答案 ── dB 才是音量的單位"},
+    {k:"B",v:21.26,c:"#c2410c",t:"最多人選錯 ── 拿 Hz（音調）去講吵不吵"},
+    {k:"C+D",v:8.96,c:"#b8ab93",t:"其餘合計（波速、週期）"}
+  ];
+  box.innerHTML=rows.map(r=>
+    '<div class="dbar"><span class="dk">'+r.k+'</span>'+
+    '<div class="dtrack"><div class="dfill" data-w="'+r.v+'" style="background:'+r.c+'"></div></div>'+
+    '<span class="dv">'+r.v.toFixed(2)+'%</span></div>'+
+    '<div style="font-size:12px;color:var(--ink2);margin:-4px 0 10px 36px">'+r.t+'</div>'
+  ).join("");
+  setTimeout(()=>{box.querySelectorAll(".dfill").forEach(d=>d.style.width=d.dataset.w+"%")},80);
+}
+
+/* -- 波形調整器 -- */
+const amp=document.getElementById("amp"), frq=document.getElementById("frq");
+const wpath=document.getElementById("wpath"), ampmark=document.getElementById("ampmark");
+const HZ=[110,165,220,275,330,392,440,523,660,880];
+const AMPWORD=["很輕","輕","偏輕","略輕","中","略強","偏強","強","很強","極強"];
+const FRQWORD=["很低","低","偏低","略低","中","略高","偏高","高","很高","極高"];
+let lastA=5,lastF=5;
+
+function drawWave(){
+  const a=+amp.value, f=+frq.value;
+  const A=8+a*7.6;                    // 振幅像素
+  const cyc=1+f*0.55;                 // 畫幾個週期
+  let d="";
+  for(let x=0;x<=600;x+=3){
+    const y=95-A*Math.sin(x/600*cyc*2*Math.PI);
+    d+=(x===0?"M":"L")+(x+20).toFixed(1)+" "+y.toFixed(1)+" ";
+  }
+  wpath.setAttribute("d",d);
+  ampmark.innerHTML=
+    '<line x1="30" y1="'+(95-A)+'" x2="30" y2="'+(95+A)+'" stroke="#1d5b79" stroke-width="1.5"/>'+
+    '<line x1="25" y1="'+(95-A)+'" x2="35" y2="'+(95-A)+'" stroke="#1d5b79" stroke-width="1.5"/>'+
+    '<line x1="25" y1="'+(95+A)+'" x2="35" y2="'+(95+A)+'" stroke="#1d5b79" stroke-width="1.5"/>'+
+    '<text x="42" y="'+(95-A-6)+'" font-size="12" fill="#1d5b79">振幅</text>';
+
+  const db=30+a*6, hz=HZ[f-1];
+  document.getElementById("ampv").textContent=AMPWORD[a-1];
+  document.getElementById("frqv").textContent=FRQWORD[f-1];
+  document.getElementById("v-db").textContent=db+" dB";
+  document.getElementById("v-hz").textContent=hz+" Hz";
+  document.getElementById("v-wl").textContent=(340/hz).toFixed(2)+" m";
+
+  document.getElementById("r-db").classList.toggle("hi",a!==lastA);
+  document.getElementById("r-hz").classList.toggle("hi",f!==lastF);
+
+  const v=document.getElementById("wverd");
+  if(a!==lastA&&f===lastF){
+    v.className="verdict good";
+    v.innerHTML="<strong>你只動了振幅。</strong>波形變<em>高</em>了，但左右的疏密沒變——所以只有 <strong>dB</strong> 在動，Hz 完全沒變。<br>翻譯成人話：<em>你只是喊得更大聲，音沒有變高。</em>";
+  }else if(f!==lastF&&a===lastA){
+    v.className="verdict good";
+    v.innerHTML="<strong>你只動了頻率。</strong>波形變<em>密</em>了，但上下的高度沒變——所以只有 <strong>Hz</strong> 在動，dB 完全沒變。<br>翻譯成人話：<em>你唱得更高，但沒有更大聲。</em>";
+  }else if(a!==lastA&&f!==lastF){
+    v.className="verdict bad";
+    v.innerHTML="<strong>你同時改了兩個。</strong>這樣就分不出來聽感的變化是誰造成的了——<em>一次只拉一根</em>，才看得出誰管誰。";
+  }
+  lastA=a;lastF=f;
+}
+amp.addEventListener("input",drawWave);
+frq.addEventListener("input",drawWave);
+drawWave();
+lastA=5;lastF=5;
+document.getElementById("wverd").innerHTML="拉拉看上面兩根滑桿。<strong>一次只拉一根</strong>，注意下面哪一行會跟著變色。";
+
+/* -- 三選一配對 -- */
+const ROLES=[
+  {q:"「這台冷氣運轉時只有 42 分貝。」", a:"響度", w:"<strong>dB</strong> 是響度的單位——這句廣告詞在講「很安靜」。"},
+  {q:"「男生變聲後，說話的聲音會從大約 250 Hz 降到 120 Hz。」", a:"音調", w:"<strong>Hz</strong> 是頻率的單位，頻率降低＝<em>音變低沉</em>，跟音量無關。"},
+  {q:"「同一個音、同樣大聲，小提琴和長笛聽起來還是不一樣。」", a:"音色", w:"音高一樣、音量一樣，剩下能分辨的只有<strong>波形</strong>——那就是音色。"}
+];
+const rolesBox=document.getElementById("roles");
+rolesBox.innerHTML=ROLES.map((r,i)=>
+  '<div class="role"><div class="rq">'+(i+1)+'. '+r.q+'</div><div class="rbtns">'+
+  ["響度","音調","音色"].map(t=>'<button class="rb" data-i="'+i+'" data-t="'+t+'">'+t+'</button>').join("")+
+  '</div><div class="rfb" id="rfb'+i+'"></div></div>').join("");
+let roleHit=0;
+document.querySelectorAll(".rb").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const i=+btn.dataset.i, r=ROLES[i];
+    const box=btn.closest(".role");
+    if(box.dataset.done)return;
+    if(btn.dataset.t===r.a){
+      box.dataset.done="1";roleHit++;
+      box.querySelectorAll(".rb").forEach(b=>{b.disabled=true;if(b.dataset.t===r.a)b.classList.add("ok")});
+      const f=document.getElementById("rfb"+i);
+      f.className="rfb show";f.innerHTML="✓ "+r.w;
+      const v=document.getElementById("rolev");
+      if(roleHit===ROLES.length){v.className="verdict good";
+        v.innerHTML="<strong>三個都歸位了。</strong>接下來只剩一個問題——而且它問的不是聲音，是<em>這個波需不需要介質</em>。";}
+      else{v.className="verdict";v.innerHTML="答對 "+roleHit+" / 3，繼續。";}
+    }else{
+      btn.classList.add("no");
+      setTimeout(()=>btn.classList.remove("no"),700);
+      const f=document.getElementById("rfb"+i);
+      f.className="rfb show";
+      f.innerHTML="再看一次那句話裡的<strong>單位</strong>：出現 dB 就是響度、出現 Hz 就是音調、兩個都沒有就往音色想。";
+    }
+  });
+});
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, saved=state["q"+qi];
+  if(saved!==undefined)reveal(qi,saved,box.dataset.ans,box,false);
+});
+gate();
+
+document.getElementById("rst").addEventListener("click",()=>{
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+</body>
+</html>

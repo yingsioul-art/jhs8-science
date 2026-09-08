@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你為什麼看得見這本書｜光</title>
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px; line-height:1.85; letter-spacing:.01em;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin:0 -20px 0;padding:10px 20px}
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+code{font-family:"SF Mono",Consolas,monospace;background:#fff;border:1px solid var(--line);
+  padding:1px 6px;border-radius:4px;font-size:.92em}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+.readout{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:9px}
+.row .lb{font-size:13.5px;color:var(--ink2)}
+.row .vl{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px}
+.row.hi{background:var(--accent-soft);border-color:#f0c9ae}
+.row.hi .vl{color:var(--accent);font-size:19px}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px}
+.slider-lab{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);margin-bottom:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;
+  cursor:pointer;font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s;
+  display:flex;align-items:center;gap:7px}
+.chip:hover{border-color:var(--ink2)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sw{width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.25);display:inline-block}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:520px}
+
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:26px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden;position:relative}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+.reset:hover{border-color:var(--ink2)}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+svg{max-width:100%;height:auto;display:block}
+.svg-cap{text-align:center;font-size:13px;color:var(--ink2);margin-top:6px}
+
+details.pre{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;overflow:hidden}
+details.pre summary{padding:13px 16px;cursor:pointer;font-size:16px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:10px}
+details.pre summary::-webkit-details-marker{display:none}
+details.pre summary::before{content:"?";flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700}
+details.pre[open] summary::before{content:"✓";background:var(--green);color:#fff}
+details.pre[open] summary{border-bottom:1px solid var(--line)}
+details.pre .bd{padding:14px 16px;font-size:15.5px;line-height:1.8;color:var(--ink2)}
+details.pre .bd strong{color:var(--ink)}
+details.pre .bd p{margin:0 0 10px}
+details.pre .bd p:last-child{margin:0}
+
+.dl{background:#fff;border:2px solid var(--accent);border-radius:14px;padding:20px 22px;margin:24px 0;text-align:left}
+.dl h4{margin:0 0 8px;font-size:17px;color:var(--ink)}
+.dl p{font-size:15px;line-height:1.8;margin:0 0 14px;color:var(--ink2)}
+.dl a.get{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;
+  text-decoration:none;padding:11px 20px;border-radius:99px;font-size:15px;font-weight:700;transition:opacity .15s}
+.dl a.get:hover{opacity:.86}
+.dl .meta{font-size:13px;color:var(--ink2);margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-inner">
+  <b id="pnum">0 / 6</b>
+  <div class="track"><div class="fill" id="pfill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">八年級上 · 第四章 光</div>
+  <h1>你為什麼<br>看得見這本書？</h1>
+  <p class="sub">這一節不從反射定律開始。<br>我們先問一個看起來很蠢的問題——而人類<strong>想錯了兩千年</strong>。<br>更妙的是：那個錯了兩千年的答案，就寫在會考題的選項裡。</p>
+  <div class="meta">
+    <span class="tag">6 題</span>
+    <span class="tag">反射角度器</span>
+    <span class="tag">顏色調色台</span>
+    <span class="tag">會考 112-9</span>
+    <span class="tag">約 25 分鐘</span>
+  </div>
+</header>
+
+<!-- ═══ 開始之前 ═══ -->
+<section>
+  <div class="step">開始之前</div>
+  <h2>這一課會用到的，只有這三件事</h2>
+  <p class="dim">都很熟就直接往下跳。</p>
+
+  <details class="pre">
+    <summary>① 光在同一種介質裡走直線</summary>
+    <div class="bd">
+      <p>手電筒的光柱、雲隙間的光束、影子有清楚的邊緣——都是因為<strong>光走直線</strong>。</p>
+      <p>影子之所以會出現，就是因為光<em>不會轉彎繞過去</em>。這件事之後會用到。</p>
+    </div>
+  </details>
+
+  <details class="pre">
+    <summary>② 光碰到東西會反射</summary>
+    <div class="bd">
+      <p>鏡子會反射光，這很直覺。但真正重要的是：<strong>牆壁、書本、你的手，也全都在反射光</strong>——只是它們的表面粗糙，把光反射得到處都是（叫做漫射）。</p>
+      <p>鏡子和牆壁的差別不是「會不會反射」，而是<em>反射得整不整齊</em>。</p>
+    </div>
+  </details>
+
+  <details class="pre">
+    <summary>③ 白光是很多種顏色混在一起的</summary>
+    <div class="bd">
+      <p>太陽光看起來是白的，但通過三稜鏡會散開成紅橙黃綠藍靛紫——這叫<strong>色散</strong>，牛頓在 1666 年做出來的。</p>
+      <p>所以「白光」不是一種顏色，是<em>一整包顏色</em>。這一句是後面顏色那幾題的全部關鍵。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═══ ① 案發 ═══ -->
+<section>
+  <div class="step"><span>①</span>　案發</div>
+  <h2>舞臺全暗，只有一盞燈打在演員身上</h2>
+
+  <p>舞臺劇演出時，通常會讓周遭的環境昏暗，再用聚光燈照射演員，讓觀眾能看見演員的表演。</p>
+  <p>這件事你看過幾百次了。但<strong>中間到底發生了什麼？</strong></p>
+
+  <div class="quote">
+    <p>光從燈出發，接下來呢？<br>它<em>停在演員身上</em>？<em>穿過演員</em>？還是<em>從演員身上彈開</em>？</p>
+    <p style="margin-top:10px">先猜一個。這不是考試。</p>
+  </div>
+
+  <div class="q" id="q0">
+    <div class="q-src">112 年會考自然科 第 9 題（原題）</div>
+    <div class="q-body">有關觀眾能看見演員表演的敘述，下列何者最合理？</div>
+    <div class="opts" data-q="0" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>聚光燈發出的光線照射在演員上，演員<strong>吸收</strong>這些光線，因此觀眾能看見演員</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>聚光燈發出的光線照射在演員上，演員<strong>折射</strong>這些光線，因此觀眾能看見演員</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>聚光燈發出的光線照射在演員上，演員<strong>反射</strong>這些光線，因此觀眾能看見演員</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span><strong>觀眾眼睛發出</strong>的光線照射在演員上，演員折射這些光線，因此觀眾能看見演員</span></button>
+    </div>
+    <div class="fb" id="fb0"></div>
+  </div>
+</section>
+
+<!-- ═══ ② 分布 ═══ -->
+<section class="locked-zone" id="z2">
+  <div class="step"><span>②</span>　全國怎麼選</div>
+  <h2>將近兩成的人，把「反射」寫成了「折射」</h2>
+  <div class="card">
+    <div class="dist" id="dist"></div>
+    <p class="dim" style="font-size:14px;margin:14px 0 0">
+      資料：國家教育研究院 112 年會考自然科官方試題分析（通過率 0.6785、鑑別度 0.54）。</p>
+  </div>
+
+  <p><strong>折射</strong>是光<em>穿進</em>另一種介質時轉彎；<strong>反射</strong>是光<em>彈回來</em>。演員不是透明的，光穿不過去——所以只能是反射。</p>
+
+  <div class="note">
+    <p><b>那個 D 選項，不是隨便編的。</b></p>
+    <p style="margin-top:10px">「眼睛會射出光線」是古希臘真的有人主張的理論（叫做 <em>extramission</em>，發射說），柏拉圖、歐幾里得都相信過。它撐了<strong>一千多年</strong>才被推翻。</p>
+    <p style="margin-top:10px">這一課的最後，我們會回來看是誰推翻它的——以及他用了什麼方法。</p>
+  </div>
+</section>
+
+<!-- ═══ ③ 反射 ═══ -->
+<section class="locked-zone" id="z3">
+  <div class="step"><span>③</span>　自己拉拉看</div>
+  <h2>光彈回來的角度，是誰決定的？</h2>
+
+  <p>下面是一面平面鏡（灰色那條）。<strong>拉滑桿改變入射光的角度</strong>，看反射光怎麼跟著動。</p>
+
+  <div class="lab">
+    <div class="lab-t">反射角度器</div>
+    <svg id="mir" viewBox="0 0 640 260" role="img" aria-label="平面鏡反射">
+      <rect x="60" y="200" width="520" height="10" fill="#c9c2b4"/>
+      <g id="hatch"></g>
+      <line x1="320" y1="34" x2="320" y2="200" stroke="#5c5349" stroke-width="1.6" stroke-dasharray="6 5"/>
+      <text x="328" y="46" font-size="13" fill="#5c5349">法線</text>
+      <path id="arcI" fill="none" stroke="#1d5b79" stroke-width="1.4"/>
+      <path id="arcR" fill="none" stroke="#c2410c" stroke-width="1.4"/>
+      <line id="rayI" stroke="#1d5b79" stroke-width="3.2" stroke-linecap="round"/>
+      <line id="rayR" stroke="#c2410c" stroke-width="3.2" stroke-linecap="round"/>
+      <circle cx="320" cy="200" r="4.5" fill="#2b2622"/>
+      <text id="labI" font-size="13" fill="#1d5b79">入射角</text>
+      <text id="labR" font-size="13" fill="#c2410c">反射角</text>
+      <text x="66" y="230" font-size="12.5" fill="#8b8275">平面鏡</text>
+    </svg>
+
+    <div style="margin-top:18px">
+      <div class="slider-lab"><span>入射角（從<strong>法線</strong>量起）</span><span id="angv">45°</span></div>
+      <input type="range" id="ang" min="0" max="80" value="45">
+    </div>
+
+    <div class="readout">
+      <div class="row hi"><span class="lb">入射角</span><span class="vl" id="v-i">45°</span></div>
+      <div class="row hi"><span class="lb">反射角</span><span class="vl" id="v-r">45°</span></div>
+      <div class="row"><span class="lb">兩者相差</span><span class="vl" id="v-d">0°</span></div>
+    </div>
+    <div class="verdict" id="mverd">拉拉看。注意兩個數字有沒有分開過。</div>
+  </div>
+
+  <div class="note">
+    <p><b>兩個角一直相等——但要小心「從哪裡量起」。</b></p>
+    <p style="margin-top:10px">入射角和反射角都是<strong>從法線量起</strong>，不是從鏡面量起。這是這一章最常見的失分點：題目給你「與鏡面夾 30°」，你要先換成<em>與法線夾 60°</em>才能用。</p>
+  </div>
+
+  <h3>那如果光根本沒碰到鏡子呢？</h3>
+  <p>反射會改變方向、折射也會改變方向。但有一種情況，光<strong>從頭到尾走的都是同一條直線</strong>。</p>
+
+  <div class="q" id="q1">
+    <div class="q-src">111 年會考自然科 第 14 題（原題）</div>
+    <div class="q-body">下列選項中的四個活動，光線經過「　」中的裝置後，哪一個<strong>不會</strong>改變光的傳播方向？</div>
+    <div class="opts" data-q="1" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>利用「針孔」成像觀察日食</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>利用「放大鏡」觀察校園中的花朵</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>利用「汽車後照鏡」觀察後方的車輛位置</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>利用「三稜鏡」將陽光分散成七種不同顏色的光</span></button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+</section>
+
+<!-- ═══ ④ 折射與透鏡 ═══ -->
+<section class="locked-zone" id="z4">
+  <div class="step"><span>④</span>　這時候才給名字</div>
+  <h2>光只會做三件事</h2>
+
+  <div class="scroll">
+  <table>
+    <tr><th>光做了什麼</th><th>什麼時候發生</th><th>方向</th><th>例子</th></tr>
+    <tr><td><b>直進</b></td><td>在同一種介質裡</td><td>不變</td><td>影子、針孔成像、雷射筆</td></tr>
+    <tr><td><b>反射</b></td><td>碰到不透明的表面，彈回來</td><td>改變</td><td>鏡子、後照鏡、你看得見任何東西</td></tr>
+    <tr><td><b>折射</b></td><td>斜斜穿進另一種介質</td><td>改變</td><td>水中的筷子看起來斷了、透鏡、三稜鏡</td></tr>
+  </table>
+  </div>
+
+  <p class="big">你之所以看得見這個世界，<br>是因為<em>反射</em>；<br>看得清楚，是因為眼睛裡有一個<em>折射</em>的鏡片。</p>
+
+  <h3>透鏡只有兩種，而且問法很固定</h3>
+  <div class="card">
+    <p style="margin:0 0 10px"><strong>凸透鏡</strong>（中間厚）：把光<em>會聚</em>起來。物體離得遠 → 倒立的實像；物體離得<strong>比焦距還近</strong> → 正立放大的虛像（這就是放大鏡）。</p>
+    <p style="margin:0"><strong>凹透鏡</strong>（中間薄）：把光<em>發散</em>出去。<strong>不管物體放多遠，永遠只有一種結果</strong>——正立、縮小的虛像，而且屏幕上永遠接不到。</p>
+  </div>
+  <p>「凹透鏡永遠只有一種答案」這句話，就是下一題的整條解法。</p>
+
+  <div class="q" id="q2">
+    <div class="q-src">109 年會考自然科 第 42 題（原題，裝置圖改以文字敘述）</div>
+    <div class="q-body">
+      小華從凸透鏡與凹透鏡中<strong>任意選擇一個</strong>透鏡做成像實驗。他把蠟燭放在距離透鏡左側 <strong>6 cm</strong> 處，結果：
+      <br>· 無論如何調整紙屏的位置，<em>都無法在紙屏上清晰成像</em>
+      <br>· 改以眼睛從紙屏那端透過透鏡看蠟燭，看到的是<em>正立縮小的蠟燭像</em>
+      <br><br>若仍使用<strong>同一個</strong>透鏡，把蠟燭移到距離透鏡左側 <strong>13 cm</strong> 處，則此時看到的像其性質應屬於下列何者？
+    </div>
+    <div class="opts" data-q="2" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>正立縮小的像</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>正立放大的像</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>倒立縮小的像</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>倒立放大的像</span></button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+</section>
+
+<!-- ═══ ⑤ 顏色 ═══ -->
+<section class="locked-zone" id="z5">
+  <div class="step"><span>⑤</span>　顏色是怎麼回事</div>
+  <h2>紅色的紙不是「紅的」，是「只把紅色丟回來」</h2>
+
+  <p>一張紅色的紙在白光下看起來是紅的。原因不是它自己會發紅光，而是：<strong>白光裡的七種顏色都射到它身上，它把其他顏色都吸收掉，只把紅色反射回你的眼睛。</strong></p>
+  <p>換句話說——<em>它身上根本沒有紅色，它只是不要紅色而已。</em></p>
+
+  <div class="lab">
+    <div class="lab-t">顏色調色台</div>
+    <p style="font-size:14.5px;color:var(--ink2);margin:0 0 10px">① 選一種光照上去</p>
+    <div class="chips" id="lightChips"></div>
+    <p style="font-size:14.5px;color:var(--ink2);margin:8px 0 10px">② 選一張色紙</p>
+    <div class="chips" id="paperChips"></div>
+
+    <svg id="colorSvg" viewBox="0 0 640 170" role="img" aria-label="顏色實驗">
+      <text x="20" y="24" font-size="13" fill="#5c5349">照射光</text>
+      <rect id="lightBox" x="20" y="34" width="120" height="90" rx="10" stroke="#ded5c6"/>
+      <text x="250" y="24" font-size="13" fill="#5c5349">色紙</text>
+      <rect id="paperBox" x="250" y="34" width="120" height="90" rx="10" stroke="#ded5c6"/>
+      <text x="480" y="24" font-size="13" fill="#5c5349">你看到</text>
+      <rect id="eyeBox" x="480" y="34" width="120" height="90" rx="10" stroke="#2b2622" stroke-width="2"/>
+      <path d="M150 79 L240 79" stroke="#8b8275" stroke-width="2" marker-end="url(#ah)"/>
+      <path d="M380 79 L470 79" stroke="#8b8275" stroke-width="2" marker-end="url(#ah)"/>
+      <defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0 0 L9 4.5 L0 9 z" fill="#8b8275"/></marker></defs>
+      <text id="eyeLabel" x="540" y="146" font-size="14" text-anchor="middle" fill="#2b2622" font-weight="700"></text>
+    </svg>
+    <div class="verdict" id="cverd">選一種光、選一張色紙。</div>
+  </div>
+
+  <div class="q" id="q3">
+    <div class="q-src">110 年會考自然科 第 9 題（原題）</div>
+    <div class="q-body">以白光照射一張單色圖卡，圖卡<strong>反射紅光、吸收其他顏色的光</strong>。若改以<strong>藍光</strong>照射此圖卡，則關於此時圖卡上的色光吸收或反射情形，下列何者最有可能發生？</div>
+    <div class="opts" data-q="3" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>吸收紅光</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>吸收藍光</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>反射綠光</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>反射藍光</span></button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="locked-zone" id="z5b">
+  <h3>最後一題，比上面難得多</h3>
+  <p>上一題是「一張紙」。這一題是<strong>三顆球，而且要你反過來推</strong>——已知在紅光下看到什麼，去推白光下它們是什麼顏色。</p>
+
+  <div class="q" id="q4">
+    <div class="q-src">114 年會考自然科 第 14 題（原題）</div>
+    <div class="q-body">有三顆小球，在<strong>紅光照射下</strong>，觀察到小球分別呈現<strong>紅色、紅色、黑色</strong>。關於這三顆小球在<strong>白光照射下</strong>所呈現顏色的推論，下列何者最合理？</div>
+    <div class="opts" data-q="4" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>至少有一顆紅球</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>至少有一顆黑球</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>最多有兩顆白球</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>最多有兩顆綠球</span></button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+  </div>
+</section>
+
+<!-- ═══ ⑥ 歷史 ═══ -->
+<section class="locked-zone" id="z6">
+  <div class="step"><span>⑥</span>　那個錯了兩千年的答案</div>
+  <h2>1021 年，一個被關起來的人</h2>
+
+  <p>回到最開始那個 D 選項：<em>「觀眾眼睛發出的光線照射在演員上。」</em></p>
+  <p>這不是出題老師隨便編的。從柏拉圖、歐幾里得到托勒密，<strong>希臘最聰明的一群人都認為眼睛會射出光線</strong>——像雷達一樣掃出去，碰到東西就「看見」。</p>
+  <p>這個想法其實很有解釋力：它說明了為什麼你要「看向」某個方向才看得到，也說明了為什麼貓的眼睛在夜裡會發亮。<strong>一個錯的理論，通常不是因為它笨，而是因為它剛好解釋得通。</strong></p>
+
+  <div class="card">
+    <p style="margin:0 0 10px"><strong>Ibn al-Haytham（海什木），約 1021 年，開羅。</strong></p>
+    <p style="margin:0 0 10px">傳說他因為一項工程失敗被軟禁多年。在那段時間裡，他做了一件事：<em>把房間封起來，只在牆上留一個小孔。</em></p>
+    <p style="margin:0">結果，外面的街景<strong>上下顛倒地投影在對面的牆上</strong>。</p>
+  </div>
+
+  <p>這就是針孔成像——你在第 ③ 段那一題剛看過。但重點在他從中讀出了什麼：</p>
+
+  <div class="quote">
+    <p>① 光是<strong>從外面的物體</strong>進到房間裡的，不是從房間射出去的。<br>
+    ② 光走<strong>直線</strong>，所以穿過小孔後上下才會顛倒。<br>
+    ③ <em>房間裡根本沒有眼睛</em>，牆上照樣有像——<strong>所以「看見」不需要眼睛先發射什麼。</strong></p>
+  </div>
+
+  <p>第 ③ 點是致命的一擊。他不是去反駁柏拉圖的論證，他是<strong>設計了一個不需要眼睛的場景，然後證明現象照樣發生</strong>。</p>
+  <p>後來他把這些寫成《光學書》（Kitāb al-Manāẓir），六百年後被翻成拉丁文，牛頓那一輩人就是讀著它長大的。</p>
+
+  <div class="q" id="q5">
+    <div class="q-src">收尾題</div>
+    <div class="q-body">海什木的暗室實驗之所以能推翻「眼睛發出光線」這個說法，最關鍵的理由是下列何者？</div>
+    <div class="opts" data-q="5" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>因為他證明了光的速度非常快，眼睛來不及發射</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>因為投影出來的像是彩色的，而眼睛只能發出白光</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>因為牆上出現了像，但整個過程中<strong>沒有任何眼睛參與</strong>——所以像不可能是眼睛造成的</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>因為像是上下顛倒的，這表示光在小孔處發生了折射</span></button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+</section>
+
+<!-- ═══ 結案 ═══ -->
+<section class="locked-zone" id="z7">
+  <div class="done">
+    <div class="step">結案</div>
+    <h2>看到光學題，先問三句話</h2>
+
+    <div style="text-align:left">
+      <div class="card">
+        <p style="margin:0 0 8px">① 光有沒有<strong>換介質</strong>？　<span class="dim">沒換 → 直進；換了而且是斜的 → 折射</span></p>
+        <p style="margin:0 0 8px">② 光有沒有<strong>彈回來</strong>？　<span class="dim">碰到不透明的表面 → 反射；角度一律從<strong>法線</strong>量</span></p>
+        <p style="margin:0 0 8px">③ 題目在講<strong>顏色</strong>嗎？　<span class="dim">→ 只問一句：這個顏色，光源裡「有沒有」</span></p>
+        <p style="margin:0;color:var(--accent)"><strong>④ 像接得到嗎？</strong>　<span class="dim">紙屏接得到＝實像（一定倒立）；接不到、只能用眼睛看＝虛像（一定正立）</span></p>
+      </div>
+    </div>
+
+    <p style="text-align:left">第 ④ 句是這一章最省力的一條捷徑：<em>你只要知道像是實是虛，就已經知道它正立還是倒立了。</em></p>
+    <p class="big" style="text-align:left">你看得見任何東西，<br>都是因為它把光丟回給你。</p>
+
+    <div class="dl">
+      <h4>整張段考卷做一次</h4>
+      <p>這一章和第 3 章一起是<strong>第 2 次段考</strong>的範圍。站上收了 112～114 學年度共 9 份原卷，
+      原始排版、原始附圖，線上作答、當場對答案。</p>
+      <a class="get" href="exam.html">去做整卷模擬 →</a>
+      <p class="meta">第 4 章對應：112-1-2、113-1-2、114-1-2 三份</p>
+    </div>
+
+    <div style="text-align:left">
+      <div class="aside">
+        <p><strong>回頭看：</strong>開場那一題，「眼睛發出光線」是四個選項裡最少人選的一個。<br>
+        但你在課本上讀到的每一句光學，都是先有人<em>認真地想錯過</em>，才被磨出來的。</p>
+      </div>
+    </div>
+    <button class="reset" id="rst">清除進度，重新開始</button>
+  </div>
+</section>
+
+<!-- == EXAM-BLOCK BEGIN（自動產生，勿手改；改 _add_exam_block.py） == -->
+<style>
+/* -- 段考實戰區塊 -- */
+.mx-wrap{margin:56px 0 0;padding-top:38px;border-top:3px double var(--line)}
+.mx-kick{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+.mx-h{font-size:24px;line-height:1.4;margin:0 0 14px;font-weight:700;letter-spacing:0;color:var(--ink)}
+.mx-intro{font-size:15.5px;line-height:1.85;color:var(--ink2);margin:0 0 6px}
+.mx-bar{display:flex;align-items:center;gap:10px;margin:22px 0 4px;font-size:13px;color:var(--ink2)}
+.mx-bar .mx-track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.mx-bar .mx-fill{height:100%;width:0;background:var(--accent);transition:width .4s}
+.mx-src{font-size:12px;letter-spacing:.06em;color:var(--ink2);margin-bottom:12px;
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mx-tag{border:1px solid var(--line);border-radius:99px;padding:2px 9px}
+.mx-own{border-color:#d8b46a;background:#fdf6e6;color:#8a6a1e}
+.mx-tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+.mx-tbl td{border:1px solid var(--line);padding:7px 9px;text-align:center;white-space:nowrap}
+.mx-tbl tr:first-child td{background:#f6f2ea;font-weight:600}
+.mx-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mx-pt{border-left:3px solid var(--accent);padding-left:12px;margin-top:14px !important;color:var(--ink2)}
+.mx-reset{margin-top:26px;background:none;border:1px solid var(--line);color:var(--ink2);
+  border-radius:99px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit}
+.mx-reset:hover{border-color:var(--ink);color:var(--ink)}
+.mx-more{display:block;text-decoration:none;color:inherit;background:#fff;border:2px solid var(--ink);
+  border-radius:14px;padding:20px;margin:28px 0 0}
+.mx-more:hover{background:var(--accent-soft)}
+.mx-more b{display:block;font-size:18px;margin-bottom:6px}
+.mx-more span{font-size:14.5px;color:var(--ink2);line-height:1.75}
+</style>
+<section class="mx-wrap">
+  <div class="mx-kick">段考實戰　·　丹鳳高中 八年級上學期</div>
+  <h2 class="mx-h">透鏡的四種組合，段考一次考完</h2>
+  <p class="mx-intro">第 4 章的段考題有一半集中在<strong>透鏡與成像</strong>。下面七題來自你們學校的段考卷，其中四題是是非題——<em>是非題最能看出你是真的分清楚了，還是只記得幾個詞。</em></p>
+  <div class="mx-bar"><b id="mxnum">0 / 7</b><div class="mx-track"><div class="mx-fill" id="mxfill"></div></div></div>
+<div class="q" id="mxq0"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 是非題 第 5 題</span></div><div class="q-body">判斷這句話是對是錯：<strong>近視眼的人矯正所戴的眼鏡是凹透鏡。</strong></div><div class="opts mx-opts" data-i="0" data-ans="A"><button class="opt" data-k="A"><span class="k">A</span><span>是（這句話正確）</span></button><button class="opt" data-k="D"><span class="k">D</span><span>否（這句話錯誤）</span></button></div><div class="fb" id="mxfb0"></div></div>
+<div class="q" id="mxq1"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 是非題 第 3 題</span></div><div class="q-body">判斷這句話是對是錯：<strong>凹透鏡的成像，隨物體愈靠近透鏡而漸大。</strong></div><div class="opts mx-opts" data-i="1" data-ans="A"><button class="opt" data-k="A"><span class="k">A</span><span>是（這句話正確）</span></button><button class="opt" data-k="D"><span class="k">D</span><span>否（這句話錯誤）</span></button></div><div class="fb" id="mxfb1"></div></div>
+<div class="q" id="mxq2"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 是非題 第 9 題</span></div><div class="q-body">判斷這句話是對是錯：<strong>凸透鏡可成縮小正立虛像。</strong></div><div class="opts mx-opts" data-i="2" data-ans="D"><button class="opt" data-k="A"><span class="k">A</span><span>是（這句話正確）</span></button><button class="opt" data-k="D"><span class="k">D</span><span>否（這句話錯誤）</span></button></div><div class="fb" id="mxfb2"></div></div>
+<div class="q" id="mxq3"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 是非題 第 10 題</span></div><div class="q-body">判斷這句話是對是錯：<strong>針孔成像形成左右互換、上下不顛倒的像。</strong></div><div class="opts mx-opts" data-i="3" data-ans="D"><button class="opt" data-k="A"><span class="k">A</span><span>是（這句話正確）</span></button><button class="opt" data-k="D"><span class="k">D</span><span>否（這句話錯誤）</span></button></div><div class="fb" id="mxfb3"></div></div>
+<div class="q" id="mxq4"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 12 題</span></div><div class="q-body">平面鏡成像時，鏡中的像屬於下列何者？</div><div class="opts mx-opts" data-i="4" data-ans="C"><button class="opt" data-k="A"><span class="k">A</span><span>正立實像</span></button><button class="opt" data-k="B"><span class="k">B</span><span>倒立實像</span></button><button class="opt" data-k="C"><span class="k">C</span><span>正立虛像</span></button><button class="opt" data-k="D"><span class="k">D</span><span>倒立虛像</span></button></div><div class="fb" id="mxfb4"></div></div>
+<div class="q" id="mxq5"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 29 題</span></div><div class="q-body">李白〈月下獨酌〉：「舉杯邀明月，對影成三人。」若將詩中的「影」解釋為<strong>水中的倒影</strong>，則此現象與下列何者較有關？</div><div class="opts mx-opts" data-i="5" data-ans="C"><button class="opt" data-k="A"><span class="k">A</span><span>光的色散</span></button><button class="opt" data-k="B"><span class="k">B</span><span>光的直進</span></button><button class="opt" data-k="C"><span class="k">C</span><span>光的反射</span></button><button class="opt" data-k="D"><span class="k">D</span><span>光的折射</span></button></div><div class="fb" id="mxfb5"></div></div>
+<div class="q" id="mxq6"><div class="mx-src"><span class="mx-tag">113 學年度 第 2 次段考 · 第 30 題</span></div><div class="q-body">承上題，就日常常識與課本所學推論，下列說法何者<strong>有誤</strong>？</div><div class="opts mx-opts" data-i="6" data-ans="C"><button class="opt" data-k="A"><span class="k">A</span><span>詩中的四個「影」字，其意義相同</span></button><button class="opt" data-k="B"><span class="k">B</span><span>在月球上說話，聽不到聲音</span></button><button class="opt" data-k="C"><span class="k">C</span><span>因木星引力為地球的兩倍，所以光速也變成兩倍</span></button><button class="opt" data-k="D"><span class="k">D</span><span>當李白看水中的魚游泳時，應感覺較淺</span></button></div><div class="fb" id="mxfb6"></div></div>
+  <a class="mx-more" href="exam.html">
+    <b>整卷模擬 →</b>
+    <span>112～114 學年度、三次段考共 9 份原卷，線上作答、當場對答案。<br>
+    這裡挑的是和本單元有關的題；那裡是<strong>整張考卷</strong>。</span>
+  </a>
+  <button class="mx-reset" id="mxrst">清除這一區的作答</button>
+</section>
+<script>
+(function(){
+"use strict";
+var KEY="jhs8-light-exam-v1", D=[{"ans": "A", "sol": "<p>對。近視是<em>眼球太長</em>，光線太早會聚，成像落在視網膜<strong>前面</strong>。</p><p>要救它，就要先把光<strong>發散</strong>一點，讓會聚點往後退——這正是<strong>凹透鏡</strong>在做的事。</p><p class='mx-pt'>遠視相反：成像落在視網膜後面，要<em>提早會聚</em>，所以戴<strong>凸</strong>透鏡。記法：<strong>近視凹、遠視凸。</strong></p>"}, {"ans": "A", "sol": "<p>對，但要看清楚它說的是「<em>漸大</em>」，不是「變成放大」。</p><p>凹透鏡永遠成<strong>正立、縮小的虛像</strong>——這一點不會變。改變的是縮小的程度：物體愈靠近透鏡，像就愈接近原本的大小（但<em>永遠不會超過</em>）。</p><p class='mx-pt'>用生活經驗檢查：拿一副近視眼鏡看東西，愈貼近字，字愈接近正常大小；拿遠一點，字就縮得愈小。</p>"}, {"ans": "D", "sol": "<p>錯。凸透鏡成虛像時<strong>一定是放大的</strong>（那就是放大鏡）；成縮小的像時<strong>一定是倒立實像</strong>。</p><p>「縮小 ＋ 正立 ＋ 虛像」這個組合，是<strong>凹透鏡</strong>的專利。</p><p class='mx-pt'>把四種可能排一次就永遠不會錯：<br>· 凸透鏡，物在焦距<em>外</em> → 倒立實像（可大可小）<br>· 凸透鏡，物在焦距<em>內</em> → 正立<strong>放大</strong>虛像<br>· 凹透鏡 → 正立<strong>縮小</strong>虛像（永遠只有這一種）</p>"}, {"ans": "D", "sol": "<p>錯。針孔成像是<strong>上下、左右都顛倒</strong>——因為光走直線。</p><p>想一次就懂：物體<em>上方</em>發出的光，要穿過小孔只能<em>斜斜往下</em>走，所以落在屏幕的下方。左右也是同樣的道理。</p><p>這種「轉 180 度」的像，和照鏡子那種「只有左右相反」是完全不同的兩件事。</p>"}, {"ans": "C", "sol": "<p>你在鏡子裡是<strong>正立</strong>的（頭在上），這不用想。</p><p>關鍵是虛像：<em>把一張紙放到鏡子後面，接不到任何影像</em>——那個「你」不在鏡子後面，是你的大腦<strong>把反射光線往回延長</strong>畫出來的。</p><p class='mx-pt'>再複習一次那條捷徑：<strong>實像必倒立、虛像必正立。</strong>既然是虛像，就只可能是「正立虛像」，(B)(D) 直接刪掉。</p>"}, {"ans": "C", "sol": "<p>水面在這裡就是一面<strong>鏡子</strong>——光從月亮射到水面、<em>彈回來</em>進入眼睛，所以是<strong>反射</strong>。</p><p>那什麼時候是折射？<strong>當你看的是水裡面的東西</strong>（魚、石頭、伸進水裡的筷子）——光從水裡穿出來，方向轉了彎。</p><p class='mx-pt'>一句話分清楚：<strong>看水面上的倒影＝反射；看水面下的東西＝折射。</strong></p>"}, {"ans": "C", "sol": "<p>(C) 是這一題要抓的：<strong>光速不會因為重力大就變快。</strong>真空中的光速是一個常數（約每秒 30 萬公里），它是<em>宇宙的上限</em>，不是可以被拉快的東西。</p><p>(B) 月球沒有大氣，<strong>聲音沒有介質可以傳</strong>，正確。<br>(D) 水中的魚因為<strong>折射</strong>，看起來比實際位置<em>淺</em>，正確——所以叉魚要往看到的位置<em>下方</em>叉。</p><p class='mx-pt'>🔴 說句公道話：(A) 嚴格看也站不住腳（詩中的「影」有月影、身影、倒影，意義並不完全相同）。<strong>學校公布的答案是 (C)</strong>，而 (C) 的物理錯誤最明確，所以在考場上仍應選 (C)——但你能看出 (A) 也怪怪的，代表你讀得比題目還仔細。</p>"}], st={};
+try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
+function paint(){
+  var n=Object.keys(st).length;
+  document.getElementById("mxnum").textContent=n+" / "+D.length;
+  document.getElementById("mxfill").style.width=(n/D.length*100)+"%";
+}
+function reveal(i,k,box,scroll){
+  box.dataset.locked="1";
+  var ans=D[i].ans;
+  box.querySelectorAll(".opt").forEach(function(b){
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+  });
+  var head=(k===ans)
+    ? "<h4 style='color:var(--green)'>答對了</h4>"
+    : "<h4 style='color:var(--accent)'>你選了 "+k+"，正解是 "+ans+"</h4>";
+  var fb=document.getElementById("mxfb"+i);
+  fb.innerHTML=head+D[i].sol;
+  fb.classList.add("show");
+  if(scroll)setTimeout(function(){fb.scrollIntoView({behavior:"smooth",block:"nearest"})},120);
+}
+document.querySelectorAll(".mx-opts").forEach(function(box){
+  var i=+box.dataset.i;
+  box.querySelectorAll(".opt").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      if(box.dataset.locked)return;
+      st[i]=btn.dataset.k;
+      try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}
+      reveal(i,btn.dataset.k,box,true);paint();
+    });
+  });
+  if(st[i]!==undefined)reveal(i,st[i],box,false);
+});
+paint();
+document.getElementById("mxrst").addEventListener("click",function(){
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+<!-- == EXAM-BLOCK END == -->
+
+<footer>
+  題目、通過率與選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析。<br>
+  109-42 原題附裝置圖，此處改以文字敘述呈現。所有圖示重繪，未使用課本內容。<br>
+  <a href="index.html" style="color:#1d5b79">← 回自學站首頁</a>　·　<span style="color:#a09789">為自學而做 · 2026</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+const KEY="jhs8-light-v1", TOTAL=6;
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+
+const PCT={0:{A:"—",B:"19.71%",C:"67.85%",D:"—"},
+           1:{A:"71.45%",B:"13.37%",C:"—",D:"—"},
+           4:{A:"—",B:"18.41%",C:"67.49%",D:"—"}};
+
+const FB={
+ 0:{A:["吸收就看不見了","<p>如果演員把光<strong>全部吸收</strong>，那他身上就一點光都不會回到觀眾眼裡——<em>觀眾看到的會是一個純黑的人形</em>。</p><p>「全部吸收」正是黑色物體在做的事。演員如果全身穿黑，你確實只看得到輪廓。</p>"],
+    B:["這是全國第二多人選的","<p><strong>折射</strong>是光<em>穿進</em>另一種介質時方向改變——水裡的筷子看起來斷掉，就是折射。</p><p>但演員不是透明的，光穿不過去。<em>穿不過去就不叫折射。</em></p><p>折射／反射這兩個詞常被混用，記法很簡單：<strong>穿過去＝折射，彈回來＝反射。</strong></p><p>全國有 19.71% 的人選這個。</p>"],
+    C:["答對了","<p>光從聚光燈出發 → 打在演員身上 → <strong>被反射</strong> → 進入觀眾的眼睛。</p><p>而且注意：演員的皮膚和衣服並不像鏡子那麼平整，光會被反射到<em>四面八方</em>（叫做漫射）——正因為這樣，<strong>整個劇場每個座位的人都看得到他</strong>。如果演員表面像鏡子一樣光滑，就只有某一個角度的觀眾看得見。</p><p>先別走——有一個選項，是人類想錯了兩千年的答案。</p>"],
+    D:["你和柏拉圖選了同一個","<p>這個選項說<strong>眼睛會射出光線</strong>。聽起來很怪，但這正是古希臘主流的看法（extramission，發射說），柏拉圖和歐幾里得都相信。</p><p>怎麼推翻它？很簡單：<em>把燈關掉。</em>如果眼睛會發光，那在全黑的房間裡你應該照樣看得見——但你看不見。</p><p>這一課的最後，我們會看到 1021 年有人用一個更漂亮的實驗把它終結掉。</p>"]},
+ 1:{A:["答對了","<p>針孔成像靠的就是<strong>光走直線</strong>——光從物體出發，<em>直直地</em>穿過小孔，落在後面的屏幕上。整段過程<strong>沒有轉彎</strong>。</p><p>之所以會上下顛倒，正是因為它太直了：物體上方的光只能往下穿過孔，落在下面。</p><p>另外三個都會改方向：放大鏡（折射）、後照鏡（反射）、三稜鏡（折射＋色散）。</p><p class='dim' style='font-size:15px'>這個「不轉彎」的裝置，等一下在最後一段還會再出現一次——而且它推翻了一個兩千年的理論。</p>"],
+    B:["放大鏡會折射","<p>放大鏡是<strong>凸透鏡</strong>，光穿進玻璃、再穿出來，<em>兩次都轉彎</em>——這就是折射。</p><p>正因為它把光聚起來，你才會看到放大的像。<strong>如果光沒轉彎，就不會放大。</strong></p><p>全國有 13.37% 的人選這個，多半是被「觀察花朵」這個很日常的動作帶過去了。</p>"],
+    C:["後照鏡會反射","<p>後照鏡是鏡子，光<strong>彈回來</strong>——方向改變得最明顯。</p><p>你之所以能坐在駕駛座卻看到後方，就是因為光的路徑被折了一個彎。</p>"],
+    D:["三稜鏡改得最厲害","<p>三稜鏡不只讓光轉彎，還讓<em>不同顏色轉不同的角度</em>——所以白光才會散開成七色。</p><p>這叫色散，是折射的一種延伸。</p>"]},
+ 2:{A:["答對了","<p>先破案：<strong>那是凹透鏡。</strong></p><p>兩個線索合起來只指向一個答案——「紙屏上接不到」代表是<em>虛像</em>；「正立縮小」是凹透鏡的招牌。凸透鏡在焦距內雖然也成正立虛像，但那是<strong>放大</strong>的。</p><p>而凹透鏡最好用的一件事是：<strong>不管物體放多遠，它永遠只給你正立、縮小的虛像。</strong>所以 6 cm 是這樣，13 cm 也是這樣。</p><p>題目給的 6 cm 和 13 cm，其實<em>一個都不用算</em>。</p>"],
+    B:["放大是凸透鏡的事","<p>正立<strong>放大</strong>的虛像，是凸透鏡在「物體放在焦距內」時的表現——那就是放大鏡。</p><p>但題目說的是<em>正立縮小</em>，方向反了。凹透鏡永遠縮小。</p>"],
+    C:["倒立就代表紙屏接得到","<p>倒立的像一定是<strong>實像</strong>，而實像的定義就是<em>紙屏接得到</em>。</p><p>題目已經明講「無論如何調整紙屏都無法清晰成像」——所以不可能是實像，也就不可能倒立。</p><p class='dim' style='font-size:15px'>把這句記起來：<strong>實像必倒立、虛像必正立。</strong>光學題有一半可以靠它直接刪掉兩個選項。</p>"],
+    D:["同上，而且方向也錯","<p>倒立＝實像＝紙屏接得到，和題目給的條件矛盾。</p><p>另外「放大」也不是凹透鏡做得到的事。</p>"]},
+ 3:{A:["它本來就在吸收紅光嗎？","<p>不對——題目說這張圖卡<strong>反射紅光</strong>。它是把紅光丟回來的那一個，不是吸收紅光。</p><p>問題在於：現在照上去的<em>只有藍光</em>，根本沒有紅光可以反射。</p>"],
+    B:["答對了","<p>這張圖卡的個性是：<strong>只反射紅光，其他全吸收。</strong></p><p>現在照上去的是藍光——藍光屬於「其他」，所以<strong>被吸收</strong>。</p><p>結果就是：沒有任何光被反射回來 → 你看到的是<em>黑色</em>。</p><p class='dim' style='font-size:15px'>一句話：<strong>紅色的東西在藍光下是黑的。</strong>不是因為它變黑了，是因為它要的那個顏色沒來。</p>"],
+    C:["沒有綠光可以反射","<p>照上去的只有藍光，現場<em>根本沒有綠光</em>——沒有的東西反射不了。</p><p>而且就算有，這張圖卡也只反射紅光。</p>"],
+    D:["它不反射藍光","<p>題目說得很清楚：反射紅光、<strong>吸收其他顏色</strong>。藍光就是「其他顏色」。</p><p>可以用上面的調色台試一次：光選藍、色紙選紅，看結果。</p>"]},
+ 4:{A:["紅球不一定存在","<p>在紅光下呈現紅色的球，可能是<strong>紅球</strong>（反射紅光），也可能是<strong>白球</strong>（反射所有顏色，當然也反射紅光）。</p><p>所以那兩顆「紅色的」球，<em>可以兩顆都是白球</em>——這樣就一顆紅球都沒有。</p>"],
+    B:["黑球也不一定存在","<p>在紅光下呈現黑色，代表它<strong>不反射紅光</strong>。這種球可以是黑球，但也可以是<em>綠球、藍球</em>——綠球在紅光下也是黑的。</p><p>全國有 18.41% 的人選這個，是最多人選錯的選項。原因很直覺：<em>看到黑就以為它是黑球</em>。但「看起來黑」只代表「沒有把光丟回來」。</p>"],
+    C:["答對了","<p>先把三顆球分成兩類：</p><p>· 紅光下呈現<strong>紅色</strong>的那兩顆 → 它們會反射紅光，所以可能是紅球，<em>也可能是白球</em>（白球什麼都反射）。<br>· 紅光下呈現<strong>黑色</strong>的那一顆 → 它不反射紅光，所以<strong>絕對不可能是白球</strong>。</p><p>白球只可能出現在前兩顆身上 → <strong>最多兩顆白球</strong>，而且這個上限是被第三顆球<em>卡死</em>的。✓</p><p>把三個錯的一起看，會更清楚這題在考什麼：<br>(A) 前兩顆可以<em>都是白球</em>，所以紅球可能一顆都沒有。<br>(B) 第三顆可以是綠球或藍球，所以黑球也可能一顆都沒有。<br>(D) 前兩顆會反射紅光，不可能是綠球；只有第三顆可能是綠的——<strong>綠球其實最多只有一顆</strong>，說「最多兩顆」上限放得太鬆，沒有用到題目給的線索。</p><p class='dim' style='font-size:15px'>這一題的關鍵字是「<strong>最多</strong>」和「<strong>至少</strong>」。看到這兩個詞，就是要你去想<em>極端情況</em>：最多能有幾顆？一顆都沒有可不可以？</p>"],
+    D:["綠球其實最多只有一顆","<p>前兩顆在紅光下呈現紅色，代表它們<strong>會反射紅光</strong>——綠球不反射紅光，所以前兩顆都不可能是綠球。</p><p>只有第三顆（紅光下呈黑色）可能是綠球。所以綠球<strong>最多只有 1 顆</strong>，說「最多兩顆」是把上限放得太寬了。</p><p>而 C 的「最多兩顆白球」剛好卡在第三顆——那顆<em>絕對不是白的</em>。</p>"]},
+ 5:{A:["和速度無關","<p>海什木的暗室實驗沒有測量光速，當時也沒有辦法測。</p><p>光速要到 1676 年（Rømer 觀測木星衛星）才第一次被估出來，比他晚了六百多年。</p>"],
+    B:["顏色不是重點","<p>暗室投影確實是彩色的，但這證明不了「光從哪裡來」——<em>不管誰發出光，它都可以是彩色的</em>。</p>"],
+    C:["對","<p>整個實驗裡，<strong>那面牆沒有眼睛</strong>。</p><p>但牆上照樣出現了外面街景的像——這代表<em>光確實是從外面的物體跑進來的</em>，而且不需要任何人「看」它才會發生。</p><p>這一步在方法上很漂亮：他沒有跟柏拉圖辯論，他<strong>把「眼睛」這個變因整個拿掉，然後證明現象照樣發生</strong>。</p><p class='dim' style='font-size:15px'>這正是<a href='variables.html' style='color:var(--accent)'>緒論那一課</a>在講的事——想知道某個東西是不是原因，最乾淨的辦法就是把它拿掉試試看。</p>"],
+    D:["顛倒是因為直進，不是折射","<p>針孔沒有玻璃，光沒有換介質，<strong>不會發生折射</strong>。</p><p>上下顛倒恰恰是因為光<em>太直了</em>：物體上方的光只能往斜下方穿過小孔，落到牆的下方。</p><p>這也是為什麼上一題的答案是 A。</p>"]}
+};
+
+function done(){return Object.keys(state).filter(k=>/^q\d+$/.test(k)).length}
+function paint(){
+  document.getElementById("pnum").textContent=done()+" / "+TOTAL;
+  document.getElementById("pfill").style.width=(done()/TOTAL*100)+"%";
+}
+function unlock(id){
+  const el=document.getElementById(id);
+  if(el&&el.classList.contains("locked-zone")){
+    el.classList.remove("locked-zone");el.classList.add("revealed");
+    setTimeout(()=>el.classList.remove("revealed"),700);
+  }
+}
+function gate(){
+  if(state.q0!==undefined){unlock("z2");unlock("z3");drawDist()}
+  if(state.q1!==undefined){unlock("z4")}
+  if(state.q2!==undefined){unlock("z5")}
+  if(state.q3!==undefined){unlock("z5b")}
+  if(state.q4!==undefined){unlock("z6")}
+  if(state.q5!==undefined){unlock("z7")}
+  paint();
+}
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, ans=box.dataset.ans;
+  box.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(box.dataset.locked)return;
+      const k=btn.dataset.k;
+      state["q"+qi]=k;
+      try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+      reveal(qi,k,ans,box,true);gate();
+    });
+  });
+});
+
+function reveal(qi,k,ans,box,scroll){
+  box.dataset.locked="1";
+  const P=PCT[qi];
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+    if(P&&P[b.dataset.k]&&P[b.dataset.k]!=="—"&&!b.querySelector(".pct")){
+      const s=document.createElement("span");s.className="pct";s.textContent=P[b.dataset.k];b.appendChild(s);
+    }
+  });
+  const f=FB[qi][k], fb=document.getElementById("fb"+qi);
+  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+f[1];
+  fb.classList.add("show");
+  if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
+}
+
+let distDone=false;
+function drawDist(){
+  if(distDone)return;distDone=true;
+  const box=document.getElementById("dist");
+  const rows=[
+    {k:"C",v:67.85,c:"#3f6d3a",t:"正確答案 ── 演員把光反射回來"},
+    {k:"B",v:19.71,c:"#c2410c",t:"最多人選錯 ── 把「反射」寫成「折射」"},
+    {k:"A+D",v:12.44,c:"#b8ab93",t:"其餘合計（吸收、眼睛發光）"}
+  ];
+  box.innerHTML=rows.map(r=>
+    '<div class="dbar"><span class="dk">'+r.k+'</span>'+
+    '<div class="dtrack"><div class="dfill" data-w="'+r.v+'" style="background:'+r.c+'"></div></div>'+
+    '<span class="dv">'+r.v.toFixed(2)+'%</span></div>'+
+    '<div style="font-size:12px;color:var(--ink2);margin:-4px 0 10px 36px">'+r.t+'</div>'
+  ).join("");
+  setTimeout(()=>{box.querySelectorAll(".dfill").forEach(d=>d.style.width=d.dataset.w+"%")},80);
+}
+
+/* -- 反射角度器 -- */
+const ang=document.getElementById("ang");
+const rayI=document.getElementById("rayI"), rayR=document.getElementById("rayR");
+const arcI=document.getElementById("arcI"), arcR=document.getElementById("arcR");
+const labI=document.getElementById("labI"), labR=document.getElementById("labR");
+document.getElementById("hatch").innerHTML=(function(){
+  let s="";for(let x=64;x<580;x+=14){s+='<line x1="'+x+'" y1="210" x2="'+(x-9)+'" y2="222" stroke="#c9c2b4" stroke-width="1.6"/>';}
+  return s;})();
+
+function arcPath(a,dir){
+  const R=62, th=a*Math.PI/180;
+  const x1=320, y1=200-R;                       // 法線上
+  const x2=320+dir*R*Math.sin(th), y2=200-R*Math.cos(th);
+  return "M"+x1+" "+y1+" A "+R+" "+R+" 0 0 "+(dir>0?1:0)+" "+x2.toFixed(1)+" "+y2.toFixed(1);
+}
+function drawMirror(){
+  const a=+ang.value, th=a*Math.PI/180, L=165;
+  const ix=320-L*Math.sin(th), iy=200-L*Math.cos(th);
+  const rx=320+L*Math.sin(th), ry=200-L*Math.cos(th);
+  rayI.setAttribute("x1",ix.toFixed(1));rayI.setAttribute("y1",iy.toFixed(1));
+  rayI.setAttribute("x2",320);rayI.setAttribute("y2",200);
+  rayR.setAttribute("x1",320);rayR.setAttribute("y1",200);
+  rayR.setAttribute("x2",rx.toFixed(1));rayR.setAttribute("y2",ry.toFixed(1));
+  arcI.setAttribute("d",arcPath(a,-1));
+  arcR.setAttribute("d",arcPath(a,1));
+  const mh=200-72*Math.cos(th/2);
+  labI.setAttribute("x",(320-72*Math.sin(th/2)-46).toFixed(1));labI.setAttribute("y",mh.toFixed(1));
+  labR.setAttribute("x",(320+72*Math.sin(th/2)+8).toFixed(1));labR.setAttribute("y",mh.toFixed(1));
+  document.getElementById("angv").textContent=a+"°";
+  document.getElementById("v-i").textContent=a+"°";
+  document.getElementById("v-r").textContent=a+"°";
+  document.getElementById("v-d").textContent="0°";
+  const v=document.getElementById("mverd");
+  if(a===0){
+    v.className="verdict good";
+    v.innerHTML="<strong>入射角 0°</strong>：光沿著法線<em>垂直射向鏡面</em>，於是原路彈回去。這是唯一一種「反射後還在同一條線上」的情況。";
+  }else if(a>=70){
+    v.className="verdict good";
+    v.innerHTML="<strong>入射角很大（"+a+"°）</strong>：光幾乎是<em>擦著鏡面</em>過去的。注意角度仍然是從法線量的——它和鏡面的夾角只剩 "+(90-a)+"°。<br>題目若寫「與鏡面夾 "+(90-a)+"°」，你要先換成入射角 "+a+"° 才能用。";
+  }else{
+    v.className="verdict";
+    v.innerHTML="不管你怎麼拉，<strong>兩個角永遠一樣大</strong>。這就是反射定律的第一句。<br>第二句是：入射線、反射線、法線<em>三條線都在同一個平面上</em>。";
+  }
+}
+ang.addEventListener("input",drawMirror);
+drawMirror();
+
+/* -- 顏色調色台 -- */
+const HEX={白:"#f2efe6",紅:"#d1352b",綠:"#2f8a3e",藍:"#2a5bd7",黑:"#231f1c"};
+const LIGHTS=["白","紅","綠","藍"];
+const PAPERS=["白","紅","綠","藍","黑"];
+let curL=null, curP=null;
+function chipHTML(arr,cls){
+  return arr.map(c=>'<button class="chip" data-'+cls+'="'+c+'"><span class="sw" style="background:'+HEX[c]+'"></span>'+c+(cls==="l"?"光":"色紙")+'</button>').join("");
+}
+document.getElementById("lightChips").innerHTML=chipHTML(LIGHTS,"l");
+document.getElementById("paperChips").innerHTML=chipHTML(PAPERS,"p");
+
+function seen(l,p){
+  if(p==="黑")return "黑";
+  if(p==="白")return l;               // 白紙反射全部，照什麼就是什麼
+  if(l==="白")return p;               // 白光含所有顏色，紙挑自己那個
+  return (l===p)? p : "黑";           // 單色光：光裡有它就反射，沒有就全黑
+}
+function drawColor(){
+  const lb=document.getElementById("lightBox"), pb=document.getElementById("paperBox"),
+        eb=document.getElementById("eyeBox"), el=document.getElementById("eyeLabel");
+  lb.setAttribute("fill",curL?HEX[curL]:"#ffffff");
+  pb.setAttribute("fill",curP?HEX[curP]:"#ffffff");
+  const v=document.getElementById("cverd");
+  if(!curL||!curP){eb.setAttribute("fill","#ffffff");el.textContent="";
+    v.className="verdict";v.innerHTML="選一種光、選一張色紙。";return;}
+  const s=seen(curL,curP);
+  eb.setAttribute("fill",HEX[s]);
+  el.textContent=s+"色";
+  if(s==="黑"&&curP!=="黑"){
+    v.className="verdict bad";
+    v.innerHTML="<strong>看起來是黑的。</strong>"+curP+"色紙只想反射"+curP+"光，但現場照的是"+curL+
+      "光——<em>它要的那個顏色根本沒來</em>，所以什麼都反射不回去。<br><strong>「看起來黑」不代表它是黑的。</strong>";
+  }else if(curP==="黑"){
+    v.className="verdict";
+    v.innerHTML="<strong>黑色是「全部吸收」。</strong>不管照什麼光，它都不丟任何東西回來，所以永遠是黑的。";
+  }else if(curP==="白"){
+    v.className="verdict good";
+    v.innerHTML="<strong>白色是「全部反射」。</strong>照什麼光就反射什麼光——所以白紙在"+curL+"光下看起來是"+s+"色的。<br><em>白紙本身沒有顏色，它只是照單全收再全丟回來。</em>";
+  }else{
+    v.className="verdict good";
+    v.innerHTML="<strong>看到"+s+"色。</strong>"+(curL==="白"
+      ? "白光裡含有所有顏色，"+curP+"色紙從裡面挑走"+curP+"光反射回來，其餘全部吸收。"
+      : "照的是"+curL+"光，而這張紙剛好就反射"+curP+"光，所以有東西回到你眼睛。");
+  }
+}
+document.querySelectorAll("[data-l]").forEach(b=>b.addEventListener("click",()=>{
+  curL=b.dataset.l;
+  document.querySelectorAll("[data-l]").forEach(x=>x.classList.toggle("on",x===b));
+  drawColor();
+}));
+document.querySelectorAll("[data-p]").forEach(b=>b.addEventListener("click",()=>{
+  curP=b.dataset.p;
+  document.querySelectorAll("[data-p]").forEach(x=>x.classList.toggle("on",x===b));
+  drawColor();
+}));
+drawColor();
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, saved=state["q"+qi];
+  if(saved!==undefined)reveal(qi,saved,box.dataset.ans,box,false);
+});
+gate();
+
+document.getElementById("rst").addEventListener("click",()=>{
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+</body>
+</html>
