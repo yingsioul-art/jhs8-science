@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>課本地圖｜八年級自然 第三冊</title>
+<style>
+:root{--paper:#faf7f0;--ink:#2b2622;--ink2:#5c5349;--line:#ded5c6;--accent:#c2410c;
+  --accent-soft:#fff1e7;--blue:#1d5b79;--blue-soft:#e8f1f5;--green:#3f6d3a;--green-soft:#eef4ec;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px;line-height:1.85}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px 90px}
+
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin:0 -20px;padding:10px 20px}
+.bar-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+header{padding:52px 0 26px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:12px}
+h1{font-size:32px;line-height:1.3;margin:0 0 14px}
+p{margin:0 0 16px}
+.dim{color:var(--ink2)}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600}
+a{color:var(--accent)}
+.howto{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:22px;margin:26px 0}
+.howto h3{font-size:18px;margin:0 0 10px}
+.howto p:last-child{margin:0}
+
+.ch{border:1px solid var(--line);border-radius:16px;background:#fff;margin:18px 0;overflow:hidden;
+  box-shadow:var(--shadow)}
+.ch>summary{list-style:none;cursor:pointer;padding:20px 22px;display:flex;align-items:center;gap:14px}
+.ch>summary::-webkit-details-marker{display:none}
+.ch>summary::after{content:"▸";margin-left:auto;color:var(--ink2);font-size:18px;flex-shrink:0}
+.ch[open]>summary::after{content:"▾"}
+.ch[open]>summary{border-bottom:1px solid var(--line)}
+.chnum{font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:700}
+.chname{font-size:20px;font-weight:700;line-height:1.35}
+.chpg{font-size:13px;color:var(--ink2);margin-top:3px}
+.chring{width:44px;height:44px;flex-shrink:0;position:relative}
+.chring svg{transform:rotate(-90deg)}
+.chring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
+.chbody{padding:20px 22px 24px}
+.chlead{font-size:15.5px;color:var(--ink2);line-height:1.8;margin:0 0 18px}
+
+.pt{border:1px solid var(--line);border-radius:13px;margin-bottom:12px;overflow:hidden;background:#fdfcfa}
+.pt.ok{border-color:#c8dcc4;background:var(--green-soft)}
+.pt-h{display:flex;align-items:baseline;gap:9px;padding:14px 16px;flex-wrap:wrap}
+.pt-no{font-weight:700;color:var(--accent);flex-shrink:0}
+.pt-t{font-weight:700;font-size:16.5px}
+.pt-p{margin-left:auto;font-size:12.5px;color:var(--ink2);border:1px solid var(--line);
+  border-radius:99px;padding:2px 10px;background:#fff;white-space:nowrap}
+.pt-q{padding:0 16px 14px;font-size:15.5px;line-height:1.8}
+.pt-o{display:flex;flex-direction:column;gap:8px;padding:0 16px 16px}
+.pt-o button{text-align:left;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;
+  background:#fff;font-family:inherit;font-size:15.5px;color:inherit;cursor:pointer;line-height:1.65}
+.pt-o button:hover:not(:disabled){border-color:var(--ink2)}
+.pt-o button:disabled{cursor:default}
+.pt-o button.right{border-color:var(--green);background:var(--green-soft);font-weight:600}
+.pt-o button.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.pt-s{display:none;padding:0 16px 16px;font-size:15.5px;line-height:1.85}
+.pt-s.show{display:block}
+.pt-s p{margin:0 0 10px}
+.pt-s p:last-child{margin:0}
+.flip{display:inline-flex;align-items:center;gap:7px;margin-top:12px;background:var(--ink);color:#fff;
+  border-radius:99px;padding:8px 15px;font-size:14px;font-weight:700}
+.flip span{opacity:.75;font-weight:400}
+
+.chfoot{border-top:1px dashed var(--line);margin-top:18px;padding-top:18px;font-size:15px}
+.chfoot a.go{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;
+  text-decoration:none;padding:10px 18px;border-radius:99px;font-weight:700;font-size:15px;margin-top:6px}
+.chfoot a.go:hover{opacity:.87}
+
+footer{padding:34px 0 0;margin-top:40px;border-top:1px solid var(--line);
+  font-size:13px;color:var(--ink2);line-height:1.9}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:22px}
+.reset:hover{border-color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-inner">
+  <b id="pnum">0 / 0</b>
+  <div class="track"><div class="fill" id="pfill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">課本地圖 · 國中自然科學 第三冊（八上）</div>
+  <h1>不知道該翻哪一頁的時候，<br>從這裡開始</h1>
+  <p class="dim">站上其他單元是<em>從一道會考題往下挖</em>；這一頁相反——
+  它照<strong>課本自己的章節和重點編號</strong>排，每一格都標了<strong>課本頁碼</strong>。<br>
+  它不是要取代課本，是要讓你<strong>知道該回去翻哪一頁</strong>。</p>
+</header>
+
+<div class="howto">
+  <h3>怎麼用</h3>
+  <p>① 點開一章 → ② 每個重點會<strong>先問你一句話</strong>，先猜再看 →
+  ③ 答完會展開一段說明，還有一個「<strong>翻課本 p.XX</strong>」的提示。</p>
+  <p><strong>答錯完全沒關係</strong>，這一頁不計分——它只是在幫你標出<em>哪幾格你其實沒把握</em>，
+  那幾頁就是你今天該翻的。</p>
+  <p class="dim" style="font-size:14px;margin-top:12px">
+  每一章的最後都有連結，通往站上那一章的<strong>互動單元</strong>和<strong>段考模擬</strong>。</p>
+</div>
+
+<div id="chs"></div>
+
+<button class="reset" id="rst">清除全部進度</button>
+
+<footer>
+  章節標題與頁碼對照自國民中學自然科學第三冊（八上）課本目次與各章「學習筆記」。<br>
+  <strong>重點說明均以自己的話重寫，未複製課本文字或圖片</strong>；頁碼僅供翻書對照。<br>
+  <a href="index.html">← 回自學站首頁</a>　·　<span style="color:#a09789">為自學而做 · 2026</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+var CH=[{"id": "intro", "num": "緒論", "name": "進入實驗室 · 科學方法", "pages": "課本 p.1–13", "unit": ["variables.html", "找出沒被固定的那一項"], "lead": "這一章沒有公式，但它是後面每一章的底：<strong>怎麼做才算數。</strong>", "items": [{"no": "①", "t": "實驗室守則", "p": "p.4", "q": "在實驗室裡打翻酒精燈起火，第一個動作應該是？", "opts": [["A", "用水澆熄"], ["B", "用濕抹布覆蓋"]], "ans": "B", "say": "<p>酒精比水輕，會浮在水面上，<strong>澆水只會讓火跟著水流開</strong>。</p><p>正確做法是用濕抹布覆蓋——滅火的原理是<em>隔絕空氣</em>，不是「加水」。</p>"}, {"no": "②", "t": "實驗器材的使用", "p": "p.5–6", "q": "下列哪一個可以直接放在酒精燈上加熱？", "opts": [["A", "量筒"], ["B", "試管"]], "ans": "B", "say": "<p>可以直接加熱的是<strong>試管、蒸發皿、坩堝</strong>這一類：管壁薄、耐熱、<em>沒有刻度</em>。</p><p>量筒是精密量具，受熱後刻度會永久失準。記一句：<strong>身上有刻度的，都不要直接燒。</strong></p>"}, {"no": "③", "t": "熱源與容器的使用", "p": "p.7", "q": "用燒杯加熱液體時，為什麼要墊陶瓷纖維網？", "opts": [["A", "讓受熱均勻，避免局部過熱而破裂"], ["B", "讓燒杯不會滑動"]], "ans": "A", "say": "<p>火焰直接燒在玻璃的一小塊上，那一塊膨脹得比旁邊快，<strong>應力集中就會裂</strong>。</p><p>陶瓷纖維網把火焰的熱攤開，讓整個杯底一起熱起來。</p>"}, {"no": "④", "t": "藥品的調配與觀察", "p": "p.8", "q": "想聞一瓶未知藥品的氣味，正確做法是？", "opts": [["A", "以手搧聞"], ["B", "鼻子靠近瓶口吸一口"]], "ans": "A", "say": "<p><strong>手搧聞</strong>：讓少量氣體飄過來，你隨時可以停。</p><p>直接吸是實驗室最危險的動作之一——你不知道那是什麼，也來不及反應。</p>"}, {"no": "⑤", "t": "科學方法：控制變因法", "p": "p.9", "q": "想知道「加鹽的熱水是不是比較快乾」，最少需要幾組才拆得開？", "opts": [["A", "兩組就夠：加鹽熱水 vs 沒加鹽冷水"], ["B", "要四組：熱／冷 × 有鹽／無鹽"]], "ans": "B", "say": "<p>只用兩組的話，<strong>溫度和鹽同時都不一樣</strong>——就算真的比較快乾，你也說不出是誰的功勞。</p><p>要拆開，就得讓每一次比較<em>只差一個東西</em>。這正是站上第一個單元整堂在做的事。</p>"}, {"no": "⑥", "t": "科學技能：紀錄表與關係圖", "p": "p.10–11", "q": "畫關係圖時，橫軸通常放哪一個？", "opts": [["A", "你刻意去改的那一個（操縱變因）"], ["B", "你量到的結果（應變變因）"]], "ans": "A", "say": "<p>橫軸放<strong>操縱變因</strong>（你改的），縱軸放<strong>應變變因</strong>（你量的）。</p><p>這個習慣有意義：圖形的形狀就在回答「<em>我改了它，結果怎麼變</em>」。</p>"}]}, {"id": "ch1", "num": "第 1 章", "name": "基本測量", "pages": "課本 p.14–31", "unit": ["density.html", "一顆會說謊的銅球"], "lead": "這一章只有一條公式，但它考的從來不是公式，是<strong>你有沒有把數字寫對</strong>。", "items": [{"no": "①", "t": "測量結果的表示", "p": "p.16–17", "q": "一個完整的測量結果，必須包含什麼？", "opts": [["A", "數值 ＋ 單位"], ["B", "只要數值就好"]], "ans": "A", "say": "<p><strong>測量結果 ＝ 數值 ＋ 單位</strong>，而數值又分成<em>準確數值</em>（讀得到的）和<em>估計數值</em>（估出來的最後一位）。</p><p>「這瓶水 600」不是測量結果，因為你不知道那是毫升還是公克。</p>"}, {"no": "②", "t": "長度測量的表示", "p": "p.17", "q": "用最小刻度 1 mm 的直尺量鉛筆，紀錄應該寫到小數點後第幾位（單位：公分）？", "opts": [["A", "第一位，例如 13.7 公分"], ["B", "第二位，例如 13.75 公分"]], "ans": "B", "say": "<p>最小刻度 1 mm ＝ 0.1 公分，所以可以<em>讀</em>到 0.1 公分，再往下<strong>估一位</strong>到 0.01 公分。</p><p>少估一位＝紀錄不完整；多估兩位＝憑空捏造。<strong>位數本身就在告訴別人你用的是什麼工具。</strong></p>"}, {"no": "③", "t": "體積的測量", "p": "p.19", "q": "形狀不規則、又不溶於水的石頭，體積怎麼量？", "opts": [["A", "用尺量長寬高再相乘"], ["B", "用排水法"]], "ans": "B", "say": "<p>形狀規則的才能套數學公式；<strong>不規則又不溶於水</strong>的，就靠排水法。</p><p>（那不溶於水但會浮的呢？綁一顆石頭把它壓下去——就是密度那一課的綁石法。）</p>"}, {"no": "④", "t": "排水法", "p": "p.19", "q": "排水法的核心是哪一句？", "opts": [["A", "水面上升的體積 ＝ 沉進去的體積"], ["B", "水的重量 ＝ 物體的重量"]], "ans": "A", "say": "<p>整個方法就這一句。<strong>兩次讀數相減</strong>，差就是物體的體積。</p><p>會考和段考的變化題，全都在玩「該減誰」——先問清楚每次讀數裡有誰。</p>"}, {"no": "⑤", "t": "質量的測量", "p": "p.22", "q": "使用上皿天平的第一個步驟是？", "opts": [["A", "把物體放上左盤"], ["B", "旋轉校準螺絲歸零"]], "ans": "B", "say": "<p><strong>歸零一定排第一。</strong>天平還沒歸零，後面量到的每一個數字都是錯的。</p><p>接著才是：左盤放物體（或秤量紙）→ 右盤放砝碼 → 調到指針回正中央。</p>"}, {"no": "⑥", "t": "密度", "p": "p.27", "q": "密度是什麼的比值？", "opts": [["A", "質量 ÷ 體積"], ["B", "體積 ÷ 質量"]], "ans": "A", "say": "<p><strong>密度 ＝ 質量 ÷ 體積（D ＝ M / V）</strong>，常用單位 g/cm³。</p><p>它的意思是「<em>每一單位體積裡塞了多少質量</em>」——所以它回答的是「這是什麼」，不是「有多少」。</p>"}, {"no": "⑦", "t": "質量、體積與密度的關係", "p": "p.28", "q": "把一塊鋁切成大小不同的三塊，三塊的密度比是？", "opts": [["A", "照體積比"], ["B", "1：1：1"]], "ans": "B", "say": "<p>切開來每一塊<strong>還是鋁</strong>——密度是<em>物質的身分證</em>，不會因為變少而改變。</p><p>質量變了、體積也變了，但兩者的<strong>比值</strong>不變。這就是密度可以拿來認物質、質量不行的原因。</p>"}]}, {"id": "ch2", "num": "第 2 章", "name": "物質的世界", "pages": "課本 p.32–67", "unit": ["solution.html", "一杯糖水裡的科學"], "lead": "這一章看起來很雜，但它其實只在教一件事：<strong>把東西分類，然後量出比例。</strong>", "items": [{"no": "①", "t": "物質三態的特性", "p": "p.35", "q": "液態的「體積」和「形狀」，哪一個會隨容器改變？", "opts": [["A", "形狀會變，體積不變"], ["B", "兩個都會變"]], "ans": "A", "say": "<p>固態：體積固定、形狀固定。<br>液態：<strong>體積固定、形狀隨容器變</strong>。<br>氣態：兩個都不固定，而且可以壓縮。</p><p>「可壓縮」是氣態獨有的——粒子之間空得多。</p>"}, {"no": "②", "t": "物質的變化", "p": "p.36–37", "q": "分辨物理變化和化學變化，唯一的判準是？", "opts": [["A", "有沒有產生新物質"], ["B", "有沒有放熱或發光"]], "ans": "A", "say": "<p><strong>有沒有產生新物質</strong>——這是唯一的判準。</p><p>三態變化（冰融化、水蒸發）是物理變化；燃燒、生鏽是化學變化。<em>放熱、發光、變色都只是線索，不是定義。</em></p>"}, {"no": "③", "t": "純物質與混合物", "p": "p.38", "q": "要區分純物質和混合物，最可靠的性質是？", "opts": [["A", "沸點是否固定"], ["B", "顏色是否透明"]], "ans": "A", "say": "<p>純物質由<strong>單一種物質組成</strong>，有固定的熔點、沸點、密度。</p><p>混合物是兩種以上任意比例混合，<em>性質會隨比例改變</em>——所以沸點不固定。</p>"}, {"no": "④", "t": "混合物的分離", "p": "p.41–42", "q": "把沙子和食鹽分開，先用哪一招？", "opts": [["A", "先過濾，再蒸發結晶"], ["B", "直接蒸發結晶"]], "ans": "A", "say": "<p>加水 → 鹽溶、沙不溶 → <strong>過濾</strong>（利用顆粒大小不同）→ 濾液<strong>蒸發結晶</strong>（利用沸點不同）。</p><p>第三種是<strong>濾紙色層分析</strong>：把混在一起的色素分開，靠的是各成分跑的距離不一樣。</p>"}, {"no": "⑤", "t": "溶液的組成", "p": "p.43", "q": "一杯黑糖水裡，「溶液」指的是哪一個？", "opts": [["A", "只有黑糖"], ["B", "黑糖 ＋ 水的總和"]], "ans": "B", "say": "<p>溶質（黑糖）＋ 溶劑（水）＝ <strong>溶液</strong>。</p><p>這三個字要分清楚，因為<em>濃度的分母是溶液，溶解度的分母是溶劑</em>——整章的分數都在這裡。</p>"}, {"no": "⑥", "t": "擴散現象", "p": "p.44", "q": "把糖丟進水裡不攪拌，最後會怎樣？", "opts": [["A", "糖會全部沉在底部不動"], ["B", "慢慢自己散開，最後濃度均勻"]], "ans": "B", "say": "<p>物質會由<strong>高濃度往低濃度</strong>移動，最後均勻分布——這叫擴散。</p><p>攪拌只是讓它快一點，不攪拌它<em>照樣會均勻</em>，只是要等很久。</p>"}, {"no": "⑦", "t": "溶液的飽和", "p": "p.45", "q": "「飽和溶液」的意思是？", "opts": [["A", "溶解的溶質已達最大量"], ["B", "溶液已經裝滿容器"]], "ans": "A", "say": "<p>飽和＝在這個溫度下，<strong>再也溶不進去了</strong>；未飽和＝還可以繼續溶。</p><p>杯底有沒有沉澱，是判斷飽和最直接的證據。</p>"}, {"no": "⑧", "t": "濃度", "p": "p.45–47", "q": "重量百分率濃度的分母是誰？", "opts": [["A", "溶劑（水）的質量"], ["B", "溶液的質量"]], "ans": "B", "say": "<p><strong>重量百分率濃度 ＝ 溶質質量 ÷ <u>溶液</u>質量 × 100%</strong>——分母裡一定含有溶質自己。</p><p>另外兩個：體積百分率濃度（分母是溶液體積）、ppm（百萬分點，分母是質量）。</p><p><em>會考 115-36 有 32.6% 的人把分母寫成水。</em></p>"}, {"no": "⑨", "t": "空氣的組成", "p": "p.48–49", "q": "乾燥空氣裡比例最高的氣體是？", "opts": [["A", "氮氣（約 78%）"], ["B", "氧氣（約 21%）"]], "ans": "A", "say": "<p>氮氣約 78%、氧氣約 21%、氬氣約 0.9%，其餘（含二氧化碳）約 0.1%。</p><p>常考的性質：<strong>氧氣助燃</strong>（線香更旺）、<strong>二氧化碳使澄清石灰水混濁</strong>、<strong>氬氣是鈍氣</strong>不易反應。</p>"}, {"no": "⑩", "t": "空氣品質與水資源", "p": "p.54–59", "q": "AQI 這個數字是在描述什麼？", "opts": [["A", "空氣中氧氣的比例"], ["B", "空氣汙染的程度"]], "ans": "B", "say": "<p>AQI（空氣品質指標）用一個數字描述汙染程度，數字愈大愈糟。</p><p>這一段是跨科主題，考法偏閱讀理解——<em>資料裡有什麼就答什麼，不要加自己的印象。</em></p>"}]}, {"id": "ch3", "num": "第 3 章", "name": "波動與聲音", "pages": "課本 p.68–91", "unit": ["wave.html", "「大聲」和「高音」不是同一件事"], "lead": "這一章的分數幾乎全部押在<strong>單位</strong>上：看到 dB 就是在講吵，看到 Hz 就是在講高低。", "items": [{"no": "①", "t": "波的分類", "p": "p.70–71", "q": "光波屬於力學波嗎？", "opts": [["A", "是，光也需要介質"], ["B", "不是，光在真空中也能傳"]], "ans": "B", "say": "<p>分類的唯一標準是<strong>需不需要介質</strong>：水波、彈簧波、聲波要介質 → <strong>力學波</strong>；光波、電磁波、重力波不用 → <strong>非力學波</strong>。</p><p>另一種分法看振動方向：與波前進方向<em>垂直</em>＝橫波，<em>平行</em>＝縱波（聲波是縱波）。</p>"}, {"no": "②", "t": "波的性質", "p": "p.72", "q": "波峰到波峰的距離叫什麼？", "opts": [["A", "波長"], ["B", "振幅"]], "ans": "A", "say": "<p><strong>波長</strong>＝一個完整波的長度（波峰到波峰、或波谷到波谷）。<br><strong>振幅</strong>＝從中線量到波峰的高度。</p><p>縱波沒有波峰波谷，改看<em>密部到密部</em>的距離。</p>"}, {"no": "③", "t": "週期與頻率", "p": "p.73", "q": "頻率 250 Hz 的聲音，週期是多少秒？", "opts": [["A", "0.004 秒"], ["B", "250 秒"]], "ans": "A", "say": "<p><strong>週期 T</strong>＝產生一個完整波所需的時間；<strong>頻率 f</strong>＝每秒振動的次數。</p><p>兩者互為倒數：<strong>f ＝ 1 / T</strong>。所以 250 Hz → T ＝ 1 ÷ 250 ＝ 0.004 秒。</p>"}, {"no": "④", "t": "週期、頻率與波速的關係", "p": "p.74", "q": "在同一種介質裡，頻率變高時波長會？", "opts": [["A", "跟著變長"], ["B", "變短"]], "ans": "B", "say": "<p><strong>波速 v ＝ 波長 λ × 頻率 f</strong>。</p><p>波速由<em>介質</em>決定，在同一種介質裡是定值——所以分母的頻率變大，波長就一定變小。<strong>它們是綁死的一對。</strong></p>"}, {"no": "⑤", "t": "聲波產生的條件", "p": "p.75–77", "q": "在真空中敲鑼，聽得到嗎？", "opts": [["A", "聽得到，鑼還是有振動"], ["B", "聽不到，沒有介質可以傳"]], "ans": "B", "say": "<p>聲波要成立需要兩件事：① 物體<strong>振動</strong>　② 有<strong>傳播的介質</strong>（固、液、氣皆可）。</p><p>真空裡鑼照樣在振動，但振動傳不出去——<em>1660 年 Boyle 就是這樣證明的</em>。</p>"}, {"no": "⑥", "t": "聲速與介質", "p": "p.78", "q": "同一個聲音，在鋼裡和在空氣裡，哪個跑得快？", "opts": [["A", "鋼"], ["B", "空氣"]], "ans": "A", "say": "<p><strong>固體 ＞ 液體 ＞ 氣體</strong>。粒子排得愈緊，推擠傳得愈快。</p><p>空氣中約 340 m/s（15°C）、水約 1500 m/s、鋼約 5000 m/s。<em>溫度愈高，空氣中的聲速也愈快。</em></p>"}, {"no": "⑦", "t": "聲波的反射與超聲波", "p": "p.79–82", "q": "聲納測深時，量到 4 秒才收到回音，該怎麼算深度？", "opts": [["A", "速率 × 4"], ["B", "速率 × 2（時間要先除以 2）"]], "ans": "B", "say": "<p>回音是<strong>來回</strong>，所以時間要先砍一半。</p><p><strong>超聲波</strong>＝頻率高於 20000 Hz、人耳聽不見的聲波，用在聲納、產檢、清洗。（低於 20 Hz 的叫次聲波。）</p>"}, {"no": "⑧", "t": "多變的聲音", "p": "p.83–87", "q": "「這台冷氣只有 42 分貝」在講聲音的哪一個性質？", "opts": [["A", "響度"], ["B", "音調"]], "ans": "A", "say": "<p><strong>響度</strong>（多吵）← 振幅，單位 dB。<br><strong>音調</strong>（多高）← 頻率，單位 Hz。<br><strong>音色</strong>（誰在發聲）← 波形，沒有單位。</p><p>三個名字、三個成因、三個單位——<em>這一章的題目幾乎都是它們的排列組合。</em></p>"}]}, {"id": "ch4", "num": "第 4 章", "name": "光", "pages": "課本 p.92–131", "unit": ["light.html", "你為什麼看得見這本書？"], "lead": "這一章看起來圖很多，但只要問四句話就能通關：<strong>換介質了嗎？彈回來了嗎？在講顏色嗎？像接得到嗎？</strong>", "items": [{"no": "①", "t": "光的特性", "p": "p.94–97", "q": "真空中的光速大約是多少？", "opts": [["A", "3 × 10⁸ m/s"], ["B", "340 m/s"]], "ans": "A", "say": "<p>光在同一種介質中<strong>沿直線前進</strong>；真空中的光速約 <strong>3 × 10⁸ m/s</strong>（每秒 30 萬公里）。</p><p>而且光<em>不需要介質</em>——這是它和聲音最大的差別（340 m/s 是聲音在空氣中的速度）。</p>"}, {"no": "②", "t": "光的反射定律", "p": "p.99", "q": "入射角是從哪裡量起的？", "opts": [["A", "從鏡面量起"], ["B", "從法線量起"]], "ans": "B", "say": "<p>反射定律三句：① 入射線與反射線分別在<strong>法線兩側</strong>　② 入射線、反射線、法線<strong>在同一平面上</strong>　③ <strong>入射角 ＝ 反射角</strong>。</p><p>角度<strong>一律從法線量</strong>。題目寫「與鏡面夾 30°」時，你要先換成入射角 60°。</p>"}, {"no": "③", "t": "平面鏡的成像性質", "p": "p.101–102", "q": "鏡子裡的你，是實像還是虛像？", "opts": [["A", "實像，因為看得很清楚"], ["B", "虛像，紙屏接不到"]], "ans": "B", "say": "<p>平面鏡成<strong>正立虛像</strong>，物與像<strong>形狀大小相同</strong>，而且<strong>物距 ＝ 像距</strong>。</p><p>判準只有一個：<em>紙屏接得到＝實像，接不到＝虛像</em>。而<strong>實像必倒立、虛像必正立</strong>。</p>"}, {"no": "④", "t": "凸面鏡與凹面鏡", "p": "p.103–104", "q": "大賣場天花板角落那種可以看到很大範圍的鏡子是？", "opts": [["A", "凸面鏡"], ["B", "凹面鏡"]], "ans": "A", "say": "<p><strong>凸面鏡</strong>成正立<em>縮小</em>的像，視野變廣——所以用在後照鏡、賣場防盜鏡。</p><p><strong>凹面鏡</strong>能把平行光<em>會聚</em>到焦點——所以用在手電筒、太陽能收集器。</p>"}, {"no": "⑤", "t": "光的折射", "p": "p.106–107", "q": "光從空氣斜射進水中，折射角和入射角哪個大？", "opts": [["A", "折射角比較小（偏向法線）"], ["B", "折射角比較大"]], "ans": "A", "say": "<p>光在不同介質中<strong>速率不同</strong>，才會在界面轉彎。</p><p>空氣→水：速率變慢，折射線<strong>偏向法線</strong>，折射角＜入射角。<em>反過來由水進空氣就偏離法線。</em></p><p>這也是為什麼看水中的魚會覺得比實際淺。</p>"}, {"no": "⑥", "t": "凸透鏡與凹透鏡", "p": "p.110–111", "q": "凹透鏡對光線做什麼？", "opts": [["A", "會聚"], ["B", "發散"]], "ans": "B", "say": "<p><strong>凸透鏡</strong>（中間厚）→ 光線<em>會聚</em>到焦點。<br><strong>凹透鏡</strong>（中間薄）→ 光線<em>發散</em>。</p><p>焦點到鏡心的距離叫<strong>焦距</strong>——它決定了成像的所有變化。</p>"}, {"no": "⑦", "t": "透鏡的成像", "p": "p.112–117", "q": "凹透鏡不管物體放多遠，成的像都是？", "opts": [["A", "正立縮小虛像"], ["B", "要看距離才知道"]], "ans": "A", "say": "<p><strong>凹透鏡永遠只有一種答案：正立、縮小、虛像。</strong>這是它最好用的地方。</p><p>凸透鏡才要看位置：兩倍焦距外→倒立縮小實像；兩倍焦距與焦點之間→倒立放大實像；<strong>焦點以內→正立放大虛像</strong>（放大鏡）。</p>"}, {"no": "⑧", "t": "視力矯正與光的顏色", "p": "p.120–123", "q": "近視眼要戴哪一種鏡片？", "opts": [["A", "凹透鏡"], ["B", "凸透鏡"]], "ans": "A", "say": "<p>近視＝成像落在視網膜<em>前方</em> → 要先發散一點 → <strong>凹透鏡</strong>。<br>遠視＝成像落在<em>後方</em> → 要提早會聚 → <strong>凸透鏡</strong>。</p><p>顏色的部分只有一句：<strong>物體吸收其他色光，只把自己那個顏色反射回來。</strong>紅紙在藍光下看起來是黑的。</p>"}]}], KEY="jhs8-book-v1", st={};
+try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
+var TOTAL=CH.reduce(function(a,c){return a+c.items.length},0);
+
+function esc(s){return s}
+var box=document.getElementById("chs");
+box.innerHTML=CH.map(function(c,ci){
+  var items=c.items.map(function(t,ti){
+    var id=ci+"-"+ti;
+    var opts=t.opts.map(function(o,oi){
+      return '<button data-id="'+id+'" data-o="'+oi+'">'+o[1]+'</button>';
+    }).join("");
+    return '<div class="pt" id="pt'+id+'">'+
+      '<div class="pt-h"><span class="pt-no">'+t.no+'</span><span class="pt-t">'+t.t+'</span>'+
+      '<span class="pt-p">課本 '+t.p+'</span></div>'+
+      '<div class="pt-q">'+t.q+'</div>'+
+      '<div class="pt-o" id="o'+id+'">'+opts+'</div>'+
+      '<div class="pt-s" id="s'+id+'">'+t.say+
+      '<div class="flip">翻課本 '+t.p+'<span>把這一格對照著看</span></div></div>'+
+    '</div>';
+  }).join("");
+  return '<details class="ch" id="ch'+ci+'"><summary>'+
+    '<div class="chring"><svg width="44" height="44" viewBox="0 0 44 44">'+
+      '<circle cx="22" cy="22" r="18" fill="none" stroke="#ded5c6" stroke-width="4"/>'+
+      '<circle class="rg" data-ci="'+ci+'" cx="22" cy="22" r="18" fill="none" stroke="#c2410c" '+
+      'stroke-width="4" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113"/>'+
+    '</svg><span class="rt" data-ci="'+ci+'">0/'+c.items.length+'</span></div>'+
+    '<div><div class="chnum">'+c.num+'</div><div class="chname">'+c.name+'</div>'+
+    '<div class="chpg">'+c.pages+'</div></div></summary>'+
+    '<div class="chbody"><p class="chlead">'+c.lead+'</p>'+items+
+    '<div class="chfoot"><p style="margin:0 0 4px">這一章在站上的互動單元：</p>'+
+    '<a class="go" href="'+c.unit[0]+'">'+c.unit[1]+' →</a>'+
+    '<p class="dim" style="font-size:14px;margin:14px 0 0">'+
+    '想直接做整張考卷？<a href="exam.html">段考模擬</a>收了 112～114 學年度共 9 份原卷。</p>'+
+    '</div></div></details>';
+}).join("");
+
+function paint(){
+  var done=0;
+  CH.forEach(function(c,ci){
+    var n=0;
+    c.items.forEach(function(t,ti){ if(st[ci+"-"+ti]!==undefined) n++; });
+    done+=n;
+    var rg=document.querySelector('.rg[data-ci="'+ci+'"]');
+    var rt=document.querySelector('.rt[data-ci="'+ci+'"]');
+    if(rg) rg.setAttribute("stroke-dashoffset", 113-113*n/c.items.length);
+    if(rt) rt.textContent=n+"/"+c.items.length;
+  });
+  document.getElementById("pnum").textContent=done+" / "+TOTAL;
+  document.getElementById("pfill").style.width=(done/TOTAL*100)+"%";
+}
+
+function reveal(ci,ti,pick){
+  var id=ci+"-"+ti, t=CH[ci].items[ti];
+  var wrap=document.getElementById("pt"+id);
+  var obox=document.getElementById("o"+id);
+  obox.querySelectorAll("button").forEach(function(b,oi){
+    b.disabled=true;
+    if(t.opts[oi][0]===t.ans) b.classList.add("right");
+    else if(oi===pick) b.classList.add("wrong");
+  });
+  document.getElementById("s"+id).classList.add("show");
+  wrap.classList.add("ok");
+}
+
+box.addEventListener("click",function(e){
+  var b=e.target.closest(".pt-o button");
+  if(!b||b.disabled)return;
+  var p=b.dataset.id.split("-"), ci=+p[0], ti=+p[1], oi=+b.dataset.o;
+  st[ci+"-"+ti]=oi;
+  try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e2){}
+  reveal(ci,ti,oi); paint();
+});
+
+CH.forEach(function(c,ci){ c.items.forEach(function(t,ti){
+  var v=st[ci+"-"+ti];
+  if(v!==undefined) reveal(ci,ti,v);
+});});
+paint();
+
+document.getElementById("rst").addEventListener("click",function(){
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+</body>
+</html>
