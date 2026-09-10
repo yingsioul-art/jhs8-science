@@ -10,7 +10,7 @@
 body{margin:0;background:var(--paper);color:var(--ink);
   font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   font-size:17px;line-height:1.85}
-.wrap{max-width:680px;margin:0 auto;padding:0 20px 80px}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px 80px}
 header{padding:64px 0 30px;border-bottom:2px solid var(--ink)}
 .kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
 h1{font-size:32px;line-height:1.3;margin:0 0 16px}
@@ -43,6 +43,21 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
 .steps li::before{content:counter(t);position:absolute;left:0;top:7px;width:24px;height:24px;
   background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;
   justify-content:center;font-size:12px;font-weight:700}
+
+/* ── 入口方塊（2026-09-10 改版：原本是一長串卡片，改成格線） ── */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:14px;margin:0 0 14px}
+.tiles a.unit,.tiles .soon{display:flex;flex-direction:column;margin-bottom:0;padding:19px 21px}
+.tiles .u-t{font-size:18.5px;margin-bottom:7px}
+.tiles .u-d{font-size:14.5px;line-height:1.72;margin-bottom:12px;flex:1}
+.tiles .u-m{margin-top:auto}
+.tiles .tag{font-size:11.5px;padding:2px 9px}
+details.fold{background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:14px 20px;margin:24px 0}
+details.fold>summary{cursor:pointer;font-size:15px;font-weight:700;color:var(--accent)}
+details.fold[open]>summary{margin-bottom:10px}
+details.fold .howto,details.fold .why{border:0;padding:0;margin:14px 0 0;background:transparent}
+@media(max-width:560px){.tiles{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -54,6 +69,8 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
   <p class="dim">這裡的每一節都從<em>一個怪事</em>開始：某個數字對不上、某個結果跟你想的不一樣。你先猜，再拆，最後才會看到課本上那個公式——而那時候它已經是你自己推出來的了。</p>
 </header>
 
+<details class="fold">
+  <summary>這個網站怎麼用？（第一次來再看就好）</summary>
 <div class="howto">
   <h3>這個網站怎麼用</h3>
   <p><strong>它不是題庫。</strong>每一課都是一條完整的路，從一個問題走到一個答案，中間有很多可以自己動手拉、拖、拆的地方。一課大約 20–30 分鐘。</p>
@@ -83,15 +100,16 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
   <p>· 每一段<strong>要答完才會解鎖下一段</strong>。不是要卡你，是不想讓你跳過「自己想一想」那一步。<br>
   · 進度會自己存著，隨時可以關掉，下次打開還在原地。</p>
 </div>
-
 <div class="why">
   <p style="font-size:15px;color:var(--ink2);margin-bottom:12px"><strong style="color:var(--ink)">為什麼題目都附「全國有多少人選錯」？</strong></p>
   <p style="font-size:15.5px">因為錯得有道理的答案，比正確答案更值得研究。當一個選項有三分之一的人選，代表它背後有一套<em>聽起來很合理但會出事的想法</em>——找出那套想法，比記住正確答案有用得多。</p>
   <p style="font-size:15.5px;margin-top:12px">所有百分比都來自國家教育研究院公布的官方試題分析，不是估的。</p>
 </div>
+</details>
 
 <h2>先看這裡　·　照課本走</h2>
 
+<div class="tiles">
 <a class="unit" href="book.html" style="border-color:var(--ink);border-width:2px">
   <div class="u-ch">課本地圖　·　緒論 ～ 第 4 章　·　課本 p.1–131</div>
   <div class="u-t">不知道該翻哪一頁的時候，從這裡開始</div>
@@ -101,9 +119,11 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
     <span class="tag">各章完成度</span><span class="tag">不計分</span>
   </div>
 </a>
+</div>
 
 <h2>單元　·　照課本章節順序</h2>
 
+<div class="tiles">
 <a class="unit" href="variables.html">
   <div class="u-ch">①　緒論 · 科學方法</div>
   <div class="u-t">找出沒被固定的那一項</div>
@@ -113,7 +133,6 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
     <span class="tag">會考 115-23</span><span class="tag">考最多題的一塊</span>
   </div>
 </a>
-
 <a class="unit" href="density.html">
   <div class="u-ch">②　第 1 章 · 基本測量</div>
   <div class="u-t">一顆會說謊的銅球</div>
@@ -123,7 +142,6 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
     <span class="tag">會考 111-38</span><span class="tag">約 25 分鐘</span>
   </div>
 </a>
-
 <a class="unit" href="solution.html">
   <div class="u-ch">③　第 2 章 · 2-2 水溶液</div>
   <div class="u-t">一杯糖水裡的科學</div>
@@ -133,9 +151,6 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
     <span class="tag">會考 115-36</span><span class="tag">最會分人的一題</span>
   </div>
 </a>
-
-
-
 <a class="unit" href="wave.html">
   <div class="u-ch">④　第 3 章 · 波動與聲音</div>
   <div class="u-t">「大聲」和「高音」不是同一件事</div>
@@ -145,7 +160,6 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
     <span class="tag">會考 115-16</span><span class="tag">＋段考實戰 8 題</span>
   </div>
 </a>
-
 <a class="unit" href="light.html">
   <div class="u-ch">⑤　第 4 章 · 光</div>
   <div class="u-t">你為什麼看得見這本書？</div>
@@ -155,9 +169,11 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
     <span class="tag">會考 112-9</span><span class="tag">＋段考實戰 7 題</span>
   </div>
 </a>
+</div>
 
 <h2>段考　·　你們學校真正考過的卷</h2>
 
+<div class="tiles">
 <a class="unit" href="exam.html">
   <div class="u-ch">整卷模擬　·　112～114 學年度</div>
   <div class="u-t">整張考卷，從頭做到尾一次</div>
@@ -167,6 +183,7 @@ footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-
     <span class="tag">答案來源逐卷標示</span><span class="tag">進度自動存</span>
   </div>
 </a>
+</div>
 
 <footer>
   題目、通過率與選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析。<br>
