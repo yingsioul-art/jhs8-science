@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>八上自然 緒論＋第1章 段考原題複習</title>
+<style>
+:root{--paper:#faf7f0;--ink:#2b2622;--ink2:#5c5349;--line:#ded5c6;--accent:#c2410c;--accent-soft:#fff1e7;
+  --green:#3f6d3a;--green-soft:#eef4ec;--warn:#8a6a1e;--warn-soft:#fdf6e6}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16.5px;line-height:1.8}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 80px}
+header{padding:36px 0 18px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:13px;letter-spacing:.18em;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+p{margin:0 0 12px}
+.dim{color:var(--ink2)}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600}
+a{color:var(--accent)}
+details.howto{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;font-size:15px}
+details.howto summary{cursor:pointer;font-weight:700}
+details.howto p{margin:8px 0 0}
+button{font-family:inherit}
+.btn{border:1.5px solid var(--ink);background:#fff;color:var(--ink);border-radius:99px;padding:8px 16px;font-size:14.5px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ink);color:#fff}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{filter:brightness(.92)}
+.btn.ok{background:var(--green);border-color:var(--green);color:#fff}
+.btn[disabled]{opacity:.45;cursor:default;background:#fff;color:var(--ink)}
+.tabs{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 16px;font-size:15.5px;cursor:pointer;font-weight:700;color:var(--ink2)}
+.tab.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.tab .cnt{display:inline-block;min-width:22px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--accent);color:#fff;font-size:13px;text-align:center}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;align-items:center}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.toc a{font-size:13.5px;color:var(--ink2);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 11px;background:#fff}
+.toc a:hover{border-color:var(--ink);color:var(--ink)}
+.toc a .st{color:var(--green);font-weight:700;margin-left:4px}
+h2{font-size:20px;margin:40px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+h2 small{font-size:13px;color:var(--ink2);font-weight:400;margin-left:8px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;margin:0 0 16px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;font-size:13px}
+.tag{border-radius:99px;padding:1px 9px;border:1px solid var(--line);color:var(--ink2);background:#f6f2ea}
+.tag.self{border-color:#d8b46a;background:var(--warn-soft);color:var(--warn)}
+.tag.no{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.tag.miss{background:var(--accent-soft);border-color:#f0b48a;color:var(--accent)}
+.qimg{display:block;width:var(--w);max-width:100%;height:auto}
+.ansrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.ansrow .lb{font-size:14px;color:var(--ink2);min-width:64px}
+.opts{display:flex;gap:6px}
+.opts button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:15px;color:var(--ink2);cursor:pointer;padding:0}
+.opts button:hover{border-color:var(--ink)}
+.opts button.pick{background:var(--ink);border-color:var(--ink);color:#fff}
+.opts button.ok{background:var(--green);border-color:var(--green);color:#fff}
+.opts button.bad{background:var(--accent);border-color:var(--accent);color:#fff}
+.opts button.miss{border:2.5px solid var(--green);color:var(--green);font-weight:700}
+.verdict{font-size:14.5px;font-weight:700}
+.verdict.ok{color:var(--green)} .verdict.bad{color:var(--accent)}
+.blank{display:none}
+.sol{margin-top:10px;background:var(--green-soft);border:1px solid #c8dcc4;border-radius:10px;padding:12px 14px;font-size:15.5px}
+.sol .key{font-weight:700;color:var(--green);margin-bottom:6px}
+.sol p:last-child{margin-bottom:0}
+.sol .mx-pt{background:#fff;border-left:3px solid var(--accent);padding:6px 10px;border-radius:0 6px 6px 0;font-size:14.5px}
+.sol .srcnote{font-size:13px;color:var(--warn);margin-top:6px}
+.secbar{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px 16px;margin:4px 0 8px;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.secbar .secstat{font-size:15px;margin-right:auto}
+.secbar .secscore{flex-basis:100%;font-size:15px}
+.secbar .secscore b.big{font-size:20px}
+.wbhead{margin:26px 0 14px}
+.wbhead h2{margin-top:0}
+.empty{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:26px;text-align:center;color:var(--ink2)}
+.wbinfo{font-size:13.5px;color:var(--accent);margin-left:auto}
+.wbact{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.qimg{cursor:zoom-in}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.92);overflow:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(52px + env(safe-area-inset-top,0px)) 10px calc(20px + env(safe-area-inset-bottom,0px))}
+.zoom img{display:block;width:1000px;max-width:none;background:#fff;border-radius:6px;margin:0 auto}
+.zoom .x{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:10px;background:#fff;border:none;border-radius:99px;
+  padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer}
+.zoom .hint{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:14px;color:#fff;font-size:13.5px}
+.printhead{display:none}
+footer{margin-top:30px;font-size:13px;color:var(--ink2);line-height:1.8}
+@media(max-width:600px){.qimg{width:100%}h1{font-size:24px}}
+
+/* ===== 列印 ===== */
+@page{size:A4;margin:12mm 11mm}
+@media print{
+  body{background:#fff;font-size:12.5pt}
+  .wrap{max-width:none;padding:0}
+  .noprint,.tabs,.toolbar,.toc,.opts,.verdict,.secbar,.wbact,details.howto{display:none!important}
+  .qimg{width:var(--w)!important}
+  header{padding:0 0 8px}
+  h1{font-size:18pt}
+  h2{font-size:14pt;margin:14px 0 8px;break-after:avoid}
+  .card{border:none;border-bottom:1px solid #bbb;border-radius:0;padding:6px 0 8px;margin:0;break-inside:avoid}
+  .ansrow{border-top:none;padding-top:4px;margin-top:2px}
+  .printhead{display:block}
+  .tag{background:#fff}
+  body.pq .blank{display:inline}
+  body.pq .sol{display:none!important}
+  body.pa .sol,body.pw .sol{display:block!important;background:#fff;border:1px solid #999;break-inside:avoid}
+  body.pa .ansrow,body.pw .ansrow{display:none}
+  body.pa .card,body.pw .card{break-inside:auto}
+  body.pa .qimg,body.pw .qimg{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">八年級上學期 · 自然科學 · 段考原題</div>
+  <h1>緒論＋第 1 章 基本測量<br>段考原題複習</h1>
+  <p class="dim printhead" id="phead"></p>
+  <p class="dim">丹鳳高中國中部 112／113／114 學年度第一學期<strong>第一次段考</strong>，挑出屬於「緒論」和「第 1 章」的題目，共 58 題，分成 5 段。題目是原卷截圖，圖表和考試時一模一樣。</p>
+  <details class="howto noprint">
+    <summary>怎麼用這一頁？</summary>
+    <p>題目字太小時，<strong>點一下圖片</strong>就會放大。</p>
+    <p>① 選一段，每題點 A～D。　② 寫完按該段最下面的<strong>「交卷這一段」</strong>，才會顯示對錯和解析。</p>
+    <p>③ 答錯或沒寫的題目會自動放進<strong>「錯題本」</strong>。在錯題本裡再做一次，答對了就可以按「我會了，移出錯題本」。</p>
+    <p>作答和錯題本都存在這台裝置上，關掉再開還在。</p>
+    <p class="dim" style="font-size:14px">答案來源：112 學年度＝官方答案卡；113 學年度＝官方解答；<span style="color:var(--warn)">114 學年度學校沒有公布解答，答案是自行解出的，請以老師講解為準</span>。</p>
+  </details>
+  <div class="tabs">
+    <button class="tab on" data-view="practice">📝 題目練習</button>
+    <button class="tab" data-view="wrongbook">📕 錯題本<span class="cnt" id="wbcnt">0</span></button>
+  </div>
+</header>
+
+<main id="practice">
+  <div class="toolbar">
+    <button class="btn" data-print="q">🖨 存成 PDF：題目卷（無答案）</button>
+    <button class="btn" data-print="a">🖨 存成 PDF：解答卷（含解析）</button>
+  </div>
+  <nav class="toc"><a href="#intro">實驗室安全與器材（9）<span class="st"></span></a><a href="#c1-1">測量與誤差（長度的紀錄）（13）<span class="st"></span></a><a href="#c1-2">體積（排水法）（3）<span class="st"></span></a><a href="#c1-3">質量（上皿天平）（8）<span class="st"></span></a><a href="#c1-4">密度（25）<span class="st"></span></a></nav>
+<section class="sec" data-sec="intro" data-title="緒論　實驗室安全與器材">
+<h2 id="intro">緒論　實驗室安全與器材<small>9 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-01</span><span class="tag">112 學年度 第一次段考 · 第 1 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 1 題" src="review/intro-ch1/112-01.png"><div class="ansrow" data-q="112-1" data-ans="A"><span class="lb">第 1 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-1" hidden><div class="key">答案：(A)</div><p><strong>只有丁是對的。</strong></p><p>甲：溫度計是<em>量測工具</em>，不是攪拌棒——下端的玻璃球泡很薄，攪一攪就破了。</p><p>乙：量筒只負責<em>量體積</em>。它口徑小又高，混合藥品若放熱會噴出來，刻度也會被弄髒。要混合請用燒杯。</p><p>丙：酒精燈要用<strong>燈罩蓋熄</strong>。用口吹會把火焰壓進燈內，引燃燈裡的酒精蒸氣。</p><p>丁：<strong>手搧聞</strong>——讓少量氣體飄過來，而不是把臉湊上去猛吸。</p><p class='mx-pt'>「四項裡只有幾項對」這種題型段考很愛出。它不是在考記憶，是在問：<em>你真的做過這個動作嗎？</em></p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-05</span><span class="tag">112 學年度 第一次段考 · 第 5 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 5 題" src="review/intro-ch1/112-05.png"><div class="ansrow" data-q="112-5" data-ans="B"><span class="lb">第 5 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-5" hidden><div class="key">答案：(B)</div><p>(A) <strong>酒精比水輕，會浮在水面上。</strong>澆水只會讓燃燒中的酒精跟著水流開，火勢反而擴大。正確做法是用<em>濕抹布覆蓋</em>——隔絕空氣才是滅火的原理。</p><p>(C) 要用手搧聞。未知氣體直接猛吸，是實驗室最危險的動作之一。</p><p>(D) 「先動手試試看」在實驗室不叫實驗精神，叫意外。真正的實驗精神是<em>先想清楚會發生什麼，再動手</em>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-09</span><span class="tag">112 學年度 第一次段考 · 第 9 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 9 題" src="review/intro-ch1/112-09.png"><div class="ansrow" data-q="112-9" data-ans="A"><span class="lb">第 9 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-9" hidden><div class="key">答案：(A)</div><p><strong>廣口瓶不能加熱，但燃燒實驗正是在廣口瓶裡做的。</strong></p><p>圖一錯在把廣口瓶放上陶瓷纖維網加熱——廣口瓶玻璃厚、受熱不均，一燒就裂。它的工作是<em>收集氣體、裝著氣體做燃燒實驗</em>，所以 (A) 正確。</p><p>(B) 廣口瓶是<strong>玻璃</strong>做的，不是塑膠。<br>(C) 燒杯加熱<strong>一定要墊陶瓷纖維網</strong>，讓受熱均勻。<br>(D) 圖二本身就是錯誤操作：燒杯不是拿來燒東西的容器，燃燒實驗要在廣口瓶裡做。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-11</span><span class="tag">112 學年度 第一次段考 · 第 11 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 11 題" src="review/intro-ch1/112-11.png"><div class="ansrow" data-q="112-11" data-ans="A"><span class="lb">第 11 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-11" hidden><div class="key">答案：(A)</div><p><strong>漏斗</strong>口大底小，專門把液體「導」進細口的容器，倒的時候不會灑出來。</p><p>(B) 藥匙：取用<em>固體</em>藥品。(C) 量筒：量液體<em>體積</em>。(D) 蒸發皿：把溶液<em>蒸乾</em>。</p><p class='mx-pt'>器材題的答法：先想「這個動作卡在哪裡」（口太細），再找專門解決它的器材。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-15</span><span class="tag">112 學年度 第一次段考 · 第 15 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 15 題" src="review/intro-ch1/112-15.png"><div class="ansrow" data-q="112-15" data-ans="D"><span class="lb">第 15 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-15" hidden><div class="key">答案：(D)</div><p>可以直接加熱的只有<strong>試管、蒸發皿、坩堝</strong>這一類：管壁薄、耐熱，而且<em>沒有刻度</em>。</p><p>量筒不行的理由不只是會裂——<strong>它是精密量具</strong>。玻璃受熱會脹、冷卻後不一定回到原狀，刻度就永久失準了。燒杯雖然常加熱，也必須墊陶瓷纖維網讓受熱均勻。</p><p class='mx-pt'>記一句就夠：<strong>身上有刻度的，都不要直接燒。</strong></p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-19</span><span class="tag">112 學年度 第一次段考 · 第 19 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 19 題" src="review/intro-ch1/112-19.png"><div class="ansrow" data-q="112-19" data-ans="A"><span class="lb">第 19 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-19" hidden><div class="key">答案：(A)</div><p>(B) 一支滴管取兩種溶液＝<strong>交叉污染</strong>，後面測到的東西都不能算數。</p><p>(C) 滴管管壁很薄，攪拌會斷在杯子裡。</p><p>(D) 倒著拿，液體會流進橡皮帽——橡皮被腐蝕，而且下次吸取時把殘留物帶回溶液。正確做法是<em>維持管口朝下</em>，取好就放開。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-09</span><span class="tag">113 學年度 第一次段考 · 第 9 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 9 題" src="review/intro-ch1/113-09.png"><div class="ansrow" data-q="113-9" data-ans="A"><span class="lb">第 9 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-9" hidden><div class="key">答案：(A)</div><p>(B) 前半對、後半錯——<strong>一個選項裡只要有一句錯，整句就是錯的</strong>。這是段考最常見的埋法。</p><p>(C) 酒精加到燈容量的 <strong>2/3 以下</strong>。加滿了，燈一傾斜就溢出來。</p><p>(D) 引燃另一個燈時必須傾斜，燈內的酒精會流出來燒到手。要用火柴或打火機。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-12</span><span class="tag">113 學年度 第一次段考 · 第 12 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 12 題" src="review/intro-ch1/113-12.png"><div class="ansrow" data-q="113-12" data-ans="D"><span class="lb">第 12 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-12" hidden><div class="key">答案：(D)</div><p><strong>試管</strong>可以直接放在火焰上加熱（管口不要對著人）。</p><p>(A) 燒杯要墊陶瓷纖維網才能加熱。(C) 量筒是精密量具，<strong>不能加熱</strong>。</p><p class='mx-pt'>⚠️ 補充：(B) 蒸發皿其實也耐熱、可以直接加熱。本題官方答案是 (D)，可能是依照老師上課的講法；如果考試遇到類似選項，<strong>請問老師這一題怎麼算</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-14</span><span class="tag">113 學年度 第一次段考 · 第 14 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 14 題" src="review/intro-ch1/113-14.png"><div class="ansrow" data-q="113-14" data-ans="D"><span class="lb">第 14 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-14" hidden><div class="key">答案：(D)</div><p>圖中是<strong>廣口瓶</strong>：瓶身直筒、瓶口很寬，旁邊那個是蓋瓶口用的蓋子／玻璃片。瓶口寬，排水集氣法才方便把導管伸進去收集氣體。</p><p>(A) 燒瓶：圓肚子、細長脖子。(B) 燒杯：矮胖、有杯嘴、身上有刻度。(C) 錐形瓶：三角錐形。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c1-1" data-title="第 1 章 ①　測量與誤差（長度的紀錄）">
+<h2 id="c1-1">第 1 章 ①　測量與誤差（長度的紀錄）<small>13 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-02</span><span class="tag">113 學年度 第一次段考 · 第 2 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 2 題" src="review/intro-ch1/113-02.png"><div class="ansrow" data-q="113-2" data-ans="D"><span class="lb">第 2 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2" hidden><div class="key">答案：(D)</div><p>「138 人」是<strong>一個一個數出來的</strong>，不是用儀器量的——人數沒有「估計值」，不會有 138.4 人。</p><p>降雨量（雨量計）、長度（尺）、氣溫（溫度計）都是用工具量的，最後一位是<em>估</em>出來的，所以一定受最小刻度限制。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-08</span><span class="tag">114 學年度 第一次段考 · 第 8 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 8 題" src="review/intro-ch1/114-08.png"><div class="ansrow" data-q="114-8" data-ans="A"><span class="lb">第 8 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-8" hidden><div class="key">答案：(A)</div><p>和上一題一模一樣的考法：<strong>「2 個小孩」是數出來的</strong>，沒有估計位。</p><p>30.0 mL（量筒）、60.2 公斤（體重計）、4.5 m（捲尺）都是測量值，最後一位都是估的。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-17</span><span class="tag">113 學年度 第一次段考 · 第 17 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 17 題" src="review/intro-ch1/113-17.png"><div class="ansrow" data-q="113-17" data-ans="C"><span class="lb">第 17 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-17" hidden><div class="key">答案：(C)</div><p><strong>完整的測量結果 ＝ 數值 ＋ 單位。</strong>66.04 公分兩樣都有。</p><p>(A) 25 名乘客是「數」的，不是測量。(B) 「600」沒有單位——是 600 毫升還是 600 公克？(D) 200 元是價錢，不是用工具量出來的。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-13</span><span class="tag">112 學年度 第一次段考 · 第 13 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 13 題" src="review/intro-ch1/112-13.png"><div class="ansrow" data-q="112-13" data-ans="C"><span class="lb">第 13 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-13" hidden><div class="key">答案：(C)</div><p>看兩個容器的刻度：甲每一格 <strong>10 cc</strong>，乙每一格 <strong>1 cc</strong>。要量 5 cc，甲連一格都不到，只能用猜的；乙可以清楚看到 5 的刻度。</p><p>(C) 的「選用愈小的單位」意思就是<em>最小刻度愈小</em>，量得愈準。</p><p>(A) 口徑大，同樣 5 cc 液面只升一點點，反而更難讀。(B) 刻度大＝最小刻度大＝比較不準。(D) 工具不同，準確程度就不同，結果不一定相等。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-03</span><span class="tag">114 學年度 第一次段考 · 第 3 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 3 題" src="review/intro-ch1/114-03.png"><div class="ansrow" data-q="114-3" data-ans="A"><span class="lb">第 3 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-3" hidden><div class="key">答案：(A)</div><p>準確度是由<strong>最小刻度</strong>決定的，不是由尺有多長決定的。</p><p>一把 30 公分、最小刻度 1 mm 的尺，和一把 100 公分、最小刻度 1 mm 的尺，能估到的位數<em>完全一樣</em>。尺變長只是讓你不必接著量第二次，跟準不準無關。</p><p class='mx-pt'>這題和變因的邏輯是同一個：要改的是<strong>真正會影響結果的那個東西</strong>，不是看起來有關係的那個。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-20</span><span class="tag">114 學年度 第一次段考 · 第 20 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 20 題" src="review/intro-ch1/114-20.png"><div class="ansrow" data-q="114-20" data-ans="C"><span class="lb">第 20 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-20" hidden><div class="key">答案：(C)</div><p>測量值的<strong>最後一位是「估」出來的</strong>——同一把尺、同一個物體，你估 70.42、我估 70.43，兩個都合法。所以 (C) 的「一定能得到相同結果」不成立。</p><p>這正是誤差的本質：<em>它不是誰做錯了，而是測量這件事本身就有極限</em>。多測幾次取平均可以把它縮小，但永遠不會變成零。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-04</span><span class="tag">113 學年度 第一次段考 · 第 4 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 4 題" src="review/intro-ch1/113-04.png"><div class="ansrow" data-q="113-4" data-ans="B"><span class="lb">第 4 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-4" hidden><div class="key">答案：(B)</div><p>第一步：<strong>先剔除明顯量錯的數據</strong>。21.32 和其他數字差了 7 公分，一定是看錯了，丟掉。</p><p>第二步：剩下 14.32、14.34、14.33、14.21 取平均：<br>(14.32 ＋ 14.34 ＋ 14.33 ＋ 14.21) ÷ 4 ＝ 57.20 ÷ 4 ＝ <strong>14.30 公分</strong></p><p>第三步：<strong>平均值的位數要和原本的紀錄一樣</strong>，原紀錄都到小數第二位，所以寫 14.30。(A) 14.3 少一位；(C) 14.300、(D) 14.335 多寫了尺量不到的位數。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-11</span><span class="tag">114 學年度 第一次段考 · 第 11 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 11 題" src="review/intro-ch1/114-11.png"><div class="ansrow" data-q="114-11" data-ans="A"><span class="lb">第 11 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-11" hidden><div class="key">答案：(A)</div><p>最小刻度 1 mm＝0.1 公分，所以可以<em>讀</em>到 0.1 公分，再往下<em>估</em>一位——合格的紀錄必須寫到<strong>小數第二位</strong>。</p><p>木聿的 70.3 少估一位（不合格）、金心的 70.321 多估了兩位（憑空捏造，不合格）。剩下 70.42、70.42、70.45 取平均＝<strong>70.43</strong>。</p><p>(B) <em>位數多 ≠ 準確</em>，多出來的位數是尺根本量不到的。(C) 沒有估計位不叫「沒誤差」，叫紀錄不完整。(D) 換更小的尺只是把誤差縮小，永遠到不了零。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-23</span><span class="tag">112 學年度 第一次段考 · 第 23 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 23 題" src="review/intro-ch1/112-23.png"><div class="ansrow" data-q="112-23" data-ans="B"><span class="lb">第 23 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-23" hidden><div class="key">答案：(B)</div><p>先看兩支尺的差別：<strong>甲尺只有公分刻度</strong>（最小刻度 1 cm），<strong>乙尺有毫米刻度</strong>（最小刻度 1 mm）。</p><p>甲尺：讀到 14 cm，再估一位 → <strong>14.0 cm</strong>。(A) 的 14.00 多估了一位。<br>乙尺：讀到 14.0 cm，再估一位 → 14.00 cm ＝ <strong>140.0 mm</strong> ✓</p><p>(C) 雖然都對齊 14，但兩支尺準確度不同，<em>紀錄的位數就不同</em>。(D) 標示的單位都是 cm，不代表最小刻度一樣。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-26</span><span class="tag">113 學年度 第一次段考 · 第 26 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 26 題" src="review/intro-ch1/113-26.png"><div class="ansrow" data-q="113-26" data-ans="C"><span class="lb">第 26 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-26" hidden><div class="key">答案：(C)</div><p><strong>起點不是 0！</strong>鐵釘從 13 公分量到 16 公分 → 長度 ＝ 16 − 13 ＝ 3 公分。</p><p>尺的最小刻度是 1 mm ＝ 0.1 公分，要再估一位到 0.01 → 記成 <strong>3.00 公分</strong>。</p><p>(A)(B) 把尾端的讀數當成長度了。(D) 3.0 少估一位。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-29</span><span class="tag">113 學年度 第一次段考 · 第 29 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 29 題" src="review/intro-ch1/113-29.png"><div class="ansrow" data-q="113-29" data-ans="A"><span class="lb">第 29 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-29" hidden><div class="key">答案：(A)</div><p>技巧：<strong>最後一位是估計值，倒數第二位就是最小刻度。</strong></p><p>甲 1.381 公尺：最後一位 0.001 m（1 mm）是估的 → 倒數第二位 0.01 m ＝ <strong>1 公分</strong>。<br>乙 42.1 公分：最後一位 0.1 cm 是估的 → 倒數第二位 ＝ <strong>1 公分</strong>。<br>丙 3.825×10² 毫米 ＝ 382.5 mm：最後一位 0.1 mm 是估的 → 倒數第二位 ＝ <strong>1 毫米</strong>。</p><p>所以甲和乙相同。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-39</span><span class="tag">113 學年度 第一次段考 · 第 39 題、第 40 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 39 題、第 40 題" src="review/intro-ch1/113-39.png"><div class="ansrow" data-q="113-39" data-ans="B"><span class="lb">第 39 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="113-40" data-ans="B"><span class="lb">第 40 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-39" hidden><div class="key">第 39 題　答案：(B)</div><p>這裡的「單位」是<strong>手掌寬</strong>。能數到幾個完整手掌是準確值，剩下不滿一個手掌的部分再<em>估一位</em>。</p><p>→ 「2.8 個手掌寬」剛好：2 個是量到的，0.8 是估的。</p><p>(A) 4.56 估了兩位，多寫了。(C) 5、(D) 9 沒有估計位，紀錄不完整。</p></div><div class="sol" data-q="113-40" hidden><div class="key">第 40 題　答案：(B)</div><p>規則：<strong>讀到最小刻度，再往下估一位</strong>。</p><p>(A) 最小刻度 1 mm → 估到 0.1 mm → 225.4 mm ✓<br>(B) 最小刻度 1 cm → 只能估到 1 mm → 應該記 225 mm（22.5 cm）。225.4 mm <strong>多估了一位 ✗</strong><br>(C) 最小刻度 1 m → 估到 0.1 m → 3.8 m ✓<br>(D) 最小刻度 1 cm ＝ 0.01 m → 估到 0.001 m → 3.802 m ✓</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c1-2" data-title="第 1 章 ②　體積（排水法）">
+<h2 id="c1-2">第 1 章 ②　體積（排水法）<small>3 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-02</span><span class="tag">112 學年度 第一次段考 · 第 2 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 2 題" src="review/intro-ch1/112-02.png"><div class="ansrow" data-q="112-2" data-ans="D"><span class="lb">第 2 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2" hidden><div class="key">答案：(D)</div><p>排水法只有一句話：<strong>水面上升的體積 ＝ 沉進去的體積</strong>。</p><p>兩球一起：180 − 100 ＝ 80 cm³。<br>取出鐵球後水面掉了 180 − 150 ＝ 30 → <strong>鐵球 30 cm³</strong>。<br>銅球 ＝ 80 − 30 ＝ <strong>50 cm³</strong>。</p><p>注意題目一個字都沒提到密度——它考的純粹是<em>你有沒有看懂那兩次減法各自在減什麼</em>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-15</span><span class="tag">113 學年度 第一次段考 · 第 15 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 15 題" src="review/intro-ch1/113-15.png"><div class="ansrow" data-q="113-15" data-ans="B"><span class="lb">第 15 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-15" hidden><div class="key">答案：(B)</div><p><strong>綠豆和綠豆之間有空隙！</strong>65 mL 是「綠豆＋空隙」的體積，不是綠豆本身。</p><p>倒入 50 mL 水，水會鑽進空隙裡。最後刻度 85 mL ＝ 水 ＋ 綠豆 → 綠豆 ＝ 85 − 50 ＝ <strong>35 mL</strong>。</p><p>(C) 65 就是把空隙也算進去了。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-21</span><span class="tag">112 學年度 第一次段考 · 第 21 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 21 題" src="review/intro-ch1/112-21.png"><div class="ansrow" data-q="112-21" data-ans="A"><span class="lb">第 21 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-21" hidden><div class="key">答案：(A)</div><p>看清楚每一步量筒裡「有誰」：</p><p>步驟二 V₂：水 ＋ 鐵塊（桌球還浮在水面上，<em>沒有沉進去</em>）<br>步驟三 V₃：水 ＋ 鐵塊 ＋ 桌球（被鐵塊拉下去了）</p><p>桌球體積 ＝ V₃ − V₂ ＝ 340 − 280 ＝ <strong>60 cm³</strong>。</p><p>V₁ 這題用不到——它是算鐵塊體積用的（280 − 180 ＝ 100）。<em>題目給的數字不一定都要用。</em></p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c1-3" data-title="第 1 章 ③　質量（上皿天平）">
+<h2 id="c1-3">第 1 章 ③　質量（上皿天平）<small>8 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-08</span><span class="tag">113 學年度 第一次段考 · 第 8 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 8 題" src="review/intro-ch1/113-08.png"><div class="ansrow" data-q="113-8" data-ans="C"><span class="lb">第 8 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-8" hidden><div class="key">答案：(C)</div><p>50 ＋ 20 ＋ 10 ＋ 10 ＝ 90 公克；200 ＋ 100 ＝ 300 毫克 ＝ 0.3 公克 → <strong>90.30 公克</strong>。</p><p>為什麼要寫 90.<strong>30</strong> 而不是 90.3？最小刻度 100 毫克＝0.1 公克，所以要再往下估一位到 0.01 公克。<em>那個 0 不是多餘的——它是在說「我估過了，估出來是 0」。</em></p><p class='mx-pt'>測量的數字會說話：位數本身就在告訴別人你用的是什麼工具。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-28</span><span class="tag">113 學年度 第一次段考 · 第 28 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 28 題" src="review/intro-ch1/113-28.png"><div class="ansrow" data-q="113-28" data-ans="C"><span class="lb">第 28 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-28" hidden><div class="key">答案：(C)</div><p>右盤下沉 ＝ <strong>右邊比較重</strong>。要讓兩邊平衡，就要讓左邊變「重」一點。</p><p>校準螺絲愈往外（離中央愈遠），那一邊的作用愈大 → 把<strong>左邊的螺絲往外旋出</strong>。</p><p>(A)(B) 右邊螺絲旋出，右邊更重，更往下沉。（原卷 (A)(B) 文字一樣，是印刷錯誤，兩個都不對。）(D) 不是隨便哪一邊都可以，方向相反會更歪。</p><p class='mx-pt'>口訣：<strong>哪邊重，就把另一邊的螺絲往外轉</strong>（或把重的那邊往內轉）。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-15</span><span class="tag">114 學年度 第一次段考 · 第 15 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:49.6%" alt="114 學年度 第 15 題" src="review/intro-ch1/114-15.png"><div class="ansrow" data-q="114-15" data-ans="C"><span class="lb">第 15 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-15" hidden><div class="key">答案：(C)</div><p>指針偏右 ＝ <strong>右邊比較重</strong>。圖中甲在右、乙在左。</p><p>讓右邊變輕：把右邊的<strong>甲往內（向左、朝中央）旋入</strong>，左邊的乙不動 → (C)。</p><p>和上一題是同一個原理：重的那邊螺絲往內，或輕的那邊螺絲往外。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-14</span><span class="tag">114 學年度 第一次段考 · 第 14 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 14 題" src="review/intro-ch1/114-14.png"><div class="ansrow" data-q="114-14" data-ans="B"><span class="lb">第 14 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-14" hidden><div class="key">答案：(B)</div><p><strong>甲（歸零）一定排第一。</strong>天平還沒歸零，後面量到的每一個數字都是錯的——這跟實驗設計裡「先把該固定的固定好」是同一個道理。</p><p>接著乙（左盤放秤量紙）→ 丁（右盤放 10 公克砝碼）→ 丙（慢慢加洗衣粉到指針回正中央）。</p><p>為什麼砝碼要先放？因為你要的是<strong>剛好 10 公克</strong>。先把目標架好，再慢慢加到平衡；反過來「先倒一堆再來湊」，只會一直加加減減。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-27</span><span class="tag">112 學年度 第一次段考 · 第 27 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 27 題" src="review/intro-ch1/112-27.png"><div class="ansrow" data-q="112-27" data-ans="C"><span class="lb">第 27 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-27" hidden><div class="key">答案：(C)</div><p>天平是在<strong>比較左右兩邊的質量</strong>。</p><p>海拔變高，物體和砝碼受到的重力<em>一起變小</em>，兩邊還是一樣平衡——需要的砝碼數量不變 → 水平線 <strong>丙</strong>。</p><p class='mx-pt'>質量不會因為位置改變；會變的是「重量」（用彈簧秤量的那個）。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-34</span><span class="tag">112 學年度 第一次段考 · 第 34 題、第 35 題、第 36 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 34 題、第 35 題、第 36 題" src="review/intro-ch1/112-34.png"><div class="ansrow" data-q="112-34" data-ans="A"><span class="lb">第 34 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="112-35" data-ans="D"><span class="lb">第 35 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="112-36" data-ans="B"><span class="lb">第 36 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-34" hidden><div class="key">第 34 題　答案：(A)</div><p>(A) 指針停在中央，<strong>或左右擺動的幅度相同</strong>，都代表已經平衡 ✓——不用等指針完全停下來。</p><p>(B) 上皿天平左右兩臂一樣長，燒杯和砝碼對調後<em>仍然平衡</em>，指針還是指中央。<br>(C) 要用<strong>鑷子</strong>夾砝碼。手上的汗會讓砝碼生鏽變重（第 36 題就是在考這個後果）。<br>(D) 砝碼應放在秤盤<strong>中央</strong>。</p></div><div class="sol" data-q="112-35" hidden><div class="key">第 35 題　答案：(D)</div><p>100 ＋ 20 ＋ 1 ＝ 121 公克；500 毫克 ＋ 200 毫克 ＝ 700 毫克 ＝ <strong>0.7 公克</strong>。</p><p>總質量 ＝ 121.7 → 記成 <strong>121.70 公克</strong>。</p><p>(A) 121.07 是把 700 毫克錯當成 0.07 公克。<em>1 公克 ＝ 1000 毫克</em>，要除以 1000。</p></div><div class="sol" data-q="112-36" hidden><div class="key">第 36 題　答案：(B)</div><p>生鏽的砝碼<strong>比上面標示的更重</strong>。換上去之後，右盤實際的質量變大 → 右邊比較重 → <strong>指針偏右</strong>。</p><p>這就是為什麼不能用手拿砝碼。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c1-4" data-title="第 1 章 ④　密度">
+<h2 id="c1-4">第 1 章 ④　密度<small>25 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-06</span><span class="tag">112 學年度 第一次段考 · 第 6 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 6 題" src="review/intro-ch1/112-06.png"><div class="ansrow" data-q="112-6" data-ans="D"><span class="lb">第 6 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-6" hidden><div class="key">答案：(D)</div><p>切開之後，每一塊<strong>都還是鋁</strong>，密度都是 2.7 → <strong>1：1：1</strong>。</p><p>(C) 1：2：3 是體積比，不是密度比。<em>密度只看「是什麼物質」，不看「有多少」。</em></p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-16</span><span class="tag">113 學年度 第一次段考 · 第 16 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 16 題" src="review/intro-ch1/113-16.png"><div class="ansrow" data-q="113-16" data-ans="C"><span class="lb">第 16 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-16" hidden><div class="key">答案：(C)</div><p>切開來，每一塊<strong>還是銅</strong>——密度都是 8.9，比是 <strong>1：1：1</strong>。</p><p>質量變了、體積也變了，但<em>兩者的比值沒變</em>。這正是密度好用的地方：它不管你有多少，只管你是什麼。</p><p>選 (A) 的人是把體積比直接抄下來——那是「有多少」，不是「是什麼」。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-12</span><span class="tag">114 學年度 第一次段考 · 第 12 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 12 題" src="review/intro-ch1/114-12.png"><div class="ansrow" data-q="114-12" data-ans="C"><span class="lb">第 12 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-12" hidden><div class="key">答案：(C)</div><p>(A) 混合物的成分比例可以不同（糖水可甜可淡），<strong>密度不固定</strong>。<br>(B) 同一種物質密度固定，不會隨質量改變。會成正比的是<em>質量和體積</em>。<br>(C) 手鐲和項鍊都是純金 → 密度相同 → 質量／體積相同 → 反過來體積／質量也相同 ✓<br>(D) 同一塊鋁切開，密度比是 1：1。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-05</span><span class="tag">114 學年度 第一次段考 · 第 5 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 5 題" src="review/intro-ch1/114-05.png"><div class="ansrow" data-q="114-5" data-ans="C"><span class="lb">第 5 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-5" hidden><div class="key">答案：(C)</div><p>同一種物質、同樣溫度，<strong>密度固定</strong>——不管銅塊多大，密度都一樣 → D-V 圖是一條<strong>水平線</strong>。</p><p>(A) 密度不會因為體積變大而變小。(B) 質量應該跟體積<em>成正比</em>（通過原點的斜直線），不是曲線。(D) 密度不會隨體積增加。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-33</span><span class="tag">114 學年度 第一次段考 · 第 33 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 33 題" src="review/intro-ch1/114-33.png"><div class="ansrow" data-q="114-33" data-ans="B"><span class="lb">第 33 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-33" hidden><div class="key">答案：(B)</div><p>同一種材質 → 密度相同 → 在 m-V 圖上會落在<strong>同一條通過原點的直線</strong>上。</p><p>乙的體積比較大 → 在 P 點的<strong>右上方</strong>、同一條線上 → <strong>B</strong>。</p><p>A 在線上但體積較小；C 是同質量、體積大（密度變小）；D 是同體積、質量大（密度變大）。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-22</span><span class="tag">113 學年度 第一次段考 · 第 22 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 22 題" src="review/intro-ch1/113-22.png"><div class="ansrow" data-q="113-22" data-ans="A"><span class="lb">第 22 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-22" hidden><div class="key">答案：(A)</div><p>麵包壓扁，<strong>質量沒有少</strong>（麵包沒被吃掉），但裡面的空氣被擠出去，<strong>體積變小</strong>。</p><p>密度 ＝ 質量 ÷ 體積，分子不變、分母變小 → <strong>密度變大</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-27</span><span class="tag">114 學年度 第一次段考 · 第 27 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 27 題" src="review/intro-ch1/114-27.png"><div class="ansrow" data-q="114-27" data-ans="B"><span class="lb">第 27 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-27" hidden><div class="key">答案：(B)</div><p>密度 ＝ M ÷ V，看 M 或 V 有沒有「不成比例」地改變：</p><p>(甲) 三態變化：質量不變、體積變（水結冰會膨脹）→ <strong>密度改變 ✓</strong><br>(乙) 切半：質量、體積一起減半 → 密度不變<br>(丙) 改變形狀：質量、體積都不變 → 密度不變<br>(丁) 溫度：熱脹冷縮，體積改變 → <strong>密度改變 ✓</strong></p><p>共 2 種。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-09</span><span class="tag">114 學年度 第一次段考 · 第 9 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 9 題" src="review/intro-ch1/114-09.png"><div class="ansrow" data-q="114-9" data-ans="B"><span class="lb">第 9 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-9" hidden><div class="key">答案：(B)</div><p>冰可以浮在水面上 → 冰的密度比水小（1 對 ✓）。</p><p>水結成冰，<strong>質量不變</strong>（2「變輕」錯、3「質量減少」錯）。<br>質量不變、密度變小 → 體積一定變大（4 對 ✓）。</p><p>共 2 項。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-06</span><span class="tag">114 學年度 第一次段考 · 第 6 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 6 題" src="review/intro-ch1/114-06.png"><div class="ansrow" data-q="114-6" data-ans="C"><span class="lb">第 6 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-6" hidden><div class="key">答案：(C)</div><p>熔化只是換型態，<strong>質量不會憑空消失</strong>：100 ＋ 200 ＝ 300 g 的水。<br>水的密度 1.0 → 體積 ＝ <strong>300 cm³</strong>。</p><p>那 0.9 是幹嘛的？<em>它是誘餌。</em>很多人拿它去算冰塊原本的體積（111 cm³）再加上去，算出一堆不存在的數字。但冰化成水以後就不是冰了——<strong>0.9 只在它還是冰的時候有效</strong>。</p><p class='mx-pt'>題目給的數字不一定每個都要用。先問一句：<strong>這一步我算的是誰的密度？</strong></p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-05</span><span class="tag">113 學年度 第一次段考 · 第 5 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 5 題" src="review/intro-ch1/113-05.png"><div class="ansrow" data-q="113-5" data-ans="A"><span class="lb">第 5 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-5" hidden><div class="key">答案：(A)</div><p>質量相同時，<strong>密度愈小，體積愈大</strong>（體積 ＝ 質量 ÷ 密度）。</p><p>鋁的密度 2.7 最小 → 體積最大 → 排開的水最多 → 水面上升最多。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-14</span><span class="tag">112 學年度 第一次段考 · 第 14 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 14 題" src="review/intro-ch1/112-14.png"><div class="ansrow" data-q="112-14" data-ans="D"><span class="lb">第 14 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-14" hidden><div class="key">答案：(D)</div><p>質量相等時，體積和密度<strong>成反比</strong>：密度愈小，體積愈大。</p><p>密度：鐵 7.98 ＜ 銅 8.9 ＜ 鉛 11.3 → 體積：<strong>鐵 ＞ 銅 ＞ 鉛</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-37</span><span class="tag">114 學年度 第一次段考 · 第 37 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 37 題" src="review/intro-ch1/114-37.png"><div class="ansrow" data-q="114-37" data-ans="A"><span class="lb">第 37 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-37" hidden><div class="key">答案：(A)</div><p>和上一題同一招：質量相同，<strong>密度最大的體積最小</strong>，做成的立方體邊長也最小。</p><p>密度：金 19.3 最大 → <strong>金</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-34</span><span class="tag">113 學年度 第一次段考 · 第 34 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 34 題" src="review/intro-ch1/113-34.png"><div class="ansrow" data-q="113-34" data-ans="B"><span class="lb">第 34 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-34" hidden><div class="key">答案：(B)</div><p>密度 ＝ 質量 ÷ 體積，逐一算：</p><p>甲 ＝ 1 ÷ 3 ＝ 1/3，乙 ＝ 2 ÷ 2 ＝ 1，丙 ＝ 3 ÷ 1 ＝ 3</p><p>1/3 ： 1 ： 3，全部乘以 3 → <strong>1：3：9</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-30</span><span class="tag">114 學年度 第一次段考 · 第 30 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 30 題" src="review/intro-ch1/114-30.png"><div class="ansrow" data-q="114-30" data-ans="B"><span class="lb">第 30 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-30" hidden><div class="key">答案：(B)</div><p>從圖讀數據：甲 5 cm³ → 8 g，密度 ＝ 8 ÷ 5 ＝ <strong>1.6</strong>；乙 10 cm³ → 3 g，密度 ＝ 3 ÷ 10 ＝ <strong>0.3</strong>。</p><p>(B) 1.6：0.3 ＝ <strong>16：3</strong> ✓<br>(A) 甲 1.6 ＞ 水的 1，會<em>沉</em>；會浮的是乙。<br>(C) 質量相同時，體積和密度成反比 → 體積比應為 3：16。<br>(D) 圖上只看得出密度，看不出是不是混合物。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-29</span><span class="tag">112 學年度 第一次段考 · 第 29 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 29 題" src="review/intro-ch1/112-29.png"><div class="ansrow" data-q="112-29" data-ans="C"><span class="lb">第 29 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-29" hidden><div class="key">答案：(C)</div><p>天平平衡 → 甲、乙<strong>質量相等</strong>。甲 20 mL、乙只有 10 mL → 乙的密度是甲的 2 倍。</p><p>M-V 圖上，<strong>線愈陡，密度愈大</strong> → 乙的線比較陡。</p><p>縱軸是「液體質量」，體積 0 時質量也是 0 → 線要<strong>通過原點</strong>。(A) 乙比較陡，但沒有通過原點，是錯的；答案是 (C)。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-30</span><span class="tag">112 學年度 第一次段考 · 第 30 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 30 題" src="review/intro-ch1/112-30.png"><div class="ansrow" data-q="112-30" data-ans="A"><span class="lb">第 30 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-30" hidden><div class="key">答案：(A)</div><p>表中的質量是<strong>「量筒 ＋ 液體」</strong>，但圖畫的是「液體的質量」。</p><p>看變化量：體積每多 5 cm³，質量多 10 g → 液體密度 ＝ 10 ÷ 5 ＝ <strong>2 g/cm³</strong>。</p><p>圖中甲線：30 cm³ 對到 60 g，密度 ＝ 2 → <strong>甲</strong>。</p><p>（順便算出空量筒 ＝ 100 − 5×2 ＝ 90 g。）</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-39</span><span class="tag">114 學年度 第一次段考 · 第 39 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 39 題" src="review/intro-ch1/114-39.png"><div class="ansrow" data-q="114-39" data-ans="D"><span class="lb">第 39 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-39" hidden><div class="key">答案：(D)</div><p>先看穿一件事：表上的質量是<strong>「量筒＋液體」</strong>，不是液體本身。</p><p>每多 10 cm³，質量多 12 g → 密度 1.2 ✓（A 對）<br>回推空量筒 ＝ 35 − 10×1.2 ＝ 23 g ✓（B 對）<br>119 ＝ 23 ＋ 1.2V → V ＝ 80 ✓（C 對）</p><p>(D) 錯在<em>它把量筒也算進縱軸了</em>。如果縱軸真的是「液體」的質量（已經扣掉量筒），那 0 體積就是 0 公克，直線<strong>一定通過原點</strong>。會不通過原點的，是「量筒＋液體」那一條。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-40</span><span class="tag">114 學年度 第一次段考 · 第 40 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:44.9%" alt="114 學年度 第 40 題" src="review/intro-ch1/114-40.png"><div class="ansrow" data-q="114-40" data-ans="C"><span class="lb">第 40 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-40" hidden><div class="key">答案：(C)</div><p>⚠️ 先看軸：這張圖<strong>縱軸是 V、橫軸是 m</strong>，和平常相反！所以線愈陡，密度反而愈<em>小</em>。</p><p>甲：24 g ÷ 3 cm³ ＝ 密度 8；乙：16 g ÷ 4 cm³ ＝ 密度 4。</p><p>① ② ④：同一條線上的球有大有小，不能說「甲線上的球<em>一定</em>比乙重／比乙小／直徑比較大」→ 都錯。<br>③ 甲密度 8 ＞ 乙 4 ✓<br>⑤ 兩條直線 ＝ 兩種密度 ✓<br>⑥ 密度只是鑑別物質的<strong>參考</strong>，光靠密度不能百分之百確定是兩種物質 → 不採計。</p><p>正確的有 ③⑤，共 2 項。（選項只有 0／1／2／4，③⑤ 一定對、①②④ 一定錯，所以答案只能是 2。）</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-20</span><span class="tag">113 學年度 第一次段考 · 第 20 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 20 題" src="review/intro-ch1/113-20.png"><div class="ansrow" data-q="113-20" data-ans="A"><span class="lb">第 20 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-20" hidden><div class="key">答案：(A)</div><p>每個點算一次「質量 ÷ 體積」，會發現它們分成幾群：</p><p>密度 <strong>6</strong>：(2, 12)、(4/3, 8)、(2/3, 4) → 3 個，密度最大（B 對）<br>密度 <strong>0.5</strong>：(4, 2)、(6, 3)、(8, 4)、(10, 5) → 4 個，比水小，會浮（C 對、D 對）<br>其餘 5 個密度都大於 1</p><p>會沉入水中的 ＝ 12 − 4 ＝ <strong>8 個</strong>，(A) 說 7 個 → 錯。</p><p class='mx-pt'>技巧：連原點畫直線，<strong>落在同一條直線上的點，密度相同</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-38</span><span class="tag">113 學年度 第一次段考 · 第 38 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 38 題" src="review/intro-ch1/113-38.png"><div class="ansrow" data-q="113-38" data-ans="D"><span class="lb">第 38 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-38" hidden><div class="key">答案：(D)</div><p>1 公斤鐵和 1 公斤棉花，<strong>質量一樣</strong>（A 對），放上天平會平衡（C 對）。</p><p>鐵的密度大 → 同樣質量體積小（B 對）。棉花蓬蓬的一大團，密度<strong>比較小</strong> → (D) 錯。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-24</span><span class="tag">113 學年度 第一次段考 · 第 24 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 24 題" src="review/intro-ch1/113-24.png"><div class="ansrow" data-q="113-24" data-ans="B"><span class="lb">第 24 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-24" hidden><div class="key">答案：(B)</div><p>同一塊合金分成兩塊，<strong>密度相同</strong>——先用正立方體把密度算出來。</p><p>正立方體：體積 10×10×10 ＝ 1000 cm³，質量 10 − 4 ＝ 6 kg ＝ 6000 g → 密度 ＝ <strong>6 g/cm³</strong>。</p><p>實心球：4 kg ＝ 4000 g，體積 ＝ 4000 ÷ 6 ≈ <strong>666 cm³</strong>。</p><p>注意 kg 要換成 g，不然單位對不起來。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-25</span><span class="tag">113 學年度 第一次段考 · 第 25 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 25 題" src="review/intro-ch1/113-25.png"><div class="ansrow" data-q="113-25" data-ans="D"><span class="lb">第 25 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-25" hidden><div class="key">答案：(D)</div><p>兩次沉下去的是<strong>同一個鋁塊</strong>，所以兩次排開的<em>體積一樣</em>——這個沒被寫出來的體積，就是整題的橋。</p><p>酒精那次：60 ÷ 0.75 ＝ 80 cm³ → 鋁塊體積 80 cm³。<br>某液體那次：160 ÷ 80 ＝ <strong>2.0 g/cm³</strong>。</p><p>題目給兩個質量、一個密度，看起來少一個條件。<em>少的那個，通常就是要你自己看出來的那個。</em></p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-25</span><span class="tag">112 學年度 第一次段考 · 第 25 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 25 題" src="review/intro-ch1/112-25.png"><div class="ansrow" data-q="112-25" data-ans="C"><span class="lb">第 25 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-25" hidden><div class="key">答案：(C)</div><p>把「3/4 純金、1/4 銅」當成<strong>體積</strong>的比例：</p><p>戒指密度 ＝ 19.3 × 3/4 ＋ 9.0 × 1/4 ＝ 14.475 ＋ 2.25 ＝ 16.725 ≈ <strong>16.7 g/cm³</strong></p><p class='mx-pt'>補充：真正的 18K 金其實是指<strong>質量</strong>占 3/4。如果照質量算，密度大約是 15.0，選項裡沒有，所以命題老師是把 3/4 當成體積比例。混合物的密度一定會介於兩種成分之間。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-26</span><span class="tag">112 學年度 第一次段考 · 第 26 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 26 題" src="review/intro-ch1/112-26.png"><div class="ansrow" data-q="112-26" data-ans="D"><span class="lb">第 26 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-26" hidden><div class="key">答案：(D)</div><p>木塊會浮，不壓下去就量不到體積——所以綁一顆石頭把它拖下去，這叫<strong>綁石法</strong>。</p><p>總排開 82.0 − 50.0 ＝ 32.0 cm³，扣掉石塊的 18.0 → 木塊 <strong>14.0 cm³</strong>。<br>密度 ＝ 8.4 ÷ 14.0 ＝ <strong>0.6 g/cm³</strong>。</p><p class='mx-pt'>算完回頭檢查一次：0.6 &lt; 1，所以它確實會浮——<em>答案自己驗證了題目的前提</em>。這個習慣可以救你很多分。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-04</span><span class="tag">112 學年度 第一次段考 · 第 4 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 4 題" src="review/intro-ch1/112-04.png"><div class="ansrow" data-q="112-4" data-ans="D"><span class="lb">第 4 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-4" hidden><div class="key">答案：(D)</div><p>步驟二稱到的 100 g 是<strong>「量筒 ＋ 水」</strong>，不是水的質量——算密度前要扣掉空量筒的質量。</p><p>(A) 量筒可以拿來裝水量體積，沒問題。(B) 歸零要在放東西<em>之前</em>做。(C) 水的密度是 1 g/mL，1.25 明顯不對。</p><p class='mx-pt'>這和 112-30、114-39 是同一個陷阱：<strong>秤到的質量裡，有沒有包含容器？</strong></p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+</main>
+
+<main id="wrongbook" hidden>
+  <div class="wbhead">
+    <h2>📕 錯題本<small id="wbsub"></small></h2>
+    <p class="dim noprint">這裡收的是交卷時答錯或沒寫的題目。再做一次：選完馬上看到對錯和解析；<strong>答對了</strong>才能移出錯題本。</p>
+    <div class="toolbar"><button class="btn" data-print="w">🖨 存成 PDF：錯題本（含解析）</button></div>
+  </div>
+  <div id="wblist"></div>
+</main>
+
+<footer>
+  試題取自學校於段考後公布的試卷，僅供自學複習使用。解析為自學用補充說明；標示「自行解出」者並非官方答案。<br>
+  <a href="index.html">← 回自學站首頁</a>　·　<a href="exam.html">整卷模擬</a>　·　<a href="book.html">課本地圖</a>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var KEY="jhs8-sci-intro-ch1-review-v2";
+var S={secs:{},wrong:{}};
+try{ var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); S.secs=o.secs||{}; S.wrong=o.wrong||{}; } }catch(e){}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} }
+function sec(k){ return S.secs[k]||(S.secs[k]={picks:{},graded:false}); }
+function $$(sel,root){ return [].slice.call((root||document).querySelectorAll(sel)); }
+
+/* ---------- 題目練習：每一段各自作答、交卷 ---------- */
+function paintSection(el){
+  var k=el.dataset.sec, s=sec(k), rows=$$(".ansrow",el), n=0, right=0;
+  rows.forEach(function(r){
+    var q=r.dataset.q, ans=r.dataset.ans, pick=s.picks[q]||"";
+    if(pick) n++;
+    if(pick===ans) right++;
+    $$(".opts button",r).forEach(function(b){
+      var c=b.dataset.c;
+      if(s.graded) b.className = c===pick ? (c===ans?"ok":"bad") : (c===ans?"miss":"");
+      else b.className = c===pick ? "pick" : "";
+    });
+    var v=r.querySelector(".verdict");
+    if(s.graded){ v.textContent = pick===ans ? "✓ 答對" : (pick ? "✗ 正解 "+ans : "沒寫，正解 "+ans); v.className="verdict "+(pick===ans?"ok":"bad"); }
+    else { v.textContent=""; v.className="verdict"; }
+  });
+  $$(".sol",el).forEach(function(x){ x.hidden=!s.graded; });
+  var bar=el.querySelector(".secbar"), N=rows.length;
+  bar.querySelector(".secstat").textContent = s.graded ? "這一段已交卷" : "已作答 "+n+" / "+N+" 題";
+  bar.querySelector(".sub").hidden = s.graded;
+  bar.querySelector(".redo").hidden = !s.graded;
+  var sc=bar.querySelector(".secscore");
+  if(s.graded){
+    var miss=N-right;
+    sc.innerHTML='答對 <b class="big">'+right+'</b> / '+N+' 題（'+Math.round(right/N*100)+'%）'+
+      (miss ? '　·　錯的 '+miss+' 題已放進 <a href="#" class="gowb">錯題本</a>' : '　·　全對！');
+    sc.hidden=false;
+  } else sc.hidden=true;
+  var t=document.querySelector('.toc a[href="#'+k+'"] .st');
+  if(t) t.textContent = s.graded ? right+"/"+N : "";
+}
+
+$$("section.sec").forEach(function(el){
+  var k=el.dataset.sec;
+  $$(".ansrow",el).forEach(function(r){
+    $$(".opts button",r).forEach(function(b){
+      b.addEventListener("click",function(){
+        var s=sec(k); if(s.graded) return;
+        var q=r.dataset.q; s.picks[q] = s.picks[q]===b.dataset.c ? "" : b.dataset.c;
+        save(); paintSection(el);
+      });
+    });
+  });
+  var bar=el.querySelector(".secbar"), sub=bar.querySelector(".sub");
+  sub.addEventListener("click",function(){
+    var s=sec(k), rows=$$(".ansrow",el);
+    var blank=rows.filter(function(r){return !s.picks[r.dataset.q]}).length;
+    if(blank && !sub.dataset.warned){
+      sub.dataset.warned="1";
+      bar.querySelector(".secstat").textContent="還有 "+blank+" 題沒寫（沒寫算錯），再按一次就交卷";
+      return;
+    }
+    sub.dataset.warned="";
+    s.graded=true;
+    rows.forEach(function(r){
+      var q=r.dataset.q, pick=s.picks[q]||"";
+      if(pick!==r.dataset.ans){ var w=S.wrong[q]||{n:0}; w.n++; w.last=pick||"沒寫"; S.wrong[q]=w; }
+    });
+    save(); paintSection(el); paintCount();
+    el.querySelector(".secbar").scrollIntoView({block:"center"});
+  });
+  bar.querySelector(".redo").addEventListener("click",function(){
+    S.secs[k]={picks:{},graded:false}; save(); paintSection(el);
+    el.querySelector("h2").scrollIntoView();
+  });
+  bar.addEventListener("click",function(e){
+    if(e.target.classList.contains("gowb")){ e.preventDefault(); show("wrongbook"); }
+  });
+  paintSection(el);
+});
+
+/* ---------- 錯題本 ---------- */
+function wrongIds(){
+  return $$("#practice .ansrow").map(function(r){return r.dataset.q}).filter(function(q){return S.wrong[q]});
+}
+function paintCount(){
+  var n=wrongIds().length;
+  document.getElementById("wbcnt").textContent=n;
+  document.getElementById("wbsub").textContent = n ? "目前 "+n+" 題" : "";
+}
+function buildWrongbook(){
+  var list=document.getElementById("wblist"); list.innerHTML="";
+  var ids=wrongIds();
+  if(!ids.length){
+    list.innerHTML='<div class="empty">錯題本是空的。<br>去「題目練習」做完一段並交卷，答錯的題目就會出現在這裡。</div>';
+    return;
+  }
+  var lastSec="";
+  ids.forEach(function(q){
+    var row=document.querySelector('#practice .ansrow[data-q="'+q+'"]');
+    var secEl=row.closest("section.sec");
+    if(secEl.dataset.sec!==lastSec){
+      lastSec=secEl.dataset.sec;
+      var h=document.createElement("h2"); h.textContent=secEl.dataset.title; list.appendChild(h);
+    }
+    var card=row.closest(".card").cloneNode(true);
+    card.classList.add("wb");
+    $$(".ansrow",card).forEach(function(r){ if(r.dataset.q!==q) r.remove(); });
+    $$(".sol",card).forEach(function(x){ if(x.dataset.q!==q) x.remove(); });
+    var r=card.querySelector(".ansrow"), sol=card.querySelector(".sol"), ans=r.dataset.ans, w=S.wrong[q];
+    var info=document.createElement("span");
+    info.className="tag miss"; info.textContent="錯過 "+w.n+" 次 · 上次："+w.last;
+    card.querySelector(".meta").appendChild(info);
+    $$(".opts button",r).forEach(function(b){ b.className=""; });
+    r.querySelector(".verdict").textContent="";
+    sol.hidden=true;
+    var act=document.createElement("div"); act.className="wbact";
+    act.innerHTML='<button class="btn ok done" hidden>我會了，移出錯題本</button><button class="btn again" hidden>再做一次</button>';
+    card.appendChild(act);
+    var locked=false;
+    $$(".opts button",r).forEach(function(b){
+      b.addEventListener("click",function(){
+        if(locked) return; locked=true;
+        var c=b.dataset.c, ok=c===ans;
+        $$(".opts button",r).forEach(function(x){
+          x.className = x.dataset.c===c ? (ok?"ok":"bad") : (x.dataset.c===ans?"miss":"");
+        });
+        var v=r.querySelector(".verdict");
+        v.textContent = ok ? "✓ 答對了" : "✗ 還是錯，正解 "+ans; v.className="verdict "+(ok?"ok":"bad");
+        if(!ok){ w.n++; w.last=c; save(); info.textContent="錯過 "+w.n+" 次 · 上次："+c; }
+        sol.hidden=false;
+        act.querySelector(".done").hidden=!ok;
+        act.querySelector(".again").hidden=false;
+      });
+    });
+    act.querySelector(".again").addEventListener("click",function(){
+      locked=false; sol.hidden=true;
+      $$(".opts button",r).forEach(function(x){x.className=""});
+      r.querySelector(".verdict").textContent="";
+      act.querySelector(".done").hidden=true; this.hidden=true;
+    });
+    act.querySelector(".done").addEventListener("click",function(){
+      delete S.wrong[q]; save(); paintCount(); card.remove();
+      if(!wrongIds().length) buildWrongbook();
+    });
+    list.appendChild(card);
+  });
+}
+function show(v){
+  $$(".tab").forEach(function(t){ t.classList.toggle("on", t.dataset.view===v); });
+  document.getElementById("practice").hidden = v!=="practice";
+  document.getElementById("wrongbook").hidden = v!=="wrongbook";
+  if(v==="wrongbook") buildWrongbook();
+  window.scrollTo(0, document.querySelector(".tabs").offsetTop-10);
+}
+$$(".tab").forEach(function(t){ t.addEventListener("click",function(){ show(t.dataset.view); }); });
+
+/* ---------- 點圖放大（手機看小字用） ---------- */
+document.addEventListener("click",function(e){
+  var im=e.target.closest && e.target.closest(".qimg"); if(!im) return;
+  var z=document.createElement("div"); z.className="zoom";
+  var big=document.createElement("img"); big.src=im.src;
+  big.style.width=Math.round(im.naturalWidth*0.75)+"px";
+  z.innerHTML='<span class="hint">可左右滑動、雙指縮放</span><button class="x">✕ 關閉</button>';
+  z.appendChild(big);
+  z.addEventListener("click",function(ev){ if(ev.target===z||ev.target.classList.contains("x")) z.remove(); });
+  document.body.appendChild(z);
+});
+window.addEventListener("load",function(){
+  if(location.hash && location.hash.length>1){ var t=document.getElementById(location.hash.slice(1)); if(t) t.scrollIntoView({behavior:"instant"}); }
+});
+
+/* ---------- 列印 ---------- */
+function setPrint(m){
+  document.body.classList.remove("pq","pa","pw");
+  document.body.classList.add("p"+m);
+  if(m==="w"){ show("wrongbook"); $$("#wblist .sol").forEach(function(x){x.hidden=false}); }
+  else { show("practice"); }
+  if(m==="a") $$("#practice .sol").forEach(function(x){x.hidden=false});
+  document.getElementById("phead").textContent =
+    m==="a" ? "【解答卷】含答案與解析" :
+    m==="w" ? "【錯題本】含答案與解析" :
+    "【題目卷】　姓名：＿＿＿＿＿＿＿　日期：＿＿＿＿＿　得分：＿＿＿／58";
+}
+window.addEventListener("afterprint",function(){
+  document.body.classList.remove("pq","pa","pw");
+  $$("section.sec").forEach(paintSection);
+});
+$$("[data-print]").forEach(function(b){
+  b.addEventListener("click",function(){ setPrint(b.dataset.print); setTimeout(function(){window.print()},80); });
+});
+paintCount();
+var m=(location.search.match(/print=([qaw])/)||[])[1];
+if(m) setPrint(m);
+})();
+</script>
+</body>
+</html>
