@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>八上自然 第3章 段考原題複習</title>
+<style>
+:root{--paper:#faf7f0;--ink:#2b2622;--ink2:#5c5349;--line:#ded5c6;--accent:#c2410c;--accent-soft:#fff1e7;
+  --green:#3f6d3a;--green-soft:#eef4ec;--warn:#8a6a1e;--warn-soft:#fdf6e6}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16.5px;line-height:1.8}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 80px}
+header{padding:36px 0 18px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:13px;letter-spacing:.18em;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+p{margin:0 0 12px}
+.dim{color:var(--ink2)}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600}
+a{color:var(--accent)}
+details.howto{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;font-size:15px}
+details.howto summary{cursor:pointer;font-weight:700}
+details.howto p{margin:8px 0 0}
+button{font-family:inherit}
+.btn{border:1.5px solid var(--ink);background:#fff;color:var(--ink);border-radius:99px;padding:8px 16px;font-size:14.5px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ink);color:#fff}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{filter:brightness(.92)}
+.btn.ok{background:var(--green);border-color:var(--green);color:#fff}
+.btn[disabled]{opacity:.45;cursor:default;background:#fff;color:var(--ink)}
+.tabs{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 16px;font-size:15.5px;cursor:pointer;font-weight:700;color:var(--ink2)}
+.tab.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.tab .cnt{display:inline-block;min-width:22px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--accent);color:#fff;font-size:13px;text-align:center}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;align-items:center}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.toc a{font-size:13.5px;color:var(--ink2);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 11px;background:#fff}
+.toc a:hover{border-color:var(--ink);color:var(--ink)}
+.toc a .st{color:var(--green);font-weight:700;margin-left:4px}
+h2{font-size:20px;margin:40px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+h2 small{font-size:13px;color:var(--ink2);font-weight:400;margin-left:8px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;margin:0 0 16px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;font-size:13px}
+.tag{border-radius:99px;padding:1px 9px;border:1px solid var(--line);color:var(--ink2);background:#f6f2ea}
+.tag.self{border-color:#d8b46a;background:var(--warn-soft);color:var(--warn)}
+.tag.no{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.tag.miss{background:var(--accent-soft);border-color:#f0b48a;color:var(--accent)}
+.qimg{display:block;width:var(--w);max-width:100%;height:auto}
+.ansrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.ansrow .lb{font-size:14px;color:var(--ink2);min-width:64px}
+.opts{display:flex;gap:6px}
+.opts button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:15px;color:var(--ink2);cursor:pointer;padding:0}
+.opts button:hover{border-color:var(--ink)}
+.opts button.pick{background:var(--ink);border-color:var(--ink);color:#fff}
+.opts button.ok{background:var(--green);border-color:var(--green);color:#fff}
+.opts button.bad{background:var(--accent);border-color:var(--accent);color:#fff}
+.opts button.miss{border:2.5px solid var(--green);color:var(--green);font-weight:700}
+.verdict{font-size:14.5px;font-weight:700}
+.verdict.ok{color:var(--green)} .verdict.bad{color:var(--accent)}
+.blank{display:none}
+.sol{margin-top:10px;background:var(--green-soft);border:1px solid #c8dcc4;border-radius:10px;padding:12px 14px;font-size:15.5px}
+.sol .key{font-weight:700;color:var(--green);margin-bottom:6px}
+.sol p:last-child{margin-bottom:0}
+.sol .mx-pt{background:#fff;border-left:3px solid var(--accent);padding:6px 10px;border-radius:0 6px 6px 0;font-size:14.5px}
+.sol .srcnote{font-size:13px;color:var(--warn);margin-top:6px}
+.secbar{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px 16px;margin:4px 0 8px;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.secbar .secstat{font-size:15px;margin-right:auto}
+.secbar .secscore{flex-basis:100%;font-size:15px}
+.secbar .secscore b.big{font-size:20px}
+.wbhead{margin:26px 0 14px}
+.wbhead h2{margin-top:0}
+.empty{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:26px;text-align:center;color:var(--ink2)}
+.wbinfo{font-size:13.5px;color:var(--accent);margin-left:auto}
+.wbact{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.qimg{cursor:zoom-in}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.92);overflow:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(52px + env(safe-area-inset-top,0px)) 10px calc(20px + env(safe-area-inset-bottom,0px))}
+.zoom img{display:block;width:1000px;max-width:none;background:#fff;border-radius:6px;margin:0 auto}
+.zoom .x{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:10px;background:#fff;border:none;border-radius:99px;
+  padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer}
+.zoom .hint{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:14px;color:#fff;font-size:13.5px}
+.printhead{display:none}
+footer{margin-top:30px;font-size:13px;color:var(--ink2);line-height:1.8}
+@media(max-width:600px){.qimg{width:100%}h1{font-size:24px}}
+
+/* ===== 列印 ===== */
+@page{size:A4;margin:12mm 11mm}
+@media print{
+  body{background:#fff;font-size:12.5pt}
+  .wrap{max-width:none;padding:0}
+  .noprint,.tabs,.toolbar,.toc,.opts,.verdict,.secbar,.wbact,details.howto{display:none!important}
+  .qimg{width:var(--w)!important}
+  header{padding:0 0 8px}
+  h1{font-size:18pt}
+  h2{font-size:14pt;margin:14px 0 8px;break-after:avoid}
+  .card{border:none;border-bottom:1px solid #bbb;border-radius:0;padding:6px 0 8px;margin:0;break-inside:avoid}
+  .ansrow{border-top:none;padding-top:4px;margin-top:2px}
+  .printhead{display:block}
+  .tag{background:#fff}
+  body.pq .blank{display:inline}
+  body.pq .sol{display:none!important}
+  body.pa .sol,body.pw .sol{display:block!important;background:#fff;border:1px solid #999;break-inside:avoid}
+  body.pa .ansrow,body.pw .ansrow{display:none}
+  body.pa .card,body.pw .card{break-inside:auto}
+  body.pa .qimg,body.pw .qimg{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">八年級上學期 · 自然科學 · 段考原題</div>
+  <h1>第 3 章 波動與聲音<br>段考原題複習</h1>
+  <p class="dim printhead" id="phead"></p>
+  <p class="dim">丹鳳高中國中部 112／113／114 學年度第一學期<strong>第二次段考</strong>，挑出屬於「第 3 章 波動與聲音」的題目，共 54 題，照課本小節分成 8 段（光的題目在第 4 章那一頁）。題目是原卷截圖，圖表和考試時一模一樣。</p>
+  <details class="howto noprint">
+    <summary>怎麼用這一頁？</summary>
+    <p>題目字太小時，<strong>點一下圖片</strong>就會放大。</p>
+    <p>① 選一段，每題點 A～D；<strong>是非題</strong>（題號 1～10）點「是」或「否」。　② 寫完按該段最下面的<strong>「交卷這一段」</strong>，才會顯示對錯和解析。</p>
+    <p>③ 答錯或沒寫的題目會自動放進<strong>「錯題本」</strong>。在錯題本裡再做一次，答對了就可以按「我會了，移出錯題本」。</p>
+    <p>作答和錯題本都存在這台裝置上，關掉再開還在。</p>
+    <p class="dim" style="font-size:14px">答案來源：112、113 學年度＝官方解答；<span style="color:var(--warn)">114 學年度學校沒有公布解答，答案是自行解出的，請以老師講解為準</span>。</p>
+  </details>
+  <div class="tabs">
+    <button class="tab on" data-view="practice">📝 題目練習</button>
+    <button class="tab" data-view="wrongbook">📕 錯題本<span class="cnt" id="wbcnt">0</span></button>
+  </div>
+</header>
+
+<main id="practice">
+  <div class="toolbar">
+    <button class="btn" data-print="q">🖨 存成 PDF：題目卷（無答案）</button>
+    <button class="btn" data-print="a">🖨 存成 PDF：解答卷（含解析）</button>
+  </div>
+  <nav class="toc"><a href="#c3-1">波的分類（2）<span class="st"></span></a><a href="#c3-2">波的性質（6）<span class="st"></span></a><a href="#c3-3">週期與頻率（3）<span class="st"></span></a><a href="#c3-4">週期、頻率與波速的關係（4）<span class="st"></span></a><a href="#c3-5">聲波產生的條件（2）<span class="st"></span></a><a href="#c3-6">聲速與介質（6）<span class="st"></span></a><a href="#c3-7">聲波的反射與超聲波（13）<span class="st"></span></a><a href="#c3-8">多變的聲音（響度、音調、音色）（18）<span class="st"></span></a></nav>
+<section class="sec" data-sec="c3-1" data-title="第 3 章 ①　波的分類">
+<h2 id="c3-1">第 3 章 ①　波的分類<small>2 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-2-04</span><span class="tag">113 學年度 第二次段考 · 是非題 第 4 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:50.5%" alt="113 學年度 是非題 第 4 題" src="review/ch3/113-2-04.png"><div class="ansrow" data-q="113-4" data-ans="A" data-al="是"><span class="lb">是非 4</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-4" hidden><div class="key">答案：是</div><p>是。分類的唯一標準：<strong>傳播時需不需要介質</strong>。</p><p>需要介質的叫<strong>力學波</strong>（水波、繩波、聲波）；不需要介質、在真空中也能傳的叫<strong>非力學波</strong>（光、電磁波）。重力波能在幾乎真空的宇宙中傳過來，所以是非力學波。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-18</span><span class="tag">114 學年度 第二次段考 · 第 18 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 18 題" src="review/ch3/114-2-18.png"><div class="ansrow" data-q="114-18" data-ans="D" data-al="D"><span class="lb">第 18 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-18" hidden><div class="key">答案：(D)</div><p><strong>雷聲是聲波 → 力學波、縱波。</strong>先把這個身分認清楚，選項就好判斷。</p><p>(A) 聲波傳遞的是<em>能量</em>，空氣粒子只在原地前後振動，不會跟著跑過來。<br>(B) 聲波在空氣中是<strong>縱波</strong>（疏密波），不是橫波。<br>(C) 閃電的「光」才是電磁波；雷聲是空氣受熱急速膨脹振動產生的聲波。<br>(D) 雷聲愈大 ＝ 振幅愈大、能量愈多，傳得比較遠還聽得到 ✓</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c3-2" data-title="第 3 章 ②　波的性質">
+<h2 id="c3-2">第 3 章 ②　波的性質<small>6 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-2-02</span><span class="tag">113 學年度 第二次段考 · 是非題 第 2 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:50.5%" alt="113 學年度 是非題 第 2 題" src="review/ch3/113-2-02.png"><div class="ansrow" data-q="113-2" data-ans="A" data-al="是"><span class="lb">是非 2</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2" hidden><div class="key">答案：是</div><p>是。抖得愈用力，彈簧被拉離平衡位置愈遠 → <strong>振幅</strong>愈大。</p><p>振幅由「波源給多少能量」決定；波速則由介質決定，和抖多大力無關。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-01</span><span class="tag">113 學年度 第二次段考 · 是非題 第 1 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:49.5%" alt="113 學年度 是非題 第 1 題" src="review/ch3/113-2-01.png"><div class="ansrow" data-q="113-1" data-ans="A" data-al="是"><span class="lb">是非 1</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-1" hidden><div class="key">答案：是</div><p>官方答案：是。波傳過去時，介質各點是<strong>一個接一個</strong>開始振動的，步調不同——同一瞬間，有的點在最高點（速率 0）、有的點正通過平衡位置（速率最大），所以各點的振動速率不一樣。</p><p class='mx-pt'>⚠️ 補充：嚴格來說，相隔一個波長的兩點步調完全一樣，速率其實相同，「<em>都</em>不相同」講得太滿。本題官方答案是「是」，如果考試遇到類似敘述，<strong>請問老師這一題怎麼算</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-01</span><span class="tag">114 學年度 第二次段考 · 是非題 第 1 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:49.5%" alt="114 學年度 是非題 第 1 題" src="review/ch3/114-2-01.png"><div class="ansrow" data-q="114-1" data-ans="D" data-al="否"><span class="lb">是非 1</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-1" hidden><div class="key">答案：否</div><p>否。和上一題同一個觀念：介質各點<strong>步調不同</strong>。同一瞬間，波形上有的點正往上、有的點正往下（下一題 112-17 就在考這個），振動方向不會全部相同。</p><p class='mx-pt'>這題是把 113 年那題的「速率都不相同」改成「方向都相同」——<em>是非題就是改一兩個字</em>，讀題要慢。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-17</span><span class="tag">112 學年度 第二次段考 · 第 17 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 17 題" src="review/ch3/112-2-17.png"><div class="ansrow" data-q="112-17" data-ans="C" data-al="C"><span class="lb">第 17 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-17" hidden><div class="key">答案：(C)</div><p>判斷方法：<strong>質點下一刻的高度，會變成「波傳來那一側」鄰居現在的高度。</strong></p><p>G 正往下，而 G 右邊的鄰居（D）比較低、左邊（C）比較高 → G 是在學右邊 → 波<strong>由右往左</strong>傳。</p><p>接著每個點都看「右邊鄰居」：<br>A：右邊比較高 → 向上 ✓（(A) 對）<br>C：右邊是 G，比較低 → 向下 ✓（(B) 對）<br>D：右邊是 E，比較低 → <strong>向下</strong>，(C) 說向上 ✗<br>E：在波谷，正要回頭，瞬間速度為零 ✓（(D) 對）</p><p>題目問錯誤的 → (C)。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-27</span><span class="tag">114 學年度 第二次段考 · 第 27 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 27 題" src="review/ch3/114-2-27.png"><div class="ansrow" data-q="114-27" data-ans="A" data-al="A"><span class="lb">第 27 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-27" hidden><div class="key">答案：(A)</div><p>先判斷傳播方向：P 正往下，P 右邊的點比 P 低 → P 在「學右邊」→ 波<strong>向左</strong>傳。</p><p>P 要到波谷，就要讓右邊的波谷（x ≈ 4.7）移到 P（x ≈ 3.7）——<strong>整個波形往左平移約 1 公尺</strong>。</p><p>平移後，每個點的高度 ＝ 現在它右邊 1 公尺那個點的高度：<br>a（x ≈ 2.7）→ 讀 x ≈ 3.7 的高度，就是現在 P 的高度 <strong>−2</strong> → y ＜ 0 ✓<br>b（x ≈ 6.9）→ 讀 x ≈ 7.9 的高度 → 波峰 4，到達最高點的是 b 不是 a。</p><p>所以 (A) 對；(B)(C)(D) 都不對。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-28</span><span class="tag">114 學年度 第二次段考 · 第 28 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 28 題" src="review/ch3/114-2-28.png"><div class="ansrow" data-q="114-28" data-ans="B" data-al="B"><span class="lb">第 28 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-28" hidden><div class="key">答案：(B)</div><p>題目給了關鍵：<strong>愈靠近海岸水愈淺，波浪愈慢</strong>。</p><p>斜斜打過來的波浪，靠岸的那一端先進淺水、先變慢，另一端還在深水跑得快 → 波浪會慢慢<strong>轉正</strong>，波峰線愈來愈和海岸平行、前進方向愈來愈正對海岸 → (B)。</p><p>(A) 愈走愈斜，方向反了。(C)(D) 一開始就正對等深線前進，兩端同時變慢，<em>不會轉彎</em>，卻畫成歪掉。</p><p class='mx-pt'>這就是為什麼海浪幾乎都是「正面」打上沙灘的。和光的折射是同一個道理：速率改變 → 轉彎。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c3-3" data-title="第 3 章 ③　週期與頻率">
+<h2 id="c3-3">第 3 章 ③　週期與頻率<small>3 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-2-26</span><span class="tag">113 學年度 第二次段考 · 第 26 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 26 題" src="review/ch3/113-2-26.png"><div class="ansrow" data-q="113-26" data-ans="A" data-al="A"><span class="lb">第 26 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-26" hidden><div class="key">答案：(A)</div><p>把文章的話翻成波形：<strong>「由緩漸急」＝頻率愈來愈高</strong>（波愈擠愈密），<strong>「由弱漸強」＝振幅愈來愈大</strong>；最後合併「歸於沉寂」＝訊號突然結束。</p><p>(A) 波愈來愈密、愈來愈高，然後突然收掉 ✓<br>(B) 振幅愈來愈小，相反。(C) 振幅變大，但疏密沒變（頻率不變）。(D) 先變大再變小，而且頻率沒變。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-37</span><span class="tag">113 學年度 第二次段考 · 第 37 題、第 38 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 37 題、第 38 題" src="review/ch3/113-2-37.png"><div class="ansrow" data-q="113-37" data-ans="B" data-al="B"><span class="lb">第 37 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="113-38" data-ans="D" data-al="D"><span class="lb">第 38 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-37" hidden><div class="key">第 37 題　答案：(B)</div><p>看圖中的比例尺：θ 波旁邊標了 <strong>100 μV</strong>。四條波用同樣比例畫，直接比高低就是比振幅。</p><p>θ 波（睏倦入眠）明顯比 α 波（清醒休息）高 → (B) ✓</p><p>(A)(D) β 波最小，但 1 mV ＝ 1000 μV，比 100 μV 還大十倍，數字不對。(C) δ 波（深睡）反而是起伏最大的。</p></div><div class="sol" data-q="113-38" hidden><div class="key">第 38 題　答案：(D)</div><p><strong>頻率 ＝ 1 秒內有幾個完整的波</strong>。圖下方有 1 s 的長度可以對照。</p><p>θ 波在 1 s 的長度裡大約有 7 個波 → 約 7 Hz，大於 3 Hz ✓</p><p>(A) 頻率 ＝ 波速 ÷ 波長，不是乘積。(B) 深睡 δ 波最稀疏，頻率最<em>低</em>。(C) β 波頻率最高沒錯，但 1 秒內大約幾十個，遠遠不到 1000 Hz。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c3-4" data-title="第 3 章 ④　週期、頻率與波速的關係">
+<h2 id="c3-4">第 3 章 ④　週期、頻率與波速的關係<small>4 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-11</span><span class="tag">112 學年度 第二次段考 · 第 11 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 11 題" src="review/ch3/112-2-11.png"><div class="ansrow" data-q="112-11" data-ans="D" data-al="D"><span class="lb">第 11 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-11" hidden><div class="key">答案：(D)</div><p>數圖：60 公分裡有 <strong>6 個完整的波</strong> → 波長 ＝ 60 ÷ 6 ＝ <strong>10 公分</strong>。</p><p>3 秒產生 6 個波 → 頻率 ＝ 6 ÷ 3 ＝ <strong>2 赫</strong>，週期 ＝ 1 ÷ 2 ＝ <strong>0.5 秒</strong>。</p><p>波速 ＝ 波長 × 頻率 ＝ 10 × 2 ＝ <strong>20 公分/秒</strong>（或 60 公分 ÷ 3 秒）。(D) 寫 30，錯。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-15</span><span class="tag">112 學年度 第二次段考 · 第 15 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 15 題" src="review/ch3/112-2-15.png"><div class="ansrow" data-q="112-15" data-ans="C" data-al="C"><span class="lb">第 15 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-15" hidden><div class="key">答案：(C)</div><p><strong>波速由介質（這條繩子）決定</strong>，你怎麼甩它都不變。</p><p>週期變 2 倍 → 頻率變一半 → 波長 ＝ 波速 ÷ 頻率 → <strong>波長變 2 倍</strong>。</p><p>(A)(B)(D) 都以為波速會變，第一步就錯了。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-07</span><span class="tag">114 學年度 第二次段考 · 是非題 第 7 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:49.5%" alt="114 學年度 是非題 第 7 題" src="review/ch3/114-2-07.png"><div class="ansrow" data-q="114-7" data-ans="D" data-al="否"><span class="lb">是非 7</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-7" hidden><div class="key">答案：否</div><p>否。甩得快只是<strong>頻率變大</strong>；同一條繩子，<strong>波速不變</strong>。</p><p>頻率變大、波速不變 → 變的是<em>波長變短</em>（波變密）。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-15</span><span class="tag">113 學年度 第二次段考 · 第 15 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 15 題" src="review/ch3/113-2-15.png"><div class="ansrow" data-q="113-15" data-ans="A" data-al="A"><span class="lb">第 15 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-15" hidden><div class="key">答案：(A)</div><p>先算頻率：f ＝ 波速 ÷ 波長 ＝ 34000 ÷ 1000 ＝ <strong>34 Hz</strong>（單位都是公分，可以直接除）。</p><p>大象聽 16～12000 Hz → 34 在範圍內，聽得到；兔子聽 360～42000 Hz → 34 太低，聽不到 → (A)。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c3-5" data-title="第 3 章 ⑤　聲波產生的條件">
+<h2 id="c3-5">第 3 章 ⑤　聲波產生的條件<small>2 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-02</span><span class="tag">112 學年度 第二次段考 · 是非題 第 2 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:50.5%" alt="112 學年度 是非題 第 2 題" src="review/ch3/112-2-02.png"><div class="ansrow" data-q="112-2" data-ans="B" data-al="否"><span class="lb">是非 2</span><span class="opts"><button data-c="A">是</button><button data-c="B">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2" hidden><div class="key">答案：否</div><p>否。聲波是<strong>力學波，一定要有介質</strong>（固體、液體、氣體都行）。真空裡沒有粒子可以推來推去，傳不過去。</p><p>真空鐘罩實驗：抽掉空氣，鬧鐘還在振動，但聲音愈來愈小。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-13</span><span class="tag">114 學年度 第二次段考 · 第 13 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 13 題" src="review/ch3/114-2-13.png"><div class="ansrow" data-q="114-13" data-ans="A" data-al="A"><span class="lb">第 13 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-13" hidden><div class="key">答案：(A)</div><p>課本的「聲波產生的條件」有兩個：<strong>① 發聲體振動　② 有介質傳播</strong>。</p><p>甲：抽掉空氣，鈴聲變小 → 證明<strong>需要介質</strong>（真空鐘罩實驗）✓<br>乙：音叉碰水濺起水花 → 證明<strong>發聲的物體在振動</strong> ✓<br>丁：鐘上的筆畫出來回彎曲的線 → 也是證明<strong>在振動</strong> ✓<br>丙：吹笛子會發出聲音——只是「有聲音」這個現象，<em>沒有說明任何條件</em> ✗</p><p>四個選項中，只有 (A) 沒有放進丙，所以選 (A)。</p><p class='mx-pt'>⚠️ 補充：照道理「乙、丁」也是好答案，但選項裡沒有這個組合。這題是自行解出的，<strong>請問老師這一題怎麼算</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c3-6" data-title="第 3 章 ⑥　聲速與介質">
+<h2 id="c3-6">第 3 章 ⑥　聲速與介質<small>6 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">114-2-10</span><span class="tag">114 學年度 第二次段考 · 是非題 第 10 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:50.5%" alt="114 學年度 是非題 第 10 題" src="review/ch3/114-2-10.png"><div class="ansrow" data-q="114-10" data-ans="A" data-al="是"><span class="lb">是非 10</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-10" hidden><div class="key">答案：是</div><p>是。<strong>固體 ＞ 液體 ＞ 氣體</strong>。粒子排得愈緊密，振動傳得愈快。</p><p>大約數字：空氣 340 m/s、水 1500 m/s、鋼 5000 m/s。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-23</span><span class="tag">113 學年度 第二次段考 · 第 23 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 23 題" src="review/ch3/113-2-23.png"><div class="ansrow" data-q="113-23" data-ans="D" data-al="D"><span class="lb">第 23 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-23" hidden><div class="key">答案：(D)</div><p><strong>波速由介質決定，不由聲源決定。</strong>三件樂器都在同一個空氣裡，所以都是每秒 340 公尺。</p><p>可以用一個生活經驗檢查：如果不同樂器的聲音跑得不一樣快，<em>整個樂團從第一排聽起來就會變成一團爛泥</em>——低音先到、高音後到。但實際上不會，所以速度一定一樣。</p><p class='mx-pt'>題目故意把「輕快、清純、宏亮」三個形容詞塞給你，那些講的是音調、音色、響度——<strong>沒有一個和速度有關</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-25</span><span class="tag">112 學年度 第二次段考 · 第 25 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 25 題" src="review/ch3/112-2-25.png"><div class="ansrow" data-q="112-25" data-ans="C" data-al="C"><span class="lb">第 25 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-25" hidden><div class="key">答案：(C)</div><p>助手聽到兩次聲響：先到的走<strong>鐵管</strong>（快），後到的走<strong>空氣</strong>（慢）。</p><p>空氣：510 ÷ 340 ＝ <strong>1.5 秒</strong>。鐵管比它早 1.3 秒 → 1.5 − 1.3 ＝ <strong>0.2 秒</strong>。</p><p>鐵管中的聲速 ＝ 510 ÷ 0.2 ＝ <strong>2550 m/s</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-34</span><span class="tag">112 學年度 第二次段考 · 第 34 題、第 35 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 34 題、第 35 題" src="review/ch3/112-2-34.png"><div class="ansrow" data-q="112-34" data-ans="B" data-al="B"><span class="lb">第 34 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="112-35" data-ans="D" data-al="D"><span class="lb">第 35 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-34" hidden><div class="key">第 34 題　答案：(B)</div><p>要證明「溫度」的影響，就要找<strong>只有溫度不同</strong>、其他條件都一樣的兩天（控制變因）。</p><p>2/2（15°C、75%、無風）和 2/4（24°C、75%、無風）：只差溫度 ✓。溫度高的 2/4 比較早收到（:46 比 :50）→ 溫度高，聲速快。</p><p>(A) 風向也不同。(C) 濕度和風向都不同。(D) 濕度也不同。</p></div><div class="sol" data-q="112-35" hidden><div class="key">第 35 題　答案：(D)</div><p>一樣用「只差一個條件」來比：</p><p>溫度：2/2 vs 2/4 → 溫度<strong>高</strong>比較快。<br>濕度：2/3（85%）vs 2/6（80%），其他相同 → 濕度<strong>大</strong>比較快（:47 比 :48）。<br>風向：2/4（無風）vs 2/5（順風），其他相同 → <strong>順風</strong>比較快（:45 比 :46）。</p><p>→ 溫度高、濕度大、順風 → (D)。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-13</span><span class="tag">112 學年度 第二次段考 · 第 13 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:73.8%" alt="112 學年度 第 13 題" src="review/ch3/112-2-13.png"><div class="ansrow" data-q="112-13" data-ans="B" data-al="B"><span class="lb">第 13 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-13" hidden><div class="key">答案：(B)</div><p>關鍵：<strong>光速遠遠比聲速快</strong>。</p><p>終點的計時員離起點約 100 公尺，槍聲要約 0.3 秒才傳到；但看到發令槍冒煙幾乎是瞬間。所以計時要<strong>看煙按錶</strong>，不是聽槍聲。深色板子當背景，白煙才看得清楚 → (B)。</p><p>(A) 板子不是拿來反射槍聲的。(C)(D) 和計時無關。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c3-7" data-title="第 3 章 ⑦　聲波的反射與超聲波">
+<h2 id="c3-7">第 3 章 ⑦　聲波的反射與超聲波<small>13 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-01</span><span class="tag">112 學年度 第二次段考 · 是非題 第 1 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:49.5%" alt="112 學年度 是非題 第 1 題" src="review/ch3/112-2-01.png"><div class="ansrow" data-q="112-1" data-ans="B" data-al="否"><span class="lb">是非 1</span><span class="opts"><button data-c="A">是</button><button data-c="B">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-1" hidden><div class="key">答案：否</div><p>否。<strong>超聲波是指「頻率」高於 20000 Hz</strong>（人耳聽不到）的聲波，和速度無關。</p><p>在同一種介質裡，超聲波和一般聲音<em>跑得一樣快</em>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-07</span><span class="tag">113 學年度 第二次段考 · 是非題 第 7 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:49.5%" alt="113 學年度 是非題 第 7 題" src="review/ch3/113-2-07.png"><div class="ansrow" data-q="113-7" data-ans="D" data-al="否"><span class="lb">是非 7</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-7" hidden><div class="key">答案：否</div><p>否。地毯、窗簾、海綿這類<strong>柔軟、多孔</strong>的東西會<strong>吸收</strong>聲音，不容易反射。</p><p>容易反射聲音的是<strong>堅硬、光滑</strong>的表面，例如磁磚牆、玻璃。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-04</span><span class="tag">114 學年度 第二次段考 · 是非題 第 4 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:50.5%" alt="114 學年度 是非題 第 4 題" src="review/ch3/114-2-04.png"><div class="ansrow" data-q="114-4" data-ans="A" data-al="是"><span class="lb">是非 4</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-4" hidden><div class="key">答案：是</div><p>是。這題就是上一題 113 年是非題第 7 題的「改正版」：地毯柔軟多孔，會吸收聲音 → <strong>不易</strong>反射。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-12</span><span class="tag">112 學年度 第二次段考 · 第 12 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 12 題" src="review/ch3/112-2-12.png"><div class="ansrow" data-q="112-12" data-ans="A" data-al="A"><span class="lb">第 12 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-12" hidden><div class="key">答案：(A)</div><p>回聲太大 ＝ 聲音反射太多。要<strong>減少反射</strong>，就加上會<strong>吸收</strong>聲音的材料 → 窗簾、絨布幔 ✓</p><p>(B) 東西清空，空房間回聲反而更大。(C) 天花板形狀對稱和吸音無關。(D) 牆面平整光滑，反射更強，回聲更大。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-23</span><span class="tag">112 學年度 第二次段考 · 第 23 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 23 題" src="review/ch3/112-2-23.png"><div class="ansrow" data-q="112-23" data-ans="D" data-al="D"><span class="lb">第 23 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-23" hidden><div class="key">答案：(D)</div><p>大聲公是一個喇叭形的筒子：聲音往旁邊散的部分，碰到筒壁會<strong>反射</strong>回來、集中往前方送出去 → (D)。</p><p>(A) 折射是聲音進入<em>另一種介質</em>才發生，大聲公裡外都是空氣。(B)(C) 是真的，但不是大聲公的原理。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-28</span><span class="tag">112 學年度 第二次段考 · 第 28 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 28 題" src="review/ch3/112-2-28.png"><div class="ansrow" data-q="112-28" data-ans="A" data-al="A"><span class="lb">第 28 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-28" hidden><div class="key">答案：(A)</div><p>回聲時間愈長 ＝ 海底愈<strong>深</strong>（聲速固定，深度和時間成正比）。</p><p>船往西開，所以第一筆在最東邊。20 → 10 → 5 → 10 → 40 → 20 秒，翻成地形：<br>中等深 → 變淺 → <strong>最淺</strong>（隆起）→ 變深 → <strong>最深</strong>（海溝）→ 又淺一點。</p><p>圖的左邊是東、右邊是西：先往上隆起、再往下凹到最深 → (A)。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-31</span><span class="tag">113 學年度 第二次段考 · 第 31 題、第 32 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 31 題、第 32 題" src="review/ch3/113-2-31.png"><div class="ansrow" data-q="113-31" data-ans="B" data-al="B"><span class="lb">第 31 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="113-32" data-ans="B" data-al="B"><span class="lb">第 32 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-31" hidden><div class="key">第 31 題　答案：(B)</div><p>「超」指的是<strong>超出人耳可聽範圍的上限</strong>（約 20000 Hz），定義完全建立在<em>頻率</em>上。</p><p>(A) 能量強弱是響度的事，和超不超聲無關。<br>(C) 波速由介質決定，不會因為頻率高就變快。<br>(D) 17 公尺那個數字講的是<strong>回聲</strong>——聲音來回 34 公尺約 0.1 秒，人耳才分得出是兩個聲音。那是另一個概念。</p><p class='mx-pt'>(D) 是很漂亮的誘餌：它把一個<em>真的、但屬於別題</em>的知識放進來。段考很愛這樣考。</p></div><div class="sol" data-q="113-32" hidden><div class="key">第 32 題　答案：(B)</div><p>4 秒是<strong>來回</strong>的時間，單程只有 <strong>2 秒</strong>。</p><p>深度 ＝ 1500 × 2 ＝ <strong>3000 公尺</strong>。</p><p>(D) 6000 就是忘了除以 2 的答案——這是回聲測距題最大的坑，<em>幾乎每次都有人踩</em>。</p><p class='mx-pt'>看到「發射→接收」「回聲」「聲納」「雷達」，第一個動作永遠是<strong>先把時間砍一半</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-30</span><span class="tag">114 學年度 第二次段考 · 第 30 題、第 31 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 30 題、第 31 題" src="review/ch3/114-2-30.png"><div class="ansrow" data-q="114-30" data-ans="D" data-al="D"><span class="lb">第 30 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="114-31" data-ans="C" data-al="C"><span class="lb">第 31 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-30" hidden><div class="key">第 30 題　答案：(D)</div><p>(A) 同一個空氣裡，超聲波和嗶嗶聲<strong>聲速一樣</strong>。<br>(B) 查表：甲車 40 公分和 60 公分都是每秒 10 次，50 公分應該是 <strong>10 次</strong>，不是 4 次。<br>(C) 「每秒 20 次嗶嗶聲」是嗶嗶聲<em>出現的次數</em>，不是聲音本身的頻率；嗶嗶聲是高音調，頻率遠大於 20 Hz（20 Hz 幾乎聽不到）。<br>(D) 距離改變，每秒嗶嗶的次數（嗶嗶聲出現的頻率）就跟著改變 ✓</p><p class='mx-pt'>這題的「頻率」有兩種意思：聲音振動的頻率（決定音調）、嗶嗶聲出現的頻率（每秒幾次）。(C) 和 (D) 就是在考你分不分得清楚。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div><div class="sol" data-q="114-31" hidden><div class="key">第 31 題　答案：(C)</div><p>0.004 秒是<strong>來回</strong>的時間，單程 0.002 秒。</p><p>距離 ＝ 350 × 0.002 ＝ 0.7 m ＝ <strong>70 公分</strong>。</p><p>查表：甲車 60 公分和 80 公分都是每秒 10 次 → 70 公分也是 <strong>10 次</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-37</span><span class="tag">114 學年度 第二次段考 · 第 37 題、第 38 題、第 39 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 37 題、第 38 題、第 39 題" src="review/ch3/114-2-37.png"><div class="ansrow" data-q="114-37" data-ans="A" data-al="A"><span class="lb">第 37 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="114-38" data-ans="C" data-al="C"><span class="lb">第 38 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="114-39" data-ans="B" data-al="B"><span class="lb">第 39 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-37" hidden><div class="key">第 37 題　答案：(A)</div><p><strong>波長 ＝ 波速 ÷ 頻率</strong>。同在空氣中波速一樣，頻率極低 → 波長很長 ✓</p><p>(B) 題目要你從「頻率低」來推論，這句和次聲波無關。(C) 次聲波也是聲波，真空中不能傳。(D) 同一介質中，次聲波和超聲波<strong>波速相同</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div><div class="sol" data-q="114-38" hidden><div class="key">第 38 題　答案：(C)</div><p>次聲波 ＝ 頻率<strong>低於 20 Hz</strong>。人說話的聲音一定在 20 Hz 以上 → 大象次聲波的頻率比較低。</p><p>同在空氣中、聲速一樣，頻率低 → <strong>波長比較長</strong> → (C) ✓</p><p>(A) 波長 ＝ 340 ÷ 20 ＝ 17 m，次聲波頻率更低，波長要<em>大於</em> 17 m。(B) 同一空氣，聲速一樣是 340 m/s。(D) 頻率比較<em>低</em>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div><div class="sol" data-q="114-39" hidden><div class="key">第 39 題　答案：(B)</div><p>文章說：<strong>頻率愈高，解析度愈高，但穿透深度降低</strong>。檢查皮膚表面不需要穿很深、要看得清楚 → 用高頻率 ✓</p><p>(A) 文章說要塗凝膠，不然超聲波會在空氣和皮膚的界面大量反射。(C) 解析度看的是頻率，不是強度。(D) 文章說能穿透 15 米厚混凝土的是<strong>次聲波</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c3-8" data-title="第 3 章 ⑧　多變的聲音（響度、音調、音色）">
+<h2 id="c3-8">第 3 章 ⑧　多變的聲音（響度、音調、音色）<small>18 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-07</span><span class="tag">112 學年度 第二次段考 · 是非題 第 7 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:49.5%" alt="112 學年度 是非題 第 7 題" src="review/ch3/112-2-07.png"><div class="ansrow" data-q="112-7" data-ans="B" data-al="否"><span class="lb">是非 7</span><span class="opts"><button data-c="A">是</button><button data-c="B">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-7" hidden><div class="key">答案：否</div><p>否。<strong>音色由發聲體本身（材質、構造、發聲方式）決定</strong>，對應波形，是聲音的「指紋」。</p><p>鋼琴和小提琴可以調成<em>一樣高（音調）、一樣大聲（響度）</em>，但音色調不成一樣——所以閉上眼睛也聽得出是哪種樂器。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-06</span><span class="tag">113 學年度 第二次段考 · 是非題 第 6 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:50.5%" alt="113 學年度 是非題 第 6 題" src="review/ch3/113-2-06.png"><div class="ansrow" data-q="113-6" data-ans="D" data-al="否"><span class="lb">是非 6</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-6" hidden><div class="key">答案：否</div><p>錯。<strong>音調只由音叉本身的固有頻率決定</strong>——那是音叉的長度、粗細、材質決定的，刻在音叉上的那個「440 Hz」不會因為你敲哪裡而改變。</p><p>敲上方或敲下方、敲用力或敲輕，改變的是<em>振幅</em>，也就是<strong>響度</strong>。</p><p class='mx-pt'>是非題把「音調」換成「響度」就會變成對的。<strong>看到是非題，先找出那個可以被替換掉的關鍵詞</strong>——出題老師動的就是那個字。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-02</span><span class="tag">114 學年度 第二次段考 · 是非題 第 2 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:50.5%" alt="114 學年度 是非題 第 2 題" src="review/ch3/114-2-02.png"><div class="ansrow" data-q="114-2" data-ans="A" data-al="是"><span class="lb">是非 2</span><span class="opts"><button data-c="A">是</button><button data-c="D">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2" hidden><div class="key">答案：是</div><p>是。這題就是上一題（113 年是非題第 6 題）把「音調」換成「響度」的版本。</p><p>音叉的音調固定；敲的位置和力道改變的是<strong>振幅</strong>，也就是<strong>響度</strong>。敲在叉臂上方（離底座遠），叉臂擺動幅度比較大，聲音比較響。</p><p class='mx-pt'>⚠️ 補充：響度主要看<strong>敲得多用力</strong>，題目沒說力道一樣；這題是自行解出的，如果考試遇到類似敘述，<strong>請問老師這一題怎麼算</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-11</span><span class="tag">113 學年度 第二次段考 · 第 11 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 11 題" src="review/ch3/113-2-11.png"><div class="ansrow" data-q="113-11" data-ans="C" data-al="C"><span class="lb">第 11 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-11" hidden><div class="key">答案：(C)</div><p>「變小聲」＝<strong>響度變小</strong> → 對應<strong>振幅</strong>變小。</p><p>其他三個為什麼不會變？<br>· 速率：由空氣決定，和你喊多遠無關（都是 340 m/s）<br>· 頻率：由聲帶決定，傳遠了音也不會變低沉<br>· 波長：波長 ＝ 波速 ÷ 頻率，上面兩個都沒變，它自然也沒變</p><p class='mx-pt'>聲音傳遠了會變小聲，是因為能量散開到愈來愈大的範圍。<em>散開的是能量，不是音高。</em></p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-13</span><span class="tag">113 學年度 第二次段考 · 第 13 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:68.2%" alt="113 學年度 第 13 題" src="review/ch3/113-2-13.png"><div class="ansrow" data-q="113-13" data-ans="A" data-al="A"><span class="lb">第 13 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-13" hidden><div class="key">答案：(A)</div><p>力度記號（f 強、p 弱）講的是<strong>音量大小 ＝ 響度</strong>。響度由<strong>振幅</strong>決定 → (A)。</p><p>(D) 頻率決定的是音調（高低）；(B)(C) 波長、波速和大小聲無關。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-24</span><span class="tag">113 學年度 第二次段考 · 第 24 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 24 題" src="review/ch3/113-2-24.png"><div class="ansrow" data-q="113-24" data-ans="A" data-al="A"><span class="lb">第 24 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-24" hidden><div class="key">答案：(A)</div><p>先把四句話翻譯成物理：<br>甲「引吭高歌」＝大聲唱 → <strong>響度</strong> ✓<br>乙「高到令人刺耳」＝聲音很尖 → 音調（不是振幅）<br>丙「音太高唱不上去」＝音高 → 音調（不是波速）<br>丁「高聲宣揚」＝大聲說 → 響度（不是頻率）</p><p>只有 (A) 的判讀和單位都對。</p><p class='mx-pt'>這題就是這一章的縮影：<strong>中文的「高」是一個字，物理上是兩件事。</strong>判斷方法是問「這句話在描述<em>音量</em>還是<em>音高</em>」，再去配單位。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-14</span><span class="tag">114 學年度 第二次段考 · 第 14 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 14 題" src="review/ch3/114-2-14.png"><div class="ansrow" data-q="114-14" data-ans="A" data-al="A"><span class="lb">第 14 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-14" hidden><div class="key">答案：(A)</div><p>甲：男中音「放聲高歌」、比女高音<strong>大</strong> → 大小聲 → <strong>響度</strong>。<br>乙：女高音比男中音<strong>高</strong> → 音高 → <strong>音調</strong>。</p><p>→ 響度、音調 (A)。和 113-24 一樣：先問自己「這是在講大小聲，還是在講高低」。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-24</span><span class="tag">112 學年度 第二次段考 · 第 24 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:80.0%" alt="112 學年度 第 24 題" src="review/ch3/112-2-24.png"><div class="ansrow" data-q="112-24" data-ans="B" data-al="B"><span class="lb">第 24 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-24" hidden><div class="key">答案：(B)</div><p>助聽器的工作是<strong>把聲音放大</strong> → 振幅變大 → 鼓膜受到的壓力變化變大 → 聽得到 ✓</p><p>(A)(C) 改變音調或頻率，聲音會走樣，不是助聽器要的。(C) 而且壓力變化變小會更聽不到。(D) 分析音色是大腦的工作，助聽器沒有這個功能。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-31</span><span class="tag">112 學年度 第二次段考 · 第 31 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 31 題" src="review/ch3/112-2-31.png"><div class="ansrow" data-q="112-31" data-ans="B" data-al="B"><span class="lb">第 31 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-31" hidden><div class="key">答案：(B)</div><p>兩種玩法，<strong>振動的東西不一樣</strong>：</p><p><strong>吹氣</strong>：振動的是杯子裡的<em>空氣柱</em>。空氣柱愈短，音調愈高。d 酒最多、空氣柱最短 → 吹氣由高到低 <strong>dcba</strong>。<br><strong>敲杯子</strong>：振動的是<em>杯子連同裡面的酒</em>。裝得愈多、愈重，振動愈慢，音調愈低。a 酒最少 → 敲打由高到低 <strong>abcd</strong>。</p><p>→ (B)。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-15</span><span class="tag">114 學年度 第二次段考 · 第 15 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 15 題" src="review/ch3/114-2-15.png"><div class="ansrow" data-q="114-15" data-ans="A" data-al="A"><span class="lb">第 15 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-15" hidden><div class="key">答案：(A)</div><p>灌水時發聲的是瓶子裡的<strong>空氣柱</strong>。水位升高 → 空氣柱變短 → 振動變快 → <strong>音調升高</strong> ✓</p><p>和上一題吹酒杯是同一個道理：空氣柱愈短，聲音愈尖。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-19</span><span class="tag">114 學年度 第二次段考 · 第 19 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 19 題" src="review/ch3/114-2-19.png"><div class="ansrow" data-q="114-19" data-ans="C" data-al="C"><span class="lb">第 19 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-19" hidden><div class="key">答案：(C)</div><p>文章：熟瓜 133～160 Hz（頻率低 → <strong>音調低沉</strong>），生瓜大於 189 Hz（頻率高 → <strong>音調較高、清脆</strong>）→ (C) ✓</p><p>(A) 同一空氣中，各種頻率的聲音傳得一樣快。(B) 拍得用力改變的是響度，不是音調。(D) 一秒拍幾下是「拍的次數」，不是每一聲的音調。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-14</span><span class="tag">113 學年度 第二次段考 · 第 14 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 14 題" src="review/ch3/113-2-14.png"><div class="ansrow" data-q="113-14" data-ans="D" data-al="D"><span class="lb">第 14 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-14" hidden><div class="key">答案：(D)</div><p>先讀懂圖：每個點代表<strong>「這個頻率，最小要多大聲才聽得到」</strong>。聲音的分貝<strong>大於等於</strong>那個點才聽得到，小於就聽不到。（●左耳、▲右耳）</p><p>(A) 左耳 125 Hz 至少要 20 dB，10 dB 聽不到 ✗<br>(B) 左耳 8000 Hz 至少要 50 dB，100 dB 聽得到 ✗<br>(C) 右耳 250 Hz 至少要 60 dB，40 dB 聽不到 ✗<br>(D) 右耳 4000 Hz 至少要 80 dB，70 dB <strong>聽不到</strong> ✓</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-11</span><span class="tag">114 學年度 第二次段考 · 第 11 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 11 題" src="review/ch3/114-2-11.png"><div class="ansrow" data-q="114-11" data-ans="B" data-al="B"><span class="lb">第 11 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-11" hidden><div class="key">答案：(B)</div><p>和 113 年那題<strong>同一張圖</strong>，選項換了位置。規則一樣：分貝 ≥ 那個點才聽得到。</p><p>(A) 右耳 250 Hz 至少要 60 dB，40 dB 聽不到 ✗<br>(B) 右耳 4000 Hz 至少要 80 dB，70 dB <strong>聽不到</strong> ✓<br>(C) 左耳 125 Hz 至少要 20 dB，10 dB 聽不到 ✗<br>(D) 左耳 8000 Hz 剛好 50 dB 就聽得到，不是聽不到 ✗</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-33</span><span class="tag">113 學年度 第二次段考 · 第 33 題、第 34 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 33 題、第 34 題" src="review/ch3/113-2-33.png"><div class="ansrow" data-q="113-33" data-ans="B" data-al="B"><span class="lb">第 33 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="113-34" data-ans="D" data-al="D"><span class="lb">第 34 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-33" hidden><div class="key">第 33 題　答案：(B)</div><p>頻率、振幅都可以模仿——<em>你可以講得跟別人一樣高、一樣大聲</em>。</p><p>但<strong>波形</strong>是由發音器官的形狀決定的（聲帶、口腔、鼻腔），那是天生的、模仿不來的，所以才拿它來當「聲音的指紋」。</p><p>波形對應的就是<strong>音色</strong>——這一章三個名字裡最少被考、但最有意思的一個。</p></div><div class="sol" data-q="113-34" hidden><div class="key">第 34 題　答案：(D)</div><p>音調升高 → <strong>頻率變大</strong>。</p><p>再看波長：<span style='white-space:nowrap'>波長 ＝ 波速 ÷ 頻率</span>。波速在同一個空氣裡<em>不會變</em>，分母的頻率變大 → <strong>波長變小</strong>。</p><p>(C) 錯在以為波長是獨立的。<em>只要波速固定，波長和頻率就是綁死的一對，一個變大另一個一定變小。</em></p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-34</span><span class="tag">114 學年度 第二次段考 · 第 34 題、第 35 題、第 36 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 34 題、第 35 題、第 36 題" src="review/ch3/114-2-34.png"><div class="ansrow" data-q="114-34" data-ans="C" data-al="C"><span class="lb">第 34 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="114-35" data-ans="A" data-al="A"><span class="lb">第 35 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="114-36" data-ans="B" data-al="B"><span class="lb">第 36 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-34" hidden><div class="key">第 34 題　答案：(C)</div><p>聲音換介質時，<strong>頻率不變</strong>（由發聲的湖鱘決定）→ <strong>音調不變</strong> ✓</p><p>會變的：聲速（水 → 空氣變慢）、波長（＝ 聲速 ÷ 頻率，跟著變短）、響度（穿過水面時能量大量損失，所以人們只聽到「微弱」的聲音）。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div><div class="sol" data-q="114-35" hidden><div class="key">第 35 題　答案：(A)</div><p>文章：最普遍的發聲方式是<strong>魚鰾振動</strong>。軟骨魚（鯊魚、魟魚、鯨魚等）一般<strong>沒有魚鰾</strong>，硬骨魚一般<strong>有魚鰾</strong>。</p><p>吳郭魚是硬骨魚 → 有魚鰾 → 可能發出聲音 → (A)。</p><p class='mx-pt'>順便一提：鯨魚其實是哺乳類，不是魚。但這題照文章分類作答就好。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div><div class="sol" data-q="114-36" hidden><div class="key">第 36 題　答案：(B)</div><p>文章：魚鰾聲音的<strong>頻率受發音肌收縮速度影響</strong>——肌肉收縮一次就「咚」一下，收縮得愈快，同樣時間裡的聲響就愈多。</p><p>四張圖時間一樣長，數一數聲響（一叢一叢的波）：(A) 4 個、(B) <strong>5 個</strong>、(C) 2 個、(D) 3 個 → (B) 最快。</p><p class='mx-pt'>⚠️ 補充：這題是自行解出的，也有人會改看每一叢裡面的波有多密；如果考試遇到類似的圖，<strong>請問老師這一題怎麼看</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+</main>
+
+<main id="wrongbook" hidden>
+  <div class="wbhead">
+    <h2>📕 錯題本<small id="wbsub"></small></h2>
+    <p class="dim noprint">這裡收的是交卷時答錯或沒寫的題目。再做一次：選完馬上看到對錯和解析；<strong>答對了</strong>才能移出錯題本。</p>
+    <div class="toolbar"><button class="btn" data-print="w">🖨 存成 PDF：錯題本（含解析）</button></div>
+  </div>
+  <div id="wblist"></div>
+</main>
+
+<footer>
+  試題取自學校於段考後公布的試卷，僅供自學複習使用。解析為自學用補充說明；標示「自行解出」者並非官方答案。<br>
+  <a href="index.html">← 回自學站首頁</a>　·　<a href="exam.html">整卷模擬</a>　·　<a href="book.html">課本地圖</a>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var KEY="jhs8-sci-ch3-review-v1";
+function lab(r,c){ var b=r.querySelector('.opts button[data-c="'+c+'"]'); return b?b.textContent:c; }
+var S={secs:{},wrong:{}};
+try{ var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); S.secs=o.secs||{}; S.wrong=o.wrong||{}; } }catch(e){}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} }
+function sec(k){ return S.secs[k]||(S.secs[k]={picks:{},graded:false}); }
+function $$(sel,root){ return [].slice.call((root||document).querySelectorAll(sel)); }
+
+/* ---------- 題目練習：每一段各自作答、交卷 ---------- */
+function paintSection(el){
+  var k=el.dataset.sec, s=sec(k), rows=$$(".ansrow",el), n=0, right=0;
+  rows.forEach(function(r){
+    var q=r.dataset.q, ans=r.dataset.ans, pick=s.picks[q]||"";
+    if(pick) n++;
+    if(pick===ans) right++;
+    $$(".opts button",r).forEach(function(b){
+      var c=b.dataset.c;
+      if(s.graded) b.className = c===pick ? (c===ans?"ok":"bad") : (c===ans?"miss":"");
+      else b.className = c===pick ? "pick" : "";
+    });
+    var v=r.querySelector(".verdict");
+    if(s.graded){ v.textContent = pick===ans ? "✓ 答對" : (pick ? "✗ 正解 "+r.dataset.al : "沒寫，正解 "+r.dataset.al); v.className="verdict "+(pick===ans?"ok":"bad"); }
+    else { v.textContent=""; v.className="verdict"; }
+  });
+  $$(".sol",el).forEach(function(x){ x.hidden=!s.graded; });
+  var bar=el.querySelector(".secbar"), N=rows.length;
+  bar.querySelector(".secstat").textContent = s.graded ? "這一段已交卷" : "已作答 "+n+" / "+N+" 題";
+  bar.querySelector(".sub").hidden = s.graded;
+  bar.querySelector(".redo").hidden = !s.graded;
+  var sc=bar.querySelector(".secscore");
+  if(s.graded){
+    var miss=N-right;
+    sc.innerHTML='答對 <b class="big">'+right+'</b> / '+N+' 題（'+Math.round(right/N*100)+'%）'+
+      (miss ? '　·　錯的 '+miss+' 題已放進 <a href="#" class="gowb">錯題本</a>' : '　·　全對！');
+    sc.hidden=false;
+  } else sc.hidden=true;
+  var t=document.querySelector('.toc a[href="#'+k+'"] .st');
+  if(t) t.textContent = s.graded ? right+"/"+N : "";
+}
+
+$$("section.sec").forEach(function(el){
+  var k=el.dataset.sec;
+  $$(".ansrow",el).forEach(function(r){
+    $$(".opts button",r).forEach(function(b){
+      b.addEventListener("click",function(){
+        var s=sec(k); if(s.graded) return;
+        var q=r.dataset.q; s.picks[q] = s.picks[q]===b.dataset.c ? "" : b.dataset.c;
+        save(); paintSection(el);
+      });
+    });
+  });
+  var bar=el.querySelector(".secbar"), sub=bar.querySelector(".sub");
+  sub.addEventListener("click",function(){
+    var s=sec(k), rows=$$(".ansrow",el);
+    var blank=rows.filter(function(r){return !s.picks[r.dataset.q]}).length;
+    if(blank && !sub.dataset.warned){
+      sub.dataset.warned="1";
+      bar.querySelector(".secstat").textContent="還有 "+blank+" 題沒寫（沒寫算錯），再按一次就交卷";
+      return;
+    }
+    sub.dataset.warned="";
+    s.graded=true;
+    rows.forEach(function(r){
+      var q=r.dataset.q, pick=s.picks[q]||"";
+      if(pick!==r.dataset.ans){ var w=S.wrong[q]||{n:0}; w.n++; w.last=pick?lab(r,pick):"沒寫"; S.wrong[q]=w; }
+    });
+    save(); paintSection(el); paintCount();
+    el.querySelector(".secbar").scrollIntoView({block:"center"});
+  });
+  bar.querySelector(".redo").addEventListener("click",function(){
+    S.secs[k]={picks:{},graded:false}; save(); paintSection(el);
+    el.querySelector("h2").scrollIntoView();
+  });
+  bar.addEventListener("click",function(e){
+    if(e.target.classList.contains("gowb")){ e.preventDefault(); show("wrongbook"); }
+  });
+  paintSection(el);
+});
+
+/* ---------- 錯題本 ---------- */
+function wrongIds(){
+  return $$("#practice .ansrow").map(function(r){return r.dataset.q}).filter(function(q){return S.wrong[q]});
+}
+function paintCount(){
+  var n=wrongIds().length;
+  document.getElementById("wbcnt").textContent=n;
+  document.getElementById("wbsub").textContent = n ? "目前 "+n+" 題" : "";
+}
+function buildWrongbook(){
+  var list=document.getElementById("wblist"); list.innerHTML="";
+  var ids=wrongIds();
+  if(!ids.length){
+    list.innerHTML='<div class="empty">錯題本是空的。<br>去「題目練習」做完一段並交卷，答錯的題目就會出現在這裡。</div>';
+    return;
+  }
+  var lastSec="";
+  ids.forEach(function(q){
+    var row=document.querySelector('#practice .ansrow[data-q="'+q+'"]');
+    var secEl=row.closest("section.sec");
+    if(secEl.dataset.sec!==lastSec){
+      lastSec=secEl.dataset.sec;
+      var h=document.createElement("h2"); h.textContent=secEl.dataset.title; list.appendChild(h);
+    }
+    var card=row.closest(".card").cloneNode(true);
+    card.classList.add("wb");
+    $$(".ansrow",card).forEach(function(r){ if(r.dataset.q!==q) r.remove(); });
+    $$(".sol",card).forEach(function(x){ if(x.dataset.q!==q) x.remove(); });
+    var r=card.querySelector(".ansrow"), sol=card.querySelector(".sol"), ans=r.dataset.ans, w=S.wrong[q];
+    var info=document.createElement("span");
+    info.className="tag miss"; info.textContent="錯過 "+w.n+" 次 · 上次："+w.last;
+    card.querySelector(".meta").appendChild(info);
+    $$(".opts button",r).forEach(function(b){ b.className=""; });
+    r.querySelector(".verdict").textContent="";
+    sol.hidden=true;
+    var act=document.createElement("div"); act.className="wbact";
+    act.innerHTML='<button class="btn ok done" hidden>我會了，移出錯題本</button><button class="btn again" hidden>再做一次</button>';
+    card.appendChild(act);
+    var locked=false;
+    $$(".opts button",r).forEach(function(b){
+      b.addEventListener("click",function(){
+        if(locked) return; locked=true;
+        var c=b.dataset.c, ok=c===ans;
+        $$(".opts button",r).forEach(function(x){
+          x.className = x.dataset.c===c ? (ok?"ok":"bad") : (x.dataset.c===ans?"miss":"");
+        });
+        var v=r.querySelector(".verdict");
+        v.textContent = ok ? "✓ 答對了" : "✗ 還是錯，正解 "+r.dataset.al; v.className="verdict "+(ok?"ok":"bad");
+        if(!ok){ w.n++; w.last=lab(r,c); save(); info.textContent="錯過 "+w.n+" 次 · 上次："+w.last; }
+        sol.hidden=false;
+        act.querySelector(".done").hidden=!ok;
+        act.querySelector(".again").hidden=false;
+      });
+    });
+    act.querySelector(".again").addEventListener("click",function(){
+      locked=false; sol.hidden=true;
+      $$(".opts button",r).forEach(function(x){x.className=""});
+      r.querySelector(".verdict").textContent="";
+      act.querySelector(".done").hidden=true; this.hidden=true;
+    });
+    act.querySelector(".done").addEventListener("click",function(){
+      delete S.wrong[q]; save(); paintCount(); card.remove();
+      if(!wrongIds().length) buildWrongbook();
+    });
+    list.appendChild(card);
+  });
+}
+function show(v){
+  $$(".tab").forEach(function(t){ t.classList.toggle("on", t.dataset.view===v); });
+  document.getElementById("practice").hidden = v!=="practice";
+  document.getElementById("wrongbook").hidden = v!=="wrongbook";
+  if(v==="wrongbook") buildWrongbook();
+  window.scrollTo(0, document.querySelector(".tabs").offsetTop-10);
+}
+$$(".tab").forEach(function(t){ t.addEventListener("click",function(){ show(t.dataset.view); }); });
+
+/* ---------- 點圖放大（手機看小字用） ---------- */
+document.addEventListener("click",function(e){
+  var im=e.target.closest && e.target.closest(".qimg"); if(!im) return;
+  var z=document.createElement("div"); z.className="zoom";
+  var big=document.createElement("img"); big.src=im.src;
+  big.style.width=Math.round(im.naturalWidth*0.75)+"px";
+  z.innerHTML='<span class="hint">可左右滑動、雙指縮放</span><button class="x">✕ 關閉</button>';
+  z.appendChild(big);
+  z.addEventListener("click",function(ev){ if(ev.target===z||ev.target.classList.contains("x")) z.remove(); });
+  document.body.appendChild(z);
+});
+window.addEventListener("load",function(){
+  if(location.hash && location.hash.length>1){ var t=document.getElementById(location.hash.slice(1)); if(t) t.scrollIntoView({behavior:"instant"}); }
+});
+
+/* ---------- 列印 ---------- */
+function setPrint(m){
+  document.body.classList.remove("pq","pa","pw");
+  document.body.classList.add("p"+m);
+  if(m==="w"){ show("wrongbook"); $$("#wblist .sol").forEach(function(x){x.hidden=false}); }
+  else { show("practice"); }
+  if(m==="a") $$("#practice .sol").forEach(function(x){x.hidden=false});
+  document.getElementById("phead").textContent =
+    m==="a" ? "【解答卷】含答案與解析" :
+    m==="w" ? "【錯題本】含答案與解析" :
+    "【題目卷】　姓名：＿＿＿＿＿＿＿　日期：＿＿＿＿＿　得分：＿＿＿／54";
+}
+window.addEventListener("afterprint",function(){
+  document.body.classList.remove("pq","pa","pw");
+  $$("section.sec").forEach(paintSection);
+});
+$$("[data-print]").forEach(function(b){
+  b.addEventListener("click",function(){ setPrint(b.dataset.print); setTimeout(function(){window.print()},80); });
+});
+paintCount();
+var m=(location.search.match(/print=([qaw])/)||[])[1];
+if(m) setPrint(m);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>八上自然 第4章 光 段考原題複習</title>
+<style>
+:root{--paper:#faf7f0;--ink:#2b2622;--ink2:#5c5349;--line:#ded5c6;--accent:#c2410c;--accent-soft:#fff1e7;
+  --green:#3f6d3a;--green-soft:#eef4ec;--warn:#8a6a1e;--warn-soft:#fdf6e6}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16.5px;line-height:1.8}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 80px}
+header{padding:36px 0 18px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:13px;letter-spacing:.18em;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+p{margin:0 0 12px}
+.dim{color:var(--ink2)}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600}
+a{color:var(--accent)}
+details.howto{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;font-size:15px}
+details.howto summary{cursor:pointer;font-weight:700}
+details.howto p{margin:8px 0 0}
+button{font-family:inherit}
+.btn{border:1.5px solid var(--ink);background:#fff;color:var(--ink);border-radius:99px;padding:8px 16px;font-size:14.5px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ink);color:#fff}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{filter:brightness(.92)}
+.btn.ok{background:var(--green);border-color:var(--green);color:#fff}
+.btn[disabled]{opacity:.45;cursor:default;background:#fff;color:var(--ink)}
+.tabs{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 16px;font-size:15.5px;cursor:pointer;font-weight:700;color:var(--ink2)}
+.tab.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.tab .cnt{display:inline-block;min-width:22px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--accent);color:#fff;font-size:13px;text-align:center}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;align-items:center}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.toc a{font-size:13.5px;color:var(--ink2);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 11px;background:#fff}
+.toc a:hover{border-color:var(--ink);color:var(--ink)}
+.toc a .st{color:var(--green);font-weight:700;margin-left:4px}
+h2{font-size:20px;margin:40px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+h2 small{font-size:13px;color:var(--ink2);font-weight:400;margin-left:8px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;margin:0 0 16px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;font-size:13px}
+.tag{border-radius:99px;padding:1px 9px;border:1px solid var(--line);color:var(--ink2);background:#f6f2ea}
+.tag.self{border-color:#d8b46a;background:var(--warn-soft);color:var(--warn)}
+.tag.no{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.tag.tf{border-color:#9db8d6;background:#eef4fb;color:#2f5b8a}
+.tag.miss{background:var(--accent-soft);border-color:#f0b48a;color:var(--accent)}
+.qimg{display:block;width:var(--w);max-width:100%;height:auto}
+.ansrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.ansrow .lb{font-size:14px;color:var(--ink2);min-width:64px}
+.opts{display:flex;gap:6px}
+.opts button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:15px;color:var(--ink2);cursor:pointer;padding:0}
+.opts button:hover{border-color:var(--ink)}
+.opts button.pick{background:var(--ink);border-color:var(--ink);color:#fff}
+.opts button.ok{background:var(--green);border-color:var(--green);color:#fff}
+.opts button.bad{background:var(--accent);border-color:var(--accent);color:#fff}
+.opts button.miss{border:2.5px solid var(--green);color:var(--green);font-weight:700}
+.verdict{font-size:14.5px;font-weight:700}
+.verdict.ok{color:var(--green)} .verdict.bad{color:var(--accent)}
+.blank{display:none}
+.sol{margin-top:10px;background:var(--green-soft);border:1px solid #c8dcc4;border-radius:10px;padding:12px 14px;font-size:15.5px}
+.sol .key{font-weight:700;color:var(--green);margin-bottom:6px}
+.sol p:last-child{margin-bottom:0}
+.sol .mx-pt{background:#fff;border-left:3px solid var(--accent);padding:6px 10px;border-radius:0 6px 6px 0;font-size:14.5px}
+.sol .srcnote{font-size:13px;color:var(--warn);margin-top:6px}
+.secbar{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px 16px;margin:4px 0 8px;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.secbar .secstat{font-size:15px;margin-right:auto}
+.secbar .secscore{flex-basis:100%;font-size:15px}
+.secbar .secscore b.big{font-size:20px}
+.wbhead{margin:26px 0 14px}
+.wbhead h2{margin-top:0}
+.empty{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:26px;text-align:center;color:var(--ink2)}
+.wbinfo{font-size:13.5px;color:var(--accent);margin-left:auto}
+.wbact{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.qimg{cursor:zoom-in}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.92);overflow:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(52px + env(safe-area-inset-top,0px)) 10px calc(20px + env(safe-area-inset-bottom,0px))}
+.zoom img{display:block;width:1000px;max-width:none;background:#fff;border-radius:6px;margin:0 auto}
+.zoom .x{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:10px;background:#fff;border:none;border-radius:99px;
+  padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer}
+.zoom .hint{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:14px;color:#fff;font-size:13.5px}
+.printhead{display:none}
+footer{margin-top:30px;font-size:13px;color:var(--ink2);line-height:1.8}
+@media(max-width:600px){.qimg{width:100%}h1{font-size:24px}}
+
+/* ===== 列印 ===== */
+@page{size:A4;margin:12mm 11mm}
+@media print{
+  body{background:#fff;font-size:12.5pt}
+  .wrap{max-width:none;padding:0}
+  .noprint,.tabs,.toolbar,.toc,.opts,.verdict,.secbar,.wbact,details.howto{display:none!important}
+  .qimg{width:var(--w)!important}
+  header{padding:0 0 8px}
+  h1{font-size:18pt}
+  h2{font-size:14pt;margin:14px 0 8px;break-after:avoid}
+  .card{border:none;border-bottom:1px solid #bbb;border-radius:0;padding:6px 0 8px;margin:0;break-inside:avoid}
+  .ansrow{border-top:none;padding-top:4px;margin-top:2px}
+  .printhead{display:block}
+  .tag{background:#fff}
+  body.pq .blank{display:inline}
+  body.pq .sol{display:none!important}
+  body.pa .sol,body.pw .sol{display:block!important;background:#fff;border:1px solid #999;break-inside:avoid}
+  body.pa .ansrow,body.pw .ansrow{display:none}
+  body.pa .card,body.pw .card{break-inside:auto}
+  body.pa .qimg,body.pw .qimg{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">八年級上學期 · 自然科學 · 段考原題</div>
+  <h1>第 4 章 光<br>段考原題複習</h1>
+  <p class="dim printhead" id="phead"></p>
+  <p class="dim">丹鳳高中國中部 112／113／114 學年度第一學期<strong>第二次段考</strong>，挑出屬於「第 4 章 光」的題目（含是非題），共 59 題，照課本小節分成 8 段。題目是原卷截圖，圖表和考試時一模一樣。</p>
+  <details class="howto noprint">
+    <summary>怎麼用這一頁？</summary>
+    <p>題目字太小時，<strong>點一下圖片</strong>就會放大。</p>
+    <p>① 選一段，每題點 A～D；<strong>是非題</strong>點「是」或「否」（這句話對就選是，錯就選否）。　② 寫完按該段最下面的<strong>「交卷這一段」</strong>，才會顯示對錯和解析。</p>
+    <p>③ 答錯或沒寫的題目會自動放進<strong>「錯題本」</strong>。在錯題本裡再做一次，答對了就可以按「我會了，移出錯題本」。</p>
+    <p>作答和錯題本都存在這台裝置上，關掉再開還在。</p>
+    <p class="dim" style="font-size:14px">答案來源：112、113 學年度＝官方解答；<span style="color:var(--warn)">114 學年度學校沒有公布解答，答案是自行解出的，請以老師講解為準</span>。</p>
+  </details>
+  <div class="tabs">
+    <button class="tab on" data-view="practice">📝 題目練習</button>
+    <button class="tab" data-view="wrongbook">📕 錯題本<span class="cnt" id="wbcnt">0</span></button>
+  </div>
+</header>
+
+<main id="practice">
+  <div class="toolbar">
+    <button class="btn" data-print="q">🖨 存成 PDF：題目卷（無答案）</button>
+    <button class="btn" data-print="a">🖨 存成 PDF：解答卷（含解析）</button>
+  </div>
+  <nav class="toc"><a href="#c4-1">光的特性（10）<span class="st"></span></a><a href="#c4-2">光的反射定律（4）<span class="st"></span></a><a href="#c4-3">平面鏡的成像性質（6）<span class="st"></span></a><a href="#c4-4">凸面鏡與凹面鏡（2）<span class="st"></span></a><a href="#c4-5">光的折射（7）<span class="st"></span></a><a href="#c4-6">凸透鏡與凹透鏡（2）<span class="st"></span></a><a href="#c4-7">透鏡的成像（16）<span class="st"></span></a><a href="#c4-8">視力矯正與光的顏色（12）<span class="st"></span></a></nav>
+<section class="sec" data-sec="c4-1" data-title="第 4 章 ①　光的特性">
+<h2 id="c4-1">第 4 章 ①　光的特性<small>10 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-03</span><span class="tag">112 學年度 第二次段考 · 是非題 第 3 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="112 學年度 是非題 第 3 題" src="review/ch4/112-2-03.png"><div class="ansrow" data-q="112-2-3" data-ans="是"><span class="lb">第 3 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-3" hidden><div class="key">答案：是</div><p><strong>光在不同介質裡跑的速率不一樣，真空中最快</strong>（約 3 × 10⁸ m/s）。空氣中只慢一點點，水、玻璃就慢得多。</p><p class='mx-pt'>對照聲音：聲音剛好相反——在真空中根本傳不過去。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-10</span><span class="tag">113 學年度 第二次段考 · 是非題 第 10 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:47.8%" alt="113 學年度 是非題 第 10 題" src="review/ch4/113-2-10.png"><div class="ansrow" data-q="113-2-10" data-ans="否"><span class="lb">第 10 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-10" hidden><div class="key">答案：否</div><p>錯。針孔成像是<strong>上下、左右都顛倒</strong>——因為光走直線。</p><p>想一次就懂：物體<em>上方</em>發出的光，要穿過小孔只能<em>斜斜往下</em>走，所以落在屏幕的下方。左右也是同樣的道理。</p><p>這種「轉 180 度」的像，和照鏡子那種「只有左右相反」是完全不同的兩件事。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-08</span><span class="tag">114 學年度 第二次段考 · 是非題 第 8 題</span><span class="tag self">自行解出（該卷無官方解答）</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:50.8%" alt="114 學年度 是非題 第 8 題" src="review/ch4/114-2-08.png"><div class="ansrow" data-q="114-2-8" data-ans="是"><span class="lb">第 8 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-8" hidden><div class="key">答案：是</div><p>針孔成像是<strong>上下、左右都顛倒</strong>（整個轉了半圈），因為光走直線、從小孔交叉過去。</p><p>這句「左右互換、上下顛倒」正好是正確的描述。</p><p class='mx-pt'>和 113 學年度是非題第 10 題對照：那一題說「上下<em>不</em>顛倒」→ 否。字只差一個，答案相反。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-16</span><span class="tag">112 學年度 第二次段考 · 第 16 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 16 題" src="review/ch4/112-2-16.png"><div class="ansrow" data-q="112-2-16" data-ans="B"><span class="lb">第 16 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-16" hidden><div class="key">答案：(B)</div><p><strong>每一個針孔都會各自成一個像</strong>——三個孔就有三個像。</p><p>像的大小只跟「蠟燭到孔」和「孔到紙屏」的距離有關，多刺兩個孔，距離沒變 → <strong>大小不變</strong>。</p><p>(A) 三個孔不會只有兩個像。(C) 孔多不會合成一個大像。(D) 距離沒變，像不會縮小。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-20</span><span class="tag">112 學年度 第二次段考 · 第 20 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:63.5%" alt="112 學年度 第 20 題" src="review/ch4/112-2-20.png"><div class="ansrow" data-q="112-2-20" data-ans="D"><span class="lb">第 20 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-20" hidden><div class="key">答案：(D)</div><p>葉子縫隙在地上形成的圓形亮點，就是<strong>針孔成像</strong>（那是太陽的像）。光在空氣中<strong>直線前進</strong>，穿過小縫沒有轉彎 → 方向沒變。</p><p>(A) 顯微鏡靠透鏡<em>折射</em>。(B) 聽診器靠管子把聲音一路<em>反射</em>導進耳朵。(C) 三稜鏡讓光<em>折射</em>、分成七色。三個都改變了方向。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-12</span><span class="tag">114 學年度 第二次段考 · 第 12 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 12 題" src="review/ch4/114-2-12.png"><div class="ansrow" data-q="114-2-12" data-ans="A"><span class="lb">第 12 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-12" hidden><div class="key">答案：(A)</div><p>和上一題同一招：<strong>針孔成像 ＝ 光直進</strong>，光的方向沒有改變。</p><p>(B) 放大鏡是凸透鏡 → 折射。(C) 汽車後照鏡是凸面鏡 → 反射。(D) 三稜鏡 → 折射＋色散。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-20</span><span class="tag">114 學年度 第二次段考 · 第 20 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 20 題" src="review/ch4/114-2-20.png"><div class="ansrow" data-q="114-2-20" data-ans="B"><span class="lb">第 20 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-20" hidden><div class="key">答案：(B)</div><p>針孔成像<strong>上下、左右都顛倒</strong>，等於把原本的排列<strong>轉半圈（180°）</strong>。</p><p>照圖中的樣子，手電筒是上排「綠、藍」，下排「紅、白」。轉半圈：<br>上排變成「白、紅」，下排變成「藍、綠」→ <strong>(B)</strong>。</p><p>(A) 只有左右對調。(C) 完全沒變。(D) 只有上下對調。</p><p class='mx-pt'>技巧：把題目的圖<strong>倒過來看</strong>（手機轉半圈），看到的就是針孔的像。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-30</span><span class="tag">112 學年度 第二次段考 · 第 30 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 30 題" src="review/ch4/112-2-30.png"><div class="ansrow" data-q="112-2-30" data-ans="A"><span class="lb">第 30 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-30" hidden><div class="key">答案：(A)</div><p>三塊厚度一樣，<strong>花的時間愈長，速率愈慢</strong>——速率和時間成反比。</p><p>時間 2：6：3 → 速率 ＝ 1/2：1/6：1/3，全部乘以 6 → <strong>3：1：2</strong> → (A)。</p><p>(B)(D) 光的頻率由光源決定，換介質<strong>不會變</strong> → 頻率、週期都是 1：1：1。<br>(C) 波長 ＝ 速率 ÷ 頻率，頻率不變 → 波長比和速率比一樣，是 3：1：2，不是 2：6：3。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-32</span><span class="tag">114 學年度 第二次段考 · 第 32 題、第 33 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 32 題、第 33 題" src="review/ch4/114-2-32.png"><div class="ansrow" data-q="114-2-32" data-ans="D"><span class="lb">第 32 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="114-2-33" data-ans="D"><span class="lb">第 33 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-32" hidden><div class="key">第 32 題　答案：(D)</div><p>「暗箱」就是一間很大的<strong>針孔成像</strong>：小洞是針孔，畫布是紙屏。課本的結論是：針孔成像<strong>上下、左右都顛倒</strong>（整張畫轉半圈）→ (D)。</p><p>(A) 和原畫一樣，沒顛倒。(B) 只有左右相反（像照鏡子）。(C) 只有上下顛倒。</p><p class='mx-pt'>⚠️ 補充：(C) 和 (D) 的差別在「從哪一邊看畫布」。照課本「上下左右都顛倒」的說法是 (D)；但如果嚴格站在畫家的位置（背對小洞、面對畫布）看，左右其實沒有對調，會是 (C)。這一卷沒有官方解答，這裡依課本說法選 (D)，<strong>請問老師這一題怎麼算</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div><div class="sol" data-q="114-2-33" hidden><div class="key">第 33 題　答案：(D)</div><p>針孔成像可以用<strong>相似三角形</strong>：像高 ÷ 物高 ＝ 像距 ÷ 物距。</p><p>像高 5 公分 ＝ 0.05 公尺，物高 9 公尺，像距（小洞到畫布）3 公尺：<br>0.05 ÷ 9 ＝ 3 ÷ 物距 → 物距 ＝ 3 × 9 ÷ 0.05 ＝ <strong>540 公尺</strong>（建築物到<em>小洞</em>）。</p><p>題目問的是到<strong>畫布</strong>的距離，還要再加上小洞到畫布的 3 公尺 → 540 ＋ 3 ＝ <strong>543 公尺</strong>。</p><p class='mx-pt'>陷阱：(C) 540 是算到小洞就停了。<em>看清楚題目問「距離誰」。</em></p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c4-2" data-title="第 4 章 ②　光的反射定律">
+<h2 id="c4-2">第 4 章 ②　光的反射定律<small>4 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-14</span><span class="tag">112 學年度 第二次段考 · 第 14 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 14 題" src="review/ch4/112-2-14.png"><div class="ansrow" data-q="112-2-14" data-ans="A"><span class="lb">第 14 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-14" hidden><div class="key">答案：(A)</div><p>反射定律：<strong>入射角 ＝ 反射角</strong>。雷射以 45° 打下去，每次碰到地板或牆，都是 45° 進、45° 出。</p><p>跟著方格線畫：雷射打到地板 → 往左上彈到左邊的牆 → 再往右上彈。<strong>地板和牆互相垂直</strong>，光碰了這兩面之後會「掉頭」，沿著和原來<em>平行、方向相反</em>的路線射回去 → 打中射手自己。</p><p class='mx-pt'>這類題目一定要<strong>拿筆在格子上畫</strong>，每一段都斜走 45°（橫一格、直一格），不要用猜的。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-25</span><span class="tag">114 學年度 第二次段考 · 第 25 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 25 題" src="review/ch4/114-2-25.png"><div class="ansrow" data-q="114-2-25" data-ans="A"><span class="lb">第 25 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-25" hidden><div class="key">答案：(A)</div><p>太陽每小時在天空中移動 <strong>15°</strong>（一天 24 小時繞 360°，360 ÷ 24 ＝ 15）。</p><p>關鍵：<strong>鏡子轉 1°，反射光會轉 2°</strong>（入射角和反射角同時各變 1°）。陽光每小時偏 15°，要讓反射光一直射向收集器，鏡子只要轉一半 → <strong>7.5°</strong>。</p><p>(B) 15° 是太陽移動的角度，不是鏡子要轉的角度。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-29</span><span class="tag">113 學年度 第二次段考 · 第 29 題、第 30 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 29 題、第 30 題" src="review/ch4/113-2-29.png"><div class="ansrow" data-q="113-2-29" data-ans="C"><span class="lb">第 29 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="113-2-30" data-ans="C"><span class="lb">第 30 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-29" hidden><div class="key">第 29 題　答案：(C)</div><p>水面在這裡就是一面<strong>鏡子</strong>——光從月亮射到水面、<em>彈回來</em>進入眼睛，所以是<strong>反射</strong>。</p><p>那什麼時候是折射？<strong>當你看的是水裡面的東西</strong>（魚、石頭、伸進水裡的筷子）——光從水裡穿出來，方向轉了彎。</p><p class='mx-pt'>一句話分清楚：<strong>看水面上的倒影＝反射；看水面下的東西＝折射。</strong></p></div><div class="sol" data-q="113-2-30" hidden><div class="key">第 30 題　答案：(C)</div><p>(C) 是這一題要抓的：<strong>光速不會因為重力大就變快。</strong>真空中的光速是一個常數（約每秒 30 萬公里），它是<em>宇宙的上限</em>，不是可以被拉快的東西。</p><p>(B) 月球沒有大氣，<strong>聲音沒有介質可以傳</strong>，正確。<br>(D) 水中的魚因為<strong>折射</strong>，看起來比實際位置<em>淺</em>，正確——所以叉魚要往看到的位置<em>下方</em>叉。</p><p class='mx-pt'>🔴 說句公道話：(A) 嚴格看也站不住腳（詩中的「影」有月影、身影、倒影，意義並不完全相同）。<strong>學校公布的答案是 (C)</strong>，而 (C) 的物理錯誤最明確，所以在考場上仍應選 (C)——但你能看出 (A) 也怪怪的，代表你讀得比題目還仔細。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c4-3" data-title="第 4 章 ③　平面鏡的成像性質">
+<h2 id="c4-3">第 4 章 ③　平面鏡的成像性質<small>6 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-04</span><span class="tag">112 學年度 第二次段考 · 是非題 第 4 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:47.8%" alt="112 學年度 是非題 第 4 題" src="review/ch4/112-2-04.png"><div class="ansrow" data-q="112-2-4" data-ans="否"><span class="lb">第 4 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-4" hidden><div class="key">答案：否</div><p>平面鏡的像和物體<strong>一樣大</strong>，跟鏡子大小無關。</p><p>鏡子大，只是能看到的<em>範圍</em>比較大（看得到全身），像本身沒有變大。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-12</span><span class="tag">113 學年度 第二次段考 · 第 12 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:67.4%" alt="113 學年度 第 12 題" src="review/ch4/113-2-12.png"><div class="ansrow" data-q="113-2-12" data-ans="C"><span class="lb">第 12 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-12" hidden><div class="key">答案：(C)</div><p>你在鏡子裡是<strong>正立</strong>的（頭在上），這不用想。</p><p>關鍵是虛像：<em>把一張紙放到鏡子後面，接不到任何影像</em>——那個「你」不在鏡子後面，是你的大腦<strong>把反射光線往回延長</strong>畫出來的。</p><p class='mx-pt'>再複習一次那條捷徑：<strong>實像必倒立、虛像必正立。</strong>既然是虛像，就只可能是「正立虛像」，(B)(D) 直接刪掉。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-17</span><span class="tag">114 學年度 第二次段考 · 第 17 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 17 題" src="review/ch4/114-2-17.png"><div class="ansrow" data-q="114-2-17" data-ans="C"><span class="lb">第 17 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-17" hidden><div class="key">答案：(C)</div><p>擋風玻璃除了讓光透過，也會<strong>像平面鏡一樣反射</strong>一部分的光。晚上車內開燈，玻璃上就會出現車內東西的虛像。</p><p>玻璃<strong>斜斜的</strong>，這個像就跑到駕駛前方的<em>斜上方</em>，不擋住前面的路；如果玻璃是豎直的，像就剛好落在駕駛眼前，干擾開車 → (C)。</p><p>(A) 後車的光主要照到後照鏡、後擋風玻璃。(B) 重點不是「嚇到」，而是擋視線。(D) 討論的是反射，不是折射。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-27</span><span class="tag">112 學年度 第二次段考 · 第 27 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 27 題" src="review/ch4/112-2-27.png"><div class="ansrow" data-q="112-2-27" data-ans="C"><span class="lb">第 27 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-27" hidden><div class="key">答案：(C)</div><p>分兩步：<strong>先在鏡 I 成像，再把這個像拿到鏡 II 裡照一次</strong>。</p><p>① 鏡 I 是直立的牆鏡：John 看到的是一般照鏡子的像——<em>正立</em>，就像選項 (A) 那樣。<br>② 鏡 II 是平放在地上的鏡子：地上的鏡子會讓像<strong>上下顛倒</strong>（像水中倒影），所以把 (A) <strong>上下翻過來</strong> → 舉起的手變成在下面、伸出的手變成往上 → <strong>(C)</strong>。</p><p>(A)(B) 沒有倒過來，不是地上鏡子的像。(D) 倒過來了，但左右也跟著換了邊。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-36</span><span class="tag">112 學年度 第二次段考 · 第 36 題、第 37 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 36 題、第 37 題" src="review/ch4/112-2-36.png"><div class="ansrow" data-q="112-2-36" data-ans="D"><span class="lb">第 36 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="112-2-37" data-ans="A"><span class="lb">第 37 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-36" hidden><div class="key">第 36 題　答案：(D)</div><p>雙面鏡的原理：<strong>哪一邊亮，玻璃就對那一邊像鏡子；從暗的一邊可以看穿到亮的一邊。</strong></p><p>手電筒法把亮室的燈關掉、只照鏡面——等於讓鏡子後面相對變亮，就看得到後面有沒有東西。</p><p>(D) 晚上屋內亮、屋外暗：屋內的人看窗戶像鏡子，屋外的人卻看得到屋內 → <strong>同一個道理</strong>。</p><p>(A)(B)(C) 都是「光直線前進」的現象，跟這篇文章講的反射與透光無關。</p></div><div class="sol" data-q="112-2-37" hidden><div class="key">第 37 題　答案：(A)</div><p><strong>平面鏡：物距 ＝ 像距</strong>。但要量到<em>反射面</em>，不是量到玻璃表面。</p><p>反射面在玻璃後面 2 mm，指甲貼著玻璃 → 指甲到反射面 2 mm → 像在反射面後面 2 mm。</p><p>指甲到像 ＝ 2 ＋ 2 ＝ <strong>4 mm</strong>。</p><p class='mx-pt'>文章裡說「指甲與像沒有間隙」的是雙面鏡（金屬膜在表面）；一般鏡子會看到間隙，就是這 4 mm。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c4-4" data-title="第 4 章 ④　凸面鏡與凹面鏡">
+<h2 id="c4-4">第 4 章 ④　凸面鏡與凹面鏡<small>2 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-19</span><span class="tag">112 學年度 第二次段考 · 第 19 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:63.2%" alt="112 學年度 第 19 題" src="review/ch4/112-2-19.png"><div class="ansrow" data-q="112-2-19" data-ans="C"><span class="lb">第 19 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-19" hidden><div class="key">答案：(C)</div><p>碟形天線、雷達是<strong>凹進去</strong>的面：平行射來的訊號碰到它，會被反射<strong>會聚</strong>到焦點，接收器就放在焦點上。</p><p>凹面鏡也是同樣的功能（例如太陽能聚光）→ (C)。</p><p>(A) 平面鏡不會聚光。(B) 凸面鏡讓光發散。(D) 哈哈鏡是凹凸不平的鏡子，把像扭曲。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-22</span><span class="tag">114 學年度 第二次段考 · 第 22 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 22 題" src="review/ch4/114-2-22.png"><div class="ansrow" data-q="114-2-22" data-ans="D"><span class="lb">第 22 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-22" hidden><div class="key">答案：(D)</div><p>(A) 賣場角落是凸面鏡沒錯，但凸面鏡成<strong>縮小</strong>的虛像（才看得到大範圍），不是放大 ✗<br>(B) 燈泡放在凹面鏡焦點，反射後是<strong>平行光</strong>射出（照得遠），不是發散 ✗<br>(C) 化妝鏡是凹面鏡沒錯，但臉要在<strong>焦距以內</strong>，才會成正立放大虛像 ✗<br>(D) 後照鏡用凸面鏡：成正立縮小虛像，像距小於物距 ✓</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c4-5" data-title="第 4 章 ⑤　光的折射">
+<h2 id="c4-5">第 4 章 ⑤　光的折射<small>7 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-05</span><span class="tag">112 學年度 第二次段考 · 是非題 第 5 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="112 學年度 是非題 第 5 題" src="review/ch4/112-2-05.png"><div class="ansrow" data-q="112-2-5" data-ans="是"><span class="lb">第 5 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-5" hidden><div class="key">答案：是</div><p><strong>頻率由光源決定</strong>，換到別的介質也不會變。</p><p>光進入水中，速率變慢；波長 ＝ 速率 ÷ 頻率，頻率不變、速率變小 → <strong>波長變短</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-21</span><span class="tag">112 學年度 第二次段考 · 第 21 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 21 題" src="review/ch4/112-2-21.png"><div class="ansrow" data-q="112-2-21" data-ans="A"><span class="lb">第 21 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-21" hidden><div class="key">答案：(A)</div><p>先把明顯錯的刪掉：</p><p>(B) 折射角是折射線和<strong>法線</strong>的夾角，不是和界面 ✗<br>(C) <strong>垂直</strong>射入時方向不會偏折 ✗<br>(D) 空氣進入玻璃，光變慢、偏向法線 → 折射角比入射角<strong>小</strong> ✗</p><p>(A) 星光穿過地球的大氣層會折射，所以我們看到的星星位置和它實際的位置不一樣 → 選 (A)。</p><p class='mx-pt'>補充：更精確的說法是，大氣折射讓星星看起來比實際位置<strong>高一點</strong>。選項寫「距離比較遠」不太精確，但另外三個選項都明顯錯，用刪去法選 (A)。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-18</span><span class="tag">112 學年度 第二次段考 · 第 18 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:82.9%" alt="112 學年度 第 18 題" src="review/ch4/112-2-18.png"><div class="ansrow" data-q="112-2-18" data-ans="B"><span class="lb">第 18 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-18" hidden><div class="key">答案：(B)</div><p>規則：<strong>光線和法線的夾角愈大，那個介質裡的光速愈快</strong>。</p><p>先把每一層換成「和法線的夾角」（圖中的虛線是法線）：<br>甲：標示的 60° 是和<em>界面</em>的夾角 → 和法線 90 − 60 ＝ <strong>30°</strong><br>乙：和法線 <strong>45°</strong><br>丙：標示的 70° 是和界面的夾角 → 和法線 <strong>20°</strong></p><p>45° ＞ 30° ＞ 20° → 光速 <strong>乙 ＞ 甲 ＞ 丙</strong>。</p><p class='mx-pt'>陷阱：題目給的角度不一定是從法線量的，<strong>先看清楚角度標在哪裡</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-16</span><span class="tag">113 學年度 第二次段考 · 第 16 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 16 題" src="review/ch4/113-2-16.png"><div class="ansrow" data-q="113-2-16" data-ans="C"><span class="lb">第 16 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-16" hidden><div class="key">答案：(C)</div><p>先想清楚光的方向：我們看到石子，是光<strong>從石子出發 → 水 → 空氣 → 進入眼睛</strong>。(B)(D) 箭頭是從眼睛射向石子，方向反了 ✗。</p><p>光從水進入空氣，速率變快，折射線<strong>偏離法線</strong>（變得更斜）。</p><p>(A) 進入空氣後反而變得更直（偏向法線）✗。(C) 進入空氣後變得更斜 ✓。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-18</span><span class="tag">113 學年度 第二次段考 · 第 18 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:67.8%" alt="113 學年度 第 18 題" src="review/ch4/113-2-18.png"><div class="ansrow" data-q="113-2-18" data-ans="D"><span class="lb">第 18 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-18" hidden><div class="key">答案：(D)</div><p>過圓心 O 的法線是一條<strong>鉛直線</strong>。光從空氣進入水，速率變慢，要<strong>偏向法線</strong>——也就是比原來的方向（乙，PO 的延長線）<em>更陡、更往下</em> → 丁。</p><p>甲、丙比乙更斜，是偏離法線，方向錯了。</p><p class='mx-pt'>為什麼丁在曲面射出時不轉彎？因為光從圓心出發，沿著<strong>半徑</strong>走，剛好垂直射到圓弧上，垂直入射就不偏折。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-19</span><span class="tag">113 學年度 第二次段考 · 第 19 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 19 題" src="review/ch4/113-2-19.png"><div class="ansrow" data-q="113-2-19" data-ans="C"><span class="lb">第 19 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-19" hidden><div class="key">答案：(C)</div><p>甲、乙、丙是<strong>從水裡射到空氣</strong>的光，乙是沒有偏折的路線。</p><p>水 → 空氣：光變快，<strong>偏離法線</strong>（變得更斜、更貼近水面）→ 比乙更斜的是 <strong>丙</strong>。</p><p>(A) 甲比乙更直（偏向法線），方向反了。(D) 丁是從空氣射進水裡的光：空氣 → 水應該偏向法線（應該是己），丁卻更斜 ✗。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-26</span><span class="tag">114 學年度 第二次段考 · 第 26 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:63.2%" alt="114 學年度 第 26 題" src="review/ch4/114-2-26.png"><div class="ansrow" data-q="114-2-26" data-ans="C"><span class="lb">第 26 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-26" hidden><div class="key">答案：(C)</div><p>a 光在玻璃中比較慢 → 進玻璃時<strong>偏折得比較多</strong>（更偏向法線）；b 偏折得少。</p><p>(A) 兩束偏折的程度不同，在玻璃裡就<strong>不平行</strong>了 ✗<br>(B) 上下表面互相平行，光從下表面射出時會「轉回」原來的方向 → 兩束出來後<strong>又平行</strong> ✗<br>(C) 在玻璃裡，b 比 a 更往右斜，兩束愈走愈開 → 射出後距離<strong>變大</strong> ✓<br>(D) 距離已經被拉開，不會和原來相同 ✗</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c4-6" data-title="第 4 章 ⑥　凸透鏡與凹透鏡">
+<h2 id="c4-6">第 4 章 ⑥　凸透鏡與凹透鏡<small>2 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-2-17</span><span class="tag">113 學年度 第二次段考 · 第 17 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 17 題" src="review/ch4/113-2-17.png"><div class="ansrow" data-q="113-2-17" data-ans="D"><span class="lb">第 17 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-17" hidden><div class="key">答案：(D)</div><p>圖中是<strong>凸透鏡</strong>（中間厚、邊緣薄），平行光穿過後會聚、交叉。</p><p>把它<strong>翻面</strong>，它還是中間厚、邊緣薄 → 還是凸透鏡 → 平行光一樣<strong>會聚到焦點再散開</strong> → (D)。</p><p>(A) 光完全沒偏折 ✗。(B) 光往外發散，那是凹透鏡 ✗。(C) 兩條光都往下偏，沒有會聚 ✗。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-24</span><span class="tag">114 學年度 第二次段考 · 第 24 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:70.9%" alt="114 學年度 第 24 題" src="review/ch4/114-2-24.png"><div class="ansrow" data-q="114-2-24" data-ans="B"><span class="lb">第 24 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-24" hidden><div class="key">答案：(B)</div><p>凹透鏡的三條特殊光線：</p><p>① <strong>平行主軸</strong>射入 → 折射後往外散，延長線<strong>好像從同一側的焦點 F 發出</strong> → 甲 ✓（圖中虛線就是從 F 拉過來）<br>② <strong>朝另一側焦點 F′</strong>射去 → 折射後<strong>平行主軸</strong> → 乙 ✓<br>③ 通過<strong>鏡心 O</strong> → 直直穿過不偏折 → 丁 ✓</p><p>丙（平行光折射後通過 F′）和戊（通過 F 後變平行）是<strong>凸透鏡</strong>的規則，放到凹透鏡就錯了。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c4-7" data-title="第 4 章 ⑦　透鏡的成像">
+<h2 id="c4-7">第 4 章 ⑦　透鏡的成像<small>16 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-2-06</span><span class="tag">112 學年度 第二次段考 · 是非題 第 6 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:47.8%" alt="112 學年度 是非題 第 6 題" src="review/ch4/112-2-06.png"><div class="ansrow" data-q="112-2-6" data-ans="否"><span class="lb">第 6 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-6" hidden><div class="key">答案：否</div><p>凹透鏡不管物體放在哪裡，都只成<strong>正立、縮小、虛像</strong>。</p><p>而且<strong>虛像必正立</strong>——「倒立虛像」根本不存在，看到這四個字就可以判錯。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-09</span><span class="tag">113 學年度 第二次段考 · 是非題 第 9 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="113 學年度 是非題 第 9 題" src="review/ch4/113-2-09.png"><div class="ansrow" data-q="113-2-9" data-ans="否"><span class="lb">第 9 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-9" hidden><div class="key">答案：否</div><p>錯。凸透鏡成虛像時<strong>一定是放大的</strong>（那就是放大鏡）；成縮小的像時<strong>一定是倒立實像</strong>。</p><p>「縮小 ＋ 正立 ＋ 虛像」這個組合，是<strong>凹透鏡</strong>的專利。</p><p class='mx-pt'>把四種可能排一次就永遠不會錯：<br>· 凸透鏡，物在焦距<em>外</em> → 倒立實像（可大可小）<br>· 凸透鏡，物在焦距<em>內</em> → 正立<strong>放大</strong>虛像<br>· 凹透鏡 → 正立<strong>縮小</strong>虛像（永遠只有這一種）</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-09</span><span class="tag">114 學年度 第二次段考 · 是非題 第 9 題</span><span class="tag self">自行解出（該卷無官方解答）</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="114 學年度 是非題 第 9 題" src="review/ch4/114-2-09.png"><div class="ansrow" data-q="114-2-9" data-ans="是"><span class="lb">第 9 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-9" hidden><div class="key">答案：是</div><p>凸透鏡，物體放在<strong>焦點以內</strong> → 正立、放大、虛像。這就是<strong>放大鏡</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-09</span><span class="tag">112 學年度 第二次段考 · 是非題 第 9 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="112 學年度 是非題 第 9 題" src="review/ch4/112-2-09.png"><div class="ansrow" data-q="112-2-9" data-ans="是"><span class="lb">第 9 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-9" hidden><div class="key">答案：是</div><p>凸透鏡成實像時，大小要看物體放在哪裡：</p><p>· 物體在<strong>兩倍焦距外</strong> → 倒立<strong>縮小</strong>實像（照相機）<br>· 物體<strong>剛好在兩倍焦距</strong> → 倒立<strong>等大</strong>實像<br>· 物體在<strong>焦點和兩倍焦距之間</strong> → 倒立<strong>放大</strong>實像（投影機）</p><p>所以「成實像就一定是放大實像」照課本來看是<strong>不對</strong>的。</p><p class='mx-pt'>⚠️ 補充：照上面的整理，這句話應該是「否」；但本題<strong>官方答案是 「是」</strong>，這裡照官方答案計分；如果考試遇到類似題目，<strong>請問老師這一題怎麼算</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-03</span><span class="tag">113 學年度 第二次段考 · 是非題 第 3 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="113 學年度 是非題 第 3 題" src="review/ch4/113-2-03.png"><div class="ansrow" data-q="113-2-3" data-ans="是"><span class="lb">第 3 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-3" hidden><div class="key">答案：是</div><p>對，但要看清楚它說的是「<em>漸大</em>」，不是「變成放大」。</p><p>凹透鏡永遠成<strong>正立、縮小的虛像</strong>——這一點不會變。改變的是縮小的程度：物體愈靠近透鏡，像就愈接近原本的大小（但<em>永遠不會超過</em>）。</p><p class='mx-pt'>用生活經驗檢查：拿一副近視眼鏡看東西，愈貼近字，字愈接近正常大小；拿遠一點，字就縮得愈小。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-10</span><span class="tag">112 學年度 第二次段考 · 是非題 第 10 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:47.8%" alt="112 學年度 是非題 第 10 題" src="review/ch4/112-2-10.png"><div class="ansrow" data-q="112-2-10" data-ans="是"><span class="lb">第 10 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-10" hidden><div class="key">答案：是</div><p>和 113 學年度是非題第 3 題一樣：凹透鏡永遠成<strong>正立縮小虛像</strong>，但物體愈靠近，像就愈接近原本的大小 → 「越來越大」是對的（只是永遠不會超過物體）。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-03</span><span class="tag">114 學年度 第二次段考 · 是非題 第 3 題</span><span class="tag self">自行解出（該卷無官方解答）</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="114 學年度 是非題 第 3 題" src="review/ch4/114-2-03.png"><div class="ansrow" data-q="114-2-3" data-ans="否"><span class="lb">第 3 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-3" hidden><div class="key">答案：否</div><p>剛好和上一題相反：凹透鏡的像是隨物體靠近而<strong>漸大</strong>，不是漸小。</p><p class='mx-pt'>是非題常這樣出：把一個字換成反義字。<strong>每個形容詞都要對過一次</strong>。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-26</span><span class="tag">112 學年度 第二次段考 · 第 26 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 26 題" src="review/ch4/112-2-26.png"><div class="ansrow" data-q="112-2-26" data-ans="D"><span class="lb">第 26 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-26" hidden><div class="key">答案：(D)</div><p>水滴中間厚、邊緣薄 → <strong>小凸透鏡</strong>，會把光會聚（A、B 對）。字在焦點以內，所以我們看到的是<strong>正立放大的虛像</strong>（C 對）。</p><p>(D) 錯在「視網膜上」：不管看什麼，眼睛的水晶體在視網膜上成的一定是<strong>倒立縮小實像</strong>。虛像沒有光真的聚在那裡，不可能成在視網膜上。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-29</span><span class="tag">112 學年度 第二次段考 · 第 29 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 29 題" src="review/ch4/112-2-29.png"><div class="ansrow" data-q="112-2-29" data-ans="D"><span class="lb">第 29 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-29" hidden><div class="key">答案：(D)</div><p>比較圖 11 和圖 12：箭頭原本往上、往右，成像變成往下、往左 → <strong>倒立</strong>；而且變大了 → <strong>倒立放大</strong>。</p><p>倒立的一定是<strong>實像</strong>；凸透鏡要成倒立放大實像，物體要在<strong>焦點和兩倍焦距之間</strong> → 紙到鏡子的距離大於焦距 → (D)。</p><p>(A) 是放大不是縮小。(B) 倒立的不會是虛像。(C) 凹透鏡只能成正立縮小的像。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-32</span><span class="tag">112 學年度 第二次段考 · 第 32 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 32 題" src="review/ch4/112-2-32.png"><div class="ansrow" data-q="112-2-32" data-ans="C"><span class="lb">第 32 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-32" hidden><div class="key">答案：(C)</div><p>凹透鏡只成<strong>正立縮小虛像</strong>，像和蠟燭在<strong>同一側</strong>，紙屏接不到。</p><p>要看虛像，就要<strong>從另一側（丁、戊、己區）透過透鏡</strong>看 → (C)。</p><p>(A)(B) 用紙屏找虛像，永遠找不到。(D) 站在蠟燭那一側，眼睛沒有透過透鏡，看不到像。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-21</span><span class="tag">113 學年度 第二次段考 · 第 21 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 21 題" src="review/ch4/113-2-21.png"><div class="ansrow" data-q="113-2-21" data-ans="D"><span class="lb">第 21 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-21" hidden><div class="key">答案：(D)</div><p>凸透鏡焦距 10 cm，丙區離透鏡不到 10 cm → 蠟燭在<strong>焦點以內</strong> → 成<strong>正立放大的虛像</strong>（放大鏡）。</p><p>虛像紙屏接不到，要<strong>從另一側透過透鏡看</strong> → (D)。(A)(B)(C) 都是用紙屏找，找不到。</p><p class='mx-pt'>和 112 學年度第 32 題對照：那一題是凹透鏡、這一題是凸透鏡放在焦點內，<strong>兩個都是虛像</strong>，答法一樣。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-25</span><span class="tag">113 學年度 第二次段考 · 第 25 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 25 題" src="review/ch4/113-2-25.png"><div class="ansrow" data-q="113-2-25" data-ans="A"><span class="lb">第 25 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-25" hidden><div class="key">答案：(A)</div><p>凹透鏡成像的規則：像一定是<strong>正立縮小虛像</strong>，和物體在<strong>同一側</strong>，而且一定落在<strong>同側焦點和鏡心之間</strong>。</p><p>物體在很遠的地方 → 像在焦點附近；物體慢慢靠近 → 像也慢慢往鏡心靠近。</p><p class='mx-pt'>⚠️ 補充：照這個規則，光點在左邊，像應該從左邊的 F₁ 出發、向右靠近鏡面，也就是 (C)。本題<strong>官方答案是 (A)</strong>，這裡照官方答案計分；如果考試遇到類似題目，<strong>請問老師這一題怎麼算</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-16</span><span class="tag">114 學年度 第二次段考 · 第 16 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 16 題" src="review/ch4/114-2-16.png"><div class="ansrow" data-q="114-2-16" data-ans="B"><span class="lb">第 16 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-16" hidden><div class="key">答案：(B)</div><p>景物很遠時，像幾乎就成在<strong>焦點</strong>上 → 像距 ≈ 焦距。</p><p>要讓像變大：把<strong>焦距變長</strong>，像距也跟著變大，底片上的像就變大 → (B)。</p><p class='mx-pt'>生活例子：望遠鏡頭（長焦鏡頭）又長又大，就是因為焦距長；手機「拉近」就是在切換成焦距較長的鏡頭。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-23</span><span class="tag">114 學年度 第二次段考 · 第 23 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 23 題" src="review/ch4/114-2-23.png"><div class="ansrow" data-q="114-2-23" data-ans="B"><span class="lb">第 23 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-23" hidden><div class="key">答案：(B)</div><p>甲：沒有針孔、沒有透鏡，燭焰每一點的光散到整個屏幕，全部疊在一起 → <strong>不能成像</strong>（只是被照亮）。</p><p>乙：針孔讓每一點只有一小束光通過 → <strong>倒立實像</strong>，但光很少，比較暗。</p><p>丙：凸透鏡把同一點發出的<em>很多條</em>光會聚到同一點 → 倒立實像，而且<strong>比乙亮</strong> → (B)。</p><p>(A)(C) 甲並沒有成虛像。(D) 透鏡收集的光比針孔多，所以是更亮。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-29</span><span class="tag">114 學年度 第二次段考 · 第 29 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 29 題" src="review/ch4/114-2-29.png"><div class="ansrow" data-q="114-2-29" data-ans="A"><span class="lb">第 29 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-29" hidden><div class="key">答案：(A)</div><p>看圖 8：透鏡裡的刻度<strong>變大</strong>，而且方向沒有顛倒 → <strong>正立放大虛像</strong>。</p><p>凸透鏡要成正立放大虛像，物體要在<strong>焦點以內</strong>：距離小於 5 cm → 只有 <strong>3 cm</strong>。</p><p>(B) 剛好在焦點不成像；(C) 10 cm 在兩倍焦距上，成倒立等大實像；(D) 20 cm 成倒立縮小實像。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-40</span><span class="tag">114 學年度 第二次段考 · 第 40 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 40 題" src="review/ch4/114-2-40.png"><div class="ansrow" data-q="114-2-40" data-ans="C"><span class="lb">第 40 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-40" hidden><div class="key">答案：(C)</div><p>放大鏡：物體放在焦點內，得到<strong>正立</strong>放大的虛像，不是「倒立」→ (C) 錯。</p><p>(A) 水晶體是凸透鏡 ✓。(B) 照相機成縮小倒立實像 ✓。(D) 凸透鏡成放大虛像要放焦點內 ✓。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c4-8" data-title="第 4 章 ⑧　視力矯正與光的顏色">
+<h2 id="c4-8">第 4 章 ⑧　視力矯正與光的顏色<small>12 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-2-05</span><span class="tag">113 學年度 第二次段考 · 是非題 第 5 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="113 學年度 是非題 第 5 題" src="review/ch4/113-2-05.png"><div class="ansrow" data-q="113-2-5" data-ans="是"><span class="lb">第 5 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-5" hidden><div class="key">答案：是</div><p>對。近視是<em>眼球太長</em>，光線太早會聚，成像落在視網膜<strong>前面</strong>。</p><p>要救它，就要先把光<strong>發散</strong>一點，讓會聚點往後退——這正是<strong>凹透鏡</strong>在做的事。</p><p class='mx-pt'>遠視相反：成像落在視網膜後面，要<em>提早會聚</em>，所以戴<strong>凸</strong>透鏡。記法：<strong>近視凹、遠視凸。</strong></p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-05</span><span class="tag">114 學年度 第二次段考 · 是非題 第 5 題</span><span class="tag self">自行解出（該卷無官方解答）</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:49.0%" alt="114 學年度 是非題 第 5 題" src="review/ch4/114-2-05.png"><div class="ansrow" data-q="114-2-5" data-ans="是"><span class="lb">第 5 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-5" hidden><div class="key">答案：是</div><p>和 113 學年度是非題第 5 題一樣：近視的像落在視網膜<strong>前面</strong>，要先讓光<strong>發散</strong>一點 → <strong>凹透鏡</strong>。</p><p class='mx-pt'>記法：<strong>近視凹、遠視凸。</strong></p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-20</span><span class="tag">113 學年度 第二次段考 · 第 20 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:66.7%" alt="113 學年度 第 20 題" src="review/ch4/113-2-20.png"><div class="ansrow" data-q="113-2-20" data-ans="B"><span class="lb">第 20 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-20" hidden><div class="key">答案：(B)</div><p>眼睛像一台照相機：水晶體是凸透鏡，在視網膜上成<strong>倒立、縮小、實像</strong>。</p><p>「倒立」是<strong>上下、左右都顛倒</strong>，等於把 e 轉半圈 → 看起來像 ə → (B)。</p><p>(A) 沒有轉。(C)(D) 只翻了一個方向。</p><p class='mx-pt'>那為什麼我們看到的世界是正的？因為<strong>大腦</strong>會自動把它轉回來。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-08</span><span class="tag">112 學年度 第二次段考 · 是非題 第 8 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:47.8%" alt="112 學年度 是非題 第 8 題" src="review/ch4/112-2-08.png"><div class="ansrow" data-q="112-2-8" data-ans="是"><span class="lb">第 8 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-8" hidden><div class="key">答案：是</div><p>色光的三原色是<strong>紅（R）、綠（G）、藍（B）</strong>，螢幕上的每一個顏色都是用它們依不同強度混出來的。</p><p class='mx-pt'>不要和美術課的「顏料三原色」（洋紅、黃、青）搞混。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-08</span><span class="tag">113 學年度 第二次段考 · 是非題 第 8 題</span><span class="tag">官方解答</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:47.8%" alt="113 學年度 是非題 第 8 題" src="review/ch4/113-2-08.png"><div class="ansrow" data-q="113-2-8" data-ans="否"><span class="lb">第 8 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-8" hidden><div class="key">答案：否</div><p>RGB 混合可以得到各種<strong>看得見的顏色（色光）</strong>，但電磁波還包括無線電波、微波、紅外線、紫外線、X 光……這些人眼看不見，不是用紅綠藍混出來的。</p><p>「所有的電磁波」說得太大了 → 否。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-06</span><span class="tag">114 學年度 第二次段考 · 是非題 第 6 題</span><span class="tag self">自行解出（該卷無官方解答）</span><span class="tag tf">是非題：這句話對選「是」、錯選「否」</span></div><img class="qimg" style="--w:50.8%" alt="114 學年度 是非題 第 6 題" src="review/ch4/114-2-06.png"><div class="ansrow" data-q="114-2-6" data-ans="否"><span class="lb">第 6 題</span><span class="opts"><button data-c="是">是</button><button data-c="否">否</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-6" hidden><div class="key">答案：否</div><p>和 113 學年度是非題第 8 題同一個陷阱：三原色只能混出<strong>可見光</strong>的各種顏色，不是<strong>所有電磁波</strong>（無線電波、X 光等都不行）。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-22</span><span class="tag">112 學年度 第二次段考 · 第 22 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 22 題" src="review/ch4/112-2-22.png"><div class="ansrow" data-q="112-2-22" data-ans="B"><span class="lb">第 22 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-22" hidden><div class="key">答案：(B)</div><p>物體的顏色＝它<strong>反射</strong>回來的色光。在綠光底下：</p><p>綠衣：反射綠光 → <strong>綠</strong><br>黑裙：什麼光都吸收 → <strong>黑</strong><br>白鞋：什麼色光都反射，照到綠光就反射綠光 → <strong>綠</strong></p><p>→ 綠衣、黑裙、綠鞋 (B)。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-22</span><span class="tag">113 學年度 第二次段考 · 第 22 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 22 題" src="review/ch4/113-2-22.png"><div class="ansrow" data-q="113-2-22" data-ans="A"><span class="lb">第 22 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-22" hidden><div class="key">答案：(A)</div><p>規則：<strong>色光照到和自己同色或白色的地方 → 看起來是那個色光；照到其他顏色 → 被吸收，看起來是黑色。</strong></p><p>要讓黑色共 10 cm²：<br>(A) 紅光：紅、白 → 紅色；藍 8 ＋ 綠 2 ＝ <strong>10</strong> 變黑 ✓<br>(B) 藍光：紅 4 ＋ 綠 2 ＝ 6 變黑<br>(C) 綠光：藍 8 ＋ 紅 4 ＝ 12 變黑<br>(D) 白光：各顏色照原樣，沒有黑色</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-2-21</span><span class="tag">114 學年度 第二次段考 · 第 21 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:100.0%" alt="114 學年度 第 21 題" src="review/ch4/114-2-21.png"><div class="ansrow" data-q="114-2-21" data-ans="D"><span class="lb">第 21 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2-21" hidden><div class="key">答案：(D)</div><p>綠色墨鏡只讓<strong>綠光</strong>通過，其他色光都被擋掉。所以透過它看：</p><p>綠色、白色的部分 → 都只剩綠光進眼睛 → 看起來<strong>綠</strong>；紅、藍的部分 → 沒有光通過 → 看起來<strong>黑</strong>。</p><p>奈及利亞（綠白綠）→ 綠、綠、綠，整面一樣 ✓<br>法國 → 黑綠黑；義大利 → 綠綠黑；祕魯 → 黑綠黑。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-2-33</span><span class="tag">112 學年度 第二次段考 · 第 33 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 33 題" src="review/ch4/112-2-33.png"><div class="ansrow" data-q="112-2-33" data-ans="A"><span class="lb">第 33 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-2-33" hidden><div class="key">答案：(A)</div><p>兩件事要一起想：<strong>像的大小</strong>和<strong>色光的混合</strong>。</p><p>① 像的大小：物體愈靠近凸透鏡（但在焦點外），成的實像<strong>愈大</strong>。① 藍燈最靠近透鏡 → 像最大；③ 紅燈最遠 → 像最小。</p><p>② 三個像疊在一起：最外圈只有藍；中間一圈是藍 ＋ 綠 ＝ <strong>青</strong>；最中心三色都有 ＝ <strong>白</strong> → (A)。</p><p class='mx-pt'>色光混合：紅＋綠＝黃、綠＋藍＝青、紅＋藍＝洋紅、紅＋綠＋藍＝白。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-2-35</span><span class="tag">113 學年度 第二次段考 · 第 35 題、第 36 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 35 題、第 36 題" src="review/ch4/113-2-35.png"><div class="ansrow" data-q="113-2-35" data-ans="B"><span class="lb">第 35 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="113-2-36" data-ans="A"><span class="lb">第 36 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-2-35" hidden><div class="key">第 35 題　答案：(B)</div><p>白光 ＝ 紅 ＋ 綠 ＋ 藍。三種色光各自遇到哪一片膜：</p><p>紅光：碰到<strong>紅光反射膜</strong>（左下到右上那條）→ 被反射，往<strong>上</strong>走 → (1)<br>綠光：兩片膜都讓它通過 → 直直往右 → (2)<br>藍光：碰到<strong>藍光反射膜</strong>（左上到右下那條）→ 被反射，往<strong>下</strong>走 → (3)</p><p>(1)(2)(3) ＝ 紅、綠、藍 → (B)。</p><p class='mx-pt'>對照圖 11：那是把三色光「合」起來；圖 12 是同一條路線倒著走，把白光「分」開。</p></div><div class="sol" data-q="113-2-36" hidden><div class="key">第 36 題　答案：(A)</div><p>黃色香蕉在白光下反射<strong>紅光 ＋ 綠光</strong>（紅＋綠＝黃）。</p><p>這兩種光往右射進稜鏡：紅光被紅光反射膜反射到上方（不會到眼睛）；綠光直直穿過 → 進入眼睛。</p><p>眼睛只收到綠光 → 香蕉看起來是<strong>綠色</strong>。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+</main>
+
+<main id="wrongbook" hidden>
+  <div class="wbhead">
+    <h2>📕 錯題本<small id="wbsub"></small></h2>
+    <p class="dim noprint">這裡收的是交卷時答錯或沒寫的題目。再做一次：選完馬上看到對錯和解析；<strong>答對了</strong>才能移出錯題本。</p>
+    <div class="toolbar"><button class="btn" data-print="w">🖨 存成 PDF：錯題本（含解析）</button></div>
+  </div>
+  <div id="wblist"></div>
+</main>
+
+<footer>
+  試題取自學校於段考後公布的試卷，僅供自學複習使用。解析為自學用補充說明；標示「自行解出」者並非官方答案。<br>
+  <a href="index.html">← 回自學站首頁</a>　·　<a href="exam.html">整卷模擬</a>　·　<a href="book.html">課本地圖</a>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var KEY="jhs8-sci-ch4-review-v1";
+var S={secs:{},wrong:{}};
+try{ var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); S.secs=o.secs||{}; S.wrong=o.wrong||{}; } }catch(e){}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} }
+function sec(k){ return S.secs[k]||(S.secs[k]={picks:{},graded:false}); }
+function $$(sel,root){ return [].slice.call((root||document).querySelectorAll(sel)); }
+
+/* ---------- 題目練習：每一段各自作答、交卷 ---------- */
+function paintSection(el){
+  var k=el.dataset.sec, s=sec(k), rows=$$(".ansrow",el), n=0, right=0;
+  rows.forEach(function(r){
+    var q=r.dataset.q, ans=r.dataset.ans, pick=s.picks[q]||"";
+    if(pick) n++;
+    if(pick===ans) right++;
+    $$(".opts button",r).forEach(function(b){
+      var c=b.dataset.c;
+      if(s.graded) b.className = c===pick ? (c===ans?"ok":"bad") : (c===ans?"miss":"");
+      else b.className = c===pick ? "pick" : "";
+    });
+    var v=r.querySelector(".verdict");
+    if(s.graded){ v.textContent = pick===ans ? "✓ 答對" : (pick ? "✗ 正解 "+ans : "沒寫，正解 "+ans); v.className="verdict "+(pick===ans?"ok":"bad"); }
+    else { v.textContent=""; v.className="verdict"; }
+  });
+  $$(".sol",el).forEach(function(x){ x.hidden=!s.graded; });
+  var bar=el.querySelector(".secbar"), N=rows.length;
+  bar.querySelector(".secstat").textContent = s.graded ? "這一段已交卷" : "已作答 "+n+" / "+N+" 題";
+  bar.querySelector(".sub").hidden = s.graded;
+  bar.querySelector(".redo").hidden = !s.graded;
+  var sc=bar.querySelector(".secscore");
+  if(s.graded){
+    var miss=N-right;
+    sc.innerHTML='答對 <b class="big">'+right+'</b> / '+N+' 題（'+Math.round(right/N*100)+'%）'+
+      (miss ? '　·　錯的 '+miss+' 題已放進 <a href="#" class="gowb">錯題本</a>' : '　·　全對！');
+    sc.hidden=false;
+  } else sc.hidden=true;
+  var t=document.querySelector('.toc a[href="#'+k+'"] .st');
+  if(t) t.textContent = s.graded ? right+"/"+N : "";
+}
+
+$$("section.sec").forEach(function(el){
+  var k=el.dataset.sec;
+  $$(".ansrow",el).forEach(function(r){
+    $$(".opts button",r).forEach(function(b){
+      b.addEventListener("click",function(){
+        var s=sec(k); if(s.graded) return;
+        var q=r.dataset.q; s.picks[q] = s.picks[q]===b.dataset.c ? "" : b.dataset.c;
+        save(); paintSection(el);
+      });
+    });
+  });
+  var bar=el.querySelector(".secbar"), sub=bar.querySelector(".sub");
+  sub.addEventListener("click",function(){
+    var s=sec(k), rows=$$(".ansrow",el);
+    var blank=rows.filter(function(r){return !s.picks[r.dataset.q]}).length;
+    if(blank && !sub.dataset.warned){
+      sub.dataset.warned="1";
+      bar.querySelector(".secstat").textContent="還有 "+blank+" 題沒寫（沒寫算錯），再按一次就交卷";
+      return;
+    }
+    sub.dataset.warned="";
+    s.graded=true;
+    rows.forEach(function(r){
+      var q=r.dataset.q, pick=s.picks[q]||"";
+      if(pick!==r.dataset.ans){ var w=S.wrong[q]||{n:0}; w.n++; w.last=pick||"沒寫"; S.wrong[q]=w; }
+    });
+    save(); paintSection(el); paintCount();
+    el.querySelector(".secbar").scrollIntoView({block:"center"});
+  });
+  bar.querySelector(".redo").addEventListener("click",function(){
+    S.secs[k]={picks:{},graded:false}; save(); paintSection(el);
+    el.querySelector("h2").scrollIntoView();
+  });
+  bar.addEventListener("click",function(e){
+    if(e.target.classList.contains("gowb")){ e.preventDefault(); show("wrongbook"); }
+  });
+  paintSection(el);
+});
+
+/* ---------- 錯題本 ---------- */
+function wrongIds(){
+  return $$("#practice .ansrow").map(function(r){return r.dataset.q}).filter(function(q){return S.wrong[q]});
+}
+function paintCount(){
+  var n=wrongIds().length;
+  document.getElementById("wbcnt").textContent=n;
+  document.getElementById("wbsub").textContent = n ? "目前 "+n+" 題" : "";
+}
+function buildWrongbook(){
+  var list=document.getElementById("wblist"); list.innerHTML="";
+  var ids=wrongIds();
+  if(!ids.length){
+    list.innerHTML='<div class="empty">錯題本是空的。<br>去「題目練習」做完一段並交卷，答錯的題目就會出現在這裡。</div>';
+    return;
+  }
+  var lastSec="";
+  ids.forEach(function(q){
+    var row=document.querySelector('#practice .ansrow[data-q="'+q+'"]');
+    var secEl=row.closest("section.sec");
+    if(secEl.dataset.sec!==lastSec){
+      lastSec=secEl.dataset.sec;
+      var h=document.createElement("h2"); h.textContent=secEl.dataset.title; list.appendChild(h);
+    }
+    var card=row.closest(".card").cloneNode(true);
+    card.classList.add("wb");
+    $$(".ansrow",card).forEach(function(r){ if(r.dataset.q!==q) r.remove(); });
+    $$(".sol",card).forEach(function(x){ if(x.dataset.q!==q) x.remove(); });
+    var r=card.querySelector(".ansrow"), sol=card.querySelector(".sol"), ans=r.dataset.ans, w=S.wrong[q];
+    var info=document.createElement("span");
+    info.className="tag miss"; info.textContent="錯過 "+w.n+" 次 · 上次："+w.last;
+    card.querySelector(".meta").appendChild(info);
+    $$(".opts button",r).forEach(function(b){ b.className=""; });
+    r.querySelector(".verdict").textContent="";
+    sol.hidden=true;
+    var act=document.createElement("div"); act.className="wbact";
+    act.innerHTML='<button class="btn ok done" hidden>我會了，移出錯題本</button><button class="btn again" hidden>再做一次</button>';
+    card.appendChild(act);
+    var locked=false;
+    $$(".opts button",r).forEach(function(b){
+      b.addEventListener("click",function(){
+        if(locked) return; locked=true;
+        var c=b.dataset.c, ok=c===ans;
+        $$(".opts button",r).forEach(function(x){
+          x.className = x.dataset.c===c ? (ok?"ok":"bad") : (x.dataset.c===ans?"miss":"");
+        });
+        var v=r.querySelector(".verdict");
+        v.textContent = ok ? "✓ 答對了" : "✗ 還是錯，正解 "+ans; v.className="verdict "+(ok?"ok":"bad");
+        if(!ok){ w.n++; w.last=c; save(); info.textContent="錯過 "+w.n+" 次 · 上次："+c; }
+        sol.hidden=false;
+        act.querySelector(".done").hidden=!ok;
+        act.querySelector(".again").hidden=false;
+      });
+    });
+    act.querySelector(".again").addEventListener("click",function(){
+      locked=false; sol.hidden=true;
+      $$(".opts button",r).forEach(function(x){x.className=""});
+      r.querySelector(".verdict").textContent="";
+      act.querySelector(".done").hidden=true; this.hidden=true;
+    });
+    act.querySelector(".done").addEventListener("click",function(){
+      delete S.wrong[q]; save(); paintCount(); card.remove();
+      if(!wrongIds().length) buildWrongbook();
+    });
+    list.appendChild(card);
+  });
+}
+function show(v){
+  $$(".tab").forEach(function(t){ t.classList.toggle("on", t.dataset.view===v); });
+  document.getElementById("practice").hidden = v!=="practice";
+  document.getElementById("wrongbook").hidden = v!=="wrongbook";
+  if(v==="wrongbook") buildWrongbook();
+  window.scrollTo(0, document.querySelector(".tabs").offsetTop-10);
+}
+$$(".tab").forEach(function(t){ t.addEventListener("click",function(){ show(t.dataset.view); }); });
+
+/* ---------- 點圖放大（手機看小字用） ---------- */
+document.addEventListener("click",function(e){
+  var im=e.target.closest && e.target.closest(".qimg"); if(!im) return;
+  var z=document.createElement("div"); z.className="zoom";
+  var big=document.createElement("img"); big.src=im.src;
+  big.style.width=Math.round(im.naturalWidth*0.75)+"px";
+  z.innerHTML='<span class="hint">可左右滑動、雙指縮放</span><button class="x">✕ 關閉</button>';
+  z.appendChild(big);
+  z.addEventListener("click",function(ev){ if(ev.target===z||ev.target.classList.contains("x")) z.remove(); });
+  document.body.appendChild(z);
+});
+window.addEventListener("load",function(){
+  if(location.hash && location.hash.length>1){ var t=document.getElementById(location.hash.slice(1)); if(t) t.scrollIntoView({behavior:"instant"}); }
+});
+
+/* ---------- 列印 ---------- */
+function setPrint(m){
+  document.body.classList.remove("pq","pa","pw");
+  document.body.classList.add("p"+m);
+  if(m==="w"){ show("wrongbook"); $$("#wblist .sol").forEach(function(x){x.hidden=false}); }
+  else { show("practice"); }
+  if(m==="a") $$("#practice .sol").forEach(function(x){x.hidden=false});
+  document.getElementById("phead").textContent =
+    m==="a" ? "【解答卷】含答案與解析" :
+    m==="w" ? "【錯題本】含答案與解析" :
+    "【題目卷】　姓名：＿＿＿＿＿＿＿　日期：＿＿＿＿＿　得分：＿＿＿／59";
+}
+window.addEventListener("afterprint",function(){
+  document.body.classList.remove("pq","pa","pw");
+  $$("section.sec").forEach(paintSection);
+});
+$$("[data-print]").forEach(function(b){
+  b.addEventListener("click",function(){ setPrint(b.dataset.print); setTimeout(function(){window.print()},80); });
+});
+paintCount();
+var m=(location.search.match(/print=([qaw])/)||[])[1];
+if(m) setPrint(m);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>八上自然 第2章 段考原題複習</title>
+<style>
+:root{--paper:#faf7f0;--ink:#2b2622;--ink2:#5c5349;--line:#ded5c6;--accent:#c2410c;--accent-soft:#fff1e7;
+  --green:#3f6d3a;--green-soft:#eef4ec;--warn:#8a6a1e;--warn-soft:#fdf6e6}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16.5px;line-height:1.8}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 80px}
+header{padding:36px 0 18px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:13px;letter-spacing:.18em;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+p{margin:0 0 12px}
+.dim{color:var(--ink2)}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600}
+a{color:var(--accent)}
+details.howto{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;font-size:15px}
+details.howto summary{cursor:pointer;font-weight:700}
+details.howto p{margin:8px 0 0}
+button{font-family:inherit}
+.btn{border:1.5px solid var(--ink);background:#fff;color:var(--ink);border-radius:99px;padding:8px 16px;font-size:14.5px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ink);color:#fff}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{filter:brightness(.92)}
+.btn.ok{background:var(--green);border-color:var(--green);color:#fff}
+.btn[disabled]{opacity:.45;cursor:default;background:#fff;color:var(--ink)}
+.tabs{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 16px;font-size:15.5px;cursor:pointer;font-weight:700;color:var(--ink2)}
+.tab.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.tab .cnt{display:inline-block;min-width:22px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--accent);color:#fff;font-size:13px;text-align:center}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;align-items:center}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.toc a{font-size:13.5px;color:var(--ink2);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 11px;background:#fff}
+.toc a:hover{border-color:var(--ink);color:var(--ink)}
+.toc a .st{color:var(--green);font-weight:700;margin-left:4px}
+h2{font-size:20px;margin:40px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+h2 small{font-size:13px;color:var(--ink2);font-weight:400;margin-left:8px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;margin:0 0 16px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;font-size:13px}
+.tag{border-radius:99px;padding:1px 9px;border:1px solid var(--line);color:var(--ink2);background:#f6f2ea}
+.tag.self{border-color:#d8b46a;background:var(--warn-soft);color:var(--warn)}
+.tag.no{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.tag.miss{background:var(--accent-soft);border-color:#f0b48a;color:var(--accent)}
+.qimg{display:block;width:var(--w);max-width:100%;height:auto}
+.ansrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.ansrow .lb{font-size:14px;color:var(--ink2);min-width:64px}
+.opts{display:flex;gap:6px}
+.opts button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:15px;color:var(--ink2);cursor:pointer;padding:0}
+.opts button:hover{border-color:var(--ink)}
+.opts button.pick{background:var(--ink);border-color:var(--ink);color:#fff}
+.opts button.ok{background:var(--green);border-color:var(--green);color:#fff}
+.opts button.bad{background:var(--accent);border-color:var(--accent);color:#fff}
+.opts button.miss{border:2.5px solid var(--green);color:var(--green);font-weight:700}
+.verdict{font-size:14.5px;font-weight:700}
+.verdict.ok{color:var(--green)} .verdict.bad{color:var(--accent)}
+.blank{display:none}
+.sol{margin-top:10px;background:var(--green-soft);border:1px solid #c8dcc4;border-radius:10px;padding:12px 14px;font-size:15.5px}
+.sol .key{font-weight:700;color:var(--green);margin-bottom:6px}
+.sol p:last-child{margin-bottom:0}
+.sol .mx-pt{background:#fff;border-left:3px solid var(--accent);padding:6px 10px;border-radius:0 6px 6px 0;font-size:14.5px}
+.sol .srcnote{font-size:13px;color:var(--warn);margin-top:6px}
+.secbar{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px 16px;margin:4px 0 8px;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.secbar .secstat{font-size:15px;margin-right:auto}
+.secbar .secscore{flex-basis:100%;font-size:15px}
+.secbar .secscore b.big{font-size:20px}
+.wbhead{margin:26px 0 14px}
+.wbhead h2{margin-top:0}
+.empty{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:26px;text-align:center;color:var(--ink2)}
+.wbinfo{font-size:13.5px;color:var(--accent);margin-left:auto}
+.wbact{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.qimg{cursor:zoom-in}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.92);overflow:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(52px + env(safe-area-inset-top,0px)) 10px calc(20px + env(safe-area-inset-bottom,0px))}
+.zoom img{display:block;width:1000px;max-width:none;background:#fff;border-radius:6px;margin:0 auto}
+.zoom .x{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:10px;background:#fff;border:none;border-radius:99px;
+  padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer}
+.zoom .hint{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:14px;color:#fff;font-size:13.5px}
+.printhead{display:none}
+footer{margin-top:30px;font-size:13px;color:var(--ink2);line-height:1.8}
+@media(max-width:600px){.qimg{width:100%}h1{font-size:24px}}
+
+/* ===== 列印 ===== */
+@page{size:A4;margin:12mm 11mm}
+@media print{
+  body{background:#fff;font-size:12.5pt}
+  .wrap{max-width:none;padding:0}
+  .noprint,.tabs,.toolbar,.toc,.opts,.verdict,.secbar,.wbact,details.howto{display:none!important}
+  .qimg{width:var(--w)!important}
+  header{padding:0 0 8px}
+  h1{font-size:18pt}
+  h2{font-size:14pt;margin:14px 0 8px;break-after:avoid}
+  .card{border:none;border-bottom:1px solid #bbb;border-radius:0;padding:6px 0 8px;margin:0;break-inside:avoid}
+  .ansrow{border-top:none;padding-top:4px;margin-top:2px}
+  .printhead{display:block}
+  .tag{background:#fff}
+  body.pq .blank{display:inline}
+  body.pq .sol{display:none!important}
+  body.pa .sol,body.pw .sol{display:block!important;background:#fff;border:1px solid #999;break-inside:avoid}
+  body.pa .ansrow,body.pw .ansrow{display:none}
+  body.pa .card,body.pw .card{break-inside:auto}
+  body.pa .qimg,body.pw .qimg{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">八年級上學期 · 自然科學 · 段考原題</div>
+  <h1>第 2 章 物質的世界<br>段考原題複習</h1>
+  <p class="dim printhead" id="phead"></p>
+  <p class="dim">丹鳳高中國中部 112／113／114 學年度第一學期<strong>第一次段考</strong>，挑出屬於「第 2 章 物質的世界」的題目，共 58 題，分成 9 段。題目是原卷截圖，圖表和考試時一模一樣。</p>
+  <details class="howto noprint">
+    <summary>怎麼用這一頁？</summary>
+    <p>題目字太小時，<strong>點一下圖片</strong>就會放大。</p>
+    <p>① 選一段，每題點 A～D。　② 寫完按該段最下面的<strong>「交卷這一段」</strong>，才會顯示對錯和解析。</p>
+    <p>③ 答錯或沒寫的題目會自動放進<strong>「錯題本」</strong>。在錯題本裡再做一次，答對了就可以按「我會了，移出錯題本」。</p>
+    <p>作答和錯題本都存在這台裝置上，關掉再開還在。</p>
+    <p class="dim" style="font-size:14px">答案來源：112 學年度＝官方答案卡；113 學年度＝官方解答；<span style="color:var(--warn)">114 學年度學校沒有公布解答，答案是自行解出的，請以老師講解為準</span>。</p>
+  </details>
+  <div class="tabs">
+    <button class="tab on" data-view="practice">📝 題目練習</button>
+    <button class="tab" data-view="wrongbook">📕 錯題本<span class="cnt" id="wbcnt">0</span></button>
+  </div>
+</header>
+
+<main id="practice">
+  <div class="toolbar">
+    <button class="btn" data-print="q">🖨 存成 PDF：題目卷（無答案）</button>
+    <button class="btn" data-print="a">🖨 存成 PDF：解答卷（含解析）</button>
+  </div>
+  <nav class="toc"><a href="#c2-1">物質三態的特性（3）<span class="st"></span></a><a href="#c2-2">物質的變化（8）<span class="st"></span></a><a href="#c2-3">純物質與混合物（6）<span class="st"></span></a><a href="#c2-4">混合物的分離（1）<span class="st"></span></a><a href="#c2-5">溶液的組成（2）<span class="st"></span></a><a href="#c2-7">溶液的飽和（10）<span class="st"></span></a><a href="#c2-8">濃度（20）<span class="st"></span></a><a href="#c2-9">空氣的組成（7）<span class="st"></span></a><a href="#c2-10">空氣品質與水資源（1）<span class="st"></span></a></nav>
+<section class="sec" data-sec="c2-1" data-title="第 2 章 ①　物質三態的特性">
+<h2 id="c2-1">第 2 章 ①　物質三態的特性<small>3 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">114-17</span><span class="tag">114 學年度 第一次段考 · 第 17 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 17 題" src="review/ch2/114-17.png"><div class="ansrow" data-q="114-17" data-ans="A"><span class="lb">第 17 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-17" hidden><div class="key">答案：(A)</div><p>先想清楚：<strong>水蒸氣是看不見的</strong>。你看得到的白霧，其實是很多很小的<em>水滴</em>。</p><p>壺嘴噴出的水蒸氣一碰到冷空氣，就由氣態變回液態 → 這叫<strong>凝結</strong>。</p><p>(B) 汽化是液態變氣態，方向相反。(C) 昇華是固態直接變氣態，這裡沒有固體。(D) 蒸發是汽化的一種，也是液態變氣態。</p><p class='mx-pt'>看到「白霧」「白煙」從熱水冒出來，答案幾乎都是<strong>凝結</strong>——看得見的一定是小水滴。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-34</span><span class="tag">114 學年度 第一次段考 · 第 34 題、第 35 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 34 題、第 35 題" src="review/ch2/114-34.png"><div class="ansrow" data-q="114-34" data-ans="C"><span class="lb">第 34 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="ansrow" data-q="114-35" data-ans="A"><span class="lb">第 35 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-34" hidden><div class="key">第 34 題　答案：(C)</div><p>箭頭是<strong>加熱的方向</strong>，而加熱一定是 固態 → 液態 → 氣態。</p><p>甲：只有箭頭<em>出去</em>、沒有箭頭進來 → 最「冷」的狀態 → <strong>固態</strong>。<br>丙：只有箭頭<em>進來</em> → 最「熱」的狀態 → <strong>氣態</strong>。<br>乙：夾在中間 → <strong>液態</strong>。</p><p>甲 → 丙 那支箭頭就是固態直接變氣態（昇華）。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div><div class="sol" data-q="114-35" hidden><div class="key">第 35 題　答案：(A)</div><p>(A) 甲是固態：<strong>體積固定、形狀也固定</strong>，不會隨容器改變 ✓</p><p>(B) 丙是氣態：體積和形狀<strong>都會</strong>隨容器改變。「體積不變、形狀會變」說的是液態。<br>(C) 甲 → 乙 是固態變液態，叫<strong>熔化</strong>；汽化是液態變氣態。<br>(D) 乙 → 丙 是液態變氣態，叫<strong>汽化</strong>；凝固是液態變固態。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c2-2" data-title="第 2 章 ②　物質的變化">
+<h2 id="c2-2">第 2 章 ②　物質的變化<small>8 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-18</span><span class="tag">113 學年度 第一次段考 · 第 18 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 18 題" src="review/ch2/113-18.png"><div class="ansrow" data-q="113-18" data-ans="D"><span class="lb">第 18 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-18" hidden><div class="key">答案：(D)</div><p><strong>物理性質</strong>：不用讓物質變成別的東西，就能觀察或量到——顏色、氣味、密度、熔點、沸點。<br><strong>化學性質</strong>：要在化學變化裡才看得出來——會不會燒（可燃性）、能不能幫忙燃燒（助燃性）、容不容易反應（活性）。</p><p>密度用天平和量筒量一量就知道，物質還是原來那個 → 物理性質。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-04</span><span class="tag">114 學年度 第一次段考 · 第 4 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 4 題" src="review/ch2/114-04.png"><div class="ansrow" data-q="114-4" data-ans="C"><span class="lb">第 4 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-4" hidden><div class="key">答案：(C)</div><p>和上一題反過來問。<strong>助燃性</strong>要真的點火燒燒看才知道，燒完物質就變了 → 化學性質。</p><p>(A) 形狀、(B) 顏色、(D) 密度：看一看、量一量就知道，物質沒有改變 → 都是物理性質。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-12</span><span class="tag">112 學年度 第一次段考 · 第 12 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 12 題" src="review/ch2/112-12.png"><div class="ansrow" data-q="112-12" data-ans="A"><span class="lb">第 12 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-12" hidden><div class="key">答案：(A)</div><p>判斷物理／化學變化只問一句：<strong>有沒有產生新物質？</strong></p><p>(A) 廚餘被微生物分解成肥料，成分完全變了 → <strong>化學變化</strong> ✓</p><p>(B) 乾冰昇華成二氧化碳氣體，冷到讓空氣中的水蒸氣凝結成白霧——都只是狀態改變。<br>(C) 水洗褪色是染料<em>溶到水裡</em>被沖走，染料本身沒變。<br>(D) 打成果汁只是切碎、混在一起。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-03</span><span class="tag">112 學年度 第一次段考 · 第 3 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 3 題" src="review/ch2/112-03.png"><div class="ansrow" data-q="112-3" data-ans="C"><span class="lb">第 3 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-3" hidden><div class="key">答案：(C)</div><p>一個一個問「有沒有新物質」：</p><p>物理變化：(丁) 麥磨成麵粉（只變形狀）、(己) 水結成冰、(庚) 奶油凝固（三態變化）、(辛) 過濾（只是把東西分開）→ <strong>4 項</strong>。</p><p>化學變化：(甲) 鞭炮爆炸、(乙) 烤肉、(丙) 米煮成飯、(戊) 光合作用——都產生了新物質，而且回不去了。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-32</span><span class="tag">113 學年度 第一次段考 · 第 32 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 32 題" src="review/ch2/113-32.png"><div class="ansrow" data-q="113-32" data-ans="A"><span class="lb">第 32 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-32" hidden><div class="key">答案：(A)</div><p>物理變化（沒有新物質）：方糖溶於水、開水沸騰、酒精蒸發、冰塊熔化、粉筆折斷 → <strong>5 種</strong>。</p><p>化學變化：鐵釘生鏽、食物腐敗、光合作用、汽油燃燒、食物消化、火藥爆炸。</p><p class='mx-pt'>容易猶豫的是「方糖溶於水」：糖只是散開在水裡，把水蒸乾糖就回來了，所以是<strong>物理變化</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-08</span><span class="tag">112 學年度 第一次段考 · 第 8 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 8 題" src="review/ch2/112-08.png"><div class="ansrow" data-q="112-8" data-ans="C"><span class="lb">第 8 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-8" hidden><div class="key">答案：(C)</div><p>同一根蠟燭，物理變化和化學變化會<strong>同時發生</strong>。</p><p>(甲) 火柴燃燒、(乙) 燭芯燃燒、(戊) 蠟蒸氣和氧氣反應發光發熱 → 燃燒都是<strong>化學變化</strong>。</p><p>(丙) 蠟熔化、(丁) 蠟油蒸發 → 只是三態改變，還是蠟 → 物理變化。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-16</span><span class="tag">112 學年度 第一次段考 · 第 16 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 16 題" src="review/ch2/112-16.png"><div class="ansrow" data-q="112-16" data-ans="B"><span class="lb">第 16 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-16" hidden><div class="key">答案：(B)</div><p>(乙) 燃燒木炭、(丙) 骨架生鐵鏽、(戊) 魚烤焦 → 都產生新物質 → <strong>化學變化</strong>。</p><p>(甲) 木炭敲碎：只是變小塊，還是木炭。<br>(丁) 壺口的「白煙」：水蒸氣遇冷<em>凝結</em>成小水滴，是物理變化——它不是真的煙。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-31</span><span class="tag">113 學年度 第一次段考 · 第 31 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 31 題" src="review/ch2/113-31.png"><div class="ansrow" data-q="113-31" data-ans="C"><span class="lb">第 31 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-31" hidden><div class="key">答案：(C)</div><p>(甲) N₂O 由液態變成氣態：只是三態改變，<strong>還是 N₂O</strong> → 物理變化。</p><p>(乙) N₂O 分解成 N₂ 和 O₂：變成了<strong>別的物質</strong> → 化學變化。</p><p>化學式改變了，就是有新物質產生。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c2-3" data-title="第 2 章 ③　純物質與混合物">
+<h2 id="c2-3">第 2 章 ③　純物質與混合物<small>6 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-13</span><span class="tag">113 學年度 第一次段考 · 第 13 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 13 題" src="review/ch2/113-13.png"><div class="ansrow" data-q="113-13" data-ans="D"><span class="lb">第 13 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-13" hidden><div class="key">答案：(D)</div><p>混合物的範圍比你想的大：空氣、合金、泥沙水、牛奶……都是混合物，<strong>不一定是水溶液</strong>。</p><p>(A)(B)(C) 都是混合物的定義和特色：兩種以上物質混合、沒有固定沸點熔點、性質隨比例改變。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-03</span><span class="tag">113 學年度 第一次段考 · 第 3 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 3 題" src="review/ch2/113-03.png"><div class="ansrow" data-q="113-3" data-ans="D"><span class="lb">第 3 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-3" hidden><div class="key">答案：(D)</div><p><strong>純物質的沸點是固定的一個數字</strong>；混合物的成分比例可以不同，沸點會在一個範圍內變動。</p><p>甲、乙、丙量了好幾次，沸點都落在一個範圍 → 混合物。只有丁每次都是 90 ℃ → 純物質。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-36</span><span class="tag">114 學年度 第一次段考 · 第 36 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 36 題" src="review/ch2/114-36.png"><div class="ansrow" data-q="114-36" data-ans="A"><span class="lb">第 36 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-36" hidden><div class="key">答案：(A)</div><p>和上一題同一個觀念：<strong>沸點（或熔點）固定</strong>的是純物質。</p><p>(B) 純物質也可以有顏色（例如銅是紅色），混合物也可以透明無色（例如糖水）。<br>(C) 金屬會導電、食鹽水也會導電，和純不純無關。<br>(D) 純物質也有氣態、液態的，例如氧氣、水。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-02</span><span class="tag">114 學年度 第一次段考 · 第 2 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 2 題" src="review/ch2/114-02.png"><div class="ansrow" data-q="114-2" data-ans="B"><span class="lb">第 2 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-2" hidden><div class="key">答案：(B)</div><p><strong>蒸餾水</strong>是水加熱成水蒸氣再冷凝收集，只剩下水一種物質 → 純物質。</p><p>牙膏、醬油、氣泡水（水 ＋ 二氧化碳 ＋ 其他）都是好幾種東西混在一起 → 混合物。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-30</span><span class="tag">113 學年度 第一次段考 · 第 30 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 30 題" src="review/ch2/113-30.png"><div class="ansrow" data-q="113-30" data-ans="B"><span class="lb">第 30 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-30" hidden><div class="key">答案：(B)</div><p>丙 金、丁 水銀（汞）：都只由<strong>一種元素</strong>組成 → 純物質。</p><p>墨水、果汁、汽水：都是很多種成分混合的 → 混合物。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-07</span><span class="tag">114 學年度 第一次段考 · 第 7 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 7 題" src="review/ch2/114-07.png"><div class="ansrow" data-q="114-7" data-ans="A"><span class="lb">第 7 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-7" hidden><div class="key">答案：(A)</div><p>只有<strong>乾冰</strong>是純物質，它就是固態的二氧化碳。</p><p>「100% 純」「無添加」「純釀造」是<em>廣告用語</em>，意思是沒有摻別的東西，不代表只有一種物質：<br>蜂蜜裡有水和好幾種糖；巧克力裡有可可脂、可可粉等；米醋裡有水、醋酸和其他成分 → 都是混合物。</p><p class='mx-pt'>科學上的「純物質」＝<strong>只由一種物質組成</strong>，跟商品標籤上的「純」是兩回事。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c2-4" data-title="第 2 章 ④　混合物的分離">
+<h2 id="c2-4">第 2 章 ④　混合物的分離<small>1 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">114-22</span><span class="tag">114 學年度 第一次段考 · 第 22 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 22 題" src="review/ch2/114-22.png"><div class="ansrow" data-q="114-22" data-ans="B"><span class="lb">第 22 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-22" hidden><div class="key">答案：(B)</div><p>色層分析：混合物的各成分被溶劑帶著在濾紙上跑，<strong>跑的速度不同</strong>，就會分開。</p><p>甲 ✗：跑一樣快的成分會疊在同一個位置，分出來的那一段<strong>不一定是純物質</strong>。<br>乙 ✓：濾紙可以換成粉筆、紙巾等其他材質。<br>丙 ✗：跑多遠是看成分和溶劑、濾紙之間的「拉扯」，<strong>和密度無關</strong>。<br>丁 ✓：可以用水，也可以用酒精等其他溶劑。</p><p>錯誤的是甲、丙，共 2 項。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c2-5" data-title="第 2 章 ⑤　溶液的組成">
+<h2 id="c2-5">第 2 章 ⑤　溶液的組成<small>2 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">114-18</span><span class="tag">114 學年度 第一次段考 · 第 18 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 18 題" src="review/ch2/114-18.png"><div class="ansrow" data-q="114-18" data-ans="D"><span class="lb">第 18 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-18" hidden><div class="key">答案：(D)</div><p>先把三個名字對好：溶質（奶粉）30 g、溶劑（水）200 g、<strong>溶液 ＝ 30 ＋ 200 ＝ 230 g</strong>。(A)(B)(C) 都對。</p><p>(D) 重量百分率濃度 ＝ 溶質 ÷ <strong>溶液</strong> ＝ 30 ÷ 230 × 100% ≈ <strong>13%</strong>，不是 10% → 錯。</p><p class='mx-pt'>分母要用<strong>溶液</strong> 230，不是水 200。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-38</span><span class="tag">114 學年度 第一次段考 · 第 38 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 38 題" src="review/ch2/114-38.png"><div class="ansrow" data-q="114-38" data-ans="C"><span class="lb">第 38 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-38" hidden><div class="key">答案：(C)</div><p>溶液是<strong>均勻的混合物</strong>：一種東西（溶質）均勻散在另一種東西（溶劑）裡。</p><p>冰水 ＝ 冰 ＋ 水，兩個都是 H₂O，只是狀態不同 → 只有一種物質，是<strong>純物質</strong>，不是溶液。</p><p>汽水（二氧化碳溶在水裡）、糖水、米酒（酒精溶在水裡）都是溶液。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c2-7" data-title="第 2 章 ⑦　溶液的飽和">
+<h2 id="c2-7">第 2 章 ⑦　溶液的飽和<small>10 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">114-13</span><span class="tag">114 學年度 第一次段考 · 第 13 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 13 題" src="review/ch2/114-13.png"><div class="ansrow" data-q="114-13" data-ans="A"><span class="lb">第 13 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-13" hidden><div class="key">答案：(A)</div><p>溶解度 36 g／100 g 水的意思：在 25 ℃ 時，100 公克的水<strong>最多</strong>能溶 36 公克食鹽 → (A) ✓</p><p>(B) 是「最多」，不是「一定含有」。只溶 10 克也可以。<br>(C) 溶解度的分母是<em>水</em>，濃度的分母是<em>溶液</em>。飽和時的濃度 ＝ 36 ÷ (100 ＋ 36) ≈ 26.5%，不是 36%。<br>(D) 溶解度會隨溫度改變。食鹽溫度愈低溶解度愈小，所以 25 ℃ 以下不一定溶得了 36 克。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-10</span><span class="tag">112 學年度 第一次段考 · 第 10 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 10 題" src="review/ch2/112-10.png"><div class="ansrow" data-q="112-10" data-ans="B"><span class="lb">第 10 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-10" hidden><div class="key">答案：(B)</div><p>圖(二)杯底有<strong>沉澱</strong> → 有溶不下去的硝酸鉀 → 這杯溶液是<strong>飽和溶液</strong>。所以 (C)(D) 的「未飽和」錯。</p><p>為什麼會沉澱？因為硝酸鉀的溶解度<strong>溫度愈低愈小</strong>，降溫後水溶不下那麼多，多的就析出來 → 溶解度變小。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-32</span><span class="tag">114 學年度 第一次段考 · 第 32 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 32 題" src="review/ch2/114-32.png"><div class="ansrow" data-q="114-32" data-ans="C"><span class="lb">第 32 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-32" hidden><div class="key">答案：(C)</div><p>溫度降 → 溶解度變小 → 溶不住的鹽<strong>析出結晶</strong> → 留在水裡的溶質變少 → 濃度跟著變小。</p><p>關鍵在一句沒寫出來的話：<em>降溫之後它仍然是飽和溶液</em>（杯底有結晶就是證據）。而<strong>飽和溶液的濃度是被溶解度綁死的</strong>——溶解度動，濃度就一定跟著動。</p><p>選 (A) 的想法通常是「水沒少、鹽也還在杯子裡，所以濃度不變」。但析出的結晶已經<strong>不算在溶液裡</strong>了。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-07</span><span class="tag">112 學年度 第一次段考 · 第 7 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 7 題" src="review/ch2/112-07.png"><div class="ansrow" data-q="112-7" data-ans="A"><span class="lb">第 7 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-7" hidden><div class="key">答案：(A)</div><p>汽水是在<strong>高壓</strong>下把大量二氧化碳壓進水裡 → 瓶內壓力比外面大 (C) ✓，氣泡主要是二氧化碳 (B) ✓。</p><p>開瓶後，瓶內壓力<strong>變小</strong>，氣體的溶解度跟著變小 (D) ✓，溶不住的二氧化碳就冒出來。</p><p>(A) 說「受外界壓力擠壓而逸出」，方向講反了——是因為壓力<strong>變小</strong>才跑出來，不是被擠出來。</p><p class='mx-pt'>氣體的溶解度：<strong>壓力愈大愈容易溶</strong>、溫度愈高愈難溶（所以汽水要冰）。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-21</span><span class="tag">113 學年度 第一次段考 · 第 21 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 21 題" src="review/ch2/113-21.png"><div class="ansrow" data-q="113-21" data-ans="D"><span class="lb">第 21 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-21" hidden><div class="key">答案：(D)</div><p>關鍵：這杯已經是<strong>飽和</strong>食鹽水，濃度已經「頂到天花板」了。</p><p>(A) 倒掉一些：溶液是均勻的，剩下的濃度不變。<br>(B) 蒸發掉水：多出來的鹽會析出，溶液<em>仍然飽和</em>，濃度不變。<br>(C) 加鹽：已經溶不下了，加的鹽沉在杯底，濃度不變。<br>(D) 加水：溶液變成未飽和，濃度<strong>變小</strong> ✓</p><p class='mx-pt'>溫度不變時，飽和溶液的濃度是固定的。要改變它，只能<strong>加水稀釋</strong>（或改變溫度）。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-19</span><span class="tag">113 學年度 第一次段考 · 第 19 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 19 題" src="review/ch2/113-19.png"><div class="ansrow" data-q="113-19" data-ans="A"><span class="lb">第 19 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-19" hidden><div class="key">答案：(A)</div><p>原本的 50 g 和 100 g 都是<strong>飽和</strong>溶液，裡面的水都已經「吃飽」了。</p><p>真正需要補鹽的，只有<strong>後來加進去的 20 g 水</strong>。兩杯加的水一樣多 → 要補的鹽也一樣多 → <strong>X ＝ Y</strong>。</p><p>原本溶液有多少，在這題是故意放來干擾你的。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-36</span><span class="tag">113 學年度 第一次段考 · 第 36 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 36 題" src="review/ch2/113-36.png"><div class="ansrow" data-q="113-36" data-ans="B"><span class="lb">第 36 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-36" hidden><div class="key">答案：(B)</div><p>先把 45% 換成「每克水能溶多少」：飽和溶液 100 g 裡有硝酸鉀 45 g、水 55 g → 每 1 g 水最多溶約 0.82 g。</p><p>水 5 g：最多溶約 4.1 g → 放 4 g 全溶 ✓、放 6 g 溶不完 ✗<br>水 10 g：最多溶約 8.2 g → 放 8 g 全溶 ✓、放 10 g 溶不完 ✗</p><p>可以完全溶解的有 <strong>2 支</strong>。</p><p class='mx-pt'>不要直接拿 45% 去乘水的質量——45% 的分母是<strong>溶液</strong>，不是水。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-19</span><span class="tag">114 學年度 第一次段考 · 第 19 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 19 題" src="review/ch2/114-19.png"><div class="ansrow" data-q="114-19" data-ans="C"><span class="lb">第 19 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-19" hidden><div class="key">答案：(C)</div><p>這題就是在叫你<strong>把分母換掉</strong>：濃度的分母是溶液，溶解度的分母是水。</p><p>25% 飽和 → 每 100 g 溶液裡：溶質 25 g、水 75 g。<br>換算成 100 g 水：25 ÷ 75 × 100 ＝ <strong>33.3 g</strong>。</p><p>(B) 是把 25% 直接抄成 25 g/100 g 水——<em>等於根本沒換分母</em>。(D) 的分母不是 100 g 水，光形式就不合溶解度的定義。</p><p class='mx-pt'>兩個公式長得很像，差別只在分母。<strong>寫下算式前先問自己：我現在的分母是誰？</strong></p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-25</span><span class="tag">114 學年度 第一次段考 · 第 25 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 25 題" src="review/ch2/114-25.png"><div class="ansrow" data-q="114-25" data-ans="C"><span class="lb">第 25 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-25" hidden><div class="key">答案：(C)</div><p>從圖上讀：30 ℃ 時，硝酸鉀的溶解度是 <strong>35 g／100 g 水</strong>。</p><p>飽和溶液：溶質 35 g、溶液 100 ＋ 35 ＝ 135 g → 濃度 ＝ 35 ÷ 135 × 100% ≈ <strong>25.9%</strong>。</p><p>(A) 16.7% ＝ 20 ÷ 120，是 20 ℃ 的答案。(D) 把 40 ℃ 的 60 直接當成 %，而且分母也沒算。</p><p class='mx-pt'>溶解度 → 濃度：分母要從「100 g 水」換成「100 g 水 ＋ 溶質」。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-24</span><span class="tag">114 學年度 第一次段考 · 第 24 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 24 題" src="review/ch2/114-24.png"><div class="ansrow" data-q="114-24" data-ans="A"><span class="lb">第 24 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-24" hidden><div class="key">答案：(A)</div><p>原溶液：溶質 ＝ 200 × 20% ＝ 40 g，水 ＝ 160 g。</p><p>再加 100 g，X 共 140 g，未溶 30 g → <strong>溶解了 110 g</strong>，而水從頭到尾都是 <strong>160 g</strong>。</p><p>溶解度問的是「<strong>每 100 克水</strong>能溶多少」→ 110 ÷ 160 × 100 ＝ <strong>68.75</strong>。</p><p>(C) 110 是直接把溶解量當答案，忘了換算成 100 克水。<em>溶解度是一個比率，不是一個總量。</em></p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c2-8" data-title="第 2 章 ⑧　濃度">
+<h2 id="c2-8">第 2 章 ⑧　濃度<small>20 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-01</span><span class="tag">113 學年度 第一次段考 · 第 1 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 1 題" src="review/ch2/113-01.png"><div class="ansrow" data-q="113-1" data-ans="B"><span class="lb">第 1 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-1" hidden><div class="key">答案：(B)</div><p>重量百分率濃度 ＝ 溶質 ÷ <strong>溶液</strong> × 100%。</p><p>溶液 ＝ 糖 5 g ＋ 水 45 g ＝ <strong>50 g</strong> → 5 ÷ 50 × 100% ＝ <strong>10%</strong>。</p><p>如果寫成 5 ÷ 45，就是把分母錯當成水了。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-20</span><span class="tag">112 學年度 第一次段考 · 第 20 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 20 題" src="review/ch2/112-20.png"><div class="ansrow" data-q="112-20" data-ans="C"><span class="lb">第 20 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-20" hidden><div class="key">答案：(C)</div><p>400 公克是<strong>整杯鹽水（溶液）</strong>。</p><p>鹽 ＝ 400 × 5% ＝ <strong>20 g</strong>；水 ＝ 400 − 20 ＝ <strong>380 g</strong>。</p><p>(B) 把 400 當成水，忘了鹽水裡也包含鹽。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-10</span><span class="tag">113 學年度 第一次段考 · 第 10 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 10 題" src="review/ch2/113-10.png"><div class="ansrow" data-q="113-10" data-ans="B"><span class="lb">第 10 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-10" hidden><div class="key">答案：(B)</div><p>倒掉一部分溶液，<strong>濃度不變</strong>，還是 20%。</p><p>剩下 100 − 50 ＝ 50 g 溶液 → 溶質 ＝ 50 × 20% ＝ <strong>10 g</strong>。</p><p>(D) 20 g 是原本整瓶的溶質，倒掉一半，溶質也跟著少一半。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-29</span><span class="tag">114 學年度 第一次段考 · 第 29 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 29 題" src="review/ch2/114-29.png"><div class="ansrow" data-q="114-29" data-ans="D"><span class="lb">第 29 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-29" hidden><div class="key">答案：(D)</div><p>濃度是<strong>比值</strong>，不是總量。溶液是均勻的，隨便舀一瓢出來，那一瓢和剩下的<em>濃度都還是 40%</em>。</p><p>會被騙的人，是把「東西變少了」直接翻譯成「濃度變小了」。</p><p class='mx-pt'>要讓濃度真的改變，只有三條路：<strong>加溶質、加溶劑、讓溶劑蒸發</strong>。單純倒掉一部分——分子分母同時等比例變少，比值不動。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-11</span><span class="tag">113 學年度 第一次段考 · 第 11 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 11 題" src="review/ch2/113-11.png"><div class="ansrow" data-q="113-11" data-ans="C"><span class="lb">第 11 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-11" hidden><div class="key">答案：(C)</div><p>先檢查溶不溶得完：30 g ＜ 36 g → <strong>全部溶掉</strong>。</p><p>溶液 ＝ 鹽 30 ＋ 水 100 ＝ <strong>130 g</strong> → 濃度 ＝ 30 ÷ 130 × 100% → (C)。</p><p>(A) 分母寫成水了。(B) 100 − 30 沒有意義。(D) 36 − 30 是「還能再溶幾克」，不是濃度。</p><p class='mx-pt'>重量百分濃度的分母是<strong>溶液</strong>，裡面一定包含溶質自己。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-23</span><span class="tag">113 學年度 第一次段考 · 第 23 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 23 題" src="review/ch2/113-23.png"><div class="ansrow" data-q="113-23" data-ans="B"><span class="lb">第 23 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-23" hidden><div class="key">答案：(B)</div><p>沒溶解的那 50 公克是沉在杯底的<strong>固體</strong>，它不在溶液裡，所以<em>分子、分母都要把它扣掉</em>。</p><p>溶質 ＝ 300 − 50 ＝ 250 g<br>溶液 ＝ 水 600 g ＋ <strong>溶解的</strong> 250 g ＝ 850 g</p><p>(C) 的分子扣了、分母卻沒扣——<strong>只扣一半是最多人踩的坑</strong>。你可以這樣檢查：分母永遠等於「水 ＋ 分子」。</p><p class='mx-pt'>補充：題目給的是礦泉水 600 <em>毫升</em>，這裡用水的密度 1 g/mL 換成 600 公克來算。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-32</span><span class="tag">112 學年度 第一次段考 · 第 32 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 32 題" src="review/ch2/112-32.png"><div class="ansrow" data-q="112-32" data-ans="C"><span class="lb">第 32 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-32" hidden><div class="key">答案：(C)</div><p>先算每杯水最多能溶多少：溶解度 36 g／100 g 水 → 25 g 水最多溶 <strong>9 g</strong>，50 g 水最多溶 <strong>18 g</strong>。</p><p>甲：放 10 g，只溶 9 g → 飽和，濃度 9 ÷ 34 ≈ 26.5%<br>乙：放 12 g，也只溶 9 g → 飽和，濃度 9 ÷ 34 ≈ 26.5%<br>丙：放 16 g ＜ 18 g，全溶 → <strong>未飽和</strong>，濃度 16 ÷ 66 ≈ 24.2%</p><p>甲、乙濃度相等 → (C) ✓。(A) 最小的是丙。(B) 丙還沒飽和。(D) 乙和甲一樣大。</p><p class='mx-pt'>沒溶掉、沉在杯底的鹽<strong>不算溶質</strong>。乙多放的鹽只是多沉一點。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-33</span><span class="tag">113 學年度 第一次段考 · 第 33 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 33 題" src="review/ch2/113-33.png"><div class="ansrow" data-q="113-33" data-ans="C"><span class="lb">第 33 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-33" hidden><div class="key">答案：(C)</div><p>兩杯濃度都是 20%，混合後還是 20% → 水占 <strong>80%</strong>。</p><p>總質量 100 ＋ 50 ＝ 150 g → 水 ＝ 150 × 80% ＝ <strong>120 g</strong>。</p><p>（分開算也可以：100 × 80% ＋ 50 × 80% ＝ 80 ＋ 40 ＝ 120。）</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-26</span><span class="tag">114 學年度 第一次段考 · 第 26 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 26 題" src="review/ch2/114-26.png"><div class="ansrow" data-q="114-26" data-ans="D"><span class="lb">第 26 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-26" hidden><div class="key">答案：(D)</div><p>每一碗算出食鹽有幾克：湯的質量 × 濃度。</p><p>(A) 900 × 0.8% ＝ 7.2 g<br>(B) 1000 × 1.2% ＝ 12 g<br>(C) 600 × 1.5% ＝ 9 g<br>(D) 500 × 1.1% ＝ <strong>5.5 g</strong> ＜ 6 g ✓</p><p>濃度最低的 (A) 反而鹽最多——因為湯也最多。<em>要比的是「鹽有幾克」，不是濃度。</em></p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-06</span><span class="tag">113 學年度 第一次段考 · 第 6 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 6 題" src="review/ch2/113-06.png"><div class="ansrow" data-q="113-6" data-ans="C"><span class="lb">第 6 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-6" hidden><div class="key">答案：(C)</div><p>酒精量 ＝ 啤酒體積 × 濃度 ＝ 2000 × 5% ＝ <strong>100 毫升</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-17</span><span class="tag">112 學年度 第一次段考 · 第 17 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 17 題" src="review/ch2/112-17.png"><div class="ansrow" data-q="112-17" data-ans="B"><span class="lb">第 17 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-17" hidden><div class="key">答案：(B)</div><p>體積百分濃度 ＝ 酒精體積 ÷ 溶液體積 × 100%。</p><p>(B) 600 ÷ (600 ＋ 200) ＝ 600 ÷ 800 ＝ <strong>75%</strong> ✓</p><p>(A) 100 ÷ 125 ＝ 80%。(C) 給的是<em>公克</em>，題目要的是體積百分濃度，單位對不上。(D) 1：1 是 50%。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-01</span><span class="tag">114 學年度 第一次段考 · 第 1 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 1 題" src="review/ch2/114-01.png"><div class="ansrow" data-q="114-1" data-ans="D"><span class="lb">第 1 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-1" hidden><div class="key">答案：(D)</div><p>酒精只從米酒來：200 × 12.5% ＝ <strong>25 mL</strong>。加水只會把濃度稀釋掉，<em>酒精一滴都沒有多出來</em>。</p><p>(A) 75 mL 是把 600 mL 全部當成米酒算的（600 × 12.5%）——等於認為「加水會生出酒精」。<br>(B) 單位就錯了：體積百分濃度算出來是<strong>體積</strong>，不是公克。</p><p class='mx-pt'>看到「加水稀釋」四個字，先問一句：<strong>溶質的量有變嗎？</strong>答案幾乎永遠是「沒有」。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-23</span><span class="tag">114 學年度 第一次段考 · 第 23 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 23 題" src="review/ch2/114-23.png"><div class="ansrow" data-q="114-23" data-ans="D"><span class="lb">第 23 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-23" hidden><div class="key">答案：(D)</div><p>酒的「度」就是<strong>體積百分濃度</strong>：66 度 ＝ 每 100 毫升酒裡有 66 毫升酒精。</p><p>50 毫升 × 66% ＝ <strong>33 毫升</strong> → (D) ✓</p><p>(A) 題目只說是「最高的之一」，不能說它就是最濃的。<br>(B) 66 度是指<em>做好的酒</em>每 100 毫升含 66 毫升酒精；酒精和水混合後體積會略微縮小，不能說成「34 毫升水加 66 毫升酒精」。<br>(C) 66 度是<strong>體積</strong>比，不是質量比，不能寫成 100 公克含 66 公克。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-37</span><span class="tag">113 學年度 第一次段考 · 第 37 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 37 題" src="review/ch2/113-37.png"><div class="ansrow" data-q="113-37" data-ans="D"><span class="lb">第 37 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-37" hidden><div class="key">答案：(D)</div><p>題目給的是<strong>每 1 公升</strong>的資料：鹽 340 公克、湖水 1.24 公斤 ＝ 1240 公克。</p><p>→ 鹽分的重量百分濃度 ＝ 340 ÷ 1240 × 100% ≈ 27.4%，可以算出來 ✓</p><p>(A)(C) 要算總量，必須知道<strong>整座湖有幾公升</strong>，題目沒給。(B) 蒸發量完全沒有數據。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-31</span><span class="tag">112 學年度 第一次段考 · 第 31 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 31 題" src="review/ch2/112-31.png"><div class="ansrow" data-q="112-31" data-ans="A"><span class="lb">第 31 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-31" hidden><div class="key">答案：(A)</div><p>濃度是用<strong>質量</strong>算的，所以先把 100 mL 換成質量：100 cm³ × X g/cm³ ＝ <strong>100X 公克</strong>。</p><p>水楊酸 ＝ 100X × 1% ＝ <strong>X 公克</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-35</span><span class="tag">113 學年度 第一次段考 · 第 35 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 35 題" src="review/ch2/113-35.png"><div class="ansrow" data-q="113-35" data-ans="B"><span class="lb">第 35 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-35" hidden><div class="key">答案：(B)</div><p>和 112 學年度那一題<strong>一模一樣</strong>，只是選項順序換了。</p><p>化妝水質量 ＝ 100 × X ＝ 100X 公克 → 水楊酸 ＝ 100X × 1% ＝ <strong>X 公克</strong> → 這次是 (B)。</p><p class='mx-pt'>考古題要記<strong>算法</strong>，不要背選項代號。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-31</span><span class="tag">114 學年度 第一次段考 · 第 31 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 31 題" src="review/ch2/114-31.png"><div class="ansrow" data-q="114-31" data-ans="B"><span class="lb">第 31 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-31" hidden><div class="key">答案：(B)</div><p>ppm 的分母是<strong>質量</strong>，所以第一步一定是把毫升換成公克：700 × 1.2 ＝ <strong>840 g</strong>（所以 (C) 錯，而且那個密度就是為了這一步給的）。</p><p>400 ppm ＝ 每 1 公斤含 400 毫克 → 0.84 kg × 400 ＝ <strong>336 毫克</strong> ✓</p><p>(D) 加水稀釋，咖啡因的<strong>含量（總毫克數）完全不變</strong>——變小的是濃度。而且 840 g 變成 1540 g，也不是剛好兩倍。<em>「含量」和「濃度」是兩個字，段考很愛在這裡換掉。</em></p><p>(A) 咖啡是混合物。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-33</span><span class="tag">112 學年度 第一次段考 · 第 33 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 33 題" src="review/ch2/112-33.png"><div class="ansrow" data-q="112-33" data-ans="B"><span class="lb">第 33 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-33" hidden><div class="key">答案：(B)</div><p>ppm ＝ <strong>百萬分之一</strong>。402 ppm ＝ 402 ÷ 1,000,000 ＝ 0.000402。</p><p>換成百分率要再 × 100% → 0.0402% ＝ <strong>4.02 × 10⁻² %</strong>。</p><p>(A) 4.02 × 10⁻⁴ 是還沒乘 100 的比值，不是「%」。</p><p class='mx-pt'>快速換算：<strong>1% ＝ 10000 ppm</strong>，所以 ppm 換 % 就是除以 10000。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">113-07</span><span class="tag">113 學年度 第一次段考 · 第 7 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 7 題" src="review/ch2/113-07.png"><div class="ansrow" data-q="113-7" data-ans="C"><span class="lb">第 7 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-7" hidden><div class="key">答案：(C)</div><p>1 公斤 ＝ 1000 公克 ＝ <strong>1,000,000 毫克</strong>。</p><p>所以 1 ppm ＝ 每公斤含 1 毫克 → 0.05 ppm ＝ 每公斤含 <strong>0.05 毫克</strong>。</p><p class='mx-pt'>好記的對應：<strong>ppm ＝ 毫克／公斤</strong>。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-10</span><span class="tag">114 學年度 第一次段考 · 第 10 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 10 題" src="review/ch2/114-10.png"><div class="ansrow" data-q="114-10" data-ans="D"><span class="lb">第 10 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-10" hidden><div class="key">答案：(D)</div><p>用上一題的對應：<strong>1 ppm ＝ 每公斤 1 毫克</strong>。</p><p>15000 公斤 × 0.07 毫克 ＝ 1050 毫克；15000 × 0.08 ＝ 1200 毫克 → 大約 1.05～1.2 公克 → 約 <strong>1.1 g</strong>。</p><p>(A) 0.75 g 是用「容許量 0.05 ppm」算的，但題目問的是實際檢出的量。(B)(C) 單位換算錯了。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c2-9" data-title="第 2 章 ⑨　空氣的組成">
+<h2 id="c2-9">第 2 章 ⑨　空氣的組成<small>7 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">113-27</span><span class="tag">113 學年度 第一次段考 · 第 27 題</span><span class="tag">官方解答</span></div><img class="qimg" style="--w:100.0%" alt="113 學年度 第 27 題" src="review/ch2/113-27.png"><div class="ansrow" data-q="113-27" data-ans="A"><span class="lb">第 27 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="113-27" hidden><div class="key">答案：(A)</div><p>呼出的氣體裡，氧氣少了一些、二氧化碳多了一些，但<strong>氮氣身體用不到</strong>，吸進去多少就吐出多少。</p><p>所以呼出的氣體中，最多的還是<strong>氮氣</strong>（將近八成）。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-16</span><span class="tag">114 學年度 第一次段考 · 第 16 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 16 題" src="review/ch2/114-16.png"><div class="ansrow" data-q="114-16" data-ans="C"><span class="lb">第 16 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-16" hidden><div class="key">答案：(C)</div><p>(C) 氧氣能幫助燃燒（<strong>助燃性</strong>）✓</p><p>(A) 空氣中最多的是<strong>氮氣</strong>（約 78%），氬氣只有約 0.9%。<br>(B) 氮氣雖然不太活潑，但<strong>鈍氣</strong>指的是氬氣這一類。<br>(D) 臭氧的多寡每個地方不一樣，例如高空臭氧層就比較多。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-21</span><span class="tag">114 學年度 第一次段考 · 第 21 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.0%" alt="114 學年度 第 21 題" src="review/ch2/114-21.png"><div class="ansrow" data-q="114-21" data-ans="B"><span class="lb">第 21 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-21" hidden><div class="key">答案：(B)</div><p>對照比例：甲 78% ＝ 氮氣、乙 21% ＝ 氧氣、丙 0.9% ＝ 氬氣、丁 0.1% ＝ <strong>其他氣體</strong>（二氧化碳等好幾種）。</p><p>(B) 丁是好幾種氣體加起來 → <strong>混合物</strong> ✓</p><p>(A) 焊接時用來隔絕氧氣的是<strong>氬氣</strong>（丙）。<br>(C) 不易反應的鈍氣是氬氣（丙），丁不是單一種氣體。<br>(D) 乙是氧氣，會助燃，線香會燒得<strong>更旺</strong>，不會熄滅。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-18</span><span class="tag">112 學年度 第一次段考 · 第 18 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 18 題" src="review/ch2/112-18.png"><div class="ansrow" data-q="112-18" data-ans="B"><span class="lb">第 18 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-18" hidden><div class="key">答案：(B)</div><p>大理石 ＋ 鹽酸 → 產生<strong>二氧化碳</strong>（甲 ✓）。</p><p>二氧化碳會使澄清石灰水變混濁（乙 ✓）；無色無臭、<strong>不助燃也不可燃</strong>（丁 ✓）。</p><p>丙 ✗：二氧化碳不助燃，線香放進去會<strong>熄滅</strong>。讓線香燒得更旺的是氧氣。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-22</span><span class="tag">112 學年度 第一次段考 · 第 22 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 22 題" src="review/ch2/112-22.png"><div class="ansrow" data-q="112-22" data-ans="B"><span class="lb">第 22 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-22" hidden><div class="key">答案：(B)</div><p>汽水裡溶了大量的<strong>二氧化碳</strong>。</p><p>開罐時壓力變小，二氧化碳溶不住就冒出來；加入鹽巴，鹽粒讓溶在水裡的二氧化碳更容易聚成氣泡跑出來。</p><p>兩種情況都只是把原本溶在汽水裡的二氧化碳「放出來」，沒有產生氧氣。</p></div></div>
+<div class="card"><div class="meta"><span class="tag no">114-28</span><span class="tag">114 學年度 第一次段考 · 第 28 題</span><span class="tag self">自行解出（該卷無官方解答）</span></div><img class="qimg" style="--w:48.9%" alt="114 學年度 第 28 題" src="review/ch2/114-28.png"><div class="ansrow" data-q="114-28" data-ans="A"><span class="lb">第 28 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="114-28" hidden><div class="key">答案：(A)</div><p>（題目表格寫子、丑、寅，選項問甲、乙、丙，指的是同樣三瓶，依序對應。）</p><p>子：不助燃、難溶於水、石灰水無反應 → <strong>氮氣</strong>。<br>丑：會使石灰水<strong>混濁</strong>、微溶於水 → <strong>二氧化碳</strong>。<br>寅：<strong>有助燃性</strong> → <strong>氧氣</strong>。</p><p>三種氣體各有一個「招牌」：氧氣助燃、二氧化碳使石灰水混濁、氮氣兩個都沒有。</p><div class="srcnote">※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div></div></div>
+<div class="card"><div class="meta"><span class="tag no">112-24</span><span class="tag">112 學年度 第一次段考 · 第 24 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 24 題" src="review/ch2/112-24.png"><div class="ansrow" data-q="112-24" data-ans="D"><span class="lb">第 24 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-24" hidden><div class="key">答案：(D)</div><p>這是用雙氧水和二氧化錳製氧的裝置。</p><p>(A) 乙瓶底的黑色固體是二氧化錳 ✓。(B) 先加水把甲的下端泡在液體裡，氧氣才不會從甲跑掉 ✓。(C) 一開始冒出來的是瓶子裡原本的<em>空氣</em>，不要收集 ✓。</p><p>(D) ✗：把甲拔開，氧氣會從瓶口跑掉，液體也可能噴出來。反應太快應該<strong>減慢或暫停加入雙氧水</strong>。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+<section class="sec" data-sec="c2-10" data-title="第 2 章 ⑩　空氣品質與水資源">
+<h2 id="c2-10">第 2 章 ⑩　空氣品質與水資源<small>1 題</small></h2>
+<div class="card"><div class="meta"><span class="tag no">112-28</span><span class="tag">112 學年度 第一次段考 · 第 28 題</span><span class="tag">官方答案卡</span></div><img class="qimg" style="--w:100.0%" alt="112 學年度 第 28 題" src="review/ch2/112-28.png"><div class="ansrow" data-q="112-28" data-ans="A"><span class="lb">第 28 題</span><span class="opts"><button data-c="A">A</button><button data-c="B">B</button><button data-c="C">C</button><button data-c="D">D</button></span><span class="blank">答：（　　）</span><span class="verdict"></span></div><div class="sol" data-q="112-28" hidden><div class="key">答案：(A)</div><p>丙（一滴水用兩次以上）、丁（雨水拿來洗車、拖地）都是省水又不汙染環境的做法 ✓</p><p>甲 ✗：汙水倒進河川會<strong>汙染水源</strong>，這不是珍惜水。<br>乙 ✗：處理後的<strong>再生水</strong>是拿來沖廁所、澆花、工業用，<em>不是拿來喝的</em>。</p></div></div>
+<div class="secbar"><span class="secstat"></span><button class="btn pri sub">交卷這一段</button><button class="btn redo" hidden>重做這一段</button><div class="secscore" hidden></div></div></section>
+</main>
+
+<main id="wrongbook" hidden>
+  <div class="wbhead">
+    <h2>📕 錯題本<small id="wbsub"></small></h2>
+    <p class="dim noprint">這裡收的是交卷時答錯或沒寫的題目。再做一次：選完馬上看到對錯和解析；<strong>答對了</strong>才能移出錯題本。</p>
+    <div class="toolbar"><button class="btn" data-print="w">🖨 存成 PDF：錯題本（含解析）</button></div>
+  </div>
+  <div id="wblist"></div>
+</main>
+
+<footer>
+  試題取自學校於段考後公布的試卷，僅供自學複習使用。解析為自學用補充說明；標示「自行解出」者並非官方答案。<br>
+  <a href="index.html">← 回自學站首頁</a>　·　<a href="exam.html">整卷模擬</a>　·　<a href="book.html">課本地圖</a>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var KEY="jhs8-sci-ch2-review-v1";
+var S={secs:{},wrong:{}};
+try{ var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); S.secs=o.secs||{}; S.wrong=o.wrong||{}; } }catch(e){}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} }
+function sec(k){ return S.secs[k]||(S.secs[k]={picks:{},graded:false}); }
+function $$(sel,root){ return [].slice.call((root||document).querySelectorAll(sel)); }
+
+/* ---------- 題目練習：每一段各自作答、交卷 ---------- */
+function paintSection(el){
+  var k=el.dataset.sec, s=sec(k), rows=$$(".ansrow",el), n=0, right=0;
+  rows.forEach(function(r){
+    var q=r.dataset.q, ans=r.dataset.ans, pick=s.picks[q]||"";
+    if(pick) n++;
+    if(pick===ans) right++;
+    $$(".opts button",r).forEach(function(b){
+      var c=b.dataset.c;
+      if(s.graded) b.className = c===pick ? (c===ans?"ok":"bad") : (c===ans?"miss":"");
+      else b.className = c===pick ? "pick" : "";
+    });
+    var v=r.querySelector(".verdict");
+    if(s.graded){ v.textContent = pick===ans ? "✓ 答對" : (pick ? "✗ 正解 "+ans : "沒寫，正解 "+ans); v.className="verdict "+(pick===ans?"ok":"bad"); }
+    else { v.textContent=""; v.className="verdict"; }
+  });
+  $$(".sol",el).forEach(function(x){ x.hidden=!s.graded; });
+  var bar=el.querySelector(".secbar"), N=rows.length;
+  bar.querySelector(".secstat").textContent = s.graded ? "這一段已交卷" : "已作答 "+n+" / "+N+" 題";
+  bar.querySelector(".sub").hidden = s.graded;
+  bar.querySelector(".redo").hidden = !s.graded;
+  var sc=bar.querySelector(".secscore");
+  if(s.graded){
+    var miss=N-right;
+    sc.innerHTML='答對 <b class="big">'+right+'</b> / '+N+' 題（'+Math.round(right/N*100)+'%）'+
+      (miss ? '　·　錯的 '+miss+' 題已放進 <a href="#" class="gowb">錯題本</a>' : '　·　全對！');
+    sc.hidden=false;
+  } else sc.hidden=true;
+  var t=document.querySelector('.toc a[href="#'+k+'"] .st');
+  if(t) t.textContent = s.graded ? right+"/"+N : "";
+}
+
+$$("section.sec").forEach(function(el){
+  var k=el.dataset.sec;
+  $$(".ansrow",el).forEach(function(r){
+    $$(".opts button",r).forEach(function(b){
+      b.addEventListener("click",function(){
+        var s=sec(k); if(s.graded) return;
+        var q=r.dataset.q; s.picks[q] = s.picks[q]===b.dataset.c ? "" : b.dataset.c;
+        save(); paintSection(el);
+      });
+    });
+  });
+  var bar=el.querySelector(".secbar"), sub=bar.querySelector(".sub");
+  sub.addEventListener("click",function(){
+    var s=sec(k), rows=$$(".ansrow",el);
+    var blank=rows.filter(function(r){return !s.picks[r.dataset.q]}).length;
+    if(blank && !sub.dataset.warned){
+      sub.dataset.warned="1";
+      bar.querySelector(".secstat").textContent="還有 "+blank+" 題沒寫（沒寫算錯），再按一次就交卷";
+      return;
+    }
+    sub.dataset.warned="";
+    s.graded=true;
+    rows.forEach(function(r){
+      var q=r.dataset.q, pick=s.picks[q]||"";
+      if(pick!==r.dataset.ans){ var w=S.wrong[q]||{n:0}; w.n++; w.last=pick||"沒寫"; S.wrong[q]=w; }
+    });
+    save(); paintSection(el); paintCount();
+    el.querySelector(".secbar").scrollIntoView({block:"center"});
+  });
+  bar.querySelector(".redo").addEventListener("click",function(){
+    S.secs[k]={picks:{},graded:false}; save(); paintSection(el);
+    el.querySelector("h2").scrollIntoView();
+  });
+  bar.addEventListener("click",function(e){
+    if(e.target.classList.contains("gowb")){ e.preventDefault(); show("wrongbook"); }
+  });
+  paintSection(el);
+});
+
+/* ---------- 錯題本 ---------- */
+function wrongIds(){
+  return $$("#practice .ansrow").map(function(r){return r.dataset.q}).filter(function(q){return S.wrong[q]});
+}
+function paintCount(){
+  var n=wrongIds().length;
+  document.getElementById("wbcnt").textContent=n;
+  document.getElementById("wbsub").textContent = n ? "目前 "+n+" 題" : "";
+}
+function buildWrongbook(){
+  var list=document.getElementById("wblist"); list.innerHTML="";
+  var ids=wrongIds();
+  if(!ids.length){
+    list.innerHTML='<div class="empty">錯題本是空的。<br>去「題目練習」做完一段並交卷，答錯的題目就會出現在這裡。</div>';
+    return;
+  }
+  var lastSec="";
+  ids.forEach(function(q){
+    var row=document.querySelector('#practice .ansrow[data-q="'+q+'"]');
+    var secEl=row.closest("section.sec");
+    if(secEl.dataset.sec!==lastSec){
+      lastSec=secEl.dataset.sec;
+      var h=document.createElement("h2"); h.textContent=secEl.dataset.title; list.appendChild(h);
+    }
+    var card=row.closest(".card").cloneNode(true);
+    card.classList.add("wb");
+    $$(".ansrow",card).forEach(function(r){ if(r.dataset.q!==q) r.remove(); });
+    $$(".sol",card).forEach(function(x){ if(x.dataset.q!==q) x.remove(); });
+    var r=card.querySelector(".ansrow"), sol=card.querySelector(".sol"), ans=r.dataset.ans, w=S.wrong[q];
+    var info=document.createElement("span");
+    info.className="tag miss"; info.textContent="錯過 "+w.n+" 次 · 上次："+w.last;
+    card.querySelector(".meta").appendChild(info);
+    $$(".opts button",r).forEach(function(b){ b.className=""; });
+    r.querySelector(".verdict").textContent="";
+    sol.hidden=true;
+    var act=document.createElement("div"); act.className="wbact";
+    act.innerHTML='<button class="btn ok done" hidden>我會了，移出錯題本</button><button class="btn again" hidden>再做一次</button>';
+    card.appendChild(act);
+    var locked=false;
+    $$(".opts button",r).forEach(function(b){
+      b.addEventListener("click",function(){
+        if(locked) return; locked=true;
+        var c=b.dataset.c, ok=c===ans;
+        $$(".opts button",r).forEach(function(x){
+          x.className = x.dataset.c===c ? (ok?"ok":"bad") : (x.dataset.c===ans?"miss":"");
+        });
+        var v=r.querySelector(".verdict");
+        v.textContent = ok ? "✓ 答對了" : "✗ 還是錯，正解 "+ans; v.className="verdict "+(ok?"ok":"bad");
+        if(!ok){ w.n++; w.last=c; save(); info.textContent="錯過 "+w.n+" 次 · 上次："+c; }
+        sol.hidden=false;
+        act.querySelector(".done").hidden=!ok;
+        act.querySelector(".again").hidden=false;
+      });
+    });
+    act.querySelector(".again").addEventListener("click",function(){
+      locked=false; sol.hidden=true;
+      $$(".opts button",r).forEach(function(x){x.className=""});
+      r.querySelector(".verdict").textContent="";
+      act.querySelector(".done").hidden=true; this.hidden=true;
+    });
+    act.querySelector(".done").addEventListener("click",function(){
+      delete S.wrong[q]; save(); paintCount(); card.remove();
+      if(!wrongIds().length) buildWrongbook();
+    });
+    list.appendChild(card);
+  });
+}
+function show(v){
+  $$(".tab").forEach(function(t){ t.classList.toggle("on", t.dataset.view===v); });
+  document.getElementById("practice").hidden = v!=="practice";
+  document.getElementById("wrongbook").hidden = v!=="wrongbook";
+  if(v==="wrongbook") buildWrongbook();
+  window.scrollTo(0, document.querySelector(".tabs").offsetTop-10);
+}
+$$(".tab").forEach(function(t){ t.addEventListener("click",function(){ show(t.dataset.view); }); });
+
+/* ---------- 點圖放大（手機看小字用） ---------- */
+document.addEventListener("click",function(e){
+  var im=e.target.closest && e.target.closest(".qimg"); if(!im) return;
+  var z=document.createElement("div"); z.className="zoom";
+  var big=document.createElement("img"); big.src=im.src;
+  big.style.width=Math.round(im.naturalWidth*0.75)+"px";
+  z.innerHTML='<span class="hint">可左右滑動、雙指縮放</span><button class="x">✕ 關閉</button>';
+  z.appendChild(big);
+  z.addEventListener("click",function(ev){ if(ev.target===z||ev.target.classList.contains("x")) z.remove(); });
+  document.body.appendChild(z);
+});
+window.addEventListener("load",function(){
+  if(location.hash && location.hash.length>1){ var t=document.getElementById(location.hash.slice(1)); if(t) t.scrollIntoView({behavior:"instant"}); }
+});
+
+/* ---------- 列印 ---------- */
+function setPrint(m){
+  document.body.classList.remove("pq","pa","pw");
+  document.body.classList.add("p"+m);
+  if(m==="w"){ show("wrongbook"); $$("#wblist .sol").forEach(function(x){x.hidden=false}); }
+  else { show("practice"); }
+  if(m==="a") $$("#practice .sol").forEach(function(x){x.hidden=false});
+  document.getElementById("phead").textContent =
+    m==="a" ? "【解答卷】含答案與解析" :
+    m==="w" ? "【錯題本】含答案與解析" :
+    "【題目卷】　姓名：＿＿＿＿＿＿＿　日期：＿＿＿＿＿　得分：＿＿＿／58";
+}
+window.addEventListener("afterprint",function(){
+  document.body.classList.remove("pq","pa","pw");
+  $$("section.sec").forEach(paintSection);
+});
+$$("[data-print]").forEach(function(b){
+  b.addEventListener("click",function(){ setPrint(b.dataset.print); setTimeout(function(){window.print()},80); });
+});
+paintCount();
+var m=(location.search.match(/print=([qaw])/)||[])[1];
+if(m) setPrint(m);
+})();
+</script>
+</body>
+</html>
