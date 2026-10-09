@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>密涅瓦思考練習 · 第一次段考</title>
+<style>
+:root{--paper:#faf7f0;--ink:#2b2622;--ink2:#5c5349;--line:#ded5c6;--accent:#c2410c;--accent-soft:#fff1e7;
+  --green:#3f6d3a;--green-soft:#eef4ec;--warn:#8a6a1e;--warn-soft:#fdf6e6;--blue:#2f5d7c;--blue-soft:#eaf2f7}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16.5px;line-height:1.8}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 80px}
+header{padding:36px 0 18px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:13px;letter-spacing:.18em;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+h2{font-size:20px;margin:36px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h2 small{font-size:13px;color:var(--ink2);font-weight:400;margin-left:8px}
+p{margin:0 0 12px}
+.dim{color:var(--ink2)}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600}
+a{color:var(--accent)}
+button{font-family:inherit}
+details.howto{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;font-size:15px}
+details.howto summary{cursor:pointer;font-weight:700}
+details.howto[open] summary{margin-bottom:8px}
+details.howto ol{margin:6px 0 12px;padding-left:22px}
+details.howto li{margin-bottom:4px}
+/* 思考習慣 */
+.habits{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:14px 0}
+.habit{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:14.5px;line-height:1.65;cursor:pointer;text-align:left;color:var(--ink)}
+.habit:hover{border-color:var(--ink)}
+.habit.on{border:2px solid var(--blue);background:var(--blue-soft)}
+.habit b{display:block;font-size:15.5px;margin-bottom:2px}
+.habit .q{color:var(--ink2)}
+.habit .cnt{float:right;font-size:12.5px;color:var(--green);font-weight:700}
+.htag{display:inline-block;font-size:12.5px;border-radius:99px;padding:0 9px;background:var(--blue-soft);color:var(--blue);border:1px solid #c5d9e6;font-weight:600}
+/* 儀表 */
+.dash{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:14.5px}
+.panel h3{font-size:15px;margin:0 0 8px}
+.bar{height:10px;background:#efe9de;border-radius:99px;overflow:hidden;margin:6px 0 4px}
+.bar i{display:block;height:100%;background:var(--green);width:0}
+table.cal{border-collapse:collapse;width:100%;font-size:14px}
+table.cal th,table.cal td{border:1px solid var(--line);padding:4px 6px;text-align:center}
+table.cal th{background:#f6f2ea;font-weight:600}
+table.cal td.hot{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.calmsg{margin:8px 0 0;font-size:13.5px;color:var(--ink2)}
+@media(max-width:640px){.dash{grid-template-columns:1fr}}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:4px 13px;font-size:14px;cursor:pointer;color:var(--ink2);font-weight:600}
+.chip.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.btn{border:1.5px solid var(--ink);background:#fff;color:var(--ink);border-radius:99px;padding:7px 15px;font-size:14.5px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ink);color:#fff}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{filter:brightness(.92)}
+.btn[disabled]{opacity:.4;cursor:default;background:#fff;color:var(--ink)}
+.btn.sm{padding:3px 11px;font-size:13px;font-weight:500}
+/* 題卡 */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 18px}
+.card.done{border-color:#b9cfb5}
+.chead{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;cursor:pointer}
+.tag{border-radius:99px;padding:1px 9px;border:1px solid var(--line);color:var(--ink2);background:#f6f2ea}
+.tag.no{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.tag.self{border-color:#d8b46a;background:var(--warn-soft);color:var(--warn)}
+.tag.ok{background:var(--green-soft);border-color:#b9cfb5;color:var(--green);font-weight:700}
+.ctitle{font-size:16.5px;font-weight:700;margin:6px 0 0;cursor:pointer}
+.ctitle .arrow{color:var(--ink2);font-weight:400;font-size:13px;margin-left:6px}
+.cbody{margin-top:12px}
+.qimg{display:block;width:var(--w);max-width:100%;height:auto;cursor:zoom-in;margin:4px 0 6px}
+.stage{border-top:1px dashed var(--line);padding-top:12px;margin-top:12px}
+.stage>.lab{font-size:13px;letter-spacing:.12em;font-weight:700;color:var(--accent);margin-bottom:6px}
+.stage.s2>.lab{color:var(--blue)}
+.stage.s3>.lab,.stage.s4>.lab{color:var(--green)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0}
+.row .lb{font-size:14px;color:var(--ink2);min-width:56px}
+.opts{display:flex;gap:6px}
+.opts button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:15px;color:var(--ink2);cursor:pointer;padding:0}
+.opts button:hover{border-color:var(--ink)}
+.opts button.pick{background:var(--ink);border-color:var(--ink);color:#fff}
+.opts button.ok{background:var(--green);border-color:var(--green);color:#fff}
+.opts button.bad{background:var(--accent);border-color:var(--accent);color:#fff}
+.opts button.miss{border:2.5px solid var(--green);color:var(--green);font-weight:700}
+.opts button[disabled]{cursor:default}
+.conf{display:flex;gap:6px;flex-wrap:wrap}
+.conf button{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:4px 12px;font-size:14px;cursor:pointer;color:var(--ink2)}
+.conf button.pick{background:var(--ink);border-color:var(--ink);color:#fff}
+.locked{font-size:14.5px;background:#f6f2ea;border-radius:8px;padding:6px 10px;display:inline-block}
+.step{margin:10px 0 0;padding:10px 12px;border-left:3px solid var(--blue);background:var(--blue-soft);border-radius:0 10px 10px 0}
+.step .sq{font-weight:600;margin-bottom:6px}
+.step .sq .n{color:var(--blue);margin-right:4px}
+.ch{display:flex;flex-direction:column;gap:6px}
+.ch button{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-size:15px;cursor:pointer;color:var(--ink);line-height:1.6}
+.ch button:hover{border-color:var(--ink)}
+.ch button.ok{border-color:var(--green);background:var(--green-soft);color:var(--green);font-weight:600}
+.ch button.bad{border-color:#f0b48a;background:var(--accent-soft);color:#8a3a12;text-decoration:line-through;text-decoration-color:rgba(194,65,12,.45)}
+.ch button[disabled]{cursor:default}
+.fb{margin-top:8px;font-size:14.5px;border-radius:8px;padding:6px 10px}
+.fb.ok{background:#fff;border:1px solid #b9cfb5;color:var(--green)}
+.fb.bad{background:#fff;border:1px solid #f0b48a;color:#8a3a12}
+.sol{margin-top:10px;background:var(--green-soft);border:1px solid #c8dcc4;border-radius:10px;padding:10px 14px;font-size:15px}
+.sol .key{font-weight:700;color:var(--green);margin-bottom:4px}
+.sol p:last-child{margin-bottom:0}
+.mirror{margin-top:8px;font-size:14.5px;background:var(--warn-soft);border:1px solid #e8d4a2;border-radius:8px;padding:8px 12px;color:#5f4810}
+.take{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px 14px;font-weight:600}
+textarea{width:100%;min-height:58px;font-family:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;resize:vertical;background:#fffdf9}
+.srcnote{font-size:13px;color:var(--warn);margin-top:6px}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.92);overflow:auto;-webkit-overflow-scrolling:touch;padding:56px 10px 20px}
+.zoom img{display:block;width:1000px;max-width:none;background:#fff;border-radius:6px;margin:0 auto}
+.zoom .x{position:fixed;top:10px;right:10px;background:#fff;border:none;border-radius:99px;padding:6px 14px;font-size:15px;font-weight:700;cursor:pointer}
+.zoom .hint{position:fixed;top:14px;left:14px;color:#fff;font-size:13.5px}
+footer{margin-top:30px;font-size:13px;color:var(--ink2);line-height:1.8;border-top:1px solid var(--line);padding-top:16px}
+@media(max-width:600px){.qimg{width:100%}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">第一次段考範圍 · 緒論＋第 1 章＋第 2 章</div>
+  <h1>用密涅瓦的方式想：<br>16 道段考原題，一步一步推出答案</h1>
+  <p class="dim">這一頁<strong>不直接給解析</strong>。每一題都照同一條路走：先憑直覺猜、說出你有多少把握 → 回答幾個小問題，把題目拆開 → 再答一次原題 → 換一個情境再考你一次。</p>
+  <p class="dim">16 題全部出自你們學校 112～114 學年度<strong>第一次段考</strong>，挑的是「會算的人也常錯」的題目——錯的原因幾乎都不是不會算，而是<em>想的順序錯了</em>。</p>
+</header>
+
+<details class="howto">
+  <summary>什麼是「密涅瓦思考方式」？（第一次來看一下）</summary>
+  <p>密涅瓦大學（Minerva University）的課堂幾乎不講課。上課前先自己讀，上課時老師丟出問題，<strong>每個人先投票、再說理由</strong>，最後才討論。它把好的思考方式拆成一個個有名字的「思考習慣」，要求學生在每一個新情境裡<strong>叫得出名字、用得出來</strong>。</p>
+  <p>這一頁借用它最核心的三件事：</p>
+  <ol>
+    <li><strong>先表態，再學習。</strong>你先猜答案、說出把握有多大。猜錯不扣分——但你會記住自己<em>為什麼</em>錯。</li>
+    <li><strong>思考習慣有名字。</strong>下面 6 個習慣，每題都標出它在練哪一兩個。考試時卡住，就問自己：「這題該叫出哪一個？」</li>
+    <li><strong>學完要能搬家。</strong>每題最後有一道<strong>換了情境</strong>的新題。原題答對不算真的會，新題也答對才算。</li>
+  </ol>
+  <p class="dim" style="margin:0">「信心校準」是密涅瓦很重視的一件事：<strong>很有把握卻答錯</strong>的題目，比猜錯的題目危險得多，因為考試時你不會回頭檢查它。右邊的表會幫你記下來。</p>
+</details>
+
+<h2>6 個思考習慣<small>點一下可以只看練這個習慣的題目</small></h2>
+<div class="habits" id="habits"></div>
+
+<div class="dash">
+  <div class="panel">
+    <h3>進度</h3>
+    <div id="prog"></div>
+    <div class="bar"><i id="progbar"></i></div>
+    <div class="dim" style="font-size:13.5px" id="prog2"></div>
+  </div>
+  <div class="panel">
+    <h3>信心校準：你的直覺有多可靠？</h3>
+    <table class="cal" id="cal"></table>
+    <p class="calmsg" id="calmsg"></p>
+  </div>
+</div>
+
+<div class="filters" id="parts"></div>
+<div id="list"></div>
+
+<p style="margin-top:24px"><button class="btn sm" id="resetAll">清除這一頁所有作答紀錄</button></p>
+
+<footer>
+  試題取自學校於段考後公布的試卷，僅供自學複習使用。引導問題與遷移題為自學站自編；標示「自行解出」者並非官方答案，請以老師講解為準。<br>
+  想一次練完整段：<a href="review-intro-ch1.html">緒論＋第 1 章分段練習</a>　·　<a href="review-ch2.html">第 2 章分段練習</a>　·　<a href="exam.html">整卷模擬</a>　·　<a href="index.html">← 回自學站首頁</a>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- 思考習慣 ---------- */
+var H={
+  right:{i:"🎯",n:"#問對問題",q:"題目真正問的是什麼？否定詞、「含量」還是「濃度」？"},
+  split:{i:"🧩",n:"#拆解",q:"把一大題拆成幾個小步驟，每一步只回答一件事。"},
+  info:{i:"🪤",n:"#篩資訊",q:"哪些數字有用、哪些是誘餌？資料夠不夠算？"},
+  vars:{i:"🔬",n:"#找真正的變因",q:"哪個因素真的影響結果？哪些會互相抵銷？"},
+  check:{i:"📏",n:"#合理性檢查",q:"答案的大小、位數合不合理？和題目的前提吻合嗎？"},
+  rule:{i:"🏷",n:"#一把尺分類",q:"分類只用一個標準，別被表面現象帶走。"}
+};
+/* ---------- 題目 ----------
+   s：引導步驟，c 為 [選項文字, 是否正確, 回饋] */
+var Q=[
+{id:"112-21",part:"c1",img:"review/intro-ch1/112-21.png",w:"100%",src:"112 學年度 第一次段考 · 第 21 題",self:0,unit:"排水法",
+ title:"量桌球的體積",hab:["split","info"],ans:"A",
+ s:[
+  {q:"步驟二讀到 V₂＝280 mL。這時候<strong>沉在水面下</strong>的有誰？",c:[
+    ["水＋鐵塊",1,"對。仔細看圖：桌球還浮在水面上，沒有被拉下去。"],
+    ["水＋鐵塊＋桌球",0,"再看一次圖：步驟二的桌球在水面上方，它還沒沉進去，所以沒有把水推高。"],
+    ["只有水",0,"鐵塊已經放進去、沉到底了。只有水的是步驟一。"]]},
+  {q:"步驟三 V₃＝340 mL。和步驟二相比，<strong>多沉進水裡的</strong>是誰？",c:[
+    ["桌球",1,"對。鐵塊兩次都在水裡，多出來的只有被拉下去的桌球。"],
+    ["鐵塊",0,"鐵塊在步驟二就已經在水裡了，它的體積在兩次讀數裡都有。"],
+    ["桌球＋鐵塊",0,"兩次讀數都有鐵塊，相減時鐵塊就消掉了。"]]},
+  {q:"那 V₁＝180 mL 這個數字，算桌球時用得到嗎？",c:[
+    ["用不到，它是拿來算鐵塊體積（280 − 180）的",1,"對。題目給的數字不一定都要用。有人算 V₃ − V₁ ＝ 160，那是「鐵塊＋桌球」——正好是選項 (D)。"],
+    ["用得到，桌球 ＝ V₃ − V₁",0,"V₃ − V₁ ＝ 160，量到的是鐵塊和桌球「加起來」的體積。這正是選項 (D) 的陷阱。"]]}
+ ],
+ key:"桌球 ＝ V₃ − V₂ ＝ 340 − 280 ＝ <strong>60 cm³</strong>。",
+ tr:{q:"量筒裝水 60 mL。放入一塊鐵 → 水面 75 mL；再用細鐵絲把一個軟木塞壓進水中（鐵塊還在，鐵絲體積不計）→ 水面 87 mL。軟木塞的體積是多少？",
+  c:["12 cm³","15 cm³","27 cm³","87 cm³"],a:0,
+  e:"每次讀數前先問「水面下有誰」：75 mL 時是水＋鐵，87 mL 時是水＋鐵＋木塞 → 木塞 ＝ 87 − 75 ＝ 12 cm³。27 是鐵＋木塞（87 − 60）。"},
+ take:"每讀一次刻度，先問：此刻水面下有誰？兩次讀數相減，就是「多沉進去的那一個」。"},
+
+{id:"114-06",part:"c1",img:"review/intro-ch1/114-06.png",w:"48.9%",src:"114 學年度 第一次段考 · 第 6 題",self:1,unit:"密度",
+ title:"冰塊熔化後的總體積",hab:["info","check"],ans:"C",
+ s:[
+  {q:"100 g 的冰熔化成水，<strong>質量</strong>會怎樣？",c:[
+    ["不變，變成 100 g 的水",1,"對。熔化只是換了狀態，東西沒有變多也沒有變少。"],
+    ["變少，因為冰比較輕",0,"冰「比較輕」說的是密度小（同樣體積比較輕），不是質量會消失。100 g 的冰化完還是 100 g。"],
+    ["變多，因為水比較重",0,"質量不會憑空增加。改變的是體積，不是質量。"]]},
+  {q:"冰全部熔化後，燒杯裡一共有幾公克的水？",c:[
+    ["300 g",1,"對：100 ＋ 200 ＝ 300 g，全部都是水了。"],
+    ["200 g",0,"冰化掉之後也變成水了，要把它加進來。"],
+    ["290 g",0,"這是把冰的體積算錯後湊出來的數字。質量直接相加就好：100 ＋ 200。"]]},
+  {q:"要算 300 g 水的體積，該用哪一個密度？",c:[
+    ["1.0 g/cm³——現在燒杯裡全都是水",1,"對。0.9 只在它「還是冰」的時候有效，現在已經用不到了。"],
+    ["0.9 g/cm³——因為有一部分原本是冰",0,"原本是冰，但<strong>現在</strong>是水。問的是熔化之後，所以只能用水的密度。"],
+    ["兩個都要用：冰的體積 ＋ 水的體積",0,"100 ÷ 0.9 ≈ 111 是冰<strong>還沒化</strong>時的體積。冰化掉之後，那 111 cm³ 就不存在了。"]]}
+ ],
+ key:"300 g ÷ 1.0 g/cm³ ＝ <strong>300 cm³</strong>。那個 0.9 是誘餌。",
+ tr:{q:"把 50 g 的冰（密度 0.9 g/cm³）放進 150 g 的水裡，冰完全熔化後，水的總體積大約是多少？",
+  c:["約 205.6 cm³","200 cm³","約 194.4 cm³","180 cm³"],a:1,
+  e:"熔化後全是水：50 ＋ 150 ＝ 200 g → 200 ÷ 1.0 ＝ 200 cm³。205.6 是把冰的體積（50 ÷ 0.9）加上去的誘餌答案。"},
+ take:"題目給的數字不一定都要用。先問：這個數字描述的東西，現在還存在嗎？"},
+
+{id:"113-25",part:"c1",img:"review/intro-ch1/113-25.png",w:"100%",src:"113 學年度 第一次段考 · 第 25 題",self:0,unit:"密度",
+ title:"同一個鋁塊，兩杯不同的液體",hab:["split","info"],ans:"D",
+ s:[
+  {q:"杯子原本是<strong>盛滿</strong>的。溢出來的酒精體積，等於什麼的體積？",c:[
+    ["鋁塊的體積",1,"對。鋁塊沉進去佔了多少位置，就擠出多少液體。"],
+    ["杯子的容積",0,"杯子很大，只有被鋁塊佔掉的那一部分會溢出來。"],
+    ["鋁塊的質量",0,"溢出來的量和「鋁塊佔了多少空間」有關，不是和它多重有關。"]]},
+  {q:"溢出的酒精 60 g，酒精密度 0.75 g/cm³，溢出的體積是？",c:[
+    ["80 cm³",1,"對：體積 ＝ 質量 ÷ 密度 ＝ 60 ÷ 0.75 ＝ 80。所以鋁塊是 80 cm³。"],
+    ["45 cm³",0,"60 × 0.75 是乘反了。體積 ＝ 質量 ÷ 密度。"],
+    ["60 cm³",0,"只有密度 1 的液體，公克數才會等於立方公分數。酒精是 0.75。"]]},
+  {q:"換成「某液體」時，溢出的體積是多少？",c:[
+    ["一樣是 80 cm³——還是同一個鋁塊",1,"對！這個題目沒寫出來的「80」，就是連接兩杯的橋。"],
+    ["160 cm³",0,"160 是溢出液體的<strong>質量</strong>（公克），不是體積。"],
+    ["題目沒給，算不出來",0,"題目沒有直接寫，但你已經求出來了：同一個鋁塊，兩次排開的體積一定一樣。"]]}
+ ],
+ key:"某液體密度 ＝ 160 g ÷ 80 cm³ ＝ <strong>2.0 g/cm³</strong>。",
+ tr:{q:"一顆石頭放進盛滿水的杯子，溢出 30 g 的水（水密度 1.0）；同一顆石頭放進盛滿食鹽水的杯子，溢出 33 g 的食鹽水。食鹽水的密度是？",
+  c:["0.9 g/cm³","1.1 g/cm³","1.3 g/cm³","3.3 g/cm³"],a:1,
+  e:"橋是石頭的體積：30 ÷ 1.0 ＝ 30 cm³。食鹽水密度 ＝ 33 ÷ 30 ＝ 1.1 g/cm³。順便檢查：食鹽水比水稍重，1.1 很合理。"},
+ take:"題目看起來少一個條件時，去找「兩次都一樣」的那個東西——它就是橋。"},
+
+{id:"112-26",part:"c1",img:"review/intro-ch1/112-26.png",w:"100%",src:"112 學年度 第一次段考 · 第 26 題",self:0,unit:"密度",
+ title:"綁石法量木塊密度",hab:["split","check"],ans:"D",
+ s:[
+  {q:"為什麼要把木塊和石塊綁在一起？",c:[
+    ["木塊會浮，綁石塊才能讓它整個沉進水裡",1,"對。木塊浮著，只有一部分在水面下，量到的體積會太小。"],
+    ["讓總質量變大，比較好秤",0,"質量是另外先秤好的（8.4 g），綁石塊和秤質量無關。"],
+    ["讓水面升高，比較好讀刻度",0,"重點不是讀刻度，而是讓木塊「全部」沉到水面下。"]]},
+  {q:"82.0 − 50.0 ＝ 32.0 cm³，這是誰的體積？",c:[
+    ["木塊＋石塊",1,"對。兩個綁在一起沉下去，一起推高了水面。"],
+    ["木塊",0,"沉下去的不只木塊，還有石塊。"],
+    ["石塊",0,"石塊的體積題目已經給了：18.0 cm³。"]]},
+  {q:"木塊的密度 ＝ 8.4 ÷ ？",c:[
+    ["14.0（32.0 − 18.0）",1,"對：8.4 ÷ 14.0 ＝ 0.6 g/cm³。"],
+    ["32.0",0,"8.4 ÷ 32 ≈ 0.26——這正是選項 (B)。32 裡面還包含了石塊。"],
+    ["18.0",0,"8.4 ÷ 18 ≈ 0.47——這是選項 (C)。18 是石塊的體積，不是木塊的。"],
+    ["82.0",0,"8.4 ÷ 82 ≈ 0.1——這是選項 (A)。82 是水面的刻度，包含了原本的水。"]]},
+  {q:"算出 0.6 g/cm³。回頭檢查一下：合理嗎？",c:[
+    ["合理——小於 1，所以會浮，正好跟「需要綁石塊」對得上",1,"對。答案自己驗證了題目的前提。每個錯誤選項其實都是「拿錯了一個體積」——檢查前提，可以抓出很多這種錯。"],
+    ["不合理——木頭的密度應該大於 1",0,"大部分木頭會浮在水上，所以密度小於 1。如果算出大於 1，反而要懷疑自己算錯了。"]]}
+ ],
+ key:"木塊體積 ＝ 32.0 − 18.0 ＝ 14.0 cm³，密度 ＝ 8.4 ÷ 14.0 ＝ <strong>0.6 g/cm³</strong>。",
+ tr:{q:"一塊保麗龍質量 3 g，和體積 10 cm³ 的鐵塊綁在一起，放進裝有 40 cm³ 水的量筒，水面升到 70 cm³。保麗龍的密度是多少？",
+  c:["0.075 g/cm³","0.1 g/cm³","0.15 g/cm³","0.3 g/cm³"],a:2,
+  e:"70 − 40 ＝ 30 cm³（保麗龍＋鐵），扣掉鐵 10 → 保麗龍 20 cm³。3 ÷ 20 ＝ 0.15 g/cm³。檢查：小於 1，會浮，所以才需要綁鐵塊 ✓"},
+ take:"算完一定回頭看：答案和題目的前提吻合嗎？會浮的東西，密度一定小於水。"},
+
+{id:"114-39",part:"c1",img:"review/intro-ch1/114-39.png",w:"48.9%",src:"114 學年度 第一次段考 · 第 39 題",self:1,unit:"密度",
+ title:"量筒＋液體的表格",hab:["right","split"],ans:"D",
+ s:[
+  {q:"先看題目最後一句：它要你選的是哪一種？",c:[
+    ["敘述「錯誤」的那一個",1,"對，先把「錯誤」圈起來。下面每一步算出來「對」的選項，都要刪掉。"],
+    ["敘述「正確」的那一個",0,"再看一次題目：「下列敘述何者<strong>錯誤</strong>」。漏看這兩個字，前面算得再對都會選錯。"]]},
+  {q:"表格的「質量」，秤到的是什麼？",c:[
+    ["量筒＋液體",1,"對。如果只有液體，體積 10 → 20 時質量應該剛好變兩倍（35 → 70），但實際是 47。多出來那一截一直都在——那就是量筒。"],
+    ["只有液體",0,"試試看：只有液體的話，20 cm³ 應該是 10 cm³ 的兩倍重（70 g），但表上是 47 g。有一個「固定的東西」一直被秤進去。"]]},
+  {q:"體積每多 10 cm³，質量多幾公克？",c:[
+    ["12 g → 密度 1.2 g/cm³",1,"對。看「變化量」就能把量筒甩掉：47 − 35 ＝ 12。所以 (A) 是對的。"],
+    ["35 g → 密度 3.5 g/cm³",0,"35 g 裡面有量筒。要看的是每多 10 cm³ 液體「多出來」的質量：47 − 35。"]]},
+  {q:"空量筒的質量是多少？",c:[
+    ["23 g（35 − 10 × 1.2）",1,"對，(B) 是對的。再用它驗證 (C)：119 − 23 ＝ 96 g 液體 → 96 ÷ 1.2 ＝ 80 cm³，(C) 也對。"],
+    ["35 g",0,"35 g 是「量筒＋10 cm³ 液體」。把 10 cm³ 液體的 12 g 扣掉才是量筒。"]]},
+  {q:"最後看 (D)：如果縱軸是「<strong>液體</strong>的質量」，體積 0 時，質量是多少？",c:[
+    ["0 g——所以直線會通過原點",1,"對！0 cm³ 的液體就是 0 g。(D) 說「未通過原點」是錯的——會不通過原點的，是「量筒＋液體」那一條。"],
+    ["23 g",0,"23 g 是量筒。(D) 的縱軸寫的是「液體質量」，已經沒有量筒了。"]]}
+ ],
+ key:"(A)(B)(C) 都算得出來是對的；(D) 的縱軸是液體本身，必過原點 → <strong>(D) 錯誤</strong>。",
+ tr:{q:"用燒杯裝某液體：液體 20 cm³ 時總質量 66 g；液體 50 cm³ 時總質量 90 g。液體的密度和空燒杯的質量各是多少？",
+  c:["3.3 g/cm³、0 g","0.8 g/cm³、50 g","1.8 g/cm³、30 g","0.8 g/cm³、66 g"],a:1,
+  e:"多 30 cm³，多 24 g → 密度 ＝ 24 ÷ 30 ＝ 0.8 g/cm³。燒杯 ＝ 66 − 20 × 0.8 ＝ 66 − 16 ＝ 50 g。3.3 是 66 ÷ 20，把燒杯也算成液體了。"},
+ take:"秤到的質量裡，有沒有包含容器？看「變化量」就能把容器甩掉。"},
+
+{id:"113-04",part:"c1",img:"review/intro-ch1/113-04.png",w:"100%",src:"113 學年度 第一次段考 · 第 4 題",self:0,unit:"測量與誤差",
+ title:"五次測量，怎麼寫最適當",hab:["check"],ans:"B",
+ s:[
+  {q:"五個數字裡，哪一個看起來不對勁？",c:[
+    ["21.32 公分",1,"對。其他都在 14 公分左右，它差了 7 公分——不是誤差，是看錯或記錯，要先剔除。"],
+    ["14.21 公分",0,"14.21 和其他只差 0.1 公分左右，屬於正常的測量誤差，可以保留。"],
+    ["沒有，五個都要用",0,"21.32 和其他差了 7 公分。同一枝筆不會一下 14 公分、一下 21 公分——那是量錯，留著會把平均拉歪。"]]},
+  {q:"剩下 14.32、14.34、14.33、14.21，平均是多少？",c:[
+    ["14.30",1,"對：57.20 ÷ 4 ＝ 14.30。"],
+    ["15.70",0,"這是把 21.32 也算進去的平均。一個量錯的數字就把結果拉高了 1.4 公分。"],
+    ["14.33",0,"這是四個數字的「中間值」附近，不是平均。要全部加起來再除以 4。"]]},
+  {q:"平均值要寫到小數第幾位？",c:[
+    ["和原紀錄一樣，到小數第二位",1,"對。原紀錄都到小數第二位（最後一位是估的），平均也要寫到同一位：14.30，那個 0 不能省。"],
+    ["位數愈多愈準，寫 14.300",0,"多寫的位數是尺根本量不到的，等於憑空捏造。"],
+    ["寫到小數第一位就好，14.3",0,"這樣就把估計位丟掉了，紀錄不完整。"]]}
+ ],
+ key:"剔除 21.32 → 四次平均 14.30 → 位數跟原紀錄一樣 → <strong>(B) 14.30 公分</strong>。",
+ tr:{q:"用最小刻度 1 公分的捲尺量桌子寬度四次：62.4、62.6、65.9、62.5 公分。最適當的結果是？",
+  c:["63.35 公分","62.5 公分","62.50 公分","63 公分"],a:1,
+  e:"65.9 和其他差了 3 公分以上，先剔除。(62.4 ＋ 62.6 ＋ 62.5) ÷ 3 ＝ 62.5；原紀錄到小數第一位，所以寫 62.5。63.35 是沒剔除的平均；62.50 多了一位。"},
+ take:"取平均之前先看一眼：有沒有一個數字明顯是量錯的？平均值的位數跟著原紀錄走。"},
+
+{id:"114-03",part:"c1",img:"review/intro-ch1/114-03.png",w:"48.9%",src:"114 學年度 第一次段考 · 第 3 題",self:1,unit:"測量與誤差",
+ title:"長一點的尺會比較準嗎？",hab:["right","vars"],ans:"A",
+ s:[
+  {q:"題目要你找的是哪一種做法？",c:[
+    ["「無法」增加準確性的",1,"對，先圈「無法」。四個選項裡有三個能讓測量更準，你要找那個沒有用的。"],
+    ["能增加準確性的",0,"再看一次：「哪一種方式<strong>無法</strong>增加測量的準確性」。"]]},
+  {q:"一把尺能讀到多細，是由什麼決定的？",c:[
+    ["最小刻度",1,"對。最小刻度 1 mm 的尺，可以讀到 mm、再估一位。"],
+    ["尺的長度",0,"尺的長度決定「一次能量多長」，不是「能讀到多細」。"],
+    ["尺的材質",0,"材質（木頭、塑膠、鐵）不會改變刻度有多細。"]]},
+  {q:"30 公分和 100 公分兩把尺，最小刻度都是 1 mm。量同一本課本，誰能記到比較多位數？",c:[
+    ["一樣多",1,"對。尺變長只是讓你不必接著量第二次，跟準不準無關——所以 (A) 是答案。"],
+    ["100 公分的尺",0,"兩把尺的最小刻度一樣，能估到的位數就一樣。長度不是影響準確度的變因。"]]}
+ ],
+ key:"準確度由<strong>最小刻度</strong>決定，和尺有多長無關 → <strong>(A)</strong>。(B) 刻度較小、(C) 小心謹慎、(D) 多次平均都能提高準確性。",
+ tr:{q:"要用量筒把液體體積量得更準，下列哪一個做法<strong>沒有</strong>幫助？",
+  c:["換一個最小刻度更小的量筒","讀數時，視線和液面最低處同高","換一個容量更大、但最小刻度一樣的量筒","多量幾次取平均"],a:2,
+  e:"和原題同一招：容量大（像尺比較長）不會讓刻度變細。真正影響準確度的是最小刻度、讀數方法和多次平均。"},
+ take:"先問：是哪一個因素真的在影響結果？看起來有關的（尺多長）不一定真的有關。"},
+
+{id:"112-27",part:"c1",img:"review/intro-ch1/112-27.png",w:"100%",src:"112 學年度 第一次段考 · 第 27 題",self:0,unit:"質量（上皿天平）",
+ title:"把天平搬上高山",hab:["vars"],ans:"C",
+ s:[
+  {q:"上皿天平「平衡」的時候，在比的是什麼？",c:[
+    ["左右兩盤誰比較重——物體和砝碼的比較",1,"對。天平不是在量「物體自己有多重」，而是在比左右兩邊。"],
+    ["物體受到的重力有多大",0,"那是彈簧秤在量的東西。天平是拿砝碼跟物體「比」。"]]},
+  {q:"愈往高處，重力會小一點點。左盤的物體和右盤的砝碼，誰受影響？",c:[
+    ["兩邊一起變小，而且變小的比例一樣",1,"對。兩邊同時受影響，就互相抵銷了。"],
+    ["只有物體變輕，砝碼不變",0,"砝碼也是在同一個地方、受同一個重力。沒有理由只有一邊變。"]]},
+  {q:"所以，愈往高處，需要的砝碼數量會？",c:[
+    ["不變——圖上是一條水平線",1,"對，就是丙。質量不會因為位置而改變。"],
+    ["愈來愈少",0,"砝碼也一起變輕了，比較的結果不變，數量自然不變。"]]}
+ ],
+ key:"天平是比較左右質量，兩邊一起受重力影響 → 砝碼數不變 → <strong>(C) 丙</strong>。",
+ tr:{q:"同一個物體，從平地帶到高山上，改用<strong>彈簧秤</strong>來量，讀數會怎樣？",
+  c:["變小一點","不變","變大一點","變成 0"],a:0,
+  e:"彈簧秤量的是物體受到的重力（重量），旁邊沒有砝碼「一起變」來抵銷 → 重力小一點，讀數就小一點。天平量質量不變，彈簧秤量重量會變——兩種工具的差別就在這裡。"},
+ take:"兩邊一起變的東西，不會影響比較的結果。先找出哪些因素被「抵銷」了。"},
+
+{id:"114-31",part:"c2",img:"review/ch2/114-31.png",w:"48.9%",src:"114 學年度 第一次段考 · 第 31 題",self:1,unit:"濃度（ppm）",
+ title:"一杯咖啡裡的咖啡因",hab:["right","split"],ans:"B",
+ s:[
+  {q:"ppm 的分母，是質量還是體積？",c:[
+    ["質量——1 ppm ＝ 每 1 公斤含 1 毫克",1,"對。所以第一步一定是把「毫升」換成「公克」。"],
+    ["體積——每 1 公升含 1 毫克",0,"這裡用的是重量百萬分率：每 1 公斤含 1 毫克。所以要先把毫升換成公克。"]]},
+  {q:"700 毫升、密度 1.2 g/cm³ 的咖啡，質量是多少？",c:[
+    ["840 g",1,"對：700 × 1.2 ＝ 840 g。所以 (C)「700 克」是錯的——那個密度就是為了這一步給的。"],
+    ["700 g",0,"只有密度剛好是 1 時，毫升數才等於公克數。這杯是 1.2。"],
+    ["約 583 g",0,"700 ÷ 1.2 是除反了。質量 ＝ 體積 × 密度。"]]},
+  {q:"400 ppm、0.84 公斤的咖啡，含咖啡因多少毫克？",c:[
+    ["336 毫克",1,"對：0.84 × 400 ＝ 336 → (B) 正確。"],
+    ["280 毫克",0,"這是用 0.7 公斤算的（700 × 400 ÷ 1000）。忘了先乘密度。"],
+    ["400 毫克",0,"400 毫克是「每 1 公斤」的量，這杯只有 0.84 公斤。"]]},
+  {q:"(D) 說加水稀釋後「咖啡因的<strong>含量</strong>也會減半」。加水之後，咖啡因的總毫克數？",c:[
+    ["不變——變小的是濃度",1,"對。加水不會把咖啡因變不見，只是把它分散到更多的水裡。"],
+    ["減半",0,"注意「含量」和「濃度」是兩個詞：含量是總共有幾毫克，加水不會變；變小的是濃度。"]]}
+ ],
+ key:"840 g × 400 ppm ＝ <strong>336 毫克 (B)</strong>。(A) 咖啡是混合物；(C) 應是 840 克；(D) 加水只降濃度，含量不變。",
+ tr:{q:"一瓶 2 公升的礦泉水（密度 1.0 g/cm³）標示含鈣 30 ppm。喝掉半瓶以後，<strong>剩下的水</strong>裡鈣的濃度和含量各是？",
+  c:["30 ppm、60 毫克","15 ppm、30 毫克","30 ppm、30 毫克","15 ppm、60 毫克"],a:2,
+  e:"整瓶 2 kg × 30 ＝ 60 毫克鈣。喝掉一半：濃度是比值，不變（30 ppm）；含量是總量，剩一半（30 毫克）。和原題是同一對詞，只是這次是「倒掉」不是「加水」。"},
+ take:"「含量」和「濃度」只差一個字：一個是總共有多少，一個是比例。讀題時先把它圈起來。"},
+
+{id:"113-23",part:"c2",img:"review/ch2/113-23.png",w:"100%",src:"113 學年度 第一次段考 · 第 23 題",self:0,unit:"濃度",
+ title:"杯底沒溶掉的 50 公克",hab:["split"],ans:"B",
+ s:[
+  {q:"沉在杯底、怎麼搖都溶不掉的 50 g 食鹽，算不算「溶液」的一部分？",c:[
+    ["不算——它是杯底的固體，不在溶液裡",1,"對。溶液只包含「真正溶進去」的部分。"],
+    ["算，它也在杯子裡",0,"在杯子裡 ≠ 在溶液裡。它是沉在杯底的固體，倒出來的食鹽水裡沒有它。"]]},
+  {q:"真正溶進水裡的食鹽（溶質）是幾公克？",c:[
+    ["250 g",1,"對：300 − 50 ＝ 250。這是分子。"],
+    ["300 g",0,"300 g 裡有 50 g 沒溶，要扣掉。"]]},
+  {q:"那分母（溶液）是多少？（600 毫升的水當作 600 g）",c:[
+    ["600 ＋ 250 ＝ 850 g",1,"對。分母永遠等於「水＋分子」。"],
+    ["600 ＋ 300 ＝ 900 g",0,"分子扣掉了 50，分母卻沒扣——只扣一半，這正是選項 (C)，也是最多人踩的坑。"],
+    ["600 g",0,"重量百分濃度的分母是「溶液」，要包含溶質自己。"]]}
+ ],
+ key:"(300 − 50) ÷ (600 ＋ 250) × 100% → <strong>(B)</strong>。",
+ tr:{q:"100 g 水中加入 45 g 糖，攪拌後杯底還有 5 g 糖溶不掉。糖水的重量百分濃度怎麼算？",
+  c:["45 ÷ 145 × 100%","40 ÷ 145 × 100%","40 ÷ 140 × 100%","40 ÷ 100 × 100%"],a:2,
+  e:"溶質 ＝ 45 − 5 ＝ 40 g；溶液 ＝ 水 100 ＋ 溶質 40 ＝ 140 g。40 ÷ 145 是「分子扣了、分母沒扣」，和原題 (C) 同一個陷阱。"},
+ take:"分母永遠等於「水＋分子」。分子扣掉了什麼，分母就要一起扣。"},
+
+{id:"113-19",part:"c2",img:"review/ch2/113-19.png",w:"100%",src:"113 學年度 第一次段考 · 第 19 題",self:0,unit:"溶液的飽和",
+ title:"50 g 和 100 g 的飽和食鹽水",hab:["info"],ans:"A",
+ s:[
+  {q:"原本 50 g 和 100 g 的飽和食鹽水，還能再多溶一點鹽嗎？",c:[
+    ["不能——飽和了，裡面的水已經「吃飽」了",1,"對。飽和的意思就是這些水已經溶到上限。"],
+    ["可以，100 g 那杯比較多，可以多溶一點",0,"不管多少，「飽和」就代表那些水已經溶到上限，一點都溶不下了。"]]},
+  {q:"各加入 20 g 水以後，是誰「還沒吃飽」、需要補鹽？",c:[
+    ["只有新加進去的 20 g 水",1,"對。舊的水早就吃飽了，要補鹽的只有新來的水。"],
+    ["整杯溶液裡所有的水",0,"原本的水已經溶滿了鹽，它們不需要再補。真正缺鹽的只有新加的那 20 g。"]]},
+  {q:"兩杯都只加了 20 g 水，要補的鹽 X 和 Y？",c:[
+    ["一樣多",1,"對：X ＝ Y。原本 50 g 和 100 g 這兩個數字，是故意放來干擾你的。"],
+    ["乙杯是甲杯的兩倍",0,"兩倍是從 50 和 100 來的，但那兩杯原本就飽和，不需要補。要補的只看新加的水，兩杯都是 20 g。"]]}
+ ],
+ key:"只有新加的 20 g 水需要補鹽，兩杯一樣 → <strong>(A) X ＝ Y</strong>。",
+ tr:{q:"25 ℃ 時，甲杯 30 g、乙杯 300 g 的飽和糖水，各蒸發掉 10 g 的水（溫度不變）。析出的糖？",
+  c:["一樣多","乙杯是甲杯的 10 倍","甲杯比較多","兩杯都不會析出"],a:0,
+  e:"倒過來的同一招：被拿走的都是 10 g 水，原本溶在這 10 g 水裡的糖就溶不住了 → 析出一樣多。30 g 和 300 g 是干擾。"},
+ take:"題目給的數字可能是干擾。先找出「真正有變化的那一部分」，只算它。"},
+
+{id:"113-37",part:"c2",img:"review/ch2/113-37.png",w:"100%",src:"113 學年度 第一次段考 · 第 37 題",self:0,unit:"濃度",
+ title:"死海：資料夠算什麼？",hab:["info","right"],ans:"D",
+ s:[
+  {q:"題目給的數字，描述的是「整座湖」，還是「每 1 公升湖水」？",c:[
+    ["每 1 公升湖水",1,"對：每公升含鹽 340 g、每公升重 1.24 kg。全是「每一份」的資料。"],
+    ["整座湖",0,"再讀一次：「每公升湖水含有 340 公克的鹽」「每公升湖水重達 1.24 公斤」。都是每一公升。"]]},
+  {q:"要算整座湖的總質量或總鹽量，還缺什麼？",c:[
+    ["整座湖一共有幾公升",1,"對，題目沒給。所以 (A) 湖水總質量、(C) 鹽分總質量都算不出來。"],
+    ["什麼都不缺",0,"每公升 1.24 kg × 幾公升？——「幾公升」題目沒給。"]]},
+  {q:"只用「每 1 公升：鹽 340 g、湖水 1240 g」，能算出什麼？",c:[
+    ["鹽分的重量百分濃度",1,"對：340 ÷ 1240 × 100% ≈ 27.4%。濃度是比值，只要「每一份」的資料就夠了。"],
+    ["每年蒸發掉多少水",0,"題目只說蒸發量大於補充量，沒有任何蒸發的數字。"]]}
+ ],
+ key:"比值只需要「每一份」的資料 → 能算的是 <strong>(D) 重量百分濃度</strong>。總量一定要知道總共有幾份。",
+ tr:{q:"某牌果汁標示：「每 100 毫升含糖 12 公克，每 100 毫升重 105 公克。」只根據這些資料，可以算出什麼？",
+  c:["整箱果汁一共含多少糖","果汁中糖的重量百分濃度","工廠每天做幾瓶果汁","一瓶果汁有多少毫升"],a:1,
+  e:"和死海同一個結構：給的都是「每 100 毫升」的資料，能算比值（12 ÷ 105 ≈ 11.4%），算不了總量。"},
+ take:"選答案前先問：資料夠不夠？比值只要「每一份」的資料；總量一定要知道「總共有幾份」。"},
+
+{id:"114-26",part:"c2",img:"review/ch2/114-26.png",w:"48.9%",src:"114 學年度 第一次段考 · 第 26 題",self:1,unit:"濃度",
+ title:"哪一碗湯不會吃太鹹？",hab:["right"],ans:"D",
+ s:[
+  {q:"醫生限制的是什麼？",c:[
+    ["食鹽的總量——少於 6 公克",1,"對。限制的是「公克」，是總量，不是濃度。"],
+    ["湯的濃度不能太高",0,"題目寫的是「食鹽的總攝取量應少於 6 公克」。是總量。"]]},
+  {q:"那直接挑濃度最低的 (A) 0.8% 可以嗎？",c:[
+    ["不行——湯的量也要算進去",1,"對。濃度低，但如果喝很多，鹽一樣會超標。"],
+    ["可以，濃度最低就最安全",0,"(A) 是 900 g 的湯！900 × 0.8% ＝ 7.2 g，超過 6 g 了。"]]},
+  {q:"每碗湯的鹽 ＝ 湯的質量 × 濃度。哪一碗少於 6 g？",c:[
+    ["(D) 500 × 1.1% ＝ 5.5 g",1,"對。其他：(A) 7.2 g、(B) 12 g、(C) 9 g，都超過了。"],
+    ["(A) 900 × 0.8% ＝ 7.2 g",0,"7.2 g 比 6 g 多，超過醫生的建議。"],
+    ["(C) 600 × 1.5% ＝ 9 g",0,"9 g 超過 6 g 很多。"]]}
+ ],
+ key:"要比的是鹽的總量，不是濃度 → <strong>(D) 5.5 g</strong>。濃度最低的 (A) 反而鹽最多。",
+ tr:{q:"兩杯奶茶：甲 300 g、含糖 10%；乙 500 g、含糖 7%。哪一杯的糖比較多？",
+  c:["甲，因為它比較甜","乙","一樣多","資料不夠，算不出來"],a:1,
+  e:"甲：300 × 10% ＝ 30 g；乙：500 × 7% ＝ 35 g → 乙比較多。甲比較甜（濃度高），但乙的糖比較多（總量大）——兩件事不一樣。"},
+ take:"先問：要比的是「濃度」還是「總量」？總量 ＝ 溶液質量 × 濃度。"},
+
+{id:"114-32",part:"c2",img:"review/ch2/114-32.png",w:"48%",src:"114 學年度 第一次段考 · 第 32 題",self:1,unit:"溶液的飽和",
+ title:"熱的飽和食鹽水放涼了",hab:["split"],ans:"C",
+ s:[
+  {q:"溫度從 80 ℃ 降到室溫，食鹽的溶解度會？",c:[
+    ["變小",1,"對。題目說溶解度「隨溫度上升而提高」，反過來，溫度下降就變小。"],
+    ["變大",0,"題目寫「溶解度隨溫度上升而提高」——現在是降溫，方向相反。"],
+    ["不變",0,"題目一開始就告訴你：溶解度會隨溫度改變。"]]},
+  {q:"溶解度變小了，原本溶在水裡的鹽會怎樣？",c:[
+    ["有一部分溶不住，析出變成結晶",1,"對。水能溶的上限變低了，多出來的就跑出來。"],
+    ["全部繼續溶在水裡",0,"原本是「飽和」——已經溶到上限。上限降低後，超過的部分一定溶不住。"]]},
+  {q:"析出的結晶，還算溶質嗎？濃度會怎樣？",c:[
+    ["不算 → 溶質變少、水不變 → 濃度變小",1,"對。結晶已經沉在杯底，不在溶液裡了。"],
+    ["算，鹽還在杯子裡，所以濃度不變",0,"這就是選 (A) 的想法。但析出的結晶已經不在溶液裡——和上一題「杯底沒溶掉的鹽不算溶質」是同一件事。"]]}
+ ],
+ key:"降溫 → 溶解度變小 → 析出結晶 → 溶質變少 → 濃度變小 → <strong>(C)</strong>。",
+ tr:{q:"60 ℃ 的飽和硝酸鉀溶液（溶解度隨溫度升高而變大），加熱到 80 ℃，不考慮蒸發，也沒有再加任何東西。溶液的濃度會？",
+  c:["變大","不變","變小"],a:1,
+  e:"一環一環推：升溫 → 溶解度變大 → 能溶更多，但「沒有再加溶質」→ 溶質、水都沒變 → 濃度不變（變成未飽和）。溶解度變大 ≠ 濃度變大。"},
+ take:"把因果一環一環寫出來：溫度 → 溶解度 → 有沒有析出 → 溶質 → 濃度。少一環就容易猜錯。"},
+
+{id:"112-32",part:"c2",img:"review/ch2/112-32.png",w:"100%",src:"112 學年度 第一次段考 · 第 32 題",self:0,unit:"濃度",
+ title:"甲、乙、丙三杯食鹽水",hab:["split","check"],ans:"C",
+ s:[
+  {q:"溶解度 36 g／100 g 水。25 g 的水最多能溶多少食鹽？",c:[
+    ["9 g",1,"對：36 × 25 ÷ 100 ＝ 9 g。"],
+    ["36 g",0,"36 g 是 100 g 水的上限。25 g 水只有四分之一。"],
+    ["25 g",0,"溶解度是每 100 g 水 36 g，所以 25 g 水 → 36 的四分之一。"]]},
+  {q:"甲放了 10 g、乙放了 12 g，各溶了多少？",c:[
+    ["都只溶了 9 g，兩杯都飽和",1,"對。乙多放的 3 g 只是多沉在杯底。"],
+    ["甲溶 10 g、乙溶 12 g",0,"25 g 水最多只能溶 9 g，多的會沉在杯底。"]]},
+  {q:"丙是 50 g 水（最多溶 18 g），放了 16 g，會？",c:[
+    ["全部溶掉，還沒飽和",1,"對：16 ＜ 18。所以 (B)「丙為飽和溶液」是錯的。"],
+    ["飽和，因為放最多鹽",0,"放最多不代表飽和。50 g 水的上限是 18 g，16 g 還溶得下。"]]},
+  {q:"比較濃度：甲、乙都是 9 ÷ 34，丙是 16 ÷ 66。結論是？",c:[
+    ["甲 ＝ 乙 ＞ 丙",1,"對：甲、乙 ≈ 26.5%（飽和的天花板），丙 ≈ 24.2% → (C) 甲、乙濃度相等。"],
+    ["乙 ＞ 甲 ＞ 丙",0,"這是 (D)。乙雖然放比較多，但溶進去的和甲一樣都是 9 g。"],
+    ["丙最大，因為鹽最多",0,"丙的鹽多，水也多。16 ÷ 66 ≈ 24.2%，反而比甲、乙小。"]]}
+ ],
+ key:"甲、乙都飽和（各溶 9 g），濃度相等 → <strong>(C)</strong>。",
+ tr:{q:"25 ℃ 時食鹽的溶解度 36 g／100 g 水。丁：20 g 水加 10 g 鹽；戊：50 g 水加 15 g 鹽。哪一杯的濃度比較大？",
+  c:["丁","戊","一樣大"],a:0,
+  e:"丁：20 g 水最多溶 7.2 g → 飽和，濃度 7.2 ÷ 27.2 ≈ 26.5%。戊：50 g 水最多溶 18 g，15 g 全溶 → 15 ÷ 65 ≈ 23.1%。丁是飽和的，濃度就是天花板。"},
+ take:"先檢查溶不溶得完，再算濃度。放愈多不一定愈濃——飽和就是天花板。"},
+
+{id:"112-08",part:"c2",img:"review/ch2/112-08.png",w:"100%",src:"112 學年度 第一次段考 · 第 8 題",self:0,unit:"物質的變化",
+ title:"點燃一根蠟燭",hab:["rule"],ans:"C",
+ s:[
+  {q:"判斷「化學變化」，只要問哪一句？",c:[
+    ["有沒有產生新的物質？",1,"對。就這一把尺。"],
+    ["有沒有發光、發熱？",0,"燈泡通電會發光發熱，但燈絲還是燈絲，是物理變化。發光發熱只是現象，不是標準。"],
+    ["形狀有沒有改變？",0,"粉筆折斷形狀變了，還是粉筆——物理變化。"]]},
+  {q:"(丙) 蠟熔化成蠟油、(丁) 蠟油蒸發成蠟蒸氣。還是蠟嗎？",c:[
+    ["還是蠟，只是三態改變 → 物理變化",1,"對。固態、液態、氣態的蠟，都還是蠟。"],
+    ["不是蠟了 → 化學變化",0,"蠟油冷了又會變回固體的蠟。三態變化只改變狀態，沒有新物質。"]]},
+  {q:"(甲) 火柴燃燒、(乙) 燭芯燃燒、(戊) 蠟蒸氣和氧氣反應。這三個呢？",c:[
+    ["都是燃燒，產生二氧化碳、水等新物質 → 化學變化",1,"對，所以答案是甲、乙、戊。"],
+    ["只有 (戊) 是，(甲)(乙) 只是在發光",0,"火柴棒、燭芯燒完都變成灰和氣體了——產生了新物質。"]]}
+ ],
+ key:"燃燒（甲、乙、戊）產生新物質 → 化學變化 → <strong>(C)</strong>。熔化、蒸發只是三態改變。",
+ tr:{q:"下列哪一個是化學變化？",
+  c:["冰塊熔化成水","方糖溶在水裡","鐵釘生鏽","粉筆折成兩段"],a:2,
+  e:"用同一把尺：鐵鏽是新物質 → 化學變化。冰化成水、糖溶進水（把水蒸乾糖就回來）、粉筆折斷，都沒有新物質。"},
+ take:"分類只用一把尺：有沒有新物質。別被「發光」「冒煙」「變形狀」這種表面現象帶走。"}
+];
+
+/* ---------- 狀態 ---------- */
+var KEY="jhs8-sci-minerva-1st-v1";
+var S={};
+try{ var raw=localStorage.getItem(KEY); if(raw) S=JSON.parse(raw)||{}; }catch(e){}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} }
+function st(id){ return S[id]||(S[id]={tries:{},step:0}); }
+var view={part:"all",habit:"",open:{}};
+var CONF=["猜的","有點把握","很有把握"];
+var L="ABCD";
+
+function $(id){ return document.getElementById(id); }
+function el(tag,cls,html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+
+/* ---------- 一題 ---------- */
+function renderCard(q){
+  var s=st(q.id), card=el("div","card"+(s.done?" done":"")); card.id="q-"+q.id;
+  var head=el("div","chead");
+  head.innerHTML='<span class="tag no">'+q.id+'</span><span class="tag">'+q.src+'</span>'+
+    (q.self?'<span class="tag self">自行解出</span>':'')+
+    q.hab.map(function(h){return '<span class="htag">'+H[h].i+' '+H[h].n+'</span>'}).join("")+
+    (s.done?'<span class="tag ok">✓ 完成</span>':'');
+  card.appendChild(head);
+  var open=!!view.open[q.id];
+  var t=el("div","ctitle",(q.part==="c1"?"緒論＋第 1 章":"第 2 章")+" · "+q.unit+"：「"+q.title+"」<span class='arrow'>"+(open?"▲ 收起":"▼ 展開")+"</span>");
+  card.appendChild(t);
+  function toggle(){ view.open[q.id]=!view.open[q.id]; redraw(q); }
+  head.addEventListener("click",toggle); t.addEventListener("click",toggle);
+  if(!open) return card;
+
+  var body=el("div","cbody");
+  var img=el("img","qimg"); img.src=q.img; img.alt=q.src; img.style.setProperty("--w",q.w);
+  body.appendChild(img);
+
+  /* 1 預測 */
+  var s1=el("div","stage s1"); s1.appendChild(el("div","lab","① 先表態：憑直覺，你選哪一個？"));
+  if(s.pred){
+    s1.appendChild(el("div","locked","你的直覺：<strong>("+s.pred+")</strong>　·　"+CONF[s.conf]+(s.fin?"":"<span class='dim'>　（先不告訴你對不對）</span>")));
+  } else {
+    var tmp=s._tmp||(s._tmp={});
+    var r1=el("div","row"); r1.appendChild(el("span","lb","答案"));
+    var o=el("div","opts");
+    L.split("").forEach(function(c){
+      var b=el("button",tmp.p===c?"pick":"",c);
+      b.addEventListener("click",function(){ tmp.p=c; redraw(q); }); o.appendChild(b);
+    });
+    r1.appendChild(o); s1.appendChild(r1);
+    var r2=el("div","row"); r2.appendChild(el("span","lb","把握"));
+    var cf=el("div","conf");
+    CONF.forEach(function(n,i){
+      var b=el("button",tmp.c===i?"pick":"",n);
+      b.addEventListener("click",function(){ tmp.c=i; redraw(q); }); cf.appendChild(b);
+    });
+    r2.appendChild(cf); s1.appendChild(r2);
+    var go=el("button","btn pri","鎖定，開始一步一步想 →");
+    go.disabled=!(tmp.p && tmp.c!=null);
+    go.addEventListener("click",function(){ s.pred=tmp.p; s.conf=tmp.c; delete s._tmp; save(); paintDash(); redraw(q); });
+    var r3=el("div","row"); r3.appendChild(go); s1.appendChild(r3);
+    s1.appendChild(el("p","dim","<span style='font-size:13.5px'>不確定也沒關係，選「猜的」。重點是先讓自己表態。</span>"));
+    body.appendChild(s1); card.appendChild(body); return card;
+  }
+  body.appendChild(s1);
+
+  /* 2 引導 */
+  var s2=el("div","stage s2"); s2.appendChild(el("div","lab","② 拆開來想：一次只回答一個小問題"));
+  for(var i=0;i<q.s.length && i<=s.step;i++){
+    s2.appendChild(renderStep(q,s,i));
+  }
+  body.appendChild(s2);
+  if(s.step<q.s.length){ card.appendChild(body); return card; }
+
+  /* 3 再答一次 */
+  var s3=el("div","stage s3"); s3.appendChild(el("div","lab","③ 回到原題：現在你選哪一個？"));
+  var r=el("div","row"); r.appendChild(el("span","lb","答案"));
+  var o3=el("div","opts");
+  L.split("").forEach(function(c){
+    var cls="";
+    if(s.fin){ cls = c===s.fin ? (c===q.ans?"ok":"bad") : (c===q.ans?"miss":""); }
+    var b=el("button",cls,c); b.disabled=!!s.fin;
+    b.addEventListener("click",function(){ s.fin=c; save(); paintDash(); redraw(q); });
+    o3.appendChild(b);
+  });
+  r.appendChild(o3); s3.appendChild(r);
+  if(!s.fin){ body.appendChild(s3); card.appendChild(body); return card; }
+  var sol=el("div","sol","<div class='key'>答案：("+q.ans+")</div><p>"+q.key+"</p>"+(q.self?"<div class='srcnote'>※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div>":""));
+  s3.appendChild(sol);
+  s3.appendChild(el("div","mirror",mirror(q,s)));
+  body.appendChild(s3);
+
+  /* 4 遷移 */
+  var s4=el("div","stage s4"); s4.appendChild(el("div","lab","④ 換個情境：同一招，還用得出來嗎？"));
+  s4.appendChild(el("p","",q.tr.q));
+  var ch=el("div","ch");
+  q.tr.c.forEach(function(txt,k){
+    var cls="";
+    if(s.tr!=null){ cls = k===q.tr.a ? "ok" : (k===s.tr?"bad":""); }
+    var b=el("button",cls,"("+L[k]+") "+txt); b.disabled=s.tr!=null;
+    b.addEventListener("click",function(){ s.tr=k; save(); paintDash(); redraw(q); });
+    ch.appendChild(b);
+  });
+  s4.appendChild(ch);
+  if(s.tr!=null){
+    var ok=s.tr===q.tr.a;
+    s4.appendChild(el("div","fb "+(ok?"ok":"bad"),(ok?"✓ 搬得過去！":"✗ 這次沒搬過去，正解是 ("+L[q.tr.a]+")。")+" "+q.tr.e));
+  }
+  body.appendChild(s4);
+  if(s.tr==null){ card.appendChild(body); return card; }
+
+  /* 5 帶走 */
+  var s5=el("div","stage s5"); s5.appendChild(el("div","lab","⑤ 帶走一句話"));
+  s5.appendChild(el("div","take",q.hab.map(function(h){return H[h].i}).join("")+" "+q.take));
+  s5.appendChild(el("p","dim","<span style='font-size:14px;display:block;margin-top:10px'>用你自己的話寫一句：下次遇到這種題目，第一步要先做什麼？（只存在這台裝置上）</span>"));
+  var ta=el("textarea"); ta.value=s.note||""; ta.placeholder="例如：先看秤到的質量有沒有包含容器";
+  ta.addEventListener("input",function(){ s.note=ta.value; save(); });
+  s5.appendChild(ta);
+  var r5=el("div","row");
+  if(!s.done){
+    var dn=el("button","btn pri","完成這一題 ✓");
+    dn.addEventListener("click",function(){ s.done=true; save(); paintDash(); paintHabits(); view.open[q.id]=false; redraw(q); nextOpen(q); });
+    r5.appendChild(dn);
+  }
+  var rd=el("button","btn sm","重做這一題");
+  rd.addEventListener("click",function(){ delete S[q.id]; save(); paintDash(); paintHabits(); redraw(q); });
+  r5.appendChild(rd);
+  s5.appendChild(r5);
+  body.appendChild(s5);
+  card.appendChild(body);
+  return card;
+}
+
+function renderStep(q,s,i){
+  var stp=q.s[i], box=el("div","step");
+  box.appendChild(el("div","sq","<span class='n'>Q"+(i+1)+"</span>"+stp.q));
+  var tried=s.tries[i]||[], solved=i<s.step, ch=el("div","ch");
+  order(q.id+"#"+i,stp.c.length).forEach(function(k){
+    var c=stp.c[k];
+    var cls = tried.indexOf(k)>=0 ? (c[1]?"ok":"bad") : "";
+    var b=el("button",cls,c[0]); b.disabled=solved || tried.indexOf(k)>=0;
+    b.addEventListener("click",function(){
+      (s.tries[i]=s.tries[i]||[]).push(k);
+      if(c[1]) s.step=i+1;
+      save(); redraw(q);
+    });
+    ch.appendChild(b);
+  });
+  box.appendChild(ch);
+  if(tried.length){
+    var last=stp.c[tried[tried.length-1]];
+    box.appendChild(el("div","fb "+(last[1]?"ok":"bad"),(last[1]?"✓ ":"✗ 再想想：")+last[2]));
+  }
+  return box;
+}
+
+/* 選項順序固定打亂（同一題每次看都一樣），避免「正解永遠在第一個」 */
+function order(seed,n){
+  var h=0; for(var j=0;j<seed.length;j++) h=(h*31+seed.charCodeAt(j))>>>0;
+  var a=[]; for(j=0;j<n;j++) a.push(j);
+  for(j=n-1;j>0;j--){ h=(h*1103515245+12345)>>>0; var r=(h>>>16)%(j+1), t=a[j]; a[j]=a[r]; a[r]=t; }
+  return a;
+}
+
+function mirror(q,s){
+  var p=s.pred, f=s.fin, a=q.ans, c=CONF[s.conf], hot=s.conf===2;
+  if(p===a && f===a) return "🪞 你的直覺（"+c+"）就是對的，拆完也確認了。"+(s.conf===0?"下次可以對自己多一點信心——但記得是因為想清楚了，不是因為運氣。":"");
+  if(p!==a && f===a) return "🪞 一開始直覺選 ("+p+")"+(hot?"，而且<strong>很有把握</strong>":"")+"；拆開之後改成 ("+a+")。<strong>這就是拆解的價值。</strong>回頭看一眼：當初是哪一步想漏了？"+(hot?"很有把握卻錯的題目最危險——考試時你不會回頭檢查它。":"");
+  if(p===a && f!==a) return "🪞 你的直覺本來是對的 ("+p+")，最後卻改成 ("+f+")。回頭看是哪一步把你帶偏了。";
+  return "🪞 直覺選 ("+p+")、最後選 ("+f+")，正解是 ("+a+")。把上面引導的小問題再讀一次，找出卡住的那一步。";
+}
+
+function redraw(q){
+  var old=$("q-"+q.id); if(old) old.replaceWith(renderCard(q));
+}
+function nextOpen(q){
+  var vis=visible(), k=vis.indexOf(q);
+  for(var j=k+1;j<vis.length;j++){ if(!st(vis[j].id).done){ view.open[vis[j].id]=true; redraw(vis[j]); var n=$("q-"+vis[j].id); if(n) n.scrollIntoView({behavior:"smooth",block:"start"}); return; } }
+}
+
+/* ---------- 篩選、列表 ---------- */
+function visible(){
+  return Q.filter(function(q){
+    return (view.part==="all"||q.part===view.part) && (!view.habit||q.hab.indexOf(view.habit)>=0);
+  });
+}
+function paintList(){
+  var list=$("list"); list.innerHTML="";
+  var vis=visible();
+  if(view.habit){
+    var h=H[view.habit];
+    list.appendChild(el("p","dim","正在看練習 <span class='htag'>"+h.i+" "+h.n+"</span> 的題目（"+vis.length+" 題）。再點一次上面的習慣卡可以取消。"));
+  }
+  vis.forEach(function(q){ list.appendChild(renderCard(q)); });
+}
+function paintParts(){
+  var box=$("parts"); box.innerHTML="";
+  [["all","全部 16 題"],["c1","緒論＋第 1 章"],["c2","第 2 章"]].forEach(function(p){
+    var b=el("button","chip"+(view.part===p[0]?" on":""),p[1]);
+    b.addEventListener("click",function(){ view.part=p[0]; paintParts(); paintList(); });
+    box.appendChild(b);
+  });
+}
+function paintHabits(){
+  var box=$("habits"); box.innerHTML="";
+  Object.keys(H).forEach(function(k){
+    var h=H[k], qs=Q.filter(function(q){return q.hab.indexOf(k)>=0}), d=qs.filter(function(q){return st(q.id).done}).length;
+    var b=el("button","habit"+(view.habit===k?" on":""),"<span class='cnt'>"+d+"/"+qs.length+"</span><b>"+h.i+" "+h.n+"</b><span class='q'>"+h.q+"</span>");
+    b.addEventListener("click",function(){ view.habit = view.habit===k ? "" : k; paintHabits(); paintList(); });
+    box.appendChild(b);
+  });
+}
+
+/* ---------- 儀表 ---------- */
+function paintDash(){
+  var done=0, fin=0, finOk=0, tr=0, trOk=0, m=[[0,0],[0,0],[0,0]];
+  Q.forEach(function(q){
+    var s=S[q.id]; if(!s) return;
+    if(s.done) done++;
+    if(s.fin){ fin++; if(s.fin===q.ans) finOk++; }
+    if(s.tr!=null){ tr++; if(s.tr===q.tr.a) trOk++; }
+    if(s.pred && s.fin) m[s.conf][s.pred===q.ans?0:1]++;
+  });
+  $("prog").innerHTML="完成 <strong>"+done+"</strong> / "+Q.length+" 題";
+  $("progbar").style.width=Math.round(done/Q.length*100)+"%";
+  $("prog2").textContent = fin ? "拆解後原題答對 "+finOk+"/"+fin+"　·　換情境題答對 "+trOk+"/"+tr : "還沒開始。從第一題展開就可以。";
+  var t="<tr><th>你的把握</th><th>直覺對</th><th>直覺錯</th></tr>";
+  CONF.forEach(function(n,i){
+    t+="<tr><th>"+n+"</th><td>"+m[i][0]+"</td><td"+(i===2&&m[i][1]?" class='hot'":"")+">"+m[i][1]+"</td></tr>";
+  });
+  $("cal").innerHTML=t;
+  var hot=m[2][1], cold=m[0][0], tot=m[0][0]+m[0][1]+m[1][0]+m[1][1]+m[2][0]+m[2][1];
+  $("calmsg").innerHTML = !tot ? "每做完一題，這裡會記下你的直覺準不準。" :
+    hot ? "⚠️ 有 <strong>"+hot+"</strong> 題你「很有把握」卻選錯——這些是段考最容易失分的地方，值得再做一次。" :
+    cold>=2 ? "你有好幾題「猜的」其實是對的：你懂的比你以為的多。" :
+    "目前沒有「很有把握卻錯」的題目，保持下去。";
+}
+
+$("resetAll").addEventListener("click",function(){
+  if(!confirm("確定要清除這一頁所有的作答紀錄和筆記嗎？")) return;
+  S={}; save(); view.open={}; paintDash(); paintHabits(); paintList();
+});
+
+/* ---------- 點圖放大 ---------- */
+document.addEventListener("click",function(e){
+  var im=e.target.closest && e.target.closest(".qimg"); if(!im) return;
+  var z=el("div","zoom");
+  var big=document.createElement("img"); big.src=im.src;
+  big.style.width=Math.round(im.naturalWidth*0.75)+"px";
+  z.innerHTML='<span class="hint">可左右滑動、雙指縮放</span><button class="x">✕ 關閉</button>';
+  z.appendChild(big);
+  z.addEventListener("click",function(ev){ if(ev.target===z||ev.target.classList.contains("x")) z.remove(); });
+  document.body.appendChild(z);
+});
+
+/* 第一次打開：展開第一題沒做完的 */
+for(var i=0;i<Q.length;i++){ if(!st(Q[i].id).done){ view.open[Q[i].id]=true; break; } }
+paintHabits(); paintDash(); paintParts(); paintList();
+})();
+</script>
+</body>
+</html>
