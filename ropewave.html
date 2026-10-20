@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>繩子上的點往哪動｜繩波與運動方向</title>
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px; line-height:1.85; letter-spacing:.01em;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+/* -- 頁首 -- */
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+/* -- 進度 -- */
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin:0 -20px 0;padding:10px 20px}
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* -- 區段 -- */
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+strong{font-weight:700}
+code{font-family:"SF Mono",Consolas,monospace;background:#fff;border:1px solid var(--line);
+  padding:1px 6px;border-radius:4px;font-size:.92em}
+
+/* -- 卡片 -- */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+
+/* -- 題目 -- */
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+
+/* -- 鎖 -- */
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* -- 實驗室 -- */
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+.readout{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:9px}
+.row .lb{font-size:13.5px;color:var(--ink2)}
+.row .vl{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px}
+.row.hi{background:var(--accent-soft);border-color:#f0c9ae}
+.row.hi .vl{color:var(--accent);font-size:19px}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px}
+.slider-lab{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);margin-bottom:2px}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+
+/* 三選一配對 */
+.role{background:#fff;border:1px solid var(--line);border-radius:11px;padding:15px 16px;margin-bottom:10px}
+.rq{font-size:15.5px;margin-bottom:10px;line-height:1.7}
+.rbtns{display:flex;gap:7px;flex-wrap:wrap}
+.rb{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;cursor:pointer;
+  font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s}
+.rb:hover:not(:disabled){border-color:var(--ink2)}
+.rb.ok{background:var(--green);border-color:var(--green);color:#fff}
+.rb.no{border-color:var(--accent);color:var(--accent);animation:shake .35s}
+.rb:disabled{cursor:default}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.rfb{display:none;margin-top:9px;font-size:14.5px;line-height:1.7;color:var(--ink2)}
+.rfb.show{display:block}
+
+/* -- 表 -- */
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:520px}
+
+/* -- 長條 -- */
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:26px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden;position:relative}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+/* -- 結尾 -- */
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+.reset:hover{border-color:var(--ink2)}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+svg{max-width:100%;height:auto;display:block}
+.svg-cap{text-align:center;font-size:13px;color:var(--ink2);margin-top:6px}
+
+/* -- 開始之前 -- */
+details.pre{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;overflow:hidden}
+details.pre summary{padding:13px 16px;cursor:pointer;font-size:16px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:10px}
+details.pre summary::-webkit-details-marker{display:none}
+details.pre summary::before{content:"?";flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700}
+details.pre[open] summary::before{content:"✓";background:var(--green);color:#fff}
+details.pre[open] summary{border-bottom:1px solid var(--line)}
+details.pre .bd{padding:14px 16px;font-size:15.5px;line-height:1.8;color:var(--ink2)}
+details.pre .bd strong{color:var(--ink)}
+details.pre .bd p{margin:0 0 10px}
+details.pre .bd p:last-child{margin:0}
+
+.dl{background:#fff;border:2px solid var(--accent);border-radius:14px;padding:20px 22px;margin:24px 0;text-align:left}
+.dl h4{margin:0 0 8px;font-size:17px;color:var(--ink)}
+.dl p{font-size:15px;line-height:1.8;margin:0 0 14px;color:var(--ink2)}
+.dl a.get{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;
+  text-decoration:none;padding:11px 20px;border-radius:99px;font-size:15px;font-weight:700;transition:opacity .15s}
+.dl a.get:hover{opacity:.86}
+.dl .meta{font-size:13px;color:var(--ink2);margin:10px 0 0}
+</style>
+</head>
+<body>
+<style>
+.cv{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:10px;display:block;touch-action:manipulation}
+.ctrl{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.kbox{background:var(--accent-soft);border:1px solid #f0c9ae;border-radius:12px;padding:14px 16px;margin:18px 0;font-size:16px;line-height:1.85}
+.seq{font-size:22px;font-weight:700;letter-spacing:.12em;color:var(--accent)}
+</style>
+<div class="wrap">
+<header>
+  <div class="kicker">八年級上　·　第三章　講義 p.5–6　繩波與其運動方向</div>
+  <h1>繩子上的點，<br>下一刻往上還是往下？</h1>
+  <p class="sub">講義 p.5–6 這兩頁在問同一件事：<strong>波往前走的時候，繩子上某一點正在往哪裡動？</strong><br>只要學會一招「跟著前面的人學動作」就會了。</p>
+  <div class="meta"><span class="tag">手甩繩子動畫</span><span class="tag">猜猜紅點往哪動</span><span class="tag">講義第 16–20 題</span><span class="tag">約 15 分鐘</span></div>
+</header>
+
+<!-- ① 手甩繩子 -->
+<section>
+  <div class="step"><span>①</span>　先看手怎麼甩</div>
+  <h2>手做一個動作，繩子就多 ¼ 個波</h2>
+  <p>講義左邊那張圖：手握繩子，<strong>先往上①、拉回來②、再往下③、再拉回來④</strong>，四個動作做完，剛好做出 1 個完整的波。</p>
+  <div class="lab">
+    <div class="lab-t">手甩繩子</div>
+    <canvas id="cv1" class="cv" width="680" height="260"></canvas>
+    <div class="ctrl">
+      <button class="rb" onclick="h1Go(1)">① 往上</button>
+      <button class="rb" onclick="h1Go(2)">② 拉回</button>
+      <button class="rb" onclick="h1Go(3)">③ 往下</button>
+      <button class="rb" onclick="h1Go(4)">④ 拉回</button>
+      <button class="rb" onclick="h1Play()">▶ 從頭播一次</button>
+    </div>
+    <div class="verdict" id="h1msg">按「▶ 從頭播一次」，看手和繩子。</div>
+  </div>
+  <div class="kbox">
+    <b>🔑 第一個重點：跑在最前面的那一段，是手最早做的動作。</b><br>
+    就像排隊進教室：最先出發的人走在最前面。手最先往上甩，所以<strong>離手最遠、跑在最前面的是波峰</strong>。<br>
+    👉 講義第 20 題就是反過來問：看波形，從最前面往回讀，就知道手的動作順序。
+  </div>
+</section>
+
+<!-- ② 猜點往哪動 -->
+<section>
+  <div class="step"><span>②</span>　換你猜</div>
+  <h2>紅點下一刻往上，還是往下？</h2>
+  <p>繩子上每一點都在做同一件事：<strong>學「前面那個人」剛剛做過的動作</strong>。<br>
+  「前面」＝<strong>波從哪邊來</strong>，就是哪一邊（比較靠近手的那一邊）。</p>
+  <div class="kbox">
+    <b>🔑 第二個重點（口訣）：波從哪邊來，就看哪邊的鄰居。</b><br>
+    鄰居比你<strong>高</strong> → 你下一刻往<strong>上</strong>。<br>
+    鄰居比你<strong>低</strong> → 你下一刻往<strong>下</strong>。<br>
+    <span class="dim">就像球場人浪：旁邊的人已經站起來了，下一個就輪到你站起來。</span>
+  </div>
+  <div class="lab">
+    <div class="lab-t">猜猜看　·　<span id="g2score">0 / 0</span></div>
+    <canvas id="cv2" class="cv" width="680" height="260"></canvas>
+    <div class="ctrl" id="g2btn">
+      <button class="rb" onclick="g2Ans('up')">紅點往上 ⬆</button>
+      <button class="rb" onclick="g2Ans('down')">紅點往下 ⬇</button>
+    </div>
+    <div class="ctrl">
+      <button class="rb" onclick="g2New()">🎲 換一題</button>
+      <button class="rb" id="g2hint" onclick="g2Hint()">💡 提示：看哪個鄰居？</button>
+    </div>
+    <div class="verdict" id="g2msg">先看波往哪邊走（藍色箭頭），再猜紅點下一刻往哪動。</div>
+  </div>
+</section>
+
+<!-- ③ 往返一次 -->
+<section>
+  <div class="step"><span>③</span>　一個點的一生</div>
+  <h2>繩子上的點，只會上上下下，不會跟著跑</h2>
+  <p>講義第 16 題問：「介質往返振動一次的路徑」。看下面的紅點 b——<strong>它從頭到尾都在同一條直線上</strong>，跑出去的只有波的形狀。</p>
+  <div class="lab">
+    <div class="lab-t">紅點 b 往返一次</div>
+    <canvas id="cv3" class="cv" width="680" height="280"></canvas>
+    <div class="ctrl"><button class="rb" onclick="r3Play()">▶ 播放往返一次</button></div>
+    <div class="verdict" id="r3msg">按播放，看紅點走過哪幾個位置。</div>
+  </div>
+  <div class="kbox">
+    <b>🔑 第三個重點：介質只在原地振動。</b><br>
+    b 的一次往返＝ b → f（往下）→ b → e（往上）→ b。<br>
+    沿著波形走 a → e → c → g → d 是「波形」在跑，不是介質在跑。
+  </div>
+</section>
+
+<!-- ④ 講義題 -->
+<section>
+  <div class="step"><span>④</span>　回到講義</div>
+  <h2>用三個重點，做講義第 16–20 題</h2>
+  <div class="scroll"><table>
+    <tr><th>題號</th><th>用哪一個重點</th><th>小提醒</th></tr>
+    <tr><td>例 1、18、19</td><td>② 波從哪邊來，看哪邊的鄰居</td><td>先找波往哪走，鄰居就在<strong>波來的那一邊</strong></td></tr>
+    <tr><td>16</td><td>③ 介質只在原地振動</td><td>選「同一個位置上下來回」的那一個</td></tr>
+    <tr><td>17</td><td>彩帶是橫波：振動方向和前進方向<strong>垂直</strong></td><td>振動南北向 → 前進不可能是南或北</td></tr>
+    <tr><td>20</td><td>① 最前面＝手最早做的動作</td><td>從波<strong>最前面</strong>往回讀：波谷＝手先↓再↑，波峰＝手先↑再↓</td></tr>
+  </table></div>
+  <p style="text-align:center;margin-top:20px"><a href="notebook-ch3.html#q-p05-ex1" style="color:var(--accent);font-weight:700">✏ 到講義練習頁做 p.5 例 1、第 15–20 題 →</a></p>
+  <p style="text-align:center"><a href="wavetype.html" style="color:var(--accent)">縱波還是橫波？</a>　｜　<a href="wave.html" style="color:var(--accent)">大聲和高音</a>　｜　<a href="index.html" style="color:var(--accent)">回首頁</a></p>
+</section>
+
+<footer>八上自然　第三章　講義 p.5–6　·　繩波與其運動方向</footer>
+</div>
+
+<script>
+const FONT="bold 22px 'Noto Sans TC','Microsoft JhengHei',sans-serif", INK="#2b2622", ACC="#c2410c", BLUE="#1d5b79", GREY="#5c5349", LINE="#ded5c6";
+function arrow(c,x1,y1,x2,y2,col,w){ c.strokeStyle=col; c.fillStyle=col; c.lineWidth=w||4; c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
+  const a=Math.atan2(y2-y1,x2-x1); c.beginPath(); c.moveTo(x2,y2); c.lineTo(x2-16*Math.cos(a-0.5),y2-16*Math.sin(a-0.5)); c.lineTo(x2-16*Math.cos(a+0.5),y2-16*Math.sin(a+0.5)); c.closePath(); c.fill(); }
+
+// ── ① 手甩繩子：手在左，波往右；手 y＝A·sin(2π·τ)，τ＝0～1 為一個週期 ──
+const c1=document.getElementById("cv1").getContext("2d");
+const H1={x0:70, y0:150, A:60, L:560, tau:0, target:0, anim:null};   // L＝一個波長的像素
+const STEP=["","①往上","②拉回","③往下","④拉回"], SYM=["","↑","↓","↓","↑"];
+function handY(tau){ return tau<=0?0:H1.A*Math.sin(2*Math.PI*Math.min(tau,1)); }
+function draw1(){
+  const c=c1, tau=H1.tau; c.clearRect(0,0,680,260);
+  c.strokeStyle=LINE; c.setLineDash([6,6]); c.lineWidth=1.5; c.beginPath(); c.moveTo(H1.x0,H1.y0); c.lineTo(660,H1.y0); c.stroke(); c.setLineDash([]);
+  // 繩：距手 d 的點，重現手在 τ − d/L 時的高度
+  c.strokeStyle=INK; c.lineWidth=5; c.beginPath();
+  for(let x=H1.x0;x<=660;x+=3){ const y=H1.y0-handY(tau-(x-H1.x0)/H1.L); x===H1.x0?c.moveTo(x,y):c.lineTo(x,y); } c.stroke();
+  // 手
+  const hy=H1.y0-handY(tau); c.font="44px sans-serif"; c.fillText("✊",H1.x0-58,hy+16);
+  // 波前進方向
+  c.font=FONT; c.fillStyle=BLUE; c.fillText("波前進方向",470,30); arrow(c,470,44,650,44,BLUE);
+  // 手已做的動作
+  const done=Math.min(4,Math.floor(tau*4+1e-6)); c.fillStyle=ACC;
+  c.fillText("手做了："+(done?SYM.slice(1,done+1).join(" "):"（還沒動）"),20,30);
+  c.fillStyle=GREY; c.fillText("產生 "+["0","¼","½","¾","1"][done]+" 個波",20,250);
+}
+function h1Anim(to){ cancelAnimationFrame(H1.anim); const st=performance.now(), from=H1.tau, dur=Math.max(300,Math.abs(to-from)*3200);
+  const f=n=>{ const p=Math.min(1,(n-st)/dur); H1.tau=from+(to-from)*p; draw1(); if(p<1) H1.anim=requestAnimationFrame(f); else h1Msg(); }; H1.anim=requestAnimationFrame(f); }
+function h1Msg(){ const d=Math.round(H1.tau*4), m=document.getElementById("h1msg");
+  const T={0:"按「▶ 從頭播一次」，看手和繩子。",
+   1:"<b>①往上</b>：繩子多了 <strong>¼ 個波</strong>（半個波峰）。",
+   2:"<b>②拉回</b>：手回到中間，繩子上出現<strong>一整個波峰</strong>＝½ 個波。",
+   3:"<b>③往下</b>：波峰被推到前面，手邊開始出現波谷＝¾ 個波。",
+   4:"<b>④拉回</b>：完成 <strong>1 個波</strong>（一個波峰＋一個波谷）。注意：<strong>最先甩出的波峰跑在最前面</strong>。"};
+  m.innerHTML=T[d]; }
+function h1Go(n){ if(n===1) H1.tau=0; h1Anim(n/4); }
+function h1Play(){ H1.tau=0; h1Anim(1); }
+draw1();
+
+// ── ② 猜紅點往哪動：y＝A·sin(kx ∓ ωt)；dir＝+1 波往右、−1 波往左 ──
+const c2=document.getElementById("cv2").getContext("2d");
+const G={A:60, k:2*Math.PI/300, y0:150, dir:1, ph:0, px:0, ans:null, done:false, hint:false, n:0, ok:0, anim:null, t:0};
+function gy(x,t){ return G.A*Math.sin(G.k*x - G.dir*t + G.ph); }
+function draw2(showMove){
+  const c=c2; c.clearRect(0,0,680,260);
+  c.strokeStyle=LINE; c.setLineDash([6,6]); c.lineWidth=1.5; c.beginPath(); c.moveTo(20,G.y0); c.lineTo(660,G.y0); c.stroke(); c.setLineDash([]);
+  if(showMove){ c.strokeStyle="#c9bda9"; c.setLineDash([8,6]); c.lineWidth=3; c.beginPath();
+    for(let x=20;x<=660;x+=3){ const y=G.y0-gy(x,G.t+0.35); x===20?c.moveTo(x,y):c.lineTo(x,y); } c.stroke(); c.setLineDash([]); }
+  c.strokeStyle=INK; c.lineWidth=5; c.beginPath();
+  for(let x=20;x<=660;x+=3){ const y=G.y0-gy(x,G.t); x===20?c.moveTo(x,y):c.lineTo(x,y); } c.stroke();
+  c.font=FONT; c.fillStyle=BLUE;
+  if(G.dir>0){ c.fillText("波往右走",500,30); arrow(c,480,44,650,44,BLUE); } else { c.fillText("波往左走",60,30); arrow(c,210,44,40,44,BLUE); }
+  // 鄰居（波來的那一邊）
+  const nx=G.px - G.dir*36;
+  if(G.hint||G.done){ const ny=G.y0-gy(nx,G.t); c.beginPath(); c.arc(nx,ny,11,0,7); c.fillStyle=BLUE; c.fill(); c.fillStyle=BLUE; c.fillText("鄰居",nx-22,ny+(ny<G.y0?-18:36)); }
+  const py=G.y0-gy(G.px,G.t); c.beginPath(); c.arc(G.px,py,13,0,7); c.fillStyle=ACC; c.fill();
+  if(showMove){ const up=gy(G.px,G.t+0.35)>gy(G.px,G.t); arrow(c,G.px+26,py,G.px+26,py+(up?-50:50),ACC,5); }
+}
+function g2New(){
+  cancelAnimationFrame(G.anim); G.dir=Math.random()<0.5?1:-1; G.ph=Math.random()*6.28; G.t=0; G.done=false; G.hint=false;
+  // 選一個不在波峰、波谷正上方的點（那裡下一刻方向不明顯）
+  for(let i=0;i<50;i++){ G.px=140+Math.random()*400; const s=Math.abs(Math.cos(G.k*G.px+G.ph)); if(s>0.45) break; }
+  G.ans = gy(G.px,0.05)>gy(G.px,0) ? "up":"down";
+  document.querySelectorAll("#g2btn .rb").forEach(b=>{b.disabled=false;b.classList.remove("ok","no");});
+  document.getElementById("g2msg").innerHTML="先看波往哪邊走（藍色箭頭），再猜紅點下一刻往哪動。";
+  draw2(false);
+}
+function g2Hint(){ G.hint=true; draw2(false);
+  document.getElementById("g2msg").innerHTML=`波往${G.dir>0?"右":"左"}走 → 波從<strong>${G.dir>0?"左":"右"}邊</strong>來 → 看${G.dir>0?"左":"右"}邊的<b style="color:${BLUE}">藍色鄰居</b>：它比紅點高還是低？`; }
+function g2Ans(k){
+  if(G.done) return; G.done=true; G.n++; const ok=k===G.ans; if(ok) G.ok++;
+  document.getElementById("g2score").textContent=`${G.ok} / ${G.n}`;
+  const bs=document.querySelectorAll("#g2btn .rb"); bs.forEach(b=>b.disabled=true);
+  bs[k==="up"?0:1].classList.add(ok?"ok":"no"); if(!ok) bs[G.ans==="up"?0:1].classList.add("ok");
+  const nh=gy(G.px-G.dir*36,0)>gy(G.px,0);
+  document.getElementById("g2msg").innerHTML=(ok?"✅ <b>答對了！</b>":"❌ <b>再想一下：</b>")+
+    `波往${G.dir>0?"右":"左"}走，波從${G.dir>0?"左":"右"}邊來 → 看${G.dir>0?"左":"右"}邊鄰居。鄰居比紅點<strong>${nh?"高":"低"}</strong> → 紅點下一刻往<strong>${nh?"上":"下"}</strong>。<br><span class="dim">虛線＝稍後一瞬間的波形；紅色箭頭＝紅點真正的動向。動畫正在播放，看紅點是不是只在原地上下。</span>`;
+  draw2(true);
+  // 播放：波往前走，紅點原地上下
+  const st=performance.now(); const f=n=>{ G.t=Math.min(3,(n-st)/1000*1.2); draw2(G.t<0.02); if(G.t<3) G.anim=requestAnimationFrame(f); else { G.t=0; draw2(true);} }; setTimeout(()=>{G.anim=requestAnimationFrame(f);},900);
+}
+g2New();
+
+// ── ③ b 點往返一次（講義第 16 題的圖：a b c d 在平衡線上，e 波峰、f 為 b 正下方、g 波谷）──
+const c3=document.getElementById("cv3").getContext("2d");
+const R={y0:140, A:80, x0:60, L:520, t:0, anim:null, trail:[]};
+const BX=R.x0+R.L/4;            // b 點位置；t＝0 時 b 在平衡線上、下一刻往下（波往右，左邊鄰居比較低）
+function ry(x,t){ return R.A*Math.sin(2*Math.PI*((x-R.x0)/R.L) - 2*Math.PI*t - Math.PI/2); }
+function draw3(){
+  const c=c3, t=R.t; c.clearRect(0,0,680,280);
+  c.strokeStyle=LINE; c.setLineDash([6,6]); c.lineWidth=1.5; c.beginPath(); c.moveTo(20,R.y0); c.lineTo(660,R.y0); c.stroke();
+  c.beginPath(); c.moveTo(BX,R.y0-R.A-20); c.lineTo(BX,R.y0+R.A+20); c.stroke(); c.setLineDash([]);
+  c.strokeStyle=INK; c.lineWidth=5; c.beginPath();
+  for(let x=20;x<=660;x+=3){ const y=R.y0-ry(x,t); x===20?c.moveTo(x,y):c.lineTo(x,y); } c.stroke();
+  c.font=FONT; c.fillStyle=BLUE; c.fillText("波往右走",500,28); arrow(c,480,42,650,42,BLUE);
+  c.fillStyle=GREY; c.fillText("e",BX-30,R.y0-R.A+6); c.fillText("f",BX-28,R.y0+R.A+6);
+  const by=R.y0-ry(BX,t); c.beginPath(); c.arc(BX,by,13,0,7); c.fillStyle=ACC; c.fill(); c.fillStyle=ACC; c.fillText("b",BX+20,by+8);
+  c.fillStyle=ACC; c.fillText("b 走過："+R.trail.join(" → "),20,270);
+}
+function r3Play(){
+  cancelAnimationFrame(R.anim); R.trail=["b"]; R.t=0; const st=performance.now(), dur=5000, marks=[[0.25,"f"],[0.5,"b"],[0.75,"e"],[1,"b"]]; let mi=0;
+  const f=n=>{ R.t=Math.min(1,(n-st)/dur); while(mi<marks.length && R.t>=marks[mi][0]-1e-3){ R.trail.push(marks[mi][1]); mi++; }
+    draw3(); if(R.t<1) R.anim=requestAnimationFrame(f); else document.getElementById("r3msg").innerHTML="紅點 b 一次往返＝<strong>b → f → b → e → b</strong>，從頭到尾都在<strong>同一條直線</strong>上，沒有跟著波往右跑。→ 講義第 16 題選 (B)。"; };
+  R.anim=requestAnimationFrame(f);
+}
+R.t=0; R.trail=["b"]; draw3();
+</script>
+</body>
+</html>
