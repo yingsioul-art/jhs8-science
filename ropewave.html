@@ -256,6 +256,8 @@ details.pre .bd p:last-child{margin:0}
       <div class="rbtns" id="g2btn"></div>
       <div class="rfb show" id="g2msg"></div>
     </div>
+    <div class="slider-lab" style="margin-top:14px"><span>動畫播放秒數（拉越右越慢）</span><span id="g2secv">8 秒</span></div>
+    <input type="range" id="g2sec" min="3" max="20" step="1" value="8" oninput="g2SetSec(this.value)">
     <div class="ctrl"><button class="rb" onclick="g2New()">🎲 下一題</button></div>
   </div>
 </section>
@@ -390,12 +392,19 @@ function g2Pick(k,b){
   G.n++; if(!G.miss) G.ok++; document.getElementById("g2score").textContent=`${G.ok} / ${G.n}`;
   const up=G.ans==="up";
   document.getElementById("g2q").innerHTML=`<b>結論：紅點下一刻往${up?"上 ⬆":"下 ⬇"}</b>`;
-  document.getElementById("g2btn").innerHTML="";
   msg.innerHTML=`✅ 鄰居比紅點<strong>${up?"高":"低"}</strong>，紅點會學鄰居 → 下一刻往<strong>${up?"上":"下"}</strong>。<br>
     <span class="dim">灰色虛線＝再過一下下的波形，紅色箭頭＝紅點要去的方向。接著動畫會播放：注意紅點<strong>只在原地上下</strong>，沒有跟著波跑。</span>`;
+  document.getElementById("g2btn").innerHTML=`<button class="rb" onclick="g2Play()">▶ 再播一次（慢動作）</button>`;
   G.showMove=true; draw2();
-  setTimeout(()=>{ const st=performance.now(); const f=n=>{ G.t=Math.min(3,(n-st)/1000*1.2); draw2(); if(G.t<3) G.anim=requestAnimationFrame(f); else { G.t=0; draw2(); } }; G.anim=requestAnimationFrame(f); }, 1500);
+  setTimeout(g2Play, 1500);
 }
+// 播放秒數：滑桿可調 3–20 秒（預設 8 秒），記在這支手機（localStorage，讀不到就用預設）
+let G_SEC=8;
+try{ const v=+localStorage.getItem("ropewave-g2sec"); if(v>=3&&v<=20) G_SEC=v; }catch(e){}
+document.getElementById("g2sec").value=G_SEC; document.getElementById("g2secv").textContent=G_SEC+" 秒";
+function g2SetSec(v){ G_SEC=+v; document.getElementById("g2secv").textContent=G_SEC+" 秒"; try{ localStorage.setItem("ropewave-g2sec",G_SEC); }catch(e){} }
+function g2Play(){ cancelAnimationFrame(G.anim); G.t=0; const st=performance.now();
+  const f=n=>{ G.t=Math.min(3,(n-st)/1000*(3/G_SEC)); draw2(); if(G.t<3) G.anim=requestAnimationFrame(f); else { G.t=0; draw2(); } }; G.anim=requestAnimationFrame(f); }
 g2New();
 
 // ── ③ b 點往返一次（講義第 16 題的圖：a b c d 在平衡線上，e 波峰、f 為 b 正下方、g 波谷）──
