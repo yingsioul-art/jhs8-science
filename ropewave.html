@@ -214,28 +214,49 @@ details.pre .bd p:last-child{margin:0}
 
 <!-- ② 猜點往哪動 -->
 <section>
-  <div class="step"><span>②</span>　換你猜</div>
+  <div class="step"><span>②</span>　換你判斷</div>
   <h2>紅點下一刻往上，還是往下？</h2>
-  <p>繩子上每一點都在做同一件事：<strong>學「前面那個人」剛剛做過的動作</strong>。<br>
-  「前面」＝<strong>波從哪邊來</strong>，就是哪一邊（比較靠近手的那一邊）。</p>
+
+  <p><b>題目在問什麼？</b>繩子上的波正在往前跑。圖上有一個<b style="color:var(--accent)">紅點</b>（繩子上的一小段）。
+  <strong>再過一下下（不到一秒），紅點會往上動，還是往下動？</strong></p>
+
+  <p><b>為什麼看「鄰居」就知道？</b>繩子上每一點，都是<strong>學它旁邊那一點剛剛的動作</strong>——就像玩人浪，你看到旁邊的人已經站起來，下一個就輪到你站起來。<br>
+  但要看<strong>哪一邊</strong>的旁邊？要看<strong>波來的那一邊</strong>，因為動作是從那邊傳過來的。</p>
+
   <div class="kbox">
-    <b>🔑 第二個重點（口訣）：波從哪邊來，就看哪邊的鄰居。</b><br>
-    鄰居比你<strong>高</strong> → 你下一刻往<strong>上</strong>。<br>
-    鄰居比你<strong>低</strong> → 你下一刻往<strong>下</strong>。<br>
-    <span class="dim">就像球場人浪：旁邊的人已經站起來了，下一個就輪到你站起來。</span>
+    <b>🔑 三步驟，每題都照這樣做</b>
+    <p style="margin:8px 0 4px"><b>第 1 步｜看藍色箭頭：波往哪邊走？</b></p>
+    <p style="margin:12px 0 4px"><b>第 2 步｜波從哪邊來，就看那一邊的鄰居</b></p>
+    <ul style="margin:0 0 0 20px;padding:0">
+      <li>波往<strong>右</strong>走＝從<strong>左邊</strong>來 → 看紅點<strong>左邊</strong>的鄰居</li>
+      <li>波往<strong>左</strong>走＝從<strong>右邊</strong>來 → 看紅點<strong>右邊</strong>的鄰居</li>
+    </ul>
+    <p style="margin:12px 0 4px"><b>第 3 步｜比高低</b></p>
+    <ul style="margin:0 0 0 20px;padding:0">
+      <li>鄰居比紅點<strong>高</strong> → 紅點下一刻往<strong>上</strong> ⬆</li>
+      <li>鄰居比紅點<strong>低</strong> → 紅點下一刻往<strong>下</strong> ⬇</li>
+    </ul>
   </div>
+
+  <details class="pre">
+    <summary>📖 先看一題示範</summary>
+    <div class="bd">
+      <p>假設波<strong>往右走</strong>，紅點在一段「往右上爬的斜坡」中間。</p>
+      <p>第 1 步：波往右走。<br>第 2 步：波從左邊來 → 看紅點<strong>左邊</strong>的鄰居。<br>
+      第 3 步：斜坡往右上爬，所以左邊的鄰居在<strong>比較低</strong>的地方 → 紅點下一刻往<strong>下</strong>。</p>
+      <p class="dim">想像人浪：左邊的人已經坐下去了（比較低），下一個輪到你坐下去。</p>
+    </div>
+  </details>
+
   <div class="lab">
-    <div class="lab-t">猜猜看　·　<span id="g2score">0 / 0</span></div>
-    <canvas id="cv2" class="cv" width="680" height="260"></canvas>
-    <div class="ctrl" id="g2btn">
-      <button class="rb" onclick="g2Ans('up')">紅點往上 ⬆</button>
-      <button class="rb" onclick="g2Ans('down')">紅點往下 ⬇</button>
+    <div class="lab-t">一題一題做　·　三步都一次答對：<span id="g2score">0 / 0</span> 題</div>
+    <canvas id="cv2" class="cv" width="680" height="280"></canvas>
+    <div class="role" style="margin-top:12px">
+      <div class="rq" id="g2q"></div>
+      <div class="rbtns" id="g2btn"></div>
+      <div class="rfb show" id="g2msg"></div>
     </div>
-    <div class="ctrl">
-      <button class="rb" onclick="g2New()">🎲 換一題</button>
-      <button class="rb" id="g2hint" onclick="g2Hint()">💡 提示：看哪個鄰居？</button>
-    </div>
-    <div class="verdict" id="g2msg">先看波往哪邊走（藍色箭頭），再猜紅點下一刻往哪動。</div>
+    <div class="ctrl"><button class="rb" onclick="g2New()">🎲 下一題</button></div>
   </div>
 </section>
 
@@ -313,47 +334,67 @@ function h1Go(n){ if(n===1) H1.tau=0; h1Anim(n/4); }
 function h1Play(){ H1.tau=0; h1Anim(1); }
 draw1();
 
-// ── ② 猜紅點往哪動：y＝A·sin(kx ∓ ωt)；dir＝+1 波往右、−1 波往左 ──
+// ── ② 三步驟判斷紅點往哪動：y＝A·sin(kx ∓ ωt)；dir＝+1 波往右、−1 波往左 ──
 const c2=document.getElementById("cv2").getContext("2d");
-const G={A:60, k:2*Math.PI/300, y0:150, dir:1, ph:0, px:0, ans:null, done:false, hint:false, n:0, ok:0, anim:null, t:0};
+const G={A:60, k:2*Math.PI/300, y0:160, dir:1, ph:0, px:0, ans:null, step:1, miss:false, n:0, ok:0, anim:null, t:0, showN:false, showMove:false};
 function gy(x,t){ return G.A*Math.sin(G.k*x - G.dir*t + G.ph); }
-function draw2(showMove){
-  const c=c2; c.clearRect(0,0,680,260);
+const NB=40;                                   // 鄰居和紅點的距離（像素）
+function nbX(){ return G.px - G.dir*NB; }      // 波來的那一邊
+function draw2(){
+  const c=c2; c.clearRect(0,0,680,280);
+  c.font=FONT; c.fillStyle="#b3a894"; c.fillText("← 左邊",20,270); c.fillText("右邊 →",578,270);
   c.strokeStyle=LINE; c.setLineDash([6,6]); c.lineWidth=1.5; c.beginPath(); c.moveTo(20,G.y0); c.lineTo(660,G.y0); c.stroke(); c.setLineDash([]);
-  if(showMove){ c.strokeStyle="#c9bda9"; c.setLineDash([8,6]); c.lineWidth=3; c.beginPath();
-    for(let x=20;x<=660;x+=3){ const y=G.y0-gy(x,G.t+0.35); x===20?c.moveTo(x,y):c.lineTo(x,y); } c.stroke(); c.setLineDash([]); }
+  if(G.showMove && G.t<0.02){ c.strokeStyle="#c9bda9"; c.setLineDash([8,6]); c.lineWidth=3; c.beginPath();
+    for(let x=20;x<=660;x+=3){ const y=G.y0-gy(x,0.35); x===20?c.moveTo(x,y):c.lineTo(x,y); } c.stroke(); c.setLineDash([]); }
   c.strokeStyle=INK; c.lineWidth=5; c.beginPath();
   for(let x=20;x<=660;x+=3){ const y=G.y0-gy(x,G.t); x===20?c.moveTo(x,y):c.lineTo(x,y); } c.stroke();
-  c.font=FONT; c.fillStyle=BLUE;
+  c.fillStyle=BLUE;
   if(G.dir>0){ c.fillText("波往右走",500,30); arrow(c,480,44,650,44,BLUE); } else { c.fillText("波往左走",60,30); arrow(c,210,44,40,44,BLUE); }
-  // 鄰居（波來的那一邊）
-  const nx=G.px - G.dir*36;
-  if(G.hint||G.done){ const ny=G.y0-gy(nx,G.t); c.beginPath(); c.arc(nx,ny,11,0,7); c.fillStyle=BLUE; c.fill(); c.fillStyle=BLUE; c.fillText("鄰居",nx-22,ny+(ny<G.y0?-18:36)); }
+  if(G.showN){ const nx=nbX(), ny=G.y0-gy(nx,G.t); c.beginPath(); c.arc(nx,ny,11,0,7); c.fillStyle=BLUE; c.fill();
+    c.fillText("鄰居",nx-22,ny+(gy(nx,G.t)>0?-20:38)); }
   const py=G.y0-gy(G.px,G.t); c.beginPath(); c.arc(G.px,py,13,0,7); c.fillStyle=ACC; c.fill();
-  if(showMove){ const up=gy(G.px,G.t+0.35)>gy(G.px,G.t); arrow(c,G.px+26,py,G.px+26,py+(up?-50:50),ACC,5); }
+  c.fillText("紅點",G.px-22,py+(gy(G.px,G.t)>0?-22:40));
+  if(G.showMove && G.t<0.02){ const up=G.ans==="up"; arrow(c,G.px+30,py,G.px+30,py+(up?-50:50),ACC,5); }
+}
+const STEPQ={
+  1:["第 1 步：看藍色箭頭，波往哪邊走？", [["往右","R"],["往左","L"]]],
+  2:["第 2 步：波是從哪邊來的？所以要看紅點哪一邊的鄰居？", [["看左邊的鄰居","L"],["看右邊的鄰居","R"]]],
+  3:["第 3 步：藍色鄰居比紅點高，還是比紅點低？", [["鄰居比較高","H"],["鄰居比較低","D"]]],
+};
+function right(step){ if(step===1) return G.dir>0?"R":"L"; if(step===2) return G.dir>0?"L":"R"; return gy(nbX(),0)>gy(G.px,0)?"H":"D"; }
+function g2Render(){
+  const [q,opts]=STEPQ[G.step];
+  document.getElementById("g2q").innerHTML=`<b>${q}</b>`;
+  document.getElementById("g2btn").innerHTML=opts.map(o=>`<button class="rb" onclick="g2Pick('${o[1]}',this)">${o[0]}</button>`).join("");
 }
 function g2New(){
-  cancelAnimationFrame(G.anim); G.dir=Math.random()<0.5?1:-1; G.ph=Math.random()*6.28; G.t=0; G.done=false; G.hint=false;
-  // 選一個不在波峰、波谷正上方的點（那裡下一刻方向不明顯）
-  for(let i=0;i<50;i++){ G.px=140+Math.random()*400; const s=Math.abs(Math.cos(G.k*G.px+G.ph)); if(s>0.45) break; }
-  G.ans = gy(G.px,0.05)>gy(G.px,0) ? "up":"down";
-  document.querySelectorAll("#g2btn .rb").forEach(b=>{b.disabled=false;b.classList.remove("ok","no");});
-  document.getElementById("g2msg").innerHTML="先看波往哪邊走（藍色箭頭），再猜紅點下一刻往哪動。";
-  draw2(false);
+  cancelAnimationFrame(G.anim); G.dir=Math.random()<0.5?1:-1; G.ph=Math.random()*6.28; G.t=0; G.step=1; G.miss=false; G.showN=false; G.showMove=false;
+  // 不選在波峰、波谷附近（那裡高低差太小，看不清楚）
+  for(let i=0;i<60;i++){ G.px=150+Math.random()*380; if(Math.abs(Math.cos(G.k*G.px+G.ph))>0.5) break; }
+  G.ans = gy(nbX(),0)>gy(G.px,0) ? "up":"down";
+  document.getElementById("g2msg").innerHTML="";
+  g2Render(); draw2();
 }
-function g2Hint(){ G.hint=true; draw2(false);
-  document.getElementById("g2msg").innerHTML=`波往${G.dir>0?"右":"左"}走 → 波從<strong>${G.dir>0?"左":"右"}邊</strong>來 → 看${G.dir>0?"左":"右"}邊的<b style="color:${BLUE}">藍色鄰居</b>：它比紅點高還是低？`; }
-function g2Ans(k){
-  if(G.done) return; G.done=true; G.n++; const ok=k===G.ans; if(ok) G.ok++;
-  document.getElementById("g2score").textContent=`${G.ok} / ${G.n}`;
-  const bs=document.querySelectorAll("#g2btn .rb"); bs.forEach(b=>b.disabled=true);
-  bs[k==="up"?0:1].classList.add(ok?"ok":"no"); if(!ok) bs[G.ans==="up"?0:1].classList.add("ok");
-  const nh=gy(G.px-G.dir*36,0)>gy(G.px,0);
-  document.getElementById("g2msg").innerHTML=(ok?"✅ <b>答對了！</b>":"❌ <b>再想一下：</b>")+
-    `波往${G.dir>0?"右":"左"}走，波從${G.dir>0?"左":"右"}邊來 → 看${G.dir>0?"左":"右"}邊鄰居。鄰居比紅點<strong>${nh?"高":"低"}</strong> → 紅點下一刻往<strong>${nh?"上":"下"}</strong>。<br><span class="dim">虛線＝稍後一瞬間的波形；紅色箭頭＝紅點真正的動向。動畫正在播放，看紅點是不是只在原地上下。</span>`;
-  draw2(true);
-  // 播放：波往前走，紅點原地上下
-  const st=performance.now(); const f=n=>{ G.t=Math.min(3,(n-st)/1000*1.2); draw2(G.t<0.02); if(G.t<3) G.anim=requestAnimationFrame(f); else { G.t=0; draw2(true);} }; setTimeout(()=>{G.anim=requestAnimationFrame(f);},900);
+function g2Pick(k,b){
+  const ok=k===right(G.step), msg=document.getElementById("g2msg");
+  if(!ok){ G.miss=true; b.classList.add("no"); b.disabled=true;
+    const why={1:`看圖上方的<b style="color:${BLUE}">藍色箭頭</b>，箭頭指的方向就是波走的方向。`,
+               2:`波往${G.dir>0?"右":"左"}走，表示波是<strong>從${G.dir>0?"左":"右"}邊過來</strong>的。動作從哪邊傳來，就看哪邊的鄰居。`,
+               3:`比一比藍點和紅點<strong>誰的位置比較高</strong>（離畫面上方比較近）。`}[G.step];
+    msg.innerHTML="❌ 再想一下："+why; return; }
+  b.classList.add("ok");
+  const say={1:`✅ 對，波往<strong>${G.dir>0?"右":"左"}</strong>走。`,
+             2:`✅ 對，波從${G.dir>0?"左":"右"}邊來，看<strong>${G.dir>0?"左":"右"}邊</strong>的鄰居。圖上的<b style="color:${BLUE}">藍點</b>就是它。`}[G.step];
+  if(G.step<3){ G.step++; if(G.step===3) G.showN=true; draw2(); g2Render(); msg.innerHTML=say; return; }
+  // 三步完成 → 下結論、播放
+  G.n++; if(!G.miss) G.ok++; document.getElementById("g2score").textContent=`${G.ok} / ${G.n}`;
+  const up=G.ans==="up";
+  document.getElementById("g2q").innerHTML=`<b>結論：紅點下一刻往${up?"上 ⬆":"下 ⬇"}</b>`;
+  document.getElementById("g2btn").innerHTML="";
+  msg.innerHTML=`✅ 鄰居比紅點<strong>${up?"高":"低"}</strong>，紅點會學鄰居 → 下一刻往<strong>${up?"上":"下"}</strong>。<br>
+    <span class="dim">灰色虛線＝再過一下下的波形，紅色箭頭＝紅點要去的方向。接著動畫會播放：注意紅點<strong>只在原地上下</strong>，沒有跟著波跑。</span>`;
+  G.showMove=true; draw2();
+  setTimeout(()=>{ const st=performance.now(); const f=n=>{ G.t=Math.min(3,(n-st)/1000*1.2); draw2(); if(G.t<3) G.anim=requestAnimationFrame(f); else { G.t=0; draw2(); } }; G.anim=requestAnimationFrame(f); }, 1500);
 }
 g2New();
 
