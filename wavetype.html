@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>縱波還是橫波？｜波動與聲音</title>
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px; line-height:1.85; letter-spacing:.01em;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+/* -- 頁首 -- */
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+/* -- 進度 -- */
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin:0 -20px 0;padding:10px 20px}
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* -- 區段 -- */
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+strong{font-weight:700}
+code{font-family:"SF Mono",Consolas,monospace;background:#fff;border:1px solid var(--line);
+  padding:1px 6px;border-radius:4px;font-size:.92em}
+
+/* -- 卡片 -- */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+
+/* -- 題目 -- */
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+
+/* -- 鎖 -- */
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* -- 實驗室 -- */
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+.readout{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:9px}
+.row .lb{font-size:13.5px;color:var(--ink2)}
+.row .vl{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px}
+.row.hi{background:var(--accent-soft);border-color:#f0c9ae}
+.row.hi .vl{color:var(--accent);font-size:19px}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px}
+.slider-lab{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);margin-bottom:2px}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+
+/* 三選一配對 */
+.role{background:#fff;border:1px solid var(--line);border-radius:11px;padding:15px 16px;margin-bottom:10px}
+.rq{font-size:15.5px;margin-bottom:10px;line-height:1.7}
+.rbtns{display:flex;gap:7px;flex-wrap:wrap}
+.rb{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;cursor:pointer;
+  font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s}
+.rb:hover:not(:disabled){border-color:var(--ink2)}
+.rb.ok{background:var(--green);border-color:var(--green);color:#fff}
+.rb.no{border-color:var(--accent);color:var(--accent);animation:shake .35s}
+.rb:disabled{cursor:default}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.rfb{display:none;margin-top:9px;font-size:14.5px;line-height:1.7;color:var(--ink2)}
+.rfb.show{display:block}
+
+/* -- 表 -- */
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:520px}
+
+/* -- 長條 -- */
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:26px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden;position:relative}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+/* -- 結尾 -- */
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+.reset:hover{border-color:var(--ink2)}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+svg{max-width:100%;height:auto;display:block}
+.svg-cap{text-align:center;font-size:13px;color:var(--ink2);margin-top:6px}
+
+/* -- 開始之前 -- */
+details.pre{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;overflow:hidden}
+details.pre summary{padding:13px 16px;cursor:pointer;font-size:16px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:10px}
+details.pre summary::-webkit-details-marker{display:none}
+details.pre summary::before{content:"?";flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700}
+details.pre[open] summary::before{content:"✓";background:var(--green);color:#fff}
+details.pre[open] summary{border-bottom:1px solid var(--line)}
+details.pre .bd{padding:14px 16px;font-size:15.5px;line-height:1.8;color:var(--ink2)}
+details.pre .bd strong{color:var(--ink)}
+details.pre .bd p{margin:0 0 10px}
+details.pre .bd p:last-child{margin:0}
+
+.dl{background:#fff;border:2px solid var(--accent);border-radius:14px;padding:20px 22px;margin:24px 0;text-align:left}
+.dl h4{margin:0 0 8px;font-size:17px;color:var(--ink)}
+.dl p{font-size:15px;line-height:1.8;margin:0 0 14px;color:var(--ink2)}
+.dl a.get{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;
+  text-decoration:none;padding:11px 20px;border-radius:99px;font-size:15px;font-weight:700;transition:opacity .15s}
+.dl a.get:hover{opacity:.86}
+.dl .meta{font-size:13px;color:var(--ink2);margin:10px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">八年級上　·　第三章　波動與聲音</div>
+  <h1>縱波還是橫波？<br>看兩個方向就知道</h1>
+  <p class="sub">波傳出去的時候，東西不會跟著跑走，只在原地抖。<br>判斷縱波、橫波，就是比較：<strong>波往哪裡走</strong>、<strong>小粒子往哪裡抖</strong>。</p>
+  <div class="meta"><span class="tag">動畫</span><span class="tag">16 張辨識卡</span><span class="tag">生活中的運用</span><span class="tag">歷史故事</span><span class="tag">約 15 分鐘</span></div>
+</header>
+
+<!-- ① 動畫 -->
+<section>
+  <div class="step"><span>①</span>　先看</div>
+  <h2>紅色那顆點，有沒有跟著波跑走？</h2>
+  <div class="lab">
+    <div class="lab-t">波的動畫</div>
+    <div class="rbtns" style="margin-bottom:12px">
+      <button class="rb ok" id="btnT" onclick="setMode('T')">橫波</button>
+      <button class="rb" id="btnL" onclick="setMode('L')">縱波</button>
+      <button class="rb" id="btnP" onclick="togglePause()">⏸ 暫停</button>
+    </div>
+    <canvas id="cv" width="680" height="220" style="width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:10px"></canvas>
+    <div class="verdict" id="mdesc"></div>
+  </div>
+  <p>看紅點：<strong>它只在原地抖，沒有跟著往右跑。</strong>往右傳過去的是「抖動」，也就是能量。</p>
+</section>
+
+<!-- ② 定義 -->
+<section>
+  <div class="step"><span>②</span>　定義</div>
+  <h2>垂直是橫波，平行是縱波</h2>
+  <div class="scroll"><table>
+    <tr><th></th><th>橫波</th><th>縱波</th></tr>
+    <tr><td><b>小粒子怎麼抖</b></td><td>和波前進方向<strong>垂直</strong>（交叉成十字 ✚）</td><td>和波前進方向<strong>平行</strong>（同一條線上前後來回 ⟷）</td></tr>
+    <tr><td><b>看起來像</b></td><td>一高一低：<strong>波峰、波谷</strong></td><td>一擠一鬆：<strong>密部、疏部</strong></td></tr>
+    <tr><td><b>生活比喻</b></td><td>🏟 球場「人浪」：每個人站起來坐下，浪往旁邊傳</td><td>🚶 排隊推擠：每個人前後晃，推擠往前傳</td></tr>
+    <tr><td><b>例子</b></td><td>甩繩子、光、手機訊號、地震 S 波</td><td>推拉彈簧、<strong>聲音</strong>、超音波、地震 P 波</td></tr>
+  </table></div>
+
+  <details class="pre" open>
+    <summary>🧠 四招記憶技巧</summary>
+    <div class="bd">
+      <p><b>① 看字面</b>：「縱」＝<strong>縱隊</strong>（排成直直一列）→ 前後同一條線抖。「橫」＝<strong>打橫</strong> → 抖的方向橫切過前進方向。</p>
+      <p><b>② 比手勢</b>：一隻手指波前進的方向，另一隻手比小粒子抖的方向。兩手成<strong>十字 ✚ ＝橫波</strong>，成<strong>一直線 ⟷ ＝縱波</strong>。</p>
+      <p><b>③ 看形狀</b>：有高低（波峰波谷）→ 橫波；有疏密（擠在一起、散開）→ 縱波。</p>
+      <p><b>④ 一定要背</b>：<strong>聲音是縱波</strong>；<strong>光是橫波</strong>。</p>
+    </div>
+  </details>
+  <details class="pre">
+    <summary>⚠️ 判斷的陷阱：看「怎麼抖」，不是看「是什麼東西」</summary>
+    <div class="bd">
+      <p>同一條彈簧可以做出兩種波：<strong>上下甩</strong>是橫波，<strong>前後推拉</strong>是縱波。</p>
+      <p>所以不要背「彈簧＝縱波」，要問自己：<strong>它抖的方向，和波走的方向，是十字還是一直線？</strong></p>
+    </div>
+  </details>
+</section>
+
+<!-- ③ 辨識練習 -->
+<section>
+  <div class="step"><span>③</span>　換你判斷</div>
+  <h2>16 張卡，每張都問同一句話</h2>
+  <p class="dim">「它抖的方向，和波走的方向，是十字還是一直線？」</p>
+  <div class="row hi" style="margin:16px 0"><span class="lb">答對</span><span class="vl" id="score">0 / 16</span></div>
+  <div id="cards"></div>
+  <div style="text-align:center"><button class="reset" onclick="buildCards()">↻ 全部重來</button></div>
+</section>
+
+<!-- ④ 實際運用 -->
+<section>
+  <div class="step"><span>④</span>　分清楚有什麼用？</div>
+  <h2>波的分類，在生活中怎麼用</h2>
+
+  <details class="pre" open>
+    <summary>📱 地震預警：搶在搖得最厲害之前通知你</summary>
+    <div class="bd">
+      <p>地震同時發出兩種波：<strong>P 波（縱波）跑得快</strong>，搖晃比較小；<strong>S 波（橫波）跑得慢</strong>，左右搖晃比較大、破壞力也比較大。</p>
+      <p>地震儀一偵測到先到的 P 波，電腦馬上算出地震多大、在哪裡，趁 S 波還在路上就發出<strong>手機地震警報</strong>。離震央越遠，能搶到的時間越多（幾秒到幾十秒），足夠躲到桌子下、讓高鐵減速。</p>
+    </div>
+  </details>
+  <details class="pre">
+    <summary>🌍 不用挖洞，就知道地球中心是液體</summary>
+    <div class="bd">
+      <p><strong>橫波不能在液體裡傳</strong>（液體被左右錯開時不會彈回來），縱波可以。</p>
+      <p>科學家發現，大地震的 S 波（橫波）到不了地球另一邊的某些地方，好像被地球中心「擋住」——所以推論<strong>地球的外核是液體</strong>。</p>
+    </div>
+  </details>
+  <details class="pre">
+    <summary>🩺 超音波檢查：看見肚子裡的寶寶</summary>
+    <div class="bd">
+      <p>超音波是頻率很高、人耳聽不到的<strong>聲波（縱波）</strong>。探頭把超音波送進身體，碰到不同的器官會反射回來，電腦依照回來的時間和強弱畫出影像。</p>
+      <p>產檢看寶寶、心臟超音波、腹部超音波都是這樣做的，而且不像 X 光有輻射。</p>
+    </div>
+  </details>
+  <details class="pre">
+    <summary>🦇 回聲定位與聲納：蝙蝠、海豚、漁船都在用</summary>
+    <div class="bd">
+      <p>蝙蝠發出超聲波（縱波），聽回聲判斷前面有沒有東西、多遠；海豚在水裡也一樣。</p>
+      <p>船上的<strong>聲納</strong>向海底發出聲波，用回聲找魚群、量海有多深。聲音在水裡傳得比在空氣裡快，也傳得遠。</p>
+    </div>
+  </details>
+  <details class="pre">
+    <summary>🕶 偏光太陽眼鏡、3D 電影眼鏡：只有橫波做得到</summary>
+    <div class="bd">
+      <p>橫波抖的方向可以有「上下」「左右」各種方向。<strong>偏光鏡片像一排細細的柵欄</strong>，只讓某一個方向抖的光通過，所以能擋掉路面、水面的刺眼反光。</p>
+      <p>3D 電影眼鏡也是：左右兩片只讓不同方向的光通過，左右眼看到不同畫面，就有立體感。</p>
+      <p>縱波只在同一條線上前後抖，沒有「方向」可以擋，所以<strong>世界上沒有「偏光耳機」</strong>。這正是科學家當年判斷「光是橫波」的證據之一。</p>
+    </div>
+  </details>
+  <details class="pre">
+    <summary>📡 手機、Wi-Fi、衛星：橫波在真空也能跑</summary>
+    <div class="bd">
+      <p>手機訊號、Wi-Fi、廣播、微波爐裡的微波，和光一樣都是<strong>電磁波（橫波）</strong>，不需要空氣也能傳，所以能和太空中的衛星通訊。</p>
+      <p>聲音（縱波）需要空氣、水、固體當介質，<strong>太空中聽不到聲音</strong>。</p>
+    </div>
+  </details>
+  <details class="pre">
+    <summary>🎸 吉他：一個聲音，兩種波</summary>
+    <div class="bd">
+      <p>撥弦時，<strong>弦上下抖動 → 弦上是橫波</strong>。</p>
+      <p>弦推動旁邊的空氣一擠一鬆 → 傳到你耳朵的是<strong>聲音（縱波）</strong>。</p>
+      <p>所以題目問「弦上的波」和問「你聽到的聲音」，答案不一樣。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ⑤ 歷史 -->
+<section>
+  <div class="step"><span>⑤</span>　這件事是誰查出來的</div>
+  <h2>光到底是哪一種波？吵了一百多年</h2>
+  <details class="pre" open>
+    <summary>1678 年　惠更斯：光是波，跟聲音一樣</summary>
+    <div class="bd"><p>荷蘭科學家<strong>惠更斯</strong>提出光是一種波，但他想像的光波像聲音那樣前後推擠，也就是<strong>縱波</strong>。</p></div>
+  </details>
+  <details class="pre">
+    <summary>1817–1821 年　楊格、菲涅耳：不對，光是橫波</summary>
+    <div class="bd"><p>英國的<strong>楊格</strong>發現光會「偏振」（就像偏光太陽眼鏡能擋掉某個方向的光），縱波解釋不了，於是提出光是<strong>橫波</strong>。法國的<strong>菲涅耳</strong>把它寫成完整理論，證明了這件事。</p></div>
+  </details>
+  <details class="pre">
+    <summary>1829 年左右　卜瓦松：固體裡兩種都有，縱波比較快</summary>
+    <div class="bd"><p>法國數學家<strong>卜瓦松</strong>用計算推出：在固體裡，縱波和橫波都能傳，而且<strong>縱波跑得比較快</strong>。</p></div>
+  </details>
+  <details class="pre">
+    <summary>1900 年前後　奧德姆：地震紀錄上真的有兩種波</summary>
+    <div class="bd"><p>英國地質學家<strong>奧德姆</strong>在地震儀紀錄上分出兩種波：先到的 <strong>P 波</strong>（Primary，第一個到，縱波）、後到的 <strong>S 波</strong>（Secondary，第二個到，橫波），證實了卜瓦松算的「縱波比較快」。</p></div>
+  </details>
+  <details class="pre">
+    <summary>1926 年　傑佛瑞斯：地球外核是液體</summary>
+    <div class="bd"><p>英國科學家<strong>傑佛瑞斯</strong>發現 S 波（橫波）穿不過地球中心，推論<strong>外核是液體</strong>。分清楚縱波、橫波，讓人類不用挖洞就「看見」了地球內部。</p></div>
+  </details>
+</section>
+
+<!-- ⑥ 陷阱 -->
+<section>
+  <div class="step"><span>⑥</span>　考試前看一眼</div>
+  <h2>常考陷阱</h2>
+  <div class="card">
+    <p>✅ 波傳的是<strong>能量</strong>，不是把介質搬走（水面上的樹葉只在原地上下動）。</p>
+    <p>✅ 聲音是縱波 → <strong>真空中聽不到</strong>。光是橫波（電磁波）→ <strong>真空也能傳</strong>。</p>
+    <p>✅ 判斷看<strong>抖動方向和前進方向</strong>，不是看是什麼東西（同一條彈簧兩種都做得到）。</p>
+    <p>✅ 橫波看<strong>波峰、波谷</strong>；縱波看<strong>密部、疏部</strong>。</p>
+    <p style="margin:0">✅ 水波：課本畫成有波峰、波谷，題目通常當作<strong>橫波</strong>；嚴格說水面的小粒子是繞小圈圈，同時有上下和前後的動作。照課本作答。</p>
+  </div>
+  <p style="text-align:center;margin-top:28px"><a href="wave.html" style="color:var(--accent);font-weight:700">← 回到「大聲和高音不是同一件事」</a>　｜　<a href="index.html" style="color:var(--accent);font-weight:700">回首頁</a></p>
+</section>
+
+<footer>八上自然　第三章　波動與聲音　·　縱波與橫波</footer>
+</div>
+
+<script>
+// ── 動畫：橫波（上下抖）／縱波（前後抖），紅點示範「只在原地抖」──
+const cv=document.getElementById("cv"), cx=cv.getContext("2d");
+let mode="T", paused=false, t=0;
+const N=26, X0=30, DX=24, Y0=110, A=36, K=2*Math.PI/(DX*13), W=2.2, RED=8;
+const DESC={
+  T:"<b>橫波</b>：紅點<strong>上下</strong>抖，波往<strong>右</strong>走 → 兩個方向<strong>交叉成十字 ✚</strong>。看得到<strong>波峰、波谷</strong>。",
+  L:"<b>縱波</b>：紅點<strong>左右</strong>抖，波也往<strong>右</strong>走 → 兩個方向在<strong>同一條線上 ⟷</strong>。看得到點<strong>擠在一起（密部）、散開（疏部）</strong>。"};
+function setMode(m){ mode=m; document.getElementById("btnT").classList.toggle("ok",m==="T"); document.getElementById("btnL").classList.toggle("ok",m==="L"); document.getElementById("mdesc").innerHTML=DESC[m]; }
+function togglePause(){ paused=!paused; document.getElementById("btnP").textContent=paused?"▶ 繼續":"⏸ 暫停"; }
+function arrow(x1,y1,x2,y2,col){ cx.strokeStyle=col; cx.fillStyle=col; cx.lineWidth=4; cx.beginPath(); cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.stroke();
+  const a=Math.atan2(y2-y1,x2-x1); cx.beginPath(); cx.moveTo(x2,y2); cx.lineTo(x2-18*Math.cos(a-0.45),y2-18*Math.sin(a-0.45)); cx.lineTo(x2-18*Math.cos(a+0.45),y2-18*Math.sin(a+0.45)); cx.closePath(); cx.fill(); }
+function draw(){
+  if(!paused) t+=1/60;
+  cx.clearRect(0,0,cv.width,cv.height);
+  cx.font="bold 26px 'Noto Sans TC','Microsoft JhengHei',sans-serif"; cx.fillStyle="#1d5b79"; cx.fillText("波往這邊走 →",440,32); arrow(440,46,660,46,"#1d5b79");
+  const pts=[];
+  for(let i=0;i<N;i++){ const x=X0+i*DX, ph=Math.sin(K*x-W*t);
+    pts.push(mode==="T"?[x,Y0+40+A*ph]:[x+0.45*DX*ph,Y0+40]); }
+  if(mode==="T"){ cx.strokeStyle="#ded5c6"; cx.lineWidth=2; cx.beginPath(); pts.forEach((p,i)=>i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1])); cx.stroke(); }
+  pts.forEach((p,i)=>{ cx.beginPath(); cx.arc(p[0],p[1],i===RED?11:7,0,7); cx.fillStyle=i===RED?"#c2410c":"#5c5349"; cx.fill(); });
+  // 紅點的「原本位置」與抖動方向
+  const rx=X0+RED*DX; cx.setLineDash([4,4]); cx.strokeStyle="#c2410c"; cx.lineWidth=1.5;
+  if(mode==="T"){ cx.beginPath(); cx.moveTo(rx,Y0+40-A-8); cx.lineTo(rx,Y0+40+A+8); cx.stroke(); }
+  else { cx.beginPath(); cx.moveTo(rx-0.45*DX-8,Y0+40); cx.lineTo(rx+0.45*DX+8,Y0+40); cx.stroke(); }
+  cx.setLineDash([]); cx.fillStyle="#c2410c"; cx.fillText(mode==="T"?"紅點：上下抖 ↕":"紅點：左右抖 ↔", 20, 32);
+  requestAnimationFrame(draw);
+}
+setMode("T"); draw();
+
+// ── 辨識卡：a＝"T" 橫波／"L" 縱波 ──
+const CARDS=[
+  ["🪢","把繩子一端綁在門把，手<strong>上下</strong>甩另一端，繩子出現一高一低的波。","T","手上下抖，波沿著繩子往門走 → 十字 ✚"],
+  ["🌀","長彈簧放在地上，手<strong>前後</strong>推拉一端，彈簧一圈擠、一圈鬆往前傳。","L","彈簧圈前後抖，波也往前走 → 一直線 ⟷；擠的地方是密部"],
+  ["🌀","同一條長彈簧，這次手<strong>左右</strong>甩（和彈簧方向交叉）。","T","陷阱題！判斷看抖的方向，不看是什麼東西：左右抖、波往前 → 十字 ✚"],
+  ["🗣","你對朋友說話，聲音穿過空氣傳到他的耳朵。","L","空氣被一擠一鬆往前推，空氣抖的方向和聲音前進方向一樣 → 縱波。<strong>聲音是縱波</strong>要背起來"],
+  ["🏟","球場觀眾玩「人浪」：每個人只是站起來、坐下，浪繞著看台跑一圈。","T","人上下動，浪往旁邊傳 → 十字 ✚"],
+  ["🚶","排隊時後面的人推了一下，前面的人一個接一個往前晃。","L","每個人前後晃，推擠也往前傳 → 一直線 ⟷"],
+  ["☀️","太陽光穿過太空照到地球。","T","光是電磁波，屬於橫波；所以真空的太空也能傳"],
+  ["📱","手機收到基地台傳來的訊號、家裡的 Wi-Fi。","T","和光一樣是電磁波 → 橫波"],
+  ["🏚","地震時<strong>最先到</strong>、讓地面<strong>上下跳</strong>一下的 P 波（從正下方傳上來）。","L","P 波從地底往上傳，地面也上下動 → 同一條線 ⟷；P 波是縱波，跑得最快"],
+  ["🏚","地震時<strong>後到</strong>、讓房子<strong>左右大搖</strong>的 S 波（從正下方傳上來）。","T","S 波往上傳，地面卻左右搖 → 十字 ✚；S 波是橫波，破壞力大"],
+  ["🩺","醫院用超音波探頭照肚子裡的寶寶。","L","超音波是人聽不到的聲波，聲波是縱波"],
+  ["🦇","蝙蝠在黑暗中發出超聲波，聽回聲找蚊子。","L","超聲波也是聲波 → 縱波"],
+  ["🎸","撥吉他弦，<strong>弦本身</strong>上下快速抖動。問：弦上的波？","T","弦上下抖，波沿著弦左右傳 → 十字 ✚"],
+  ["🎸","同一把吉他，問：<strong>傳到你耳朵的聲音</strong>？","L","弦推動空氣一擠一鬆 → 傳到耳朵的是聲音，縱波。同一個聲音，兩種波！"],
+  ["🚂","火車頭啟動，一節一節車廂「碰、碰、碰」往後撞過去。","L","每節車廂沿著鐵軌前後動，碰撞也沿著鐵軌傳 → 一直線 ⟷"],
+  ["🌊","丟石頭進池塘，水面一圈一圈的波紋擴散出去，樹葉在原地上下浮動。","T","課本當作橫波：樹葉上下動，波往外擴散 → 十字。（嚴格說水面小粒子是繞小圈圈，照課本作答）"],
+];
+let got=0;
+function buildCards(){
+  got=0; document.getElementById("score").textContent=`0 / ${CARDS.length}`;
+  document.getElementById("cards").innerHTML=CARDS.map((c,i)=>`<div class="role" id="c${i}">
+    <div class="rq"><b>${i+1}.</b> ${c[0]} ${c[1]}</div>
+    <div class="rbtns"><button class="rb" onclick="pick(${i},'T',this)">橫波 ✚</button><button class="rb" onclick="pick(${i},'L',this)">縱波 ⟷</button></div>
+    <div class="rfb" id="f${i}"></div></div>`).join("");
+}
+function pick(i,k,b){
+  const c=CARDS[i], box=document.getElementById("c"+i), ok=k===c[2];
+  box.querySelectorAll(".rb").forEach(x=>x.disabled=true);
+  b.classList.add(ok?"ok":"no");
+  if(!ok) box.querySelectorAll(".rb")[c[2]==="T"?0:1].classList.add("ok");
+  const f=document.getElementById("f"+i); f.classList.add("show");
+  f.innerHTML=(ok?"✅ <b>答對了</b>：":"❌ <b>正確答案是"+(c[2]==="T"?"橫波":"縱波")+"</b>：")+c[3];
+  if(ok){ got++; document.getElementById("score").textContent=`${got} / ${CARDS.length}`; }
+}
+buildCards();
+</script>
+</body>
+</html>
