@@ -203,6 +203,8 @@ details.pre .bd p:last-child{margin:0}
       <button class="rb" onclick="h1Go(4)">④ 拉回</button>
       <button class="rb" onclick="h1Play()">▶ 從頭播一次</button>
     </div>
+    <div class="slider-lab"><span>甩完一整個波要幾秒（拉越右越慢）</span><span id="h1secv">6 秒</span></div>
+    <input type="range" id="h1sec" min="2" max="20" step="1" value="6">
     <div class="verdict" id="h1msg">按「▶ 從頭播一次」，看手和繩子。</div>
   </div>
   <div class="kbox">
@@ -257,7 +259,7 @@ details.pre .bd p:last-child{margin:0}
       <div class="rfb show" id="g2msg"></div>
     </div>
     <div class="slider-lab" style="margin-top:14px"><span>動畫播放秒數（拉越右越慢）</span><span id="g2secv">8 秒</span></div>
-    <input type="range" id="g2sec" min="3" max="20" step="1" value="8" oninput="g2SetSec(this.value)">
+    <input type="range" id="g2sec" min="3" max="20" step="1" value="8">
     <div class="ctrl"><button class="rb" onclick="g2New()">🎲 下一題</button></div>
   </div>
 </section>
@@ -271,6 +273,8 @@ details.pre .bd p:last-child{margin:0}
     <div class="lab-t">紅點 b 往返一次</div>
     <canvas id="cv3" class="cv" width="680" height="280"></canvas>
     <div class="ctrl"><button class="rb" onclick="r3Play()">▶ 播放往返一次</button></div>
+    <div class="slider-lab"><span>往返一次要幾秒（拉越右越慢）</span><span id="r3secv">8 秒</span></div>
+    <input type="range" id="r3sec" min="2" max="20" step="1" value="8">
     <div class="verdict" id="r3msg">按播放，看紅點走過哪幾個位置。</div>
   </div>
   <div class="kbox">
@@ -299,6 +303,12 @@ details.pre .bd p:last-child{margin:0}
 </div>
 
 <script>
+// 秒數滑桿：id＝滑桿、id+"v"＝顯示文字；值存在 localStorage（私密模式讀不到就用預設）
+function secSlider(id, def){ const el=document.getElementById(id), lab=document.getElementById(id+"v"); let v=def;
+  try{ const x=+localStorage.getItem("ropewave-"+id); if(x>=+el.min&&x<=+el.max) v=x; }catch(e){}
+  el.value=v; lab.textContent=v+" 秒";
+  el.addEventListener("input",()=>{ lab.textContent=el.value+" 秒"; try{ localStorage.setItem("ropewave-"+id, el.value); }catch(e){} });
+  return ()=>+el.value; }
 const FONT="bold 22px 'Noto Sans TC','Microsoft JhengHei',sans-serif", INK="#2b2622", ACC="#c2410c", BLUE="#1d5b79", GREY="#5c5349", LINE="#ded5c6";
 function arrow(c,x1,y1,x2,y2,col,w){ c.strokeStyle=col; c.fillStyle=col; c.lineWidth=w||4; c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
   const a=Math.atan2(y2-y1,x2-x1); c.beginPath(); c.moveTo(x2,y2); c.lineTo(x2-16*Math.cos(a-0.5),y2-16*Math.sin(a-0.5)); c.lineTo(x2-16*Math.cos(a+0.5),y2-16*Math.sin(a+0.5)); c.closePath(); c.fill(); }
@@ -323,7 +333,8 @@ function draw1(){
   c.fillText("手做了："+(done?SYM.slice(1,done+1).join(" "):"（還沒動）"),20,30);
   c.fillStyle=GREY; c.fillText("產生 "+["0","¼","½","¾","1"][done]+" 個波",20,250);
 }
-function h1Anim(to){ cancelAnimationFrame(H1.anim); const st=performance.now(), from=H1.tau, dur=Math.max(300,Math.abs(to-from)*3200);
+const h1Sec=secSlider("h1sec",6);
+function h1Anim(to){ cancelAnimationFrame(H1.anim); const st=performance.now(), from=H1.tau, dur=Math.max(300,Math.abs(to-from)*h1Sec()*1000);
   const f=n=>{ const p=Math.min(1,(n-st)/dur); H1.tau=from+(to-from)*p; draw1(); if(p<1) H1.anim=requestAnimationFrame(f); else h1Msg(); }; H1.anim=requestAnimationFrame(f); }
 function h1Msg(){ const d=Math.round(H1.tau*4), m=document.getElementById("h1msg");
   const T={0:"按「▶ 從頭播一次」，看手和繩子。",
@@ -354,6 +365,8 @@ function draw2(){
   if(G.dir>0){ c.fillText("波往右走",500,30); arrow(c,480,44,650,44,BLUE); } else { c.fillText("波往左走",60,30); arrow(c,210,44,40,44,BLUE); }
   if(G.showN){ const nx=nbX(), ny=G.y0-gy(nx,G.t); c.beginPath(); c.arc(nx,ny,11,0,7); c.fillStyle=BLUE; c.fill();
     c.fillText("鄰居",nx-22,ny+(gy(nx,G.t)>0?-20:38)); }
+  c.strokeStyle=ACC; c.globalAlpha=.55; c.setLineDash([7,6]); c.lineWidth=2.5;
+  c.beginPath(); c.moveTo(G.px,G.y0-G.A-24); c.lineTo(G.px,G.y0+G.A+24); c.stroke(); c.setLineDash([]); c.globalAlpha=1;
   const py=G.y0-gy(G.px,G.t); c.beginPath(); c.arc(G.px,py,13,0,7); c.fillStyle=ACC; c.fill();
   c.fillText("紅點",G.px-22,py+(gy(G.px,G.t)>0?-22:40));
   if(G.showMove && G.t<0.02){ const up=G.ans==="up"; arrow(c,G.px+30,py,G.px+30,py+(up?-50:50),ACC,5); }
@@ -398,13 +411,9 @@ function g2Pick(k,b){
   G.showMove=true; draw2();
   setTimeout(g2Play, 1500);
 }
-// 播放秒數：滑桿可調 3–20 秒（預設 8 秒），記在這支手機（localStorage，讀不到就用預設）
-let G_SEC=8;
-try{ const v=+localStorage.getItem("ropewave-g2sec"); if(v>=3&&v<=20) G_SEC=v; }catch(e){}
-document.getElementById("g2sec").value=G_SEC; document.getElementById("g2secv").textContent=G_SEC+" 秒";
-function g2SetSec(v){ G_SEC=+v; document.getElementById("g2secv").textContent=G_SEC+" 秒"; try{ localStorage.setItem("ropewave-g2sec",G_SEC); }catch(e){} }
+const g2Sec=secSlider("g2sec",8);
 function g2Play(){ cancelAnimationFrame(G.anim); G.t=0; const st=performance.now();
-  const f=n=>{ G.t=Math.min(3,(n-st)/1000*(3/G_SEC)); draw2(); if(G.t<3) G.anim=requestAnimationFrame(f); else { G.t=0; draw2(); } }; G.anim=requestAnimationFrame(f); }
+  const f=n=>{ G.t=Math.min(3,(n-st)/1000*(3/g2Sec())); draw2(); if(G.t<3) G.anim=requestAnimationFrame(f); else { G.t=0; draw2(); } }; G.anim=requestAnimationFrame(f); }
 g2New();
 
 // ── ③ b 點往返一次（講義第 16 題的圖：a b c d 在平衡線上，e 波峰、f 為 b 正下方、g 波谷）──
@@ -415,7 +424,8 @@ function ry(x,t){ return R.A*Math.sin(2*Math.PI*((x-R.x0)/R.L) - 2*Math.PI*t - M
 function draw3(){
   const c=c3, t=R.t; c.clearRect(0,0,680,280);
   c.strokeStyle=LINE; c.setLineDash([6,6]); c.lineWidth=1.5; c.beginPath(); c.moveTo(20,R.y0); c.lineTo(660,R.y0); c.stroke();
-  c.beginPath(); c.moveTo(BX,R.y0-R.A-20); c.lineTo(BX,R.y0+R.A+20); c.stroke(); c.setLineDash([]);
+  c.setLineDash([]); c.strokeStyle=ACC; c.globalAlpha=.55; c.setLineDash([7,6]); c.lineWidth=2.5;
+  c.beginPath(); c.moveTo(BX,R.y0-R.A-24); c.lineTo(BX,R.y0+R.A+24); c.stroke(); c.setLineDash([]); c.globalAlpha=1;
   c.strokeStyle=INK; c.lineWidth=5; c.beginPath();
   for(let x=20;x<=660;x+=3){ const y=R.y0-ry(x,t); x===20?c.moveTo(x,y):c.lineTo(x,y); } c.stroke();
   c.font=FONT; c.fillStyle=BLUE; c.fillText("波往右走",500,28); arrow(c,480,42,650,42,BLUE);
@@ -423,8 +433,9 @@ function draw3(){
   const by=R.y0-ry(BX,t); c.beginPath(); c.arc(BX,by,13,0,7); c.fillStyle=ACC; c.fill(); c.fillStyle=ACC; c.fillText("b",BX+20,by+8);
   c.fillStyle=ACC; c.fillText("b 走過："+R.trail.join(" → "),20,270);
 }
+const r3Sec=secSlider("r3sec",8);
 function r3Play(){
-  cancelAnimationFrame(R.anim); R.trail=["b"]; R.t=0; const st=performance.now(), dur=5000, marks=[[0.25,"f"],[0.5,"b"],[0.75,"e"],[1,"b"]]; let mi=0;
+  cancelAnimationFrame(R.anim); R.trail=["b"]; R.t=0; const st=performance.now(), dur=r3Sec()*1000, marks=[[0.25,"f"],[0.5,"b"],[0.75,"e"],[1,"b"]]; let mi=0;
   const f=n=>{ R.t=Math.min(1,(n-st)/dur); while(mi<marks.length && R.t>=marks[mi][0]-1e-3){ R.trail.push(marks[mi][1]); mi++; }
     draw3(); if(R.t<1) R.anim=requestAnimationFrame(f); else document.getElementById("r3msg").innerHTML="紅點 b 一次往返＝<strong>b → f → b → e → b</strong>，從頭到尾都在<strong>同一條直線</strong>上，沒有跟著波往右跑。→ 講義第 16 題選 (B)。"; };
   R.anim=requestAnimationFrame(f);
