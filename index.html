@@ -4,73 +4,112 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>八年級自然 · 自學站</title>
+<meta name="theme-color" content="#5b4bdb">
 <style>
-:root{--paper:#faf7f0;--ink:#2b2622;--ink2:#5c5349;--line:#ded5c6;--accent:#c2410c;--accent-soft:#fff1e7}
+/* 2026-10-23 改版：照七上生物站的島嶼風格，首頁依章節分島 */
+:root{
+  --bg:#f4f1ff; --card:#ffffff; --ink:#22203a; --sub:#5d5a78; --line:#e3def7;
+  --pri:#5b4bdb; --pri2:#7c6cf0; --gold:#f5a524;
+  --c21:#ff8a3d; --c22:#e84393; --c23:#22a35a; --c24:#2f80ed;
+  --shadow:0 4px 0 rgba(40,30,110,.12), 0 8px 24px rgba(40,30,110,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16142a; --card:#221f3d; --ink:#f1efff; --sub:#b4b0d6; --line:#37335e;
+    --pri:#8f82ff; --pri2:#a79dff;
+    --shadow:0 4px 0 rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16142a; --card:#221f3d; --ink:#f1efff; --sub:#b4b0d6; --line:#37335e;
+  --pri:#8f82ff; --pri2:#a79dff;
+  --shadow:0 4px 0 rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.25);
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);
-  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-  font-size:17px;line-height:1.85}
-.wrap{max-width:920px;margin:0 auto;padding:0 20px 80px}
-header{padding:64px 0 30px;border-bottom:2px solid var(--ink)}
-.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
-h1{font-size:32px;line-height:1.3;margin:0 0 16px}
-p{margin:0 0 18px}
-.dim{color:var(--ink2)}
-em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600}
-h2{font-size:15px;letter-spacing:.14em;color:var(--ink2);margin:44px 0 16px;font-weight:700}
-a.unit{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);
-  border-radius:14px;padding:22px;margin-bottom:14px;transition:border-color .15s,transform .15s;
-  box-shadow:0 1px 2px rgba(43,38,34,.05),0 8px 24px rgba(43,38,34,.05)}
-a.unit:hover{border-color:var(--ink);transform:translateY(-2px)}
-.u-ch{font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:700;margin-bottom:8px}
-.u-t{font-size:21px;font-weight:700;margin-bottom:8px;line-height:1.4}
-.u-d{font-size:15px;color:var(--ink2);line-height:1.75;margin-bottom:14px}
-.u-m{display:flex;gap:7px;flex-wrap:wrap}
-.tag{font-size:12px;padding:3px 10px;border:1px solid var(--line);border-radius:99px;color:var(--ink2)}
-.soon{background:#f6f2ea;border-style:dashed;opacity:.72;cursor:default}
-.soon:hover{border-color:var(--line);transform:none}
-.why{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:30px 0}
-.why p:last-child{margin:0}
-footer{padding:40px 0 0;font-size:13px;color:var(--ink2);line-height:1.9;border-top:1px solid var(--line);margin-top:44px}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  font-size:17px;line-height:1.7}
+a{color:var(--pri)}
+.wrap{max-width:920px;margin:0 auto;padding:0 16px 80px}
+p{margin:0 0 14px}
+strong{font-weight:800}
+em{font-style:normal;background:color-mix(in srgb,var(--gold) 30%,transparent);border-radius:4px;padding:0 3px;font-weight:700}
 
-.howto{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:30px 0}
-.howto h3{font-size:19px;margin:0 0 12px;line-height:1.4}
-.howto h4{font-size:15.5px;margin:24px 0 8px;color:var(--accent);letter-spacing:.02em}
-.howto p{font-size:15.5px;line-height:1.8;margin:0 0 14px}
-.howto p:last-child{margin:0}
+/* 頂部橫幅 */
+.hero{padding:26px 22px;border-radius:24px;color:#fff;background:linear-gradient(135deg,#5b4bdb,#9b5de5 60%,#f15bb5);
+  box-shadow:var(--shadow);margin-top:16px;position:relative;overflow:hidden}
+.hero .kicker{font-size:13px;letter-spacing:.18em;font-weight:800;opacity:.9;margin-bottom:8px}
+.hero h1{margin:0 0 10px;font-size:30px;line-height:1.3;color:#fff}
+.hero p{margin:0;opacity:.95;font-size:15.5px}
+.hero em{background:rgba(255,255,255,.25);color:#fff}
+.hero .blob{position:absolute;right:-24px;top:-28px;font-size:120px;opacity:.18;transform:rotate(-12deg)}
+
+/* 使用說明（可收合） */
+details.fold{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:14px 20px;margin:16px 0}
+details.fold>summary{cursor:pointer;font-size:15.5px;font-weight:800;color:var(--pri);min-height:32px}
+details.fold[open]>summary{margin-bottom:10px}
+.howto h3{font-size:19px;margin:6px 0 12px;line-height:1.4}
+.howto h4{font-size:15.5px;margin:22px 0 8px;color:var(--pri)}
+.howto p,.why p{font-size:15.5px;line-height:1.8}
 .steps{counter-reset:t;list-style:none;padding:0;margin:0 0 8px}
 .steps li{counter-increment:t;position:relative;padding:6px 0 6px 38px;font-size:15px;line-height:1.65}
-.steps li::before{content:counter(t);position:absolute;left:0;top:7px;width:24px;height:24px;
-  background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:12px;font-weight:700}
+.steps li::before{content:counter(t);position:absolute;left:0;top:7px;width:26px;height:26px;background:var(--pri);color:#fff;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.why{border-top:2px dashed var(--line);margin-top:18px;padding-top:14px}
+.why p:last-child{margin:0}
 
-/* ── 入口方塊（2026-09-10 改版：原本是一長串卡片，改成格線） ── */
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:14px;margin:0 0 14px}
-.tiles a.unit,.tiles .soon{display:flex;flex-direction:column;margin-bottom:0;padding:19px 21px}
-.tiles .u-t{font-size:18.5px;margin-bottom:7px}
-.tiles .u-d{font-size:14.5px;line-height:1.72;margin-bottom:12px;flex:1}
-.tiles .u-m{margin-top:auto}
-.tiles .tag{font-size:11.5px;padding:2px 9px}
-details.fold{background:#fff;border:1px solid var(--line);border-radius:14px;
-  padding:14px 20px;margin:24px 0}
-details.fold>summary{cursor:pointer;font-size:15px;font-weight:700;color:var(--accent)}
-details.fold[open]>summary{margin-bottom:10px}
-details.fold .howto,details.fold .why{border:0;padding:0;margin:14px 0 0;background:transparent}
-@media(max-width:560px){.tiles{grid-template-columns:1fr}}
+h2.sect{font-size:15px;letter-spacing:.12em;color:var(--sub);margin:30px 0 4px;font-weight:800}
+
+/* 章節島 */
+.islands{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:12px}
+@media (max-width:700px){.islands{grid-template-columns:1fr}}
+.isl{background:var(--card);border-radius:22px;padding:16px;box-shadow:var(--shadow);border-left:8px solid var(--c)}
+.isl-h{display:flex;gap:14px;align-items:center;margin-bottom:10px}
+.isl-h .ic{font-size:40px;width:62px;height:62px;border-radius:18px;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--c) 18%,transparent);flex:none}
+.isl-h .ch{display:inline-block;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:800;
+  background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--ink)}
+.isl-h b{display:block;font-size:1.15em;line-height:1.35;margin-top:2px}
+.pg{display:flex;gap:10px;align-items:flex-start;text-decoration:none;color:inherit;border:2px solid var(--line);
+  background:var(--card);border-radius:16px;padding:10px 12px;margin-top:8px;transition:transform .12s,border-color .12s}
+.pg:hover{border-color:var(--c);transform:translateY(-2px)}
+.pg:active{transform:translateY(1px)}
+.pg .k{flex:none;font-size:12px;font-weight:800;border-radius:10px;padding:3px 8px;margin-top:2px;white-space:nowrap}
+.k.unit{background:color-mix(in srgb,var(--pri) 14%,transparent);color:var(--pri)}
+.k.note{background:color-mix(in srgb,var(--c24) 16%,transparent);color:var(--c24)}
+.k.exam{background:color-mix(in srgb,var(--gold) 26%,transparent);color:#8a5a00}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .k.exam{color:#ffd36b}}
+:root[data-theme="dark"] .k.exam{color:#ffd36b}
+.pg .t{font-weight:800;line-height:1.4;display:block}
+.pg .d{font-size:14px;color:var(--sub);line-height:1.6;display:block;margin-top:2px}
+.pg .done{font-size:12.5px;color:var(--c23);font-weight:800;display:block;margin-top:2px}
+
+/* 下方方塊 */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+@media (max-width:700px){.tiles{grid-template-columns:1fr}}
+.tile{display:block;text-decoration:none;color:inherit;background:var(--card);border-radius:18px;padding:16px;
+  box-shadow:var(--shadow);transition:transform .12s}
+.tile:hover{transform:translateY(-2px)}
+.tile .ic{font-size:34px;line-height:1}
+.tile b{display:block;font-size:1.05em;margin:6px 0 4px}
+.tile small{display:block;color:var(--sub);font-size:14px;line-height:1.6}
+
+footer{padding:30px 0 0;font-size:13px;color:var(--sub);line-height:1.9;border-top:1px solid var(--line);margin-top:36px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<header>
+<div class="hero"><div class="blob">🔭</div>
   <div class="kicker">國中自然 · 八年級上（第三冊）</div>
-  <h1>不背重點，<br>把每個現象查清楚</h1>
-  <p class="dim">這裡的每一節都從<em>一個怪事</em>開始：某個數字對不上、某個結果跟你想的不一樣。你先猜，再拆，最後才會看到課本上那個公式——而那時候它已經是你自己推出來的了。</p>
-</header>
+  <h1>不背重點，把每個現象查清楚</h1>
+  <p>這裡的每一節都從<em>一個怪事</em>開始：某個數字對不上、某個結果跟你想的不一樣。你先猜，再拆，最後才會看到課本上那個公式——而那時候它已經是你自己推出來的了。</p>
+</div>
 
 <details class="fold">
-  <summary>這個網站怎麼用？（第一次來再看就好）</summary>
+  <summary>📖 這個網站怎麼用？（第一次來再看就好）</summary>
 <div class="howto">
   <h3>這個網站怎麼用</h3>
   <p><strong>它不是題庫。</strong>每一課都是一條完整的路，從一個問題走到一個答案，中間有很多可以自己動手拉、拖、拆的地方。一課大約 20–30 分鐘。</p>
@@ -101,167 +140,72 @@ details.fold .howto,details.fold .why{border:0;padding:0;margin:14px 0 0;backgro
   · 進度會自己存著，隨時可以關掉，下次打開還在原地。</p>
 </div>
 <div class="why">
-  <p style="font-size:15px;color:var(--ink2);margin-bottom:12px"><strong style="color:var(--ink)">為什麼題目都附「全國有多少人選錯」？</strong></p>
-  <p style="font-size:15.5px">因為錯得有道理的答案，比正確答案更值得研究。當一個選項有三分之一的人選，代表它背後有一套<em>聽起來很合理但會出事的想法</em>——找出那套想法，比記住正確答案有用得多。</p>
-  <p style="font-size:15.5px;margin-top:12px">所有百分比都來自國家教育研究院公布的官方試題分析，不是估的。</p>
+  <p style="color:var(--sub);margin-bottom:12px"><strong style="color:var(--ink)">為什麼題目都附「全國有多少人選錯」？</strong></p>
+  <p>因為錯得有道理的答案，比正確答案更值得研究。當一個選項有三分之一的人選，代表它背後有一套<em>聽起來很合理但會出事的想法</em>——找出那套想法，比記住正確答案有用得多。</p>
+  <p style="margin-top:12px">所有百分比都來自國家教育研究院公布的官方試題分析，不是估的。</p>
 </div>
 </details>
 
-<h2>先看這裡　·　照課本走</h2>
+<h2 class="sect">🏝️ 照章節走 · 每座島＝一章</h2>
+<p style="font-size:14px;color:var(--sub);margin:0">每座島裡有三種東西：<b style="color:var(--pri)">互動單元</b>（先猜再拆）、<b style="color:var(--c24)">學校講義</b>（對答案）、<b style="color:#b97300">段考練習</b>（學校原題）。</p>
 
-<div class="tiles">
-<a class="unit" href="book.html" style="border-color:var(--ink);border-width:2px">
-  <div class="u-ch">課本地圖　·　緒論 ～ 第 4 章　·　課本 p.1–131</div>
-  <div class="u-t">不知道該翻哪一頁的時候，從這裡開始</div>
-  <div class="u-d">其他單元是<strong>從一道會考題往下挖</strong>；這一頁相反——它照<strong>課本自己的章節和重點編號</strong>排。每個重點先問你一句話，答完才展開，然後告訴你<strong>該翻回課本第幾頁</strong>。<br><em>它不取代課本，它帶你回課本。</em></div>
-  <div class="u-m">
-    <span class="tag">5 章 · 39 個重點</span><span class="tag">每格都有課本頁碼</span>
-    <span class="tag">各章完成度</span><span class="tag">不計分</span>
-  </div>
-</a>
+<div class="islands">
+
+<section class="isl" style="--c:var(--c21)">
+  <div class="isl-h"><span class="ic">📏</span><div><span class="ch">緒論＋第 1 章</span><b>科學方法與基本測量</b></div></div>
+  <a class="pg" href="variables.html" data-key="jhs8-variables-v1" data-total="6"><span class="k unit">互動單元</span><span><span class="t">① 找出沒被固定的那一項</span><span class="d">「加食鹽的熱水拖地比較快乾」——你要怎麼證明？五年 28 題、佔全卷 11%，什麼都不用背。</span></span></a>
+  <a class="pg" href="density.html" data-key="jhs8-density-v1" data-total="10"><span class="k unit">互動單元</span><span><span class="t">② 一顆會說謊的銅球</span><span class="d">純銅球、準確的天平，算出來卻不是 8.96。10 題、4 個互動實驗。</span></span></a>
+  <a class="pg" href="review-intro-ch1.html"><span class="k exam">段考練習</span><span><span class="t">緒論＋第 1 章 分段練習</span><span class="d">第一次段考原題 58 題，分 5 段：器材、測量紀錄、排水法、天平、密度；附錯題本。</span></span></a>
+</section>
+
+<section class="isl" style="--c:var(--c22)">
+  <div class="isl-h"><span class="ic">🧪</span><div><span class="ch">第 2 章</span><b>物質的世界</b></div></div>
+  <a class="pg" href="solution.html" data-key="jhs8-solution-v1" data-total="6"><span class="k unit">互動單元</span><span><span class="t">③ 一杯糖水裡的科學</span><span class="d">分母是「水」還是「糖水」？32.6% 的人寫錯了那個字。附溶解度曲線。</span></span></a>
+  <a class="pg" href="review-ch2.html"><span class="k exam">段考練習</span><span><span class="t">第 2 章 分段練習</span><span class="d">第一次段考原題 58 題，照課本小節分 9 段；考最多的是濃度（20 題）和飽和（10 題）。</span></span></a>
+</section>
+
+<section class="isl" style="--c:var(--c24)">
+  <div class="isl-h"><span class="ic">🔊</span><div><span class="ch">第 3 章</span><b>波動與聲音</b></div></div>
+  <a class="pg" href="wave.html" data-key="jhs8-wave-v1" data-total="6"><span class="k unit">互動單元</span><span><span class="t">④「大聲」和「高音」不是同一件事</span><span class="d">打鼾吵不吵，要拿哪一個數字講？全國兩成的人拿了 Hz。附波形調整器。</span></span></a>
+  <a class="pg" href="wavetype.html"><span class="k unit">互動單元</span><span><span class="t">④-2 縱波還是橫波？</span><span class="d">抖的方向和波走的方向，是十字還是一直線？波的動畫＋16 張辨識卡。</span></span></a>
+  <a class="pg" href="ropewave.html"><span class="k unit">互動單元</span><span><span class="t">④-3 繩子上的點往哪動？</span><span class="d">講義 p.5–6：波從哪邊來，就看哪邊的鄰居。手甩繩子動畫＋猜紅點往哪動。</span></span></a>
+  <a class="pg" href="notebook-ch3.html"><span class="k note">學校講義</span><span><span class="t">第 3 章講義對答案（Notebook p.3–28）</span><span class="d">3-1～3-5 共 150 題＋74 個重點填空，可線上寫或紙本對答案。</span></span></a>
+  <a class="pg" href="review-ch3.html"><span class="k exam">段考練習</span><span><span class="t">第 3 章 分段練習</span><span class="d">第二次段考原題 54 題（含是非題）分 8 段，每段再接講義同主題選擇題 131 題。</span></span></a>
+</section>
+
+<section class="isl" style="--c:var(--c23)">
+  <div class="isl-h"><span class="ic">💡</span><div><span class="ch">第 4 章</span><b>光</b></div></div>
+  <a class="pg" href="light.html" data-key="jhs8-light-v1" data-total="6"><span class="k unit">互動單元</span><span><span class="t">⑤ 你為什麼看得見這本書？</span><span class="d">「觀眾眼睛發出光線」是柏拉圖相信了一輩子的答案。附反射角度器、顏色調色台。</span></span></a>
+  <a class="pg" href="review-ch4.html"><span class="k exam">段考練習</span><span><span class="t">第 4 章 分段練習</span><span class="d">第二次段考原題 59 題（含是非題）分 8 段；考最多的是透鏡成像（16 題）。</span></span></a>
+</section>
+
 </div>
 
-<h2>單元　·　照課本章節順序</h2>
-
+<h2 class="sect">🧭 跨章節</h2>
 <div class="tiles">
-<a class="unit" href="variables.html">
-  <div class="u-ch">①　緒論 · 科學方法</div>
-  <div class="u-t">找出沒被固定的那一項</div>
-  <div class="u-d">網路說「加食鹽的熱水拖地比較快乾」——你要怎麼證明？<strong>五年 28 題、佔全卷 11%，什麼都不用背</strong>，只考你看不看得出一個實驗哪裡沒設計好。<br>最後回頭看 1747 年一艘船上的十二個病人。</div>
-  <div class="u-m">
-    <span class="tag">6 題</span><span class="tag">四桶水配對器</span><span class="tag">變因分類練習</span>
-    <span class="tag">會考 115-23</span><span class="tag">考最多題的一塊</span>
-  </div>
-</a>
-<a class="unit" href="density.html">
-  <div class="u-ch">②　第 1 章 · 基本測量</div>
-  <div class="u-t">一顆會說謊的銅球</div>
-  <div class="u-d">純銅球、準確的天平、正確的計算，算出來卻不是 8.96。誰在說謊？<br>拆完這一顆球，密度就不用背了。</div>
-  <div class="u-m">
-    <span class="tag">10 題</span><span class="tag">4 個互動實驗</span>
-    <span class="tag">會考 111-38</span><span class="tag">約 25 分鐘</span>
-  </div>
-</a>
-<a class="unit" href="solution.html">
-  <div class="u-ch">③　第 2 章 · 2-2 水溶液</div>
-  <div class="u-t">一杯糖水裡的科學</div>
-  <div class="u-d">一題只有一個字會決定對錯：分母是「水」還是「糖水」。<strong>32.6% 的人寫錯了那個字</strong>，而且算出了 150% 的糖水還繼續往下寫。<br>最後回頭看：第一批把濃度用到出神入化的人，是曬鹽的人。</div>
-  <div class="u-m">
-    <span class="tag">6 題</span><span class="tag">糖水拆開來看</span><span class="tag">溶解度曲線</span>
-    <span class="tag">會考 115-36</span><span class="tag">最會分人的一題</span>
-  </div>
-</a>
-<a class="unit" href="wave.html">
-  <div class="u-ch">④　第 3 章 · 波動與聲音</div>
-  <div class="u-t">「大聲」和「高音」不是同一件事</div>
-  <div class="u-d">室友說你打鼾沒那麼吵，你要拿<strong>哪一個數字</strong>反駁他？<strong>全國兩成的人拿了 Hz 去講吵不吵</strong>——但那是在講音有多尖，不是有多大聲。<br>最後回頭看：1660 年，一個吊在玻璃罩裡的鬧鐘。</div>
-  <div class="u-m">
-    <span class="tag">6 題</span><span class="tag">波形調整器</span><span class="tag">三選一配對</span>
-    <span class="tag">會考 115-16</span><span class="tag">＋段考實戰 8 題</span>
-  </div>
-</a>
-<a class="unit" href="wavetype.html">
-  <div class="u-ch">④-2　第 3 章 · 波的種類</div>
-  <div class="u-t">縱波還是橫波？看兩個方向就知道</div>
-  <div class="u-d">波傳出去，東西不會跟著跑走，只在原地抖。<strong>抖的方向和波走的方向，是十字還是一直線？</strong><br>再看分清楚有什麼用：地震預警、超音波、偏光眼鏡，以及科學家怎麼用橫波發現地球外核是液體。</div>
-  <div class="u-m">
-    <span class="tag">波的動畫</span><span class="tag">16 張辨識卡</span><span class="tag">生活中的運用</span><span class="tag">歷史故事</span>
-  </div>
-</a>
-<a class="unit" href="ropewave.html">
-  <div class="u-ch">④-3　第 3 章 · 講義 p.5–6 繩波與運動方向</div>
-  <div class="u-t">繩子上的點，下一刻往上還是往下？</div>
-  <div class="u-d">手甩一下，繩子多 ¼ 個波；<strong>跑在最前面的，是手最早做的動作</strong>。<br>口訣：<strong>波從哪邊來，就看哪邊的鄰居</strong>——鄰居比你高，你就往上。</div>
-  <div class="u-m">
-    <span class="tag">手甩繩子動畫</span><span class="tag">猜猜紅點往哪動</span><span class="tag">講義第 16–20 題</span>
-  </div>
-</a>
-<a class="unit" href="light.html">
-  <div class="u-ch">⑤　第 4 章 · 光</div>
-  <div class="u-t">你為什麼看得見這本書？</div>
-  <div class="u-d">會考有一個選項寫著「觀眾眼睛發出光線」——那不是亂編的，<strong>那是柏拉圖相信了一輩子的答案</strong>，撐了一千多年。<br>最後回頭看：1021 年，一個被關起來的人，用一間暗房把它終結掉。</div>
-  <div class="u-m">
-    <span class="tag">6 題</span><span class="tag">反射角度器</span><span class="tag">顏色調色台</span>
-    <span class="tag">會考 112-9</span><span class="tag">＋段考實戰 7 題</span>
-  </div>
-</a>
-</div>
-
-<h2>段考　·　你們學校真正考過的卷</h2>
-
-<div class="tiles">
-<a class="unit" href="minerva.html" style="border-color:var(--accent);border-width:2px">
-  <div class="u-ch">思考練習　·　第一次段考範圍（緒論～第 2 章）</div>
-  <div class="u-t">用密涅瓦的方式想：先表態，再一步一步拆</div>
-  <div class="u-d">第一次段考範圍（緒論～第 2 章）的 <strong>116 題全部收錄</strong>，照課本小節排好。每題先猜、說出把握多大，再回答幾個小問題把題目拆開，最後<strong>換一個情境再考一次</strong>。<br>練的是 6 個有名字的思考習慣：問對問題、拆解、篩資訊、找真正的變因、合理性檢查、一把尺分類。</div>
-  <div class="u-m">
-    <span class="tag">116 題逐步引導</span><span class="tag">信心校準表</span>
-    <span class="tag">換情境遷移題</span><span class="tag">進度自動存</span>
-  </div>
-</a>
-<a class="unit" href="review-intro-ch1.html" style="border-color:var(--ink);border-width:2px">
-  <div class="u-ch">分段練習　·　緒論＋第 1 章</div>
-  <div class="u-t">一段一段寫，錯的收進錯題本</div>
-  <div class="u-d">三個學年度第一次段考裡，屬於<strong>緒論、第 1 章</strong>的 58 題，照主題分成 5 段：器材、測量紀錄、排水法、天平、密度。<br>每段寫完才交卷看解析，答錯的自動進<strong>錯題本</strong>，重做答對才能移出。</div>
-  <div class="u-m">
-    <span class="tag">58 題附解析</span><span class="tag">分段交卷</span>
-    <span class="tag">錯題本</span><span class="tag">可存成 PDF</span>
-  </div>
-</a>
-<a class="unit" href="review-ch2.html" style="border-color:var(--ink);border-width:2px">
-  <div class="u-ch">分段練習　·　第 2 章 物質的世界</div>
-  <div class="u-t">三態、純物質、飽和、濃度一段一段練</div>
-  <div class="u-d">三個學年度第一次段考裡，屬於<strong>第 2 章</strong>的 58 題，照課本小節分成 9 段。<br>考最多的是<strong>濃度（20 題）</strong>和<strong>溶液的飽和（10 題）</strong>。</div>
-  <div class="u-m">
-    <span class="tag">58 題附解析</span><span class="tag">照課本小節</span>
-    <span class="tag">錯題本</span><span class="tag">可存成 PDF</span>
-  </div>
-</a>
-<a class="unit" href="review-ch3.html" style="border-color:var(--ink);border-width:2px">
-  <div class="u-ch">分段練習　·　第 3 章 波動與聲音</div>
-  <div class="u-t">波、頻率、聲速、回聲，照小節練</div>
-  <div class="u-d">三個學年度第二次段考裡，屬於<strong>第 3 章</strong>的 54 題（含是非題），照課本小節分成 8 段。<br>考最多的是<strong>響度、音調、音色（18 題）</strong>和<strong>回聲與超聲波（13 題）</strong>。<br>每段後面再接<strong>學校講義同主題的選擇題 131 題</strong>（藍色邊條標示）。</div>
-  <div class="u-m">
-    <span class="tag">段考 54 題＋講義 131 題</span><span class="tag">是非題按「是／否」</span>
-    <span class="tag">錯題本</span><span class="tag">可存成 PDF</span>
-  </div>
-</a>
-<a class="unit" href="notebook-ch3.html" style="border-color:#1d5b79;border-width:2px">
-  <div class="u-ch" style="color:#1d5b79">學校講義　·　第 3 章 波動與聲音（Notebook p.3–28）</div>
-  <div class="u-t">紙本講義寫完了，一題一題對答案</div>
-  <div class="u-d">治<strong>「講義寫完沒人對，錯了也不知道錯在哪」</strong>：學校講義 3-1～3-5 共 <strong>150 題＋74 個重點填空</strong>，每題標講義第幾頁第幾題。<br>可以線上直接寫（選完立刻看對錯），也可以寫紙本再切到「紙本對答案」；計算題一步一步算給你看。</div>
-  <div class="u-m">
-    <span class="tag">150 題附解析</span><span class="tag">重點填空</span>
-    <span class="tag">紙本對答案</span><span class="tag">有爭議題標 ⚠</span>
-  </div>
-</a>
-<a class="unit" href="review-ch4.html" style="border-color:var(--ink);border-width:2px">
-  <div class="u-ch">分段練習　·　第 4 章 光</div>
-  <div class="u-t">反射、平面鏡、折射、透鏡成像，照小節練</div>
-  <div class="u-d">三個學年度第二次段考裡，屬於<strong>第 4 章</strong>的 59 題（含是非題），照課本小節分成 8 段。<br>考最多的是<strong>透鏡的成像（16 題）</strong>和<strong>視力矯正與色光（12 題）</strong>。</div>
-  <div class="u-m">
-    <span class="tag">59 題附解析</span><span class="tag">是非題按「是／否」</span>
-    <span class="tag">錯題本</span><span class="tag">可存成 PDF</span>
-  </div>
-</a>
-<a class="unit" href="exam.html">
-  <div class="u-ch">整卷模擬　·　112～114 學年度</div>
-  <div class="u-t">整張考卷，從頭做到尾一次</div>
-  <div class="u-d">丹鳳高中八年級上學期、三個學年度、三次段考共 <strong>9 份原卷</strong>——原始排版、原始附圖，跟你考試那天拿到的一模一樣。<br>線上點答案卡，交卷當場算分、標出錯在哪幾題。</div>
-  <div class="u-m">
-    <span class="tag">9 份原卷</span><span class="tag">311 題可對答案</span>
-    <span class="tag">答案來源逐卷標示</span><span class="tag">進度自動存</span>
-  </div>
-</a>
+  <a class="tile" href="exam.html"><span class="ic">🏫</span><b>整卷模擬</b><small>112～114 學年度三次段考共 9 份原卷、311 題可對答案，交卷當場算分。</small></a>
+  <a class="tile" href="minerva.html"><span class="ic">🦉</span><b>密涅瓦思考練習</b><small>第一次段考範圍（緒論～第 2 章）116 題：先表態、再一步一步拆、換情境再考一次。</small></a>
+  <a class="tile" href="book.html"><span class="ic">🗺️</span><b>課本地圖</b><small>照課本章節與重點編號走：5 章、39 個重點，每格都有課本頁碼。</small></a>
 </div>
 
 <footer>
   題目、通過率與選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析。<br>
   部分題目為配合互動呈現而改寫，均於題頭標示「改寫自」。所有圖示重繪，未使用課本內容。<br>
-  數學自學站在 <a href="https://yingsioul-art.github.io/jhs8-math/" style="color:#1d5b79">這裡</a>。<br>
-  <span style="color:#a09789">為自學而做 · 2026</span>
+  數學自學站在 <a href="https://yingsioul-art.github.io/jhs8-math/">這裡</a>。<br>
+  為自學而做 · 2026
 </footer>
 
 </div>
+<script>
+// 互動單元的進度：直接讀各單元頁自己存的 localStorage（state 裡 q1、q2… 的數量）
+(function(){
+  function done(key){ try{ var s=JSON.parse(localStorage.getItem(key)||"{}"); return Object.keys(s).filter(function(k){return /^q\d+$/.test(k)}).length; }catch(e){ return 0; } }
+  document.querySelectorAll(".pg[data-key]").forEach(function(a){
+    var n=Math.min(done(a.dataset.key), +a.dataset.total), t=+a.dataset.total;
+
+    if(n>0){ var s=document.createElement("span"); s.className="done"; s.textContent=(n>=t?"✅ 已答完 ":"已答 ")+n+" / "+t+" 題"; a.querySelector(".d").after(s); }
+  });
+})();
+</script>
 </body>
 </html>
