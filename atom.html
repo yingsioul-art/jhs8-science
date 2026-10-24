@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>誰是最輕的那一個｜原子</title>
+<!--
+  第 6 章 探索物質組成 互動單元（2026-10-24）
+  進度 key：jhs8-atom-v1
+  總段數（作答題數）＝ 10（q0～q9）→ 首頁進度條用 data-total="10"
+  骨架照 solution.html：開始之前 → 案發 → 全國怎麼選 → 自己動手拆 → 才給名字 → 變化題 → 歷史 → 結案
+  官方數據只取自 111～115 年會考自然科官方試題分析（全體欄）
+-->
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px;line-height:1.85;letter-spacing:.01em}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);
+  border-bottom:1px solid var(--line);margin:0;padding:10px 20px}  /* 原本 margin:0 -20px 會讓頁面寬出 20px，造成手機橫向捲動 */
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+code{font-family:"SF Mono",Consolas,monospace;background:#fff;border:1px solid var(--line);
+  padding:1px 6px;border-radius:4px;font-size:.92em}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+.book{display:inline-block;font-size:13px;color:var(--ink2);background:#fff;border:1px solid var(--line);
+  border-radius:99px;padding:3px 11px;margin:0 0 16px}
+
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:center;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+.pct-note{font-size:12.5px;color:var(--ink2);margin:10px 0 0;display:none}
+.pct-note.show{display:block}
+
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+.readout{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.pill{flex:1;min-width:104px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.pill .lb{font-size:12.5px;color:var(--ink2)}
+.pill .vl{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.pill.ok{background:var(--green-soft);border-color:#c8dcc4}
+.pill.ok .vl{color:var(--green)}
+.pill.bad{background:var(--accent-soft);border-color:#f0c9ae}
+.pill.bad .vl{color:var(--accent)}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+.chip{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;
+  cursor:pointer;font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s}
+.chip:hover{border-color:var(--ink2)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:20px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:500px}
+table.mini{width:auto;margin:6px 0 14px;font-size:15px}
+table.mini th,table.mini td{padding:6px 14px;text-align:center}
+
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+svg{max-width:100%;height:auto;display:block}
+
+/* ── 開始之前 ── */
+.flow{counter-reset:s;list-style:none;padding:0;margin:14px 0 0}
+.flow li{counter-increment:s;position:relative;padding:7px 0 7px 40px;font-size:15.5px;line-height:1.7}
+.flow li::before{content:counter(s);position:absolute;left:0;top:8px;width:25px;height:25px;
+  background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12.5px;font-weight:700}
+details.pre{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;overflow:hidden}
+details.pre summary{padding:13px 16px;cursor:pointer;font-size:16px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:10px}
+details.pre summary::-webkit-details-marker{display:none}
+details.pre summary::before{content:"?";flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700}
+details.pre[open] summary::before{content:"✓";background:var(--green);color:#fff}
+details.pre[open] summary{border-bottom:1px solid var(--line)}
+details.pre .bd{padding:14px 16px;font-size:15.5px;line-height:1.8;color:var(--ink2)}
+details.pre .bd strong{color:var(--ink)}
+details.pre .bd p{margin:0 0 10px}
+details.pre .bd p:last-child{margin:0}
+
+/* ── 實驗室 A：原子組裝台 ── */
+.atom-box{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.atom-box svg{flex:1 1 240px;max-width:300px;margin:0 auto}
+.ctrls{flex:1 1 220px;display:flex;flex-direction:column;gap:10px}
+.crow{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:8px 10px}
+.crow .dot{width:16px;height:16px;border-radius:50%;flex-shrink:0}
+.crow .nm{flex:1;font-size:15px;font-weight:600}
+.crow .nm small{display:block;font-weight:400;font-size:12px;color:var(--ink2);line-height:1.4}
+.crow button{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:#fff;
+  font-size:20px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--ink);line-height:1}
+.crow button:hover{border-color:var(--ink2)}
+.crow .ct{width:30px;text-align:center;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.nuc{display:inline-flex;align-items:center;font-size:30px;font-weight:700;line-height:1;font-family:"Times New Roman",serif}
+.nuc .lr{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:14px;margin-right:2px;line-height:1.15}
+.nuc .ch{font-size:15px;align-self:flex-start;margin-left:1px}
+.massbar{margin-top:14px;font-size:13px;color:var(--ink2)}
+.mtrack{display:flex;height:16px;border-radius:6px;overflow:hidden;background:#f0eade;margin:4px 0}
+.mtrack .mn{background:#b8ab93}
+.mtrack .me{background:#2f6fd0}
+
+/* ── 實驗室 C：分類台 ── */
+.sorter{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.scard{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.scard .sn{font-weight:700;font-size:15px}
+.scard .sn small{font-weight:400;color:var(--ink2);font-size:12.5px;margin-left:4px}
+.scard svg{background:#fbf9f4;border-radius:8px}
+.scard .sb{display:flex;gap:4px}
+.scard .sb button{flex:1;font-family:inherit;font-size:13px;padding:6px 0;border-radius:8px;border:1.5px solid var(--line);
+  background:#fff;cursor:pointer;color:var(--ink)}
+.scard .sb button:hover{border-color:var(--ink2)}
+.scard.ok{border-color:var(--green);background:var(--green-soft)}
+.scard.no{border-color:var(--accent);background:var(--accent-soft)}
+.scard .sm{font-size:12.5px;line-height:1.6;color:var(--ink2);min-height:0}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--ink2);margin:10px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.25)}
+
+/* ── 實驗室 D：化學式 ── */
+.fin{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.fin input{flex:1;min-width:120px;font-size:16px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);font-family:inherit}
+.fin button{font-family:inherit;font-size:14px;padding:8px 16px;border-radius:10px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer}
+.fbig{font-size:30px;font-weight:700;text-align:center;margin:8px 0 2px;font-family:"Times New Roman",serif}
+.fbig .cf{color:var(--accent)}
+.fbig .sb2{color:var(--blue)}
+
+/* ── 實驗室 E：週期表 ── */
+.ptable{display:grid;grid-template-columns:22px repeat(8,minmax(0,1fr));gap:3px;margin-top:6px}
+.ptable .gh,.ptable .ph{font-family:inherit;font-size:12px;font-weight:700;border:1px solid var(--line);
+  background:#f4efe6;border-radius:6px;cursor:pointer;padding:3px 0;color:var(--ink2);text-align:center}
+.ptable .ph{writing-mode:horizontal-tb;display:flex;align-items:center;justify-content:center}
+.ptable .gh.on,.ptable .ph.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ptable .corner{font-size:10px;color:var(--ink2);display:flex;align-items:center;justify-content:center}
+.el{font-family:inherit;border:1.5px solid var(--line);border-radius:7px;background:#fff;cursor:pointer;
+  padding:3px 0 2px;display:flex;flex-direction:column;align-items:center;line-height:1.15;color:var(--ink);min-width:0}
+.el .z{font-size:10px;color:var(--ink2)}
+.el .s{font-size:16px;font-weight:700}
+.el .c{font-size:10.5px;color:var(--ink2)}
+.el.metal{background:#eef3f8}
+.el.semi{background:#f5f0e2}
+.el.non{background:#fff}
+.el.gas18{background:#f3edf9}
+.el.hl{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.el.pick{border-color:var(--ink);border-width:2px}
+.el.dim2{opacity:.35}
+.pempty{border:1px dashed var(--line);border-radius:7px}
+.pinfo{margin-top:14px}
+
+/* 113-04 重繪小表 */
+.pt-mini{display:inline-grid;grid-template-columns:repeat(2,74px);gap:3px;margin:6px 0 12px}
+.pt-mini div{border:1.5px solid var(--ink);text-align:center;padding:4px 0;line-height:1.25;font-size:13px;background:#fff}
+.pt-mini b{font-size:17px;display:block}
+.pt-mini .x{border:none;background:none}
+
+/* 歷史時間軸 */
+.tl{border-left:3px solid var(--line);margin:24px 0 24px 8px;padding-left:20px}
+.tl .ev{position:relative;margin-bottom:22px}
+.tl .ev::before{content:"";position:absolute;left:-28px;top:7px;width:13px;height:13px;border-radius:50%;background:var(--accent);border:3px solid var(--paper)}
+.tl .yr{font-size:13px;letter-spacing:.14em;color:var(--accent);font-weight:700}
+.tl .tt{font-size:17.5px;font-weight:700;margin:2px 0 4px}
+.tl p{margin:0;font-size:15.5px}
+</style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<a class="th-home" href="index.html">🏝️ 回自學站首頁</a>
+
+<div class="bar"><div class="bar-inner">
+  <b id="pnum">0 / 10</b>
+  <div class="track"><div class="fill" id="pfill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">八年級上 · 第六章 探索物質組成</div>
+  <h1>誰是最輕的那一個？</h1>
+  <p class="sub">一題只給你三個代號、一句「X 最輕」，就要你猜出誰是誰。<br>全國的考生四個選項幾乎平分——<strong>一半以上的人在猜</strong>。<br>可是那一句話，就已經刪掉了兩個選項。</p>
+  <div class="meta">
+    <span class="tag">會考 111-31</span>
+    <span class="tag">通過率 44.8%</span>
+    <span class="tag">10 題</span>
+    <span class="tag">原子組裝台</span>
+    <span class="tag">物質分類台</span>
+    <span class="tag">化學式數數看</span>
+    <span class="tag">可以點的週期表</span>
+    <span class="tag">約 30 分鐘</span>
+  </div>
+</header>
+
+<!-- ══ 開始之前 ══ -->
+<section>
+  <div class="step">開始之前</div>
+  <h2>這一課不是考試，是一場拆解</h2>
+
+  <p class="lead">等一下你會先看到一題會考題。<strong>那不是要考你</strong>——是想讓你先猜一次。<br>猜錯完全沒關係：這題全國只有不到一半的人答對。</p>
+
+  <div class="card">
+    <p style="margin:0 0 4px"><strong>這一課會這樣走：</strong></p>
+    <ol class="flow">
+      <li>先看一題只給代號的怪題目</li>
+      <li><strong>你先猜</strong>一個（猜錯沒關係）</li>
+      <li>看看全國的考生怎麼選</li>
+      <li>自己用按鈕組原子：加一顆質子、中子、電子，看看各會改變什麼</li>
+      <li>這時候才給名字：原子序、質量數、離子</li>
+      <li>往上一層：原子怎麼組成元素、化合物、混合物，化學式裡的數字在數什麼</li>
+      <li>點一點週期表：為什麼同一直行的元素脾氣很像</li>
+      <li>最後：電子、原子核、中子是照什麼順序被找到的——剛好和這題有關</li>
+    </ol>
+  </div>
+
+  <h3>先確認你知道這些</h3>
+  <p>下面每一項點開來看，幾十秒就能確認。<strong>如果都很熟，直接往下開始。</strong></p>
+  <details class="pre"><summary>東西是由很小很小的粒子組成的</summary><div class="bd"><p>一滴水、一塊鐵，切到最後會切到<strong>眼睛、顯微鏡都看不到的小粒子</strong>，叫做<strong>原子</strong>。</p><p>這一課要再往裡面看一層：<strong>原子自己也是由更小的三種東西組成的</strong>——質子、中子、電子。</p></div></details>
+  <details class="pre"><summary>正電和負電會互相抵消</summary><div class="bd"><p>一個<strong>正電（＋）</strong>加一個<strong>負電（－）</strong>，合起來就是<strong>不帶電</strong>，就像 ＋1 加 －1 等於 0。</p><p>所以如果一個東西裡面有 5 個正電、5 個負電，整個就不帶電；有 5 個正電、6 個負電，就多出 1 個負電，整個<strong>帶負電</strong>。</p><p>📌 這一課最後會用到的，就只有這個加減法。</p></div></details>
+  <details class="pre"><summary>元素符號長什麼樣子</summary><div class="bd"><p>每一種元素都有一個英文字母的代號：<strong>H 是氫、O 是氧、C 是碳、N 是氮、Na 是鈉、Cl 是氯</strong>。</p><p>第一個字母大寫，有第二個字母的話小寫。不用全部背，這一課用到時都會寫中文。</p></div></details>
+
+  <div class="note">
+    <p><b>三個提醒</b></p>
+    <p style="margin-top:10px">① 一開始那題全國只有 44.76% 的人答對，而且四個選項被選的比例差不多——很多人是用猜的。</p>
+    <p style="margin-top:8px">② 這題<strong>完全不用計算</strong>，只要知道三種粒子「誰最輕」「誰帶正電、誰帶負電」。</p>
+    <p style="margin-top:8px">③ 每一段要答完才解鎖下一段，不是要考你，是不想讓你跳過思考。進度會自己存著。</p>
+  </div>
+</section>
+
+<!-- ══ 0 案發 ══ -->
+<section>
+  <div class="step">案發現場</div>
+  <h2>三個代號，一句線索</h2>
+
+  <p class="lead">有一個很小很小的粒子，它<strong>帶著電</strong>。</p>
+  <p>裡面有三種更小的東西：質子、中子、電子。但題目故意不告訴你誰是誰，只把它們叫做 <strong>X、Y、Z</strong>，再給你一句線索：</p>
+
+  <div class="quote">
+    <p style="font-size:19px"><strong>「X 粒子的質量最小。」</strong></p>
+    <p style="margin-top:10px">就這一句。這題<em>不用計算</em>，但它比算數學還難——全國有超過一半的人答錯。</p>
+  </div>
+
+  <p class="big">X 是哪一種？光靠這一句，你能刪掉幾個選項？</p>
+</section>
+
+<!-- ══ 1 押注 ══ -->
+<section>
+  <div class="step">STEP 1　先猜一個</div>
+  <h2>讀完選一個，猜錯沒關係</h2>
+
+  <div class="q" id="q0">
+    <div class="q-src">111 年會考自然科 第 31 題（原題）</div>
+    <div class="q-body">有一個帶電的離子含有 X、Y、Z 三種粒子（質子、電子、中子，未依照順序排列），且 X、Y、Z 的粒子數目依序為 N<sub>X</sub>、N<sub>Y</sub>、N<sub>Z</sub>。已知 <strong>X 粒子的質量最小</strong>，關於此離子的說明，下列何者最合理？</div>
+    <div class="opts" data-q="0" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>若為陽離子，且 N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub>，則 Z 為質子</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>若為陽離子，且 N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub>，則 Z 為電子</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>若為陰離子，且 N<sub>X</sub>＝N<sub>Y</sub>＞N<sub>Z</sub>，則 Z 為質子</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>若為陰離子，且 N<sub>X</sub>＞N<sub>Y</sub>＝N<sub>Z</sub>，則 Z 為電子</span></button>
+    </div>
+    <p class="pct-note" id="pn0">選項右邊的百分比＝111 年全國考生選這個選項的比例（官方試題分析）。</p>
+    <div class="fb" id="fb0"></div>
+  </div>
+  <p class="dim" style="font-size:14.5px">看不懂「陽離子」「陰離子」沒關係，等一下你會親手做出來。先憑感覺選。</p>
+</section>
+
+<!-- ══ 2 全國 ══ -->
+<section class="locked-zone" id="z2">
+  <div class="step">STEP 2　全國怎麼選</div>
+  <h2>四個選項，三個錯的被選得幾乎一樣多</h2>
+
+  <div class="card">
+    <div class="dist" id="dist"></div>
+    <p class="dim" style="font-size:14px;margin:14px 0 0">
+      資料：國家教育研究院 111 年國中教育會考自然科官方試題分析（全體考生；通過率 0.4476、鑑別度 0.43）。<br>
+      <span>「通過率」＝答對的人佔幾成；「鑑別度」越高，代表這題越能分出真的懂和只是猜對的人。</span></p>
+  </div>
+
+  <div class="note">
+    <p><b>錯的三個選項各拿到 15%～20%，這代表什麼？</b></p>
+    <p style="margin-top:10px">如果大家都有同一個誤會，錯的人會擠在同一個選項。但這題沒有——<em>錯的人平均分散</em>，看起來像是很多人根本不知道怎麼下手，只好用猜的。</p>
+    <p style="margin-top:10px">而選 B 和選 D 的人加起來有 <strong>35.52%</strong>。這兩個選項有一個共同點，等一下你會發現：<strong>它們和題目第一句線索直接打架</strong>。</p>
+  </div>
+
+  <p>先不要看解答。我們自己來組幾個原子。</p>
+</section>
+
+<!-- ══ 3 動手拆 ══ -->
+<section class="locked-zone" id="z3">
+  <div class="step">STEP 3　自己組一個原子</div>
+  <h2>三種粒子，各管一件事</h2>
+  <span class="book">📖 康軒課本 6-3 化合物與原子概念的發展 p.177 起</span>
+
+  <p>原子的中間有一團<strong>原子核</strong>，裡面是<span style="color:#c2410c;font-weight:700">質子（帶正電）</span>和<span style="color:#6f685c;font-weight:700">中子（不帶電）</span>；外面有<span style="color:#2f6fd0;font-weight:700">電子（帶負電）</span>在繞。</p>
+  <p><strong>按按鈕，一次加一顆或拿掉一顆</strong>，看右邊（手機在下面）的四個數字，哪個會動、哪個不會動。</p>
+
+  <div class="lab">
+    <div class="lab-t">實驗室 A ── 原子組裝台</div>
+    <div class="atom-box">
+      <svg id="atomSvg" viewBox="0 0 300 270" role="img" aria-label="原子示意圖：中間原子核、外圈電子"></svg>
+      <div class="ctrls">
+        <div class="crow"><span class="dot" style="background:#e0523f"></span><span class="nm">質子<small>帶正電（＋）</small></span>
+          <button data-p="p" data-d="-1" aria-label="質子減一">−</button><span class="ct" id="cp">6</span><button data-p="p" data-d="1" aria-label="質子加一">＋</button></div>
+        <div class="crow"><span class="dot" style="background:#9a9488"></span><span class="nm">中子<small>不帶電</small></span>
+          <button data-p="n" data-d="-1" aria-label="中子減一">−</button><span class="ct" id="cn">6</span><button data-p="n" data-d="1" aria-label="中子加一">＋</button></div>
+        <div class="crow"><span class="dot" style="background:#2f6fd0"></span><span class="nm">電子<small>帶負電（－）</small></span>
+          <button data-p="e" data-d="-1" aria-label="電子減一">−</button><span class="ct" id="ce">6</span><button data-p="e" data-d="1" aria-label="電子加一">＋</button></div>
+        <div style="text-align:center;margin-top:4px" id="nucNote"></div>
+      </div>
+    </div>
+
+    <div class="readout">
+      <div class="pill"><div class="lb">是哪一種元素</div><div class="vl" id="rEl">碳</div></div>
+      <div class="pill"><div class="lb">原子序</div><div class="vl" id="rZ">6</div></div>
+      <div class="pill"><div class="lb">質量數</div><div class="vl" id="rA">12</div></div>
+      <div class="pill"><div class="lb">帶電</div><div class="vl" id="rQ">不帶電</div></div>
+    </div>
+    <p class="dim" style="font-size:12.5px;margin:6px 0 0">「原子序」「質量數」這兩個詞先不用懂，看它們跟著誰變就好。</p>
+
+    <div class="massbar">
+      <div>重量都在哪裡？（整個粒子的質量，分成原子核和電子兩段）</div>
+      <div class="mtrack"><div class="mn" id="mN" style="width:100%"></div><div class="me" id="mE" style="width:0"></div></div>
+      <div id="mTxt"></div>
+    </div>
+
+    <div class="chips">
+      <button class="chip" data-preset="H">氫原子</button>
+      <button class="chip" data-preset="C12">碳原子</button>
+      <button class="chip" data-preset="C14">另一種碳（多 2 個中子）</button>
+      <button class="chip" data-preset="Na">鈉原子</button>
+      <button class="chip" data-preset="Cl-">氯多一個電子</button>
+    </div>
+    <div class="verdict" id="labA"></div>
+  </div>
+
+  <div class="q" id="q1">
+    <div class="q-body">在組裝台上<strong>只按「電子 ＋」</strong>，其他都不動。下面四個數字，哪一個會改變？</div>
+    <div class="opts" data-q="1" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>是哪一種元素（例如碳變成氮）</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>質量數</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>帶電</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>原子序</span></button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="locked-zone" id="z3b">
+    <div class="q" id="q2">
+      <div class="q-body">三種粒子裡，<strong>哪一種的數目一改變，元素就換成另一種</strong>（例如碳變成氮）？回組裝台試試看。</div>
+      <div class="opts" data-q="2" data-ans="C">
+        <button class="opt" data-k="A"><span class="k">A</span><span>電子</span></button>
+        <button class="opt" data-k="B"><span class="k">B</span><span>中子</span></button>
+        <button class="opt" data-k="C"><span class="k">C</span><span>質子</span></button>
+        <button class="opt" data-k="D"><span class="k">D</span><span>三種都會</span></button>
+      </div>
+      <div class="fb" id="fb2"></div>
+    </div>
+  </div>
+
+  <div class="locked-zone" id="z3c">
+    <p>再看一次組裝台下面那條「重量都在哪裡」：藍色那段（電子）細到幾乎看不見。<strong>一顆電子的質量，大約只有一顆質子的 1836 分之 1</strong>；質子和中子則差不多重。</p>
+    <div class="q" id="q3">
+      <div class="q-src">回到原題</div>
+      <div class="q-body">題目說「X 粒子的質量最小」。所以 X 是電子。<br>光憑這一句，原題的哪兩個選項<strong>可以直接刪掉</strong>？</div>
+      <div class="opts" data-q="3" data-ans="B">
+        <button class="opt" data-k="A"><span class="k">A</span><span>選項 (A) 和 (C)</span></button>
+        <button class="opt" data-k="B"><span class="k">B</span><span>選項 (B) 和 (D)</span></button>
+        <button class="opt" data-k="C"><span class="k">C</span><span>選項 (A) 和 (D)</span></button>
+        <button class="opt" data-k="D"><span class="k">D</span><span>一個都刪不掉，一定要算</span></button>
+      </div>
+      <div class="fb" id="fb3"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 4 剩下兩個 + 命名 ══ -->
+<section class="locked-zone" id="z4">
+  <div class="step">STEP 4　剩下兩個，組出來看</div>
+  <h2>選項 (A) 說它是陽離子，組出來卻不帶電</h2>
+
+  <p>刪掉 (B)、(D) 之後，剩下 (A) 和 (C)。兩個都說 <strong>Z 是質子</strong>（X 是電子，所以剩下的 Y 就是中子）。<br>把它們的數目真的組出來看看。<strong>點下面的選項。</strong></p>
+
+  <div class="lab">
+    <div class="lab-t">實驗室 B ── 四個選項逐一組組看</div>
+    <div class="chips" id="optChips">
+      <button class="chip" data-o="A">選項 (A)</button>
+      <button class="chip" data-o="B">選項 (B)</button>
+      <button class="chip on" data-o="C">選項 (C)</button>
+      <button class="chip" data-o="D">選項 (D)</button>
+    </div>
+    <div class="atom-box">
+      <svg id="atomSvg2" viewBox="0 0 300 270" role="img" aria-label="選項的原子示意圖"></svg>
+      <div class="ctrls" id="optInfo" style="font-size:15px"></div>
+    </div>
+    <div class="verdict" id="labB"></div>
+  </div>
+
+  <h3>現在才給名字</h3>
+  <p>你剛剛親手發現的三件事，課本各給了一個名字：</p>
+  <div class="scroll">
+  <table>
+    <tr><th>你發現的事</th><th>課本的名字</th><th>算法</th></tr>
+    <tr><td>質子幾個，決定它是哪一種元素</td><td><b>原子序</b></td><td>原子序 ＝ 質子數</td></tr>
+    <tr><td>原子幾乎全部的重量都在原子核</td><td><b>質量數</b></td><td>質量數 ＝ 質子數 ＋ 中子數</td></tr>
+    <tr><td>質子和電子一樣多，就不帶電</td><td><b>原子</b>（中性）</td><td>電子數 ＝ 質子數</td></tr>
+    <tr><td>電子比質子<b>少</b>，多出正電</td><td><b>陽離子</b></td><td>帶正電</td></tr>
+    <tr><td>電子比質子<b>多</b>，多出負電</td><td><b>陰離子</b></td><td>帶負電</td></tr>
+  </table>
+  </div>
+  <p>課本寫元素的方式，是把質量數放在左上角、原子序放在左下角，例如 <span class="nuc" style="font-size:22px"><span class="lr"><span>12</span><span>6</span></span>C</span>（碳：6 個質子、6 個中子）。離子再把帶的電寫在右上角，例如 <span class="nuc" style="font-size:22px"><span class="lr"><span>19</span><span>9</span></span>F<span class="ch">−</span></span>（氟離子）。</p>
+
+  <div class="quote">
+    <p><strong>那原題答案是哪一個？</strong></p>
+    <p style="margin-top:10px">X 最輕 → X 是電子 → 刪掉 (B)、(D)。<br>
+    (A)：電子數 N<sub>X</sub>＝質子數 N<sub>Z</sub> → 正負抵消 → <strong>不帶電</strong>，卻說自己是陽離子 → 自相矛盾。<br>
+    (C)：電子數 N<sub>X</sub>＞質子數 N<sub>Z</sub> → 負電比較多 → <strong>陰離子</strong> ✓<br>
+    答案 <strong>C</strong>。全程沒有算任何一個數字。</p>
+  </div>
+
+  <div class="aside">
+    <p><strong>記法：</strong>三種粒子各管一件事——<br>
+    <strong>質子</strong>管「你是誰」（元素）；<strong>質子＋中子</strong>管「你多重」（質量數）；<strong>質子和電子比一比</strong>管「你帶什麼電」。<br>
+    中子什麼電都不管，所以題目常常拿它來湊數。</p>
+  </div>
+</section>
+
+<!-- ══ 5 變化題：離子 ══ -->
+<section class="locked-zone" id="z5">
+  <div class="step">STEP 5　同一招，換一題</div>
+  <h2>離子只動電子，不動質子</h2>
+
+  <p>剛剛組裝台教你的最重要一件事：<strong>帶電改變，只能是電子在變</strong>。質子一變，就不是同一種元素了。</p>
+
+  <div class="q" id="q4">
+    <div class="q-src">114 年會考自然科 第 17 題（原題；表格重新排版）</div>
+    <div class="q-body">已知 Ca 和 Cl 的原子序分別為 20、17，Ca<sup>2+</sup> 和 Cl<sup>−</sup> 的質子數和電子數如表（三），表中 w、x、y、z 的數值大小比較，下列何者正確？
+      <table class="mini"><tr><th></th><th>Ca<sup>2+</sup></th><th>Cl<sup>−</sup></th></tr><tr><th>質子數</th><td>w</td><td>x</td></tr><tr><th>電子數</th><td>y</td><td>z</td></tr></table>
+    </div>
+    <div class="opts" data-q="4" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>w＞z</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>x＞y</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>x＞z</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>y＞w</span></button>
+    </div>
+    <p class="pct-note" id="pn4">右邊百分比＝114 年全國考生的選答比例（官方試題分析）。</p>
+    <div class="fb" id="fb4"></div>
+  </div>
+</section>
+
+<!-- ══ 6 物質的層級 ══ -->
+<section class="locked-zone" id="z6">
+  <div class="step">STEP 6　往上一層：原子怎麼組成東西</div>
+  <h2>只看兩件事，就能把物質分成三類</h2>
+  <span class="book">📖 康軒課本 6-1 元素的探索 p.164、6-3 p.177</span>
+
+  <p>原子組好了，接著它們會一個一個黏成<strong>分子</strong>，再堆成我們看得到的東西。下面每張卡片畫的是那樣東西<strong>放大幾億倍</strong>的樣子（示意圖）。</p>
+  <p>幫每張卡片選一個分類。<strong>只要問自己兩個問題：</strong></p>
+  <div class="card" style="font-size:16px">
+    <p style="margin:0 0 8px">① 盒子裡的粒子<strong>全部長一樣嗎？</strong>　不一樣 → <b>混合物</b></p>
+    <p style="margin:0">② 長一樣的話，每顆粒子裡有<strong>幾種顏色的原子？</strong>　一種 → <b>元素</b>；兩種以上 → <b>化合物</b></p>
+  </div>
+
+  <div class="lab">
+    <div class="lab-t">實驗室 C ── 物質分類台</div>
+    <div class="sorter" id="sorter"></div>
+    <div class="legend" id="legC"></div>
+    <div class="verdict" id="labC">點每張卡片下面的按鈕。分錯了可以再按一次別的。</div>
+  </div>
+
+  <div class="q" id="q5">
+    <div class="q-src">114 年會考自然科 第 4 題（原題；表格重新排版）</div>
+    <div class="q-body">小志將物質分成元素、化合物和混合物三類，並舉例如表（一）。表中各例子所含<strong>原子種類</strong>多寡的比較，下列何者正確？
+      <table class="mini"><tr><th>類別</th><th>例子</th></tr><tr><td>元素</td><td>硫磺</td></tr><tr><td>化合物</td><td>笑氣</td></tr><tr><td>混合物</td><td>花岡岩</td></tr></table>
+    </div>
+    <div class="opts" data-q="5" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>笑氣＞硫磺</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>硫磺＞笑氣</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>硫磺＞花岡岩</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>三個例子都一樣多</span></button>
+    </div>
+    <p class="pct-note" id="pn5">右邊百分比＝114 年全國考生的選答比例（官方試題分析）。</p>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <div class="locked-zone" id="z6b">
+    <h3>化學式裡的兩種數字</h3>
+    <span class="book">📖 康軒課本 6-4 分子與化學式 p.184</span>
+    <p>把分子寫成文字，就是<strong>化學式</strong>。例如水分子是 1 個氧原子加 2 個氫原子，寫成 H<sub>2</sub>O。</p>
+    <p>化學式裡會出現<strong>兩種位置的數字</strong>，它們數的東西完全不一樣。點下面的化學式，看圖數數看。</p>
+
+    <div class="lab">
+      <div class="lab-t">實驗室 D ── 化學式數數看</div>
+      <div class="chips" id="fChips"></div>
+      <div class="fin"><input id="fInput" placeholder="自己打，例如 2H2O、NH3" aria-label="輸入化學式" maxlength="16"><button id="fGo">畫出來</button></div>
+      <div class="fbig" id="fBig"></div>
+      <svg id="fSvg" viewBox="0 0 320 120" role="img" aria-label="化學式的分子示意圖"></svg>
+      <div class="legend" id="legD"></div>
+      <div class="readout">
+        <div class="pill"><div class="lb">前面的大數字：幾個分子</div><div class="vl" id="fM">1</div></div>
+        <div class="pill"><div class="lb">每個分子幾個原子</div><div class="vl" id="fPer">3</div></div>
+        <div class="pill"><div class="lb">幾種原子</div><div class="vl" id="fK">2</div></div>
+        <div class="pill"><div class="lb">原子一共幾個</div><div class="vl" id="fT">3</div></div>
+      </div>
+      <div class="verdict" id="labD"></div>
+    </div>
+
+    <div class="q" id="q6">
+      <div class="q-src">本站練習題（非會考原題）</div>
+      <div class="q-body">「3CO<sub>2</sub>」這個寫法，下列敘述何者正確？</div>
+      <div class="opts" data-q="6" data-ans="B">
+        <button class="opt" data-k="A"><span class="k">A</span><span>一共有 3 個氧原子</span></button>
+        <button class="opt" data-k="B"><span class="k">B</span><span>有 3 個二氧化碳分子，一共 9 個原子</span></button>
+        <button class="opt" data-k="C"><span class="k">C</span><span>「3」是說每個分子裡有 3 個原子</span></button>
+        <button class="opt" data-k="D"><span class="k">D</span><span>一共有 6 個碳原子</span></button>
+      </div>
+      <div class="fb" id="fb6"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 7 週期表 ══ -->
+<section class="locked-zone" id="z7">
+  <div class="step">STEP 7　週期表：把元素照質子數排隊</div>
+  <h2>為什麼同一直行的元素，脾氣很像？</h2>
+  <span class="book">📖 康軒課本 6-2 元素週期表 p.172</span>
+
+  <p>你在組裝台上一顆一顆加質子，元素就從氫、氦、鋰⋯⋯一路換下去。<strong>週期表就是把這條隊伍，每隔一段就折一次行</strong>，折得剛剛好，讓性質相像的元素上下對齊。</p>
+  <p>橫的一列叫<strong>週期</strong>，直的一行叫<strong>族</strong>。<strong>點上面的族號、左邊的週期號，或任何一格元素。</strong></p>
+
+  <div class="lab">
+    <div class="lab-t">實驗室 E ── 可以點的週期表（前四週期、主要的族）</div>
+    <div class="ptable" id="ptable"></div>
+    <p class="dim" style="font-size:12.5px;margin:6px 0 0">第 2 族和第 13 族中間，其實還有第 3～12 族（鐵、銅、金都在那裡），這裡先省略。格子顏色：<span style="background:#eef3f8;padding:0 4px">金屬</span>　<span style="background:#f5f0e2;padding:0 4px">類金屬</span>　<span style="background:#fff;border:1px solid var(--line);padding:0 4px">非金屬</span>　<span style="background:#f3edf9;padding:0 4px">鈍氣</span></p>
+    <div class="verdict pinfo" id="labE">先點最右邊的「18」族看看。</div>
+  </div>
+
+  <div class="q" id="q7">
+    <div class="q-src">115 年會考自然科 第 3 題（原題）</div>
+    <div class="q-body">鈍氣又稱惰性氣體，是指氦（He）、氖（Ne）、氬（Ar）等元素，位於週期表中的第 18 族，這些元素具有下列何種性質？</div>
+    <div class="opts" data-q="7" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>熔點均高於室溫</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>有相似的化學性質</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>有相似的物理性質</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>均由雙原子所組成</span></button>
+    </div>
+    <p class="pct-note" id="pn7">右邊百分比＝115 年全國考生的選答比例（官方試題分析）。</p>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <div class="locked-zone" id="z7b">
+    <p>再來一題：週期表的一格裡寫了哪些情報？哪些<strong>沒寫</strong>？</p>
+    <div class="q" id="q8">
+      <div class="q-src">113 年會考自然科 第 4 題（原題；附圖重繪）</div>
+      <div class="q-body">圖（三）為元素週期表的一部分，<strong>無法</strong>從圖中知道下列何項資訊？<br>
+        <div class="pt-mini">
+          <div class="x"></div><div><small>2</small> <b>He</b>氦<br><small>4.003</small></div>
+          <div><small>9</small> <b>F</b>氟<br><small>19.00</small></div><div><small>10</small> <b>Ne</b>氖<br><small>20.18</small></div>
+          <div><small>17</small> <b>Cl</b>氯<br><small>35.45</small></div><div><small>18</small> <b>Ar</b>氬<br><small>39.95</small></div>
+          <div><small>35</small> <b>Br</b>溴<br><small>79.90</small></div><div><small>36</small> <b>Kr</b>氪<br><small>83.80</small></div>
+        </div>
+        <div class="dim" style="font-size:13.5px">（每格左上小字＝原子序，下方數字＝原子量）</div>
+      </div>
+      <div class="opts" data-q="8" data-ans="C">
+        <button class="opt" data-k="A"><span class="k">A</span><span>氯原子與氬原子的質子數分別為多少</span></button>
+        <button class="opt" data-k="B"><span class="k">B</span><span>氖原子與氪原子是否有相似的化學性質</span></button>
+        <button class="opt" data-k="C"><span class="k">C</span><span>氦原子與氪原子在自然界中含量何者比較多</span></button>
+        <button class="opt" data-k="D"><span class="k">D</span><span>1 莫耳的氯氣（Cl<sub>2</sub>）與 1 莫耳的溴（Br<sub>2</sub>）何者質量比較大</span></button>
+      </div>
+      <p class="pct-note" id="pn8">右邊百分比＝113 年全國考生的選答比例（官方試題分析）。</p>
+      <div class="fb" id="fb8"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 8 歷史 ══ -->
+<section class="locked-zone" id="z8">
+  <div class="step">STEP 8　這些粒子是怎麼被找到的</div>
+  <h2>最輕的最先被抓到，不帶電的躲得最久</h2>
+
+  <p class="lead">你今天在組裝台上隨手按的三顆粒子，人類花了<strong>一百多年</strong>才一顆一顆找齊。<br>而且找到的順序，正好和原題的線索有關。</p>
+
+  <div class="tl">
+    <div class="ev"><div class="yr">約 1803 年 · 道耳頓</div><div class="tt">原子說：原子是最小的，不能再分</div>
+      <p>英國老師道耳頓說：所有物質都由原子組成，同一種元素的原子都一樣，化學反應只是原子重新排列。他把原子想成<strong>實心的小球</strong>。</p></div>
+    <div class="ev"><div class="yr">1869 年 · 門得列夫</div><div class="tt">排出週期表，還故意留空格</div>
+      <p>俄國化學家門得列夫把元素排成表，<strong>排到性質對不上的地方就空一格</strong>，說「這裡有一個還沒被發現的元素」，甚至先寫出它大概多重。幾年後，鎵（1875 年）、鍺（1886 年）真的被找到，性質和他預言的很接近。</p></div>
+    <div class="ev"><div class="yr">1894 年 · 雷利與拉姆齊</div><div class="tt">一整族元素，躲在空氣裡沒人發現</div>
+      <p>第一個鈍氣「氬」被找到時，週期表上根本沒有它的位置——因為鈍氣<strong>幾乎不和任何東西反應</strong>，化學家用反應找元素，當然找不到它。後來乾脆加了一整行，就是第 18 族。</p></div>
+    <div class="ev"><div class="yr">1897 年 · 湯姆森</div><div class="tt">發現電子：原子原來可以再分</div>
+      <p>湯姆森發現一種<strong>比最輕的原子還要輕很多</strong>、帶負電的小粒子——電子。它<em>最輕、又帶電</em>，用電和磁就能讓它轉彎，所以最先被抓到。道耳頓「原子不能再分」的說法從此要修改。</p></div>
+    <div class="ev"><div class="yr">1911 年 · 拉塞福</div><div class="tt">原子中間有一顆又小又重的核</div>
+      <p>拉塞福用帶正電的粒子去打很薄的金箔，大部分直直穿過去，<strong>極少數卻被彈回來</strong>。他推論：原子幾乎是空的，正電和幾乎全部的重量，都擠在中間一個極小的<strong>原子核</strong>裡。就是組裝台那條「重量都在哪裡」。</p></div>
+    <div class="ev"><div class="yr">1932 年 · 查兌克</div><div class="tt">最後才找到中子</div>
+      <p>中子<strong>不帶電</strong>，電和磁都推不動它，在儀器上幾乎不留痕跡，所以躲到最後。查兌克找到它，才解釋了為什麼原子核比「質子數」算出來的還要重。</p></div>
+  </div>
+
+  <div class="note">
+    <p><b>回頭看原題那一句「X 的質量最小」</b></p>
+    <p style="margin-top:10px">「最輕」這條線索，一百多年前湯姆森也用過——他就是靠<strong>電子特別輕、特別容易被推動</strong>，才把它從原子裡分出來。<em>出題老師給你的，是科學家當年手上的同一條線索。</em></p>
+  </div>
+
+  <div class="q" id="q9">
+    <div class="q-src">112 年會考自然科 第 12 題（原題）</div>
+    <div class="q-body">道耳頓提出原子說後，越來越多的科學發現及證據顯示，原始的原子說需要修正。下列哪一項最可能是因為<strong>電子的發現</strong>，原子說需要修正的內容？</div>
+    <div class="opts" data-q="9" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>物質均由原子組成，原子不可再分割</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>相同元素的原子，有相同的質量和性質</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>不同元素的原子，有不同的質量和性質</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>化學反應是原子的重新排列組合，形成新的物質</span></button>
+    </div>
+    <p class="pct-note" id="pn9">右邊百分比＝112 年全國考生的選答比例（官方試題分析）。</p>
+    <div class="fb" id="fb9"></div>
+  </div>
+</section>
+
+<!-- ══ 收束 ══ -->
+<section class="locked-zone" id="z9">
+  <div class="done">
+    <div class="step">結案</div>
+    <h2>三種粒子，各管一件事</h2>
+    <p style="text-align:left">這一課從頭到尾只有一個關鍵：<strong>先認出誰是誰，題目就自己解開了</strong>。電子最輕；質子決定元素；質子和電子比一比，決定帶什麼電；中子只管重量。</p>
+    <p style="text-align:left">往上一層也是同一個道理：先看粒子一不一樣（純物質還是混合物），再看粒子裡有幾種原子（元素還是化合物）。週期表則是把元素照質子數排好，讓同族的脾氣上下對齊。</p>
+    <p style="text-align:left">如果只留一句話帶走：</p>
+    <p class="big" style="text-align:left">看到「帶電」，先比質子和電子；看到「最輕」，那就是電子。</p>
+
+    <div style="text-align:left">
+      <div class="aside">
+        <p><strong>這是第三冊的最後一課。</strong>走過的路（照課本順序）：<br>
+        <a href="variables.html" style="color:var(--accent)">緒論</a> →
+        <a href="density.html" style="color:var(--accent)">第 1 章</a> →
+        <a href="solution.html" style="color:var(--accent)">第 2 章</a> →
+        <a href="wave.html" style="color:var(--accent)">第 3 章</a> →
+        <a href="light.html" style="color:var(--accent)">第 4 章</a> →
+        <a href="heat.html" style="color:var(--accent)">第 5 章</a> → 這一課（第 6 章）。</p>
+        <p style="margin-top:10px">想照課本頁碼複習，可以到<a href="book.html" style="color:var(--accent);font-weight:700">課本地圖</a>。第 6 章在康軒課本：6-1 p.164、6-2 p.172、6-3 p.177、6-4 p.184。</p>
+      </div>
+    </div>
+    <button class="reset" id="rst">清除進度，重新開始</button>
+  </div>
+</section>
+
+<footer>
+  題目、通過率、鑑別度與選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析（111～115 年）。<br>
+  表格與附圖已重新排版、重繪；本站練習題已於題頭標示。所有圖示自行繪製，未使用課本內容。<br>
+  <span style="color:#a09789">為自學而做 · 2026</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+/* 進度 key 與總段數：首頁進度條用 data-total="10" */
+const KEY="jhs8-atom-v1", TOTAL=10;
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+
+/* 官方試題分析「全體」各選項百分比（只放有官方數據的原題） */
+const PCT={
+  0:{A:19.56,B:20.17,C:44.76,D:15.35},   // 111-31
+  4:{A:65.80,B:11.62,C:11.58,D:10.85},   // 114-17
+  5:{A:68.50,B:11.81,C:9.38,D:10.21},    // 114-04
+  7:{A:5.74,B:74.02,C:13.78,D:6.39},     // 115-03
+  8:{A:7.48,B:8.93,C:70.57,D:12.93},     // 113-04
+  9:{A:58.70,B:14.85,C:13.54,D:12.81}    // 112-12
+};
+
+const FB={
+ 0:{
+  A:["你和 19.56% 的考生選了同一個","<p>選項 (A) 說：Z 是質子，而且 N<sub>X</sub>＝N<sub>Z</sub>。</p><p>先記住題目第一句：<strong>X 最輕</strong>。等一下你會在組裝台上看到，最輕的是電子。那 (A) 就是在說「<em>電子數＝質子數</em>」——正電和負電一樣多，會怎樣？</p><p>往下拉，自己組一次就知道它哪裡怪。</p>"],
+  B:["你和 20.17% 的考生選了同一個——這是最多人選的錯誤答案","<p>選項 (B) 說 Z 是電子。</p><p>但題目第一句就說了：<strong>X 的質量最小</strong>。三種粒子裡最輕的是電子——所以 <em>X 已經是電子了</em>，Z 不可能也是電子。</p><p>選 (B) 和 (D) 的人加起來 35.52%，都是沒用上第一句線索。等一下組裝台會讓你看到，電子到底有多輕。</p>"],
+  C:["答對了——全國只有 44.76% 的人選這個","<p>先別走。這題錯的三個選項各有 15%～20% 的人選，看起來很多人是用猜的。</p><p>等一下你會在組裝台上，<em>一步一步把錯的三個選項拆掉</em>。知道別人怎麼錯，比自己答對更有用。</p>"],
+  D:["你和 15.35% 的考生選了同一個","<p>選項 (D) 說 Z 是電子。</p><p>但題目第一句：<strong>X 的質量最小</strong>。三種粒子裡最輕的是電子，所以 <em>X 已經是電子了</em>，Z 不可能也是。</p><p>選 (B) 和 (D) 的人加起來 35.52%，都是沒用上第一句線索。往下拉，先去看看電子有多輕。</p>"]},
+ 1:{
+  A:["元素沒有變","<p>回組裝台看「是哪一種元素」那一格：按電子＋之後，它還是同一個元素。</p><p>決定元素的不是電子。<strong>下一題就要找出是誰。</strong></p>"],
+  B:["質量數沒有動","<p>電子太輕了，輕到「質量數」根本不算它。質量數只數原子核裡的粒子。</p><p>看看組裝台下面那條「重量都在哪裡」——藍色那段細到幾乎看不見。</p>"],
+  C:["對，只有帶電改變","<p>多一個電子，就多一個負電。本來正負剛好抵消，現在負電多了一個 → <strong>整個帶負電</strong>。</p><p>元素沒變、質量數沒變。<em>電子只管「帶什麼電」這一件事。</em></p>"],
+  D:["原子序沒有動","<p>回組裝台看：按「電子＋」，原子序那一格一動也不動。</p><p>原子序跟著誰變？試試看按另外兩排的按鈕。</p>"]},
+ 2:{
+  A:["電子只會改變帶電","<p>剛剛已經試過：加電子，元素不會換，只會多一個負電。</p><p>試試按「質子 ＋」，看「是哪一種元素」那格。</p>"],
+  B:["中子改變的是重量","<p>按「中子 ＋」：元素不變、帶電不變，<strong>只有質量數變了</strong>。</p><p>同一種元素、中子數不同的原子，叫做<em>同位素</em>（組裝台上的「另一種碳」就是）。它們還是同一種元素。</p>"],
+  C:["對，質子就是元素的身分證","<p>質子多一個，碳（6 個質子）就變成氮（7 個）；再多一個變成氧（8 個）。</p><p><em>元素是誰，只看質子有幾個</em>。所以課本把質子的數目叫做「原子序」——它就是元素在週期表上排第幾號。</p>"],
+  D:["只有一種會","<p>試著只按「電子 ＋」或只按「中子 ＋」：元素那格都沒變。</p><p>只有按「質子」的時候，元素才會換掉。</p>"]},
+ 3:{
+  A:["再看一次 (A) 和 (C)","<p>(A) 和 (C) 都說 <strong>Z 是質子</strong>——沒有和「X 是電子」打架。</p><p>打架的是說「<strong>Z 是電子</strong>」的那兩個：X 已經是電子了，Z 就不可能也是電子。</p>"],
+  B:["對，(B) 和 (D) 直接出局","<p>(B) 和 (D) 都說 <strong>Z 是電子</strong>。但 X 最輕，X 才是電子，<em>電子的位置已經被 X 坐走了</em>。</p><p>這兩個選項一共有 <strong>35.52%</strong> 的考生選——他們很可能是沒用上第一句線索。</p><p>剩下 (A) 和 (C)，下一段把它們真的組出來。</p>"],
+  C:["(A) 沒有和線索打架","<p>(A) 說 Z 是質子，這和「X 是電子」不衝突。(A) 錯在別的地方，下一段會組給你看。</p><p>先找說「<strong>Z 是電子</strong>」的選項——X 已經是電子了。</p>"],
+  D:["其實可以刪","<p>這題一個數字都不用算。題目說「X 最輕」→ X 就是電子。</p><p>那說「<strong>Z 是電子</strong>」的選項，就和題目自己打架了。找找看是哪兩個。</p>"]},
+ 4:{
+  A:["答對了，w＞z","<p>原子序就是質子數：<strong>w＝20、x＝17</strong>。變成離子時<em>質子不動</em>。</p><p>Ca<sup>2+</sup> 帶 2 個正電 → 電子比質子少 2 個 → y＝18。<br>Cl<sup>−</sup> 帶 1 個負電 → 電子比質子多 1 個 → z＝18。</p><p>所以 w(20)＞z(18) ✓。</p>"],
+  B:["x 是 17，y 是 18","<p>Cl 的原子序 17 → 質子 x＝17，變成離子也不會改。</p><p>Ca<sup>2+</sup> 少了 2 個電子：20 − 2 ＝ <strong>y＝18</strong>。所以 x＜y。</p><p>會選這個，常常是以為「離子的質子數也會變」。<em>記住組裝台：質子一變，元素就換了。</em></p>"],
+  C:["Cl⁻ 的電子比質子多","<p>Cl<sup>−</sup> 帶<strong>負</strong>電 → 負電比較多 → 電子比質子多 1 個：z＝17＋1＝18。</p><p>所以 x(17)＜z(18)。只要問一句「帶負電，是誰比較多？」就不會反過來。</p>"],
+  D:["Ca²⁺ 的電子比質子少","<p>Ca<sup>2+</sup> 帶<strong>正</strong>電 → 正電比較多 → 電子比質子少 2 個：y＝20−2＝18。</p><p>所以 y(18)＜w(20)。<em>帶正電＝少了電子</em>，不是多了質子。</p>"]},
+ 5:{
+  A:["答對了","<p>笑氣（化學式 N<sub>2</sub>O）是化合物，含<strong>氮、氧兩種</strong>原子；硫磺是元素，只有<strong>硫一種</strong>。</p><p>這就是分類台的第二個問題：<em>粒子裡有幾種原子</em>。元素一定只有一種。</p>"],
+  B:["反過來了","<p>元素只由<strong>一種</strong>原子組成，硫磺裡全部都是硫原子。化合物至少有兩種——笑氣有氮和氧。</p><p>所以是笑氣＞硫磺。會選反，可能是把「原子的<strong>個數</strong>」和「原子的<strong>種類</strong>」搞混了。</p>"],
+  C:["花岡岩是混合物","<p>花岡岩是好幾種礦物（石英、長石、雲母⋯⋯）混在一起，每一種礦物又是好幾種原子組成的，所以<strong>原子種類一定比硫磺多</strong>。</p><p>硫磺是元素，只有一種原子——不可能比誰多。</p>"],
+  D:["三類的差別就在種類","<p>元素、化合物、混合物之所以分成三類，就是因為「裡面有幾種原子、幾種粒子」不一樣。</p><p>硫磺 1 種；笑氣 2 種；花岡岩好多種。</p>"]},
+ 6:{
+  A:["3 是乘在整個分子前面","<p>前面的大數字 3，代表<strong>有 3 個 CO<sub>2</sub> 分子</strong>。每個分子有 2 個氧，所以氧原子一共 3 × 2 ＝ <strong>6 個</strong>。</p><p>回實驗室 D 點「3CO₂」，數一數紅色的球。</p>"],
+  B:["對","<p>大數字 3 ＝ 3 個分子；每個 CO<sub>2</sub> 有 1 個碳＋2 個氧＝3 個原子。</p><p>3 × 3 ＝ <strong>9 個原子</strong>（碳 3 個、氧 6 個）。</p><p><em>右下角的小數字只管它前面那一個原子；前面的大數字管整個分子。</em></p>"],
+  C:["那是右下角小數字的工作","<p>每個分子有幾個原子，要看化學式本身（C 後面沒寫＝1 個，O 後面的小 2＝2 個）。</p><p>前面的大數字 3 說的是<strong>有幾個分子</strong>。</p>"],
+  D:["碳只有 3 個","<p>C 後面沒有小數字，代表每個分子只有 1 個碳。3 個分子 → <strong>3 個碳</strong>。</p><p>6 是氧的數目（3 × 2）。</p>"]},
+ 7:{
+  A:["鈍氣在室溫是氣體","<p>它們叫「鈍<strong>氣</strong>」，在室溫下全都是氣體，熔點都比室溫低很多。</p><p>例如氦要到大約 −269°C 才會變成液體，是所有物質裡最難液化的。</p>"],
+  B:["對，同族相似的是化學性質","<p>化學性質＝會不會、容易不容易和別的東西反應。鈍氣<strong>幾乎都不反應</strong>，這一點整族都一樣。</p><p>這也是為什麼它們最晚才被發現（最後一段會講）。</p>"],
+  C:["你和 13.78% 的考生選了同一個——這是最多人選的錯誤答案","<p>「物理性質」是熔點、沸點、密度這類，不用發生反應就量得到的。這些在同一族裡<strong>差很多</strong>：氦大約 −269°C 才變液體，氪大約 −153°C 就變了。</p><p>同族元素相似的是<em>化學性質</em>（反應的脾氣），不是物理性質。</p>"],
+  D:["鈍氣是單獨一顆原子","<p>氧氣是 O<sub>2</sub>（兩顆黏在一起），但鈍氣不愛和任何原子黏，連自己人都不黏，所以是<strong>一顆一顆單獨存在</strong>的。</p><p>回分類台想一想：空氣那張卡片裡的紫色小球，就是單獨的氬原子。</p>"]},
+ 8:{
+  A:["左上角就寫了","<p>每一格左上的小數字是原子序，原子序＝質子數：<strong>氯 17、氬 18</strong>。可以知道。</p>"],
+  B:["看位置就知道","<p>氖和氪在<strong>同一直行（第 18 族）</strong>，同族元素的化學性質相似。可以知道。</p><p>這正是週期表最有用的地方：看位置就能猜脾氣。</p>"],
+  C:["對，表上沒有「含量」","<p>週期表每格寫的是：原子序、元素符號、名稱、原子量。<strong>自然界裡有多少，表上沒寫</strong>。</p><p>考這題是要你分清楚：週期表能告訴你什麼、不能告訴你什麼。</p>"],
+  D:["你和 12.93% 的考生選了同一個——這是最多人選的錯誤答案","<p>「莫耳」九年級才會學，看不懂沒關係。只要知道：<strong>每格下面的數字（原子量）越大，原子越重</strong>。</p><p>溴 79.90 比氯 35.45 重，所以一樣多的 Br<sub>2</sub> 一定比 Cl<sub>2</sub> 重——<em>表上的數字就能比</em>。</p><p>會選這個，多半是看到「莫耳」就覺得「表上沒有」。題目裡看不懂的詞，不一定是答案。</p>"]},
+ 9:{
+  A:["對","<p>電子比原子小、從原子裡跑出來——那原子就<strong>可以再分</strong>了。道耳頓「原子不可再分割」這一句，第一個被推翻。</p>"],
+  B:["你和 14.85% 的考生選了同一個——這是最多人選的錯誤答案","<p>這一句後來確實也被修改了，但<strong>不是因為電子</strong>。</p><p>推翻它的是後來發現的<em>同位素</em>：同一種元素的原子，質量可以不一樣（組裝台上那兩種碳）。再後來找到中子，才知道差別就在中子數。</p><p>題目問的是「因為<strong>電子</strong>的發現」，要找跟「原子能不能再分」有關的那一句。</p>"],
+  C:["這一句沒有被電子推翻","<p>不同元素的原子確實不一樣——它們的質子數就不一樣。電子的發現沒有改變這一點。</p>"],
+  D:["這一句到現在都還成立","<p>化學反應確實是原子重新排列組合，原子本身不會消失也不會變成別種。這一句一直沒被推翻。</p>"]}
+};
+
+function done(){return Object.keys(state).filter(k=>/^q\d+$/.test(k)).length}
+function paint(){
+  document.getElementById("pnum").textContent=done()+" / "+TOTAL;
+  document.getElementById("pfill").style.width=(done()/TOTAL*100)+"%";
+}
+function unlock(id){
+  const el=document.getElementById(id);
+  /* 解鎖時 remove class（不要疊加 class，避免超高區段的合成層渲染異常） */
+  if(el&&el.classList.contains("locked-zone")){
+    el.classList.remove("locked-zone");el.classList.add("revealed");
+    setTimeout(()=>el.classList.remove("revealed"),700);
+  }
+}
+function gate(){
+  if(state.q0!==undefined){unlock("z2");unlock("z3");drawDist()}
+  if(state.q1!==undefined){unlock("z3b")}
+  if(state.q2!==undefined){unlock("z3c")}
+  if(state.q3!==undefined){unlock("z4");unlock("z5")}
+  if(state.q4!==undefined){unlock("z6")}
+  if(state.q5!==undefined){unlock("z6b")}
+  if(state.q6!==undefined){unlock("z7")}
+  if(state.q7!==undefined){unlock("z7b")}
+  if(state.q8!==undefined){unlock("z8")}
+  if(state.q9!==undefined){unlock("z9")}
+  paint();
+}
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, ans=box.dataset.ans;
+  box.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(box.dataset.locked)return;
+      const k=btn.dataset.k;
+      state["q"+qi]=k;
+      try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+      reveal(qi,k,ans,box,true);gate();
+    });
+  });
+});
+
+function reveal(qi,k,ans,box,scroll){
+  box.dataset.locked="1";
+  const pc=PCT[qi];
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+    if(pc&&!b.querySelector(".pct")){
+      const s=document.createElement("span");s.className="pct";s.textContent=pc[b.dataset.k].toFixed(2)+"%";b.appendChild(s);
+    }
+  });
+  const pn=document.getElementById("pn"+qi); if(pn)pn.classList.add("show");
+  const f=FB[qi][k], fb=document.getElementById("fb"+qi);
+  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+"<div class='sp-body'>"+f[1]+"</div>";
+  fb.classList.add("show");
+  if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
+}
+
+let distDone=false;
+function drawDist(){
+  if(distDone)return;distDone=true;
+  const box=document.getElementById("dist");
+  const rows=[
+    {k:"C",v:44.76,c:"#3f6d3a",t:"正確答案（陰離子，Z 是質子）"},
+    {k:"B",v:20.17,c:"#c2410c",t:"說 Z 是電子（但 X 才是最輕的）"},
+    {k:"A",v:19.56,c:"#d98a5f",t:"陽離子，Z 是質子"},
+    {k:"D",v:15.35,c:"#c2410c",t:"說 Z 是電子（但 X 才是最輕的）"}
+  ];
+  box.innerHTML=rows.map(r=>
+    '<div class="dbar"><span class="dk">'+r.k+'</span>'+
+    '<div class="dtrack"><div class="dfill" data-w="'+r.v+'" style="background:'+r.c+'"></div></div>'+
+    '<span class="dv">'+r.v.toFixed(2)+'%</span></div>'+
+    '<div style="font-size:12px;color:var(--ink2);margin:-4px 0 10px 34px">'+r.t+'</div>'
+  ).join("");
+  setTimeout(()=>{box.querySelectorAll(".dfill").forEach(d=>d.style.width=d.dataset.w+"%")},80);
+}
+
+/* ══ 共用：元素資料（原子序 1～20） ══ */
+const EL=["","氫H","氦He","鋰Li","鈹Be","硼B","碳C","氮N","氧O","氟F","氖Ne","鈉Na","鎂Mg","鋁Al","矽Si","磷P","硫S","氯Cl","氬Ar","鉀K","鈣Ca"];
+function elName(p){return p>=1&&p<=20?EL[p].charAt(0):(p===0?"（沒有）":"?")}
+function elSym(p){return p>=1&&p<=20?EL[p].slice(1):"?"}
+function chargeStr(q){if(q===0)return "";const a=Math.abs(q);return (a>1?a:"")+(q>0?"+":"−")}
+function notation(p,n,e){
+  if(p<1)return "";
+  return '<span class="nuc"><span class="lr"><span>'+(p+n)+'</span><span>'+p+'</span></span>'+elSym(p)+(p!==e?'<span class="ch">'+chargeStr(p-e)+'</span>':'')+'</span>';
+}
+
+/* ══ 共用：畫原子（原子核＋電子殼層示意） ══ */
+function atomSVG(p,n,e){
+  const cx=150,cy=135;let s="";
+  const R=[54,78,100,122],CAP=[2,8,8,99];
+  for(let i=0;i<4;i++)s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R[i]+'" fill="none" stroke="#ded5c6" stroke-width="1" stroke-dasharray="3 4"/>';
+  /* 原子核：質子與中子交錯排成向日葵螺旋 */
+  const tot=p+n, list=[];let ip=0,inn=0;
+  for(let i=0;i<tot;i++){
+    if(inn>=n||(ip<p&&ip*n<=inn*p))list.push("p"),ip++;else list.push("n"),inn++;
+  }
+  if(tot===0)s+='<text x="'+cx+'" y="'+(cy+4)+'" text-anchor="middle" font-size="11" fill="#8b8275">（空的原子核）</text>';
+  for(let i=tot-1;i>=0;i--){
+    const r=5.4*Math.sqrt(i), th=i*2.39996;
+    const x=cx+r*Math.cos(th), y=cy+r*Math.sin(th);
+    if(list[i]==="p")s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5" fill="#e0523f" stroke="#fff" stroke-width=".8"/><text x="'+x.toFixed(1)+'" y="'+(y+2.6).toFixed(1)+'" text-anchor="middle" font-size="7.5" fill="#fff" font-weight="700">+</text>';
+    else s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5" fill="#9a9488" stroke="#fff" stroke-width=".8"/>';
+  }
+  /* 電子：依 2、8、8、其餘 排在殼層上 */
+  let left=e;
+  for(let i=0;i<4&&left>0;i++){
+    const k=Math.min(CAP[i],left);left-=k;
+    for(let j=0;j<k;j++){
+      const th=-Math.PI/2+j*2*Math.PI/k+i*.35;
+      const x=cx+R[i]*Math.cos(th), y=cy+R[i]*Math.sin(th);
+      s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4.6" fill="#2f6fd0"/><text x="'+x.toFixed(1)+'" y="'+(y+2.4).toFixed(1)+'" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">−</text>';
+    }
+  }
+  return s;
+}
+
+/* ══ 實驗室 A：原子組裝台 ══ */
+const A={p:6,n:6,e:6,last:"preset",preset:"C12"};
+const LIM={p:[0,20],n:[0,24],e:[0,22]};
+const PRE={H:[1,0,1],C12:[6,6,6],C14:[6,8,6],Na:[11,12,11],"Cl-":[17,18,18]};
+function qText(p,e){
+  const q=p-e;
+  if(q===0)return "質子 "+p+" 個、電子 "+e+" 個，正負剛好抵消 → <strong>不帶電</strong>（中性原子）。";
+  if(q>0)return "質子 "+p+" 個、電子只有 "+e+" 個 → 正電多了 "+q+" 個 → <strong>帶正電</strong>。";
+  return "電子 "+e+" 個、質子只有 "+p+" 個 → 負電多了 "+(-q)+" 個 → <strong>帶負電</strong>。";
+}
+function labA(){
+  const {p,n,e}=A;
+  document.getElementById("atomSvg").innerHTML=atomSVG(p,n,e);
+  document.getElementById("cp").textContent=p;
+  document.getElementById("cn").textContent=n;
+  document.getElementById("ce").textContent=e;
+  document.getElementById("rEl").textContent=p?elName(p):"—";
+  document.getElementById("rZ").textContent=p;
+  document.getElementById("rA").textContent=p+n;
+  const q=p-e;
+  document.getElementById("rQ").textContent=q===0?"不帶電":(q>0?"＋"+q:"−"+(-q));
+  document.getElementById("nucNote").innerHTML=notation(p,n,e);
+  /* 質量條：質子、中子各算 1，電子算 1/1836 */
+  const mN=p+n, mE=e/1836, tot=mN+mE;
+  const pe=tot?mE/tot*100:0;
+  document.getElementById("mN").style.width=(tot?100-pe:0)+"%";
+  document.getElementById("mE").style.width=pe+"%";
+  document.getElementById("mTxt").innerHTML=tot?"電子只佔整個粒子質量的 <strong>"+(pe<0.01&&pe>0?"不到 0.01":pe.toFixed(2))+"%</strong>，其餘全在原子核。":"";
+  const v=document.getElementById("labA");
+  let msg="";
+  if(p===0){v.className="verdict bad";v.innerHTML="原子核裡<strong>沒有質子</strong>，就不算任何一種元素。先按「質子 ＋」。";return}
+  if(A.last==="p")msg="你動了<strong>質子</strong>：元素直接換成了「"+elName(p)+"」，原子序也跟著變成 "+p+"。<em>質子一變，就是另一種元素。</em><br>";
+  else if(A.last==="n")msg="你動了<strong>中子</strong>：還是「"+elName(p)+"」、帶電也沒變，<em>只有質量數變了</em>（變成 "+(p+n)+"）。<br>";
+  else if(A.last==="e")msg="你動了<strong>電子</strong>：元素沒變、質量數也沒變（電子太輕，不算進質量數），<em>只有帶電改變了</em>。<br>";
+  else if(A.preset==="C14")msg="這也是碳！質子一樣 6 個，只是中子多了 2 個（質量數 14）。同一種元素、中子數不同，叫做<em>同位素</em>。<br>";
+  else if(A.preset==="Cl-")msg="氯原子本來 17 個電子，多抓了 1 個 → 變成 18 個。<em>還是氯</em>（質子還是 17），但帶負電了。<br>";
+  v.className=p!==e?"verdict":"verdict good";  /* 帶電不是錯，用中性藍色 */
+  v.innerHTML=msg+qText(p,e);
+}
+document.querySelectorAll(".crow button").forEach(b=>{
+  b.addEventListener("click",()=>{
+    const k=b.dataset.p, d=+b.dataset.d, nv=A[k]+d;
+    if(nv<LIM[k][0]||nv>LIM[k][1])return;
+    A[k]=nv;A.last=k;labA();
+  });
+});
+document.querySelectorAll(".chip[data-preset]").forEach(c=>{
+  c.addEventListener("click",()=>{
+    const v=PRE[c.dataset.preset];A.p=v[0];A.n=v[1];A.e=v[2];A.last="preset";A.preset=c.dataset.preset;labA();
+  });
+});
+labA();
+
+/* ══ 實驗室 B：原題四個選項組組看 ══ */
+const OPT={
+  A:{ok:false,info:"陽離子，N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub><br>X＝電子、Z＝質子、Y＝中子<br>舉例：電子 5、質子 5、中子 6",p:5,n:6,e:5,
+     v:"組出來是 <strong>硼原子</strong>：質子 5、電子 5，正負剛好抵消 → <strong>不帶電</strong>。<br>可是選項說它是<em>陽離子</em>（帶正電）。不管數字換成多少，只要電子數＝質子數，就一定不帶電 → <strong>(A) 自相矛盾 ✗</strong>"},
+  B:{ok:false,info:"陽離子，說 Z 是電子<br>但 X 最輕，X 已經是電子",
+     v:"<strong>組不出來。</strong>一個粒子裡只有一種電子，X 已經佔了「電子」這個位置，Z 不能也是電子。<br>題目第一句就把它刪掉了 → <strong>(B) ✗</strong>"},
+  C:{ok:true,info:"陰離子，N<sub>X</sub>＝N<sub>Y</sub>＞N<sub>Z</sub><br>X＝電子、Z＝質子、Y＝中子<br>舉例：電子 10、中子 10、質子 9",p:9,n:10,e:10,
+     v:"組出來是 <strong>氟離子</strong> <span style='font-family:serif;font-weight:700'><sup>19</sup>F<sup>−</sup></span>：質子 9、電子 10 → 電子多 1 個 → <strong>帶負電，是陰離子</strong>。和選項說的完全一樣 → <strong>(C) ✓</strong><br>這不是隨便湊的：氟離子真的就是 9 個質子、10 個中子、10 個電子。"},
+  D:{ok:false,info:"陰離子，說 Z 是電子<br>但 X 最輕，X 已經是電子",
+     v:"<strong>組不出來。</strong>和 (B) 一樣：X 最輕，X 才是電子，Z 不可能也是電子 → <strong>(D) ✗</strong>"}
+};
+function labB(o){
+  const d=OPT[o], svg=document.getElementById("atomSvg2");
+  document.querySelectorAll("#optChips .chip").forEach(c=>c.classList.toggle("on",c.dataset.o===o));
+  svg.innerHTML=d.p!==undefined?atomSVG(d.p,d.n,d.e):'<text x="150" y="130" text-anchor="middle" font-size="40" fill="#c2410c">✗</text><text x="150" y="160" text-anchor="middle" font-size="13" fill="#5c5349">電子已經是 X 了</text>';
+  document.getElementById("optInfo").innerHTML="<div class='card' style='margin:0;padding:14px 16px'>"+d.info+(d.p!==undefined?"<div style='margin-top:8px;text-align:center'>"+notation(d.p,d.n,d.e)+"</div>":"")+"</div>";
+  const v=document.getElementById("labB");v.className="verdict "+(d.ok?"good":"bad");v.innerHTML=d.v;
+}
+document.querySelectorAll("#optChips .chip").forEach(c=>c.addEventListener("click",()=>labB(c.dataset.o)));
+labB("A");
+
+/* ══ 共用：原子顏色 ══ */
+const COL={H:"#f2f2ee",O:"#e0523f",C:"#3d3a36",N:"#3b6fd1",S:"#e8c228",Ar:"#a07cd0",Cl:"#5fb35a",Na:"#9a7bd8",Fe:"#b5651d",Cu:"#c87533",Ca:"#9aa3a8",K:"#b38ee0",He:"#d9b8ea",F:"#9fd97a",Mg:"#7fb0a0",Al:"#a8b4c0",P:"#f08a24",Si:"#c9a77a",Zn:"#8ea0b8",Ag:"#c0c0c0",Au:"#e1b93a",I:"#8a3fa8",Br:"#a5402c",Ne:"#e9a6c9"};
+const CNAME={H:"氫",O:"氧",C:"碳",N:"氮",S:"硫",Ar:"氬",Cl:"氯",Na:"鈉",Fe:"鐵",Cu:"銅",Ca:"鈣",K:"鉀",He:"氦",F:"氟",Mg:"鎂",Al:"鋁",P:"磷",Si:"矽",Zn:"鋅",Ag:"銀",Au:"金",I:"碘",Br:"溴",Ne:"氖"};
+function ball(el,x,y,r){
+  return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r+'" fill="'+(COL[el]||"#999")+'" stroke="rgba(0,0,0,.35)" stroke-width=".7"/>';
+}
+function legendHTML(els){
+  return els.map(e=>'<span><i style="background:'+COL[e]+'"></i>'+CNAME[e]+'（'+e+'）</span>').join("");
+}
+
+/* ══ 實驗室 C：物質分類台 ══ */
+const SHAPE={
+  O2:[["O",-4,0],["O",4,0]], O3:[["O",-7,3],["O",0,-3],["O",7,3]], N2:[["N",-4,0],["N",4,0]],
+  H2O:[["O",0,0],["H",-6,4.5],["H",6,4.5]], CO2:[["O",-8,0],["C",0,0],["O",8,0]],
+  N2O:[["N",-8,0],["N",0,0],["O",8,0]], Ar:[["Ar",0,0]]
+};
+const SPOT=[[22,20],[65,16],[108,22],[26,56],[68,58],[110,58]];
+function particleBox(mols){
+  let s="";
+  mols.forEach((m,i)=>{const [x,y]=SPOT[i];SHAPE[m].forEach(a=>{s+=ball(a[0],x+a[1],y+a[2],a[0]==="H"?3.3:4.6)})});
+  return s;
+}
+function solidBox(el){
+  let s="";for(let r=0;r<5;r++)for(let c=0;c<10;c++)s+=ball(el,14+c*11.5+(r%2?5.5:0),12+r*13,5.4);return s;
+}
+const ITEMS=[
+  {id:"o2",nm:"氧氣",f:"O<sub>2</sub>",ans:"元素",svg:()=>particleBox(["O2","O2","O2","O2","O2","O2"]),
+   why:"每顆粒子都一樣，而且只有氧一種原子 → 元素。"},
+  {id:"h2o",nm:"水",f:"H<sub>2</sub>O",ans:"化合物",svg:()=>particleBox(["H2O","H2O","H2O","H2O","H2O","H2O"]),
+   why:"每顆粒子都一樣（純物質），但每顆裡有氫和氧兩種原子 → 化合物。"},
+  {id:"air",nm:"空氣",f:"",ans:"混合物",svg:()=>particleBox(["N2","O2","N2","N2","Ar","O2"]),
+   why:"盒子裡有氮氣、氧氣、氬好幾種不同的粒子 → 混合物。"},
+  {id:"o3",nm:"臭氧",f:"O<sub>3</sub>",ans:"元素",svg:()=>particleBox(["O3","O3","O3","O3","O3"]),
+   why:"一顆粒子有 3 個原子，但<strong>全都是氧</strong>——只有一種原子，所以還是元素。原子的「個數」多不等於「種類」多。"},
+  {id:"co2",nm:"二氧化碳",f:"CO<sub>2</sub>",ans:"化合物",svg:()=>particleBox(["CO2","CO2","CO2","CO2","CO2","CO2"]),
+   why:"粒子都一樣，每顆裡有碳和氧兩種原子 → 化合物。"},
+  {id:"soda",nm:"汽水",f:"",ans:"混合物",svg:()=>particleBox(["H2O","CO2","H2O","H2O","H2O","CO2"]),
+   why:"水分子和二氧化碳分子混在一起（還有糖），不同的粒子 → 混合物。"},
+  {id:"s",nm:"硫磺",f:"S",ans:"元素",svg:()=>solidBox("S"),
+   why:"整塊都是硫原子一顆顆堆起來的，只有一種原子 → 元素。"},
+  {id:"n2o",nm:"笑氣",f:"N<sub>2</sub>O",ans:"化合物",svg:()=>particleBox(["N2O","N2O","N2O","N2O","N2O","N2O"]),
+   why:"粒子都一樣，每顆裡有氮和氧兩種原子 → 化合物。"},
+  {id:"gr",nm:"花岡岩",f:"",ans:"混合物",
+   svg:()=>{let s='<path d="M10 62 Q8 22 40 14 Q70 4 100 14 Q126 22 122 54 Q118 74 66 74 Q14 76 10 62Z" fill="#d9d2c6" stroke="#8b8275"/>';
+     const pts=[[30,30,"#f3efe8"],[52,46,"#6b6560"],[78,28,"#e8c9b8"],[96,50,"#f3efe8"],[40,60,"#6b6560"],[70,60,"#e8c9b8"],[104,32,"#6b6560"],[60,24,"#f3efe8"]];
+     pts.forEach(p=>{s+='<rect x="'+(p[0]-7)+'" y="'+(p[1]-5)+'" width="14" height="10" rx="2" fill="'+p[2]+'" stroke="#8b8275" stroke-width=".6"/>'});
+     return s+'<text x="65" y="80" text-anchor="middle" font-size="8" fill="#5c5349">石英、長石、雲母⋯混在一起</text>'},
+   why:"看得到好幾種顏色的顆粒，是好幾種礦物混在一起 → 混合物。"}
+];
+const sortState={};
+function renderSorter(){
+  const box=document.getElementById("sorter");
+  box.innerHTML=ITEMS.map(it=>
+    '<div class="scard" id="sc-'+it.id+'"><div class="sn">'+it.nm+(it.f?'<small>'+it.f+'</small>':'')+'</div>'+
+    '<svg viewBox="0 0 130 82" role="img" aria-label="'+it.nm+'的粒子示意圖">'+it.svg()+'</svg>'+
+    '<div class="sb">'+["元素","化合物","混合物"].map(c=>'<button data-id="'+it.id+'" data-c="'+c+'">'+c+'</button>').join("")+'</div>'+
+    '<div class="sm" id="sm-'+it.id+'"></div></div>'
+  ).join("");
+  box.querySelectorAll(".sb button").forEach(b=>b.addEventListener("click",()=>{
+    const it=ITEMS.find(x=>x.id===b.dataset.id), c=b.dataset.c, card=document.getElementById("sc-"+it.id);
+    const ok=c===it.ans; sortState[it.id]=ok;
+    card.classList.toggle("ok",ok);card.classList.toggle("no",!ok);
+    document.getElementById("sm-"+it.id).innerHTML=ok?"✓ "+it.why:"✗ 再想想：盒子裡的粒子都一樣嗎？每顆裡有幾種顏色？";
+    const n=Object.values(sortState).filter(Boolean).length, v=document.getElementById("labC");
+    if(n===ITEMS.length){v.className="verdict good";v.innerHTML="<strong>九張全對！</strong>你用的就是課本的分法：<br>粒子都一樣 → <b>純物質</b>；再分：只有一種原子 → <b>元素</b>，兩種以上 → <b>化合物</b>。粒子不一樣 → <b>混合物</b>。<br><em>注意臭氧：原子有 3 個，但種類只有 1 種。</em>下面這題考的就是「種類」。";}
+    else{v.className="verdict";v.innerHTML="已經分對 <strong>"+n+" / "+ITEMS.length+"</strong> 張。";}
+  }));
+  document.getElementById("legC").innerHTML=legendHTML(["H","O","C","N","S","Ar"]);
+}
+renderSorter();
+
+/* ══ 實驗室 D：化學式數數看 ══ */
+const FCHIPS=["O2","O3","H2O","2H2O","CO2","3CO2","CH4","NH3","H2O2","C6H12O6"];
+const SUBS="₀₁₂₃₄₅₆₇₈₉";
+function subNum(s){return s.replace(/\d/g,d=>SUBS[+d])}
+function parseF(str){
+  str=str.replace(/\s/g,"").replace(/[₀-₉]/g,c=>String(SUBS.indexOf(c)));
+  const m=str.match(/^(\d*)((?:[A-Z][a-z]?\d*)+)$/); if(!m)return null;
+  const coef=m[1]?+m[1]:1; if(coef<1||coef>5)return {err:"前面的數字請用 1～5"};
+  const parts=[];let re=/([A-Z][a-z]?)(\d*)/g,x;
+  while((x=re.exec(m[2]))){const el=x[1], k=x[2]?+x[2]:1; if(!COL[el])return {err:"「"+el+"」這個符號這裡沒有收錄"}; if(k<1)return {err:"小數字不能是 0"}; parts.push([el,k]);}
+  const per=parts.reduce((a,b)=>a+b[1],0); if(per>30)return {err:"一個分子最多畫 30 個原子"};
+  return {coef,parts,body:m[2]};
+}
+function labD(str){
+  const r=parseF(str), v=document.getElementById("labD");
+  document.querySelectorAll("#fChips .chip").forEach(c=>c.classList.toggle("on",c.dataset.f===str));
+  if(!r||r.err){v.className="verdict bad";v.innerHTML=r&&r.err?r.err:"看不懂這個化學式。請用元素符號加數字，例如 2H2O、CO2、NH3。";return}
+  const {coef,parts,body}=r;
+  /* 大字：係數紅、右下小數字藍 */
+  document.getElementById("fBig").innerHTML=(coef>1?'<span class="cf">'+coef+'</span>':'')+
+    parts.map(p=>p[0]+(p[1]>1?'<sub class="sb2">'+p[1]+'</sub>':'')).join("");
+  const atoms=[];parts.forEach(p=>{for(let i=0;i<p[1];i++)atoms.push(p[0])});
+  const per=atoms.length, cols=Math.min(per,6), rows=Math.ceil(per/cols);
+  const sp=18, w=cols*sp+10, h=rows*sp+10;
+  let x=6,y=6,rowH=0,s="";
+  for(let m=0;m<coef;m++){
+    if(x+w>314){x=6;y+=rowH+10;rowH=0}
+    s+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="10" fill="#fff" stroke="#5c5349" stroke-dasharray="4 3"/>';
+    atoms.forEach((a,i)=>{const cx=x+5+sp/2+(i%cols)*sp, cy=y+5+sp/2+Math.floor(i/cols)*sp;
+      s+=ball(a,cx,cy,7.6)+'<text x="'+cx.toFixed(1)+'" y="'+(cy+3).toFixed(1)+'" text-anchor="middle" font-size="8" font-weight="700" fill="'+(a==="H"||a==="S"||a==="He"||a==="Au"||a==="Ag"?"#2b2622":"#fff")+'">'+a+'</text>';});
+    x+=w+12;rowH=Math.max(rowH,h);
+  }
+  const svg=document.getElementById("fSvg");svg.setAttribute("viewBox","0 0 320 "+(y+rowH+6));svg.innerHTML=s;
+  document.getElementById("legD").innerHTML=legendHTML(parts.map(p=>p[0]).filter((e,i,a)=>a.indexOf(e)===i));
+  document.getElementById("fM").textContent=coef;
+  document.getElementById("fPer").textContent=per;
+  document.getElementById("fK").textContent=parts.length;
+  document.getElementById("fT").textContent=coef*per;
+  const kinds=parts.length;
+  const each=parts.map(p=>CNAME[p[0]]+" "+(coef*p[1])+" 個").join("、");
+  v.className="verdict";
+  v.innerHTML="<span style='color:#c2410c;font-weight:700'>前面的大數字</span>"+(coef>1?"是 "+coef+"：<strong>有 "+coef+" 個分子</strong>（虛線框）。":"沒寫＝ 1 個分子。")+
+    "<br><span style='color:#1d5b79;font-weight:700'>右下的小數字</span>只管它<strong>前面那一個原子</strong>：每個分子裡有 "+parts.map(p=>CNAME[p[0]]+" "+p[1]+" 個").join("、")+"。"+
+    "<br>原子一共 "+coef+" × "+per+" ＝ <strong>"+(coef*per)+" 個</strong>（"+each+"）。"+
+    "<br>只有 "+kinds+" 種原子 → 這是"+(kinds===1?"<b>元素</b>":"<b>化合物</b>")+"。"+(body==="O3"?"<em>（臭氧：3 個原子，但只有 1 種）</em>":"");
+}
+document.getElementById("fChips").innerHTML=FCHIPS.map(f=>'<button class="chip" data-f="'+f+'">'+f.replace(/^(\d*)(.*)$/,(m,a,b)=>a+subNum(b))+'</button>').join("");
+document.querySelectorAll("#fChips .chip").forEach(c=>c.addEventListener("click",()=>{document.getElementById("fInput").value=c.dataset.f;labD(c.dataset.f)}));
+document.getElementById("fGo").addEventListener("click",()=>labD(document.getElementById("fInput").value));
+document.getElementById("fInput").addEventListener("keydown",e=>{if(e.key==="Enter")labD(e.target.value)});
+labD("H2O");
+
+/* ══ 實驗室 E：可以點的週期表 ══ */
+/* [原子序, 符號, 中文, 原子量, 類別(metal/semi/non/gas18)] */
+const PT=[
+  [[1,"H","氫","1.008","non"],null,null,null,null,null,null,[2,"He","氦","4.003","gas18"]],
+  [[3,"Li","鋰","6.94","metal"],[4,"Be","鈹","9.012","metal"],[5,"B","硼","10.81","semi"],[6,"C","碳","12.01","non"],[7,"N","氮","14.01","non"],[8,"O","氧","16.00","non"],[9,"F","氟","19.00","non"],[10,"Ne","氖","20.18","gas18"]],
+  [[11,"Na","鈉","22.99","metal"],[12,"Mg","鎂","24.31","metal"],[13,"Al","鋁","26.98","metal"],[14,"Si","矽","28.09","semi"],[15,"P","磷","30.97","non"],[16,"S","硫","32.07","non"],[17,"Cl","氯","35.45","non"],[18,"Ar","氬","39.95","gas18"]],
+  [[19,"K","鉀","39.10","metal"],[20,"Ca","鈣","40.08","metal"],[31,"Ga","鎵","69.72","metal"],[32,"Ge","鍺","72.63","semi"],[33,"As","砷","74.92","semi"],[34,"Se","硒","78.97","non"],[35,"Br","溴","79.90","non"],[36,"Kr","氪","83.80","gas18"]]
+];
+const GN=[1,2,13,14,15,16,17,18];
+const GINFO={
+  1:"<strong>第 1 族</strong>：鋰、鈉、鉀（氫除外，叫做<strong>鹼金屬</strong>）。都是很軟的金屬，用刀就切得動；丟進水裡會劇烈反應、冒出氫氣，所以要泡在油裡保存。<em>整族的反應脾氣都很像</em>，而且越往下越激烈。<br>氫雖然排在這一行，但它是氣體、不是金屬，是個例外。",
+  2:"<strong>第 2 族</strong>：鈹、鎂、鈣（叫做<strong>鹼土金屬</strong>）。也很容易反應，所以在自然界多半以化合物存在——石灰岩、貝殼、骨頭裡都有鈣的化合物。",
+  13:"<strong>第 13 族</strong>：硼、鋁、鎵。鋁是地殼裡最多的金屬。鎵很特別，大約 30°C 就熔化，放在手心會變成液體——它就是門得列夫當年<strong>先留空格、後來才被找到</strong>的元素之一。",
+  14:"<strong>第 14 族</strong>：碳、矽、鍺。碳是所有生物身體的骨架；矽和鍺是做電腦晶片的材料。鍺也是門得列夫先預言、後來才被找到的。",
+  15:"<strong>第 15 族</strong>：氮、磷、砷。氮氣大約佔空氣的 78%。",
+  16:"<strong>第 16 族</strong>：氧、硫、硒。氧氣大約佔空氣的 21%；硫就是分類台上那塊黃色的硫磺。",
+  17:"<strong>第 17 族</strong>：氟、氯、溴（叫做<strong>鹵素</strong>）。反應非常活潑，特別愛和金屬結合——食鹽（氯化鈉）就是第 1 族的鈉和第 17 族的氯結合成的。<em>同族的脾氣很像</em>，但物理性質差很多：室溫下氟、氯是氣體，溴卻是液體。",
+  18:"<strong>第 18 族</strong>：氦、氖、氬、氪（叫做<strong>鈍氣</strong>，又叫惰性氣體）。<em>幾乎不和任何東西反應</em>——這是它們共同的化學性質。所以它們一顆一顆單獨存在，不和別人黏成分子。<br>但它們的熔點、沸點、密度一路往下差很多：氦大約 −269°C 才變液體，氪大約 −153°C 就變了。<strong>同族相似的是化學性質，不是物理性質。</strong>"
+};
+function pInfo(r){
+  const z=PT[r].filter(Boolean).map(c=>c[0]);
+  return "<strong>第 "+(r+1)+" 週期</strong>（橫的一列）：原子序從 "+z[0]+" 到 "+z[z.length-1]+"。"+(r===0?"第一列只有氫和氦兩個。":"從左到右，<strong>每往右一格就多一個質子</strong>"+(r===3?"（中間省略的第 3～12 族補起來，才會剛好一格一格接上）":"")+"。")+
+    "<br>同一週期的元素脾氣<em>不像</em>：左邊是金屬、右邊是非金屬，最右邊是不反應的鈍氣。<strong>要找脾氣相像的，要看直的那一行。</strong>";
+}
+function eInfo(c,gi){
+  const [z,sym,nm,m]=c;
+  const sib=PT.map(row=>row[gi]).filter(Boolean).filter(x=>x[0]!==z).map(x=>x[2]).join("、");
+  return "<strong>"+nm+"（"+sym+"）</strong>　原子序 "+z+"、原子量 "+m+"<br>"+
+    "原子序 "+z+" → 原子核裡有 <strong>"+z+" 個質子</strong>；不帶電的時候，外面也有 "+z+" 個電子。"+
+    "<br>它在第 "+GN[gi]+" 族，"+(sib?"同族的兄弟："+sib+"——<em>化學性質和它很像</em>。":"")+
+    (z===18?"<br>🔎 小發現：氬的原子量 39.95，比下一格鉀（39.10）還重！週期表是照<strong>質子數</strong>排，不是照重量排。":"")+
+    (z===19?"<br>🔎 小發現：鉀的原子量 39.10，比前一格氬（39.95）還輕。週期表照的是<strong>質子數</strong>，不是重量。":"");
+}
+function renderPT(){
+  const t=document.getElementById("ptable");
+  let h='<div class="corner">族→</div>'+GN.map((g,i)=>'<button class="gh" data-g="'+i+'">'+g+'</button>').join("");
+  PT.forEach((row,r)=>{
+    h+='<button class="ph" data-r="'+r+'">'+(r+1)+'</button>';
+    row.forEach((c,gi)=>{
+      if(!c){h+='<div class="pempty"></div>';return}
+      h+='<button class="el '+c[4]+'" data-r="'+r+'" data-gi="'+gi+'"><span class="z">'+c[0]+'</span><span class="s">'+c[1]+'</span><span class="c">'+c[2]+'</span></button>';
+    });
+  });
+  t.innerHTML=h;
+  const v=document.getElementById("labE");
+  function clear(){t.querySelectorAll(".on,.hl,.pick,.dim2").forEach(x=>x.classList.remove("on","hl","pick","dim2"))}
+  t.querySelectorAll(".gh").forEach(b=>b.addEventListener("click",()=>{
+    clear();b.classList.add("on");const gi=+b.dataset.g;
+    t.querySelectorAll(".el").forEach(e=>{if(+e.dataset.gi===gi)e.classList.add("hl");else e.classList.add("dim2")});
+    v.className="verdict pinfo";v.innerHTML=GINFO[GN[gi]];
+  }));
+  t.querySelectorAll(".ph").forEach(b=>b.addEventListener("click",()=>{
+    clear();b.classList.add("on");const r=+b.dataset.r;
+    t.querySelectorAll(".el").forEach(e=>{if(+e.dataset.r===r)e.classList.add("hl");else e.classList.add("dim2")});
+    v.className="verdict pinfo";v.innerHTML=pInfo(r);
+  }));
+  t.querySelectorAll(".el").forEach(b=>b.addEventListener("click",()=>{
+    clear();const r=+b.dataset.r, gi=+b.dataset.gi;b.classList.add("pick");
+    t.querySelectorAll(".el").forEach(e=>{if(+e.dataset.gi===gi&&e!==b)e.classList.add("hl")});
+    v.className="verdict pinfo";v.innerHTML=eInfo(PT[r][gi],gi);
+  }));
+}
+renderPT();
+
+/* 還原已作答的題目 */
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, saved=state["q"+qi];
+  if(saved!==undefined)reveal(qi,saved,box.dataset.ans,box,false);
+});
+gate();
+
+document.getElementById("rst").addEventListener("click",()=>{
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+<!--STEPPLAY-->
+<script>
+/* stepplay.js — 國中學習站共用「一步一步看」解說播放器（2026-10-24）
+ * 原始檔：D:\Zettelkasten\20_教學\_共用\stepplay.js。各站產生器 build 時把整支內嵌進網頁，🔴 改這支、不要改產出的 html。
+ *
+ * 做法：把一段解析 HTML 依「換行、＝、→、，。；：」切成好幾步（標籤不拆，根號、分數、SVG 跟著所在的步出現），
+ * 一次亮一步，新出現的那步有淡入＋螢光底；下方有 上一步／下一步／自動播放／全部顯示。
+ *
+ * 用法：
+ *   StepPlay.mount(el, html)          把 html 放進 el 並做成播放器
+ *   StepPlay.enhance(el)              把 el 現有內容做成播放器（已做過就重來一次）
+ *   StepPlay.watch("選擇器, 選擇器")   之後這些元素一出現或內容一換，就自動做成播放器（給手寫頁、各站引擎用）
+ *   在元素加 class="sp-skip" 或 data-sp="off" 就不切步。
+ */
+(function (root) {
+  "use strict";
+  if (root.StepPlay) return;
+
+  var CSS =
+    ".sp-u,.sp-e{transition:opacity .25s}" +
+    ".sp-off{display:none!important}" +
+    ".sp-new{animation:spIn .55s ease-out both;border-radius:4px}" +
+    "@keyframes spIn{0%{opacity:0;transform:translateY(6px);background:rgba(255,214,10,.55)}" +
+    "60%{opacity:1;transform:none;background:rgba(255,214,10,.45)}100%{opacity:1;background:transparent}}" +
+    ".sp-u{display:inline}" +
+    ".sp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 2px;font-size:14px}" +
+    ".sp-bar button{font:inherit;font-size:14px;padding:5px 11px;border-radius:999px;border:1px solid rgba(0,0,0,.18);" +
+    "background:#fff;color:#1f2937;cursor:pointer;line-height:1.3}" +
+    ".sp-bar button:disabled{opacity:.4;cursor:default}" +
+    ".sp-bar .sp-next{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:700}" +
+    ".sp-bar .sp-cnt{color:#6b7280;margin-left:auto;font-variant-numeric:tabular-nums}" +
+    ".sp-bar .sp-dots{display:inline-flex;gap:3px}" +
+    ".sp-bar .sp-dots i{width:7px;height:7px;border-radius:50%;background:#d1d5db;display:inline-block}" +
+    ".sp-bar .sp-dots i.on{background:#2563eb}" +
+    "@media (prefers-color-scheme:dark){.sp-bar button{background:#1f2937;color:#e5e7eb;border-color:#4b5563}" +
+    ".sp-bar .sp-next{background:#3b82f6;border-color:#3b82f6;color:#fff}.sp-bar .sp-cnt{color:#9ca3af}" +
+    "@keyframes spIn{0%{opacity:0;transform:translateY(6px);background:rgba(250,204,21,.35)}" +
+    "60%{opacity:1;transform:none;background:rgba(250,204,21,.28)}100%{opacity:1;background:transparent}}}" +
+    "@media (prefers-reduced-motion:reduce){.sp-new{animation:none}}";
+
+  function injectCss() {
+    if (document.getElementById("sp-css")) return;
+    var s = document.createElement("style");
+    s.id = "sp-css";
+    s.textContent = CSS;
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  // 每一步最少幾個字，太短的併到前一步（避免「＝72」單獨一步太碎時可調）
+  var MIN_CHARS = 3, MAX_STEPS = 9;
+  // 斷點：在 ＝ → ≈ ⇒ 之前斷；在 ，。；：！？ 之後斷
+  var SPLIT = /(?=[＝→≈⇒])|(?<=[，。；：！？])/;
+  // 不切開、整塊跟著出現的元素（SVG、圖、公式小圖）
+  var ATOMIC = { SVG: 1, IMG: 1, CANVAS: 1, VIDEO: 1, AUDIO: 1, INPUT: 1, BUTTON: 1, SELECT: 1 };
+
+  function splitText(t) {
+    try { return t.split(SPLIT); } catch (e) { return t.split(/(?=[＝→])/); } // 舊瀏覽器沒有 lookbehind
+  }
+
+  /* 走過 el 的所有節點，把文字切成 .sp-u，每個片段標第幾步；回傳總步數 */
+  function tag(el) {
+    var step = 0, chars = 0, started = false, units = [], needBr = false, prose = false; // prose＝這一行已經出現中文說明
+    function bump(soft, minc) { // 開新的一步（目前這步字太少就不開）；soft＝從句中切開的，要自己補換行
+      if (started && chars >= (minc || MIN_CHARS)) { step++; chars = 0; needBr = !!soft; }
+      else if (!soft) needBr = false;
+    }
+    function br() { // 每一步從新的一行開始（10/24 使用者要求）
+      needBr = false;
+      var b = document.createElement("br"); b.className = "sp-e sp-br"; b.dataset.s = step; units.push(b); return b;
+    }
+    function walk(node) {
+      var kids = Array.prototype.slice.call(node.childNodes);
+      kids.forEach(function (n) {
+        if (n.nodeType === 3) {
+          var t = n.nodeValue;
+          if (!t) return;
+          if (!t.trim()) { // 純空白：跟著前一步
+            var w = document.createElement("span"); w.className = "sp-u"; w.dataset.s = step;
+            n.parentNode.insertBefore(w, n); w.appendChild(n); units.push(w); return;
+          }
+          var parts = splitText(t), frag = document.createDocumentFragment();
+          parts.forEach(function (p, i) {
+            if (!p) return;
+            var eqHead = /^[＝→≈⇒]/.test(p);
+            // 說明句子裡的算式（這一行前面已經有中文）不在「＝」「→」拆行，整句留在同一行（10/24 使用者要求）
+            if (eqHead && prose) {
+              var last = frag.lastChild || (units.length ? units[units.length - 1] : null);
+              if (i > 0 && last && last.classList && last.classList.contains("sp-u")) { last.textContent += p; chars += p.length; return; }
+            } else if (i > 0 || eqHead) bump(true, eqHead ? 5 : 0); // 「1＋3＝4」這種短算式不拆
+            if (needBr) { frag.appendChild(br()); p = p.replace(/^\s+/, ""); if (!p) return; }
+            var s = document.createElement("span"); s.className = "sp-u"; s.dataset.s = step;
+            s.textContent = p; frag.appendChild(s); units.push(s);
+            if (/[一-鿿]/.test(p)) prose = true;
+            chars += p.replace(/\s/g, "").length; started = true;
+          });
+          n.parentNode.replaceChild(frag, n);
+        } else if (n.nodeType === 1) {
+          var tn = n.tagName.toUpperCase();
+          if (tn === "BR") { prose = false; bump(); n.classList.add("sp-e"); n.dataset.s = step; units.push(n); return; } // 換行跟著下一步出現
+          if (n.classList.contains("sp-bar")) return;
+          if (ATOMIC[tn] || n.classList.contains("xc") || n.classList.contains("sp-atom")) {
+            if (needBr) n.parentNode.insertBefore(br(), n);
+            n.classList.add("sp-e"); n.dataset.s = step; units.push(n); started = true; chars += 2; return;
+          }
+          var block = /^(P|DIV|LI|TR|H[1-6]|TABLE|UL|OL|BLOCKQUOTE)$/.test(tn);
+          if (block) { prose = false; bump(); }
+          walk(n);
+          if (block) bump();
+        }
+      });
+    }
+    walk(el);
+    var n = units.length ? (+units[units.length - 1].dataset.s + 1) : 0;
+    // 步數太多就等比例合併
+    if (n > MAX_STEPS) {
+      var r = n / MAX_STEPS;
+      units.forEach(function (u) { u.dataset.s = Math.floor(+u.dataset.s / r); });
+      n = MAX_STEPS;
+    }
+    // 每個元素的「出現步」＝它裡面最早的那一步（根號上的橫線、分數線才不會先跑出來）
+    var all = el.querySelectorAll("*");
+    for (var i = all.length - 1; i >= 0; i--) {
+      var e = all[i];
+      if (e.classList.contains("sp-u") || e.classList.contains("sp-e") || e.closest(".sp-bar")) continue;
+      var m = Infinity, d = e.querySelectorAll(".sp-u,.sp-e");
+      for (var j = 0; j < d.length; j++) m = Math.min(m, +d[j].dataset.s);
+      if (m !== Infinity) { e.dataset.s = m; e.classList.add("sp-w"); }
+    }
+    return n;
+  }
+
+  function show(p, k, anim) {
+    p.k = k;
+    var nodes = p.el.querySelectorAll(".sp-u,.sp-e,.sp-w");
+    for (var i = 0; i < nodes.length; i++) {
+      var x = nodes[i], s = +x.dataset.s;
+      x.classList.toggle("sp-on", s <= k);
+      x.classList.toggle("sp-off", s > k);
+      x.classList.remove("sp-new");
+      if (anim && s === k && !x.classList.contains("sp-w")) { void x.offsetWidth; x.classList.add("sp-new"); }
+    }
+    var b = p.bar;
+    b.querySelector(".sp-prev").disabled = k <= 0;
+    b.querySelector(".sp-next").disabled = k >= p.n - 1;
+    b.querySelector(".sp-all").disabled = k >= p.n - 1;
+    b.querySelector(".sp-cnt").textContent = "第 " + (k + 1) + " 步 / 共 " + p.n + " 步";
+    var dots = b.querySelectorAll(".sp-dots i");
+    for (var d = 0; d < dots.length; d++) dots[d].classList.toggle("on", d <= k);
+    if (k >= p.n - 1) stop(p);
+  }
+
+  function stop(p) {
+    if (p.timer) { clearTimeout(p.timer); p.timer = null; }
+    var a = p.bar.querySelector(".sp-auto");
+    a.textContent = p.k >= p.n - 1 ? "⟲ 重播" : "▶ 自動播放";
+  }
+  function stepLen(p, k) { // 字越多停越久
+    var t = 0, u = p.el.querySelectorAll('.sp-u[data-s="' + k + '"]');
+    for (var i = 0; i < u.length; i++) t += u[i].textContent.length;
+    return Math.min(4200, 1300 + t * 90);
+  }
+  function play(p) {
+    var a = p.bar.querySelector(".sp-auto");
+    if (p.k >= p.n - 1) show(p, 0, true);
+    a.textContent = "⏸ 暫停";
+    (function tick() {
+      p.timer = setTimeout(function () {
+        if (p.k < p.n - 1) { show(p, p.k + 1, true); if (p.k < p.n - 1) tick(); }
+      }, stepLen(p, p.k));
+    })();
+  }
+
+  function enhance(el, opts) {
+    if (!el || el.dataset.sp === "off" || el.classList.contains("sp-skip")) return null;
+    injectCss();
+    opts = opts || {};
+    el._spBusy = true;
+    if (el._sp) { // 做過一次：內容若還是切好的樣子，先還原成原本的 HTML 再切
+      if (el._sp.timer) clearTimeout(el._sp.timer);
+      if (el.querySelector(".sp-u,.sp-e")) el.innerHTML = el._spHtml;
+    }
+    el._spHtml = el.innerHTML;
+    var n = tag(el);
+    var p = { el: el, n: n, k: 0, timer: null };
+    el._sp = p;
+    if (n <= 1) { // 只有一步：不放按鈕，淡入就好
+      var bar0 = document.createElement("div"); bar0.className = "sp-bar"; bar0.style.display = "none";
+      bar0.innerHTML = '<button class="sp-prev"></button><button class="sp-next"></button><button class="sp-auto"></button><button class="sp-all"></button><span class="sp-dots"></span><span class="sp-cnt"></span>';
+      el.appendChild(bar0); p.bar = bar0; show(p, 0, true);
+      el._spBusy = false; return p;
+    }
+    var bar = document.createElement("div");
+    bar.className = "sp-bar";
+    var dots = ""; for (var i = 0; i < n; i++) dots += "<i></i>";
+    bar.innerHTML =
+      '<button type="button" class="sp-prev">◀ 上一步</button>' +
+      '<button type="button" class="sp-next">下一步 ▶</button>' +
+      '<button type="button" class="sp-auto">▶ 自動播放</button>' +
+      '<button type="button" class="sp-all">全部顯示</button>' +
+      '<span class="sp-dots">' + dots + '</span><span class="sp-cnt"></span>';
+    el.appendChild(bar);
+    p.bar = bar;
+    function on(cls, fn) { bar.querySelector(cls).addEventListener("click", function (ev) { ev.preventDefault(); ev.stopPropagation(); fn(); }); }
+    on(".sp-prev", function () { stop(p); if (p.k > 0) show(p, p.k - 1, false); });
+    on(".sp-next", function () { stop(p); if (p.k < p.n - 1) show(p, p.k + 1, true); });
+    on(".sp-all", function () { stop(p); show(p, p.n - 1, false); });
+    on(".sp-auto", function () { if (p.timer) stop(p); else play(p); });
+    show(p, 0, true);
+    if (opts.autoplay) play(p);
+    el._spVis = el.offsetParent !== null; // 記下做好時看不看得到；重新整理後已顯示的解析，第一次按下一步才不會被拉回第 1 步
+    el._spBusy = false;
+    return p;
+  }
+
+  function mount(el, html, opts) {
+    if (!el) return null;
+    el.innerHTML = html;
+    return enhance(el, opts);
+  }
+
+  /* 自動模式：選擇器命中的元素，內容一放進來（或換掉）就做成播放器；已做過且內容沒變就跳過 */
+  function watch(sel, opts) {
+    injectCss();
+    function scan(rootEl) {
+      var list = (rootEl.matches && rootEl.matches(sel)) ? [rootEl] : [];
+      if (rootEl.querySelectorAll) list = list.concat(Array.prototype.slice.call(rootEl.querySelectorAll(sel)));
+      list.forEach(function (el) {
+        if (el._spBusy || !el.textContent.trim()) return;
+        if (el._sp && el.querySelector(":scope > .sp-bar")) return; // 做過且內容沒被換掉
+        enhance(el, opts);
+      });
+    }
+    var pending = false;
+    var mo = new MutationObserver(function () {
+      if (pending) return; pending = true;
+      (root.requestAnimationFrame || setTimeout)(function () { pending = false; scan(document.body); });
+    });
+    function start() { scan(document.body); mo.observe(document.body, { childList: true, subtree: true }); }
+    if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+    // 元素從隱藏變成看得到（hidden 拿掉、加 .on/.show）時，從第 1 步重新開始
+    document.addEventListener("click", function () {
+      setTimeout(function () {
+        var els = document.querySelectorAll(sel);
+        for (var i = 0; i < els.length; i++) {
+          var e = els[i], vis = e.offsetParent !== null;
+          if (e._sp && vis && !e._spVis && e._sp.n > 1) show(e._sp, 0, true);
+          e._spVis = vis;
+        }
+      }, 30);
+    }, true);
+  }
+
+  root.StepPlay = { mount: mount, enhance: enhance, watch: watch };
+})(typeof window !== "undefined" ? window : this);
+</script>
+<script>StepPlay.watch(".sp-body");</script>
+<!--/STEPPLAY-->
+</body>
+</html>

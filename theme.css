@@ -36,3 +36,6 @@ em{background:linear-gradient(transparent 62%,#ffe08a 62%)}
 .tag.miss{background:var(--bad-soft);border-color:#f3b4b4;color:var(--bad)}
 .rb.no{border-color:var(--bad);color:var(--bad)}
 .ch button.bad{background:var(--bad-soft);border-color:#f3b4b4}
+
+/* 2026-10-24：.bar 放在 .wrap 外面時，原本的 margin:0 -20px 會在手機上多出 20px 橫向捲動 */
+body>.bar{margin-left:0;margin-right:0}

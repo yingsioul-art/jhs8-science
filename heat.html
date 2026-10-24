@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>燒得比較燙的，比熱比較大嗎｜溫度與熱</title>
+<!--
+  第 5 章 溫度與熱 互動單元（heat.html）
+  總段數：8（= 8 題，q0～q7；首頁進度條用 data-total="8"）
+  localStorage key：jhs8-heat-v1（只記 q0～q7 的作答）
+  通過率與選項百分比只用 111～115 年官方試題分析；104～110 年的題目不寫百分比。
+-->
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px; line-height:1.85; letter-spacing:.01em;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px 120px}
+
+header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:14px}
+h1{font-size:34px;line-height:1.3;margin:0 0 14px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+
+.bar{position:sticky;top:0;z-index:50;background:rgba(250,247,240,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin:0 -20px 0;padding:10px 20px}
+.bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar b{font-size:12px;color:var(--ink2);font-weight:600;font-variant-numeric:tabular-nums}
+
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:25px;line-height:1.4;margin:0 0 20px;letter-spacing:-.01em}
+h3{font-size:19px;margin:34px 0 12px}
+p{margin:0 0 18px}
+.lead{font-size:19px;line-height:1.9}
+.dim{color:var(--ink2)}
+.big{font-size:22px;font-weight:700;line-height:1.6;margin:26px 0}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+code{font-family:"SF Mono",Consolas,monospace;background:#fff;border:1px solid var(--line);
+  padding:1px 6px;border-radius:4px;font-size:.92em}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:18px 20px;border-radius:0 10px 10px 0;margin:24px 0}
+.quote p:last-child{margin:0}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:18px 20px;margin:24px 0;font-size:16px}
+.note p:last-child{margin:0}
+.note b{color:var(--blue)}
+.aside{background:var(--warn-soft);border:1px dashed #e0cf9a;border-radius:12px;padding:16px 18px;margin:24px 0;font-size:15px;color:#5c4d20}
+.aside p:last-child{margin:0}
+
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:24px;margin:26px 0;box-shadow:var(--shadow)}
+.q-src{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:12px}
+.q-body{font-size:16.5px;line-height:1.9;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;cursor:pointer;background:#fff;font-size:16px;line-height:1.7;
+  transition:border-color .15s,background .15s;text-align:left;width:100%;font-family:inherit;color:inherit}
+.opt:hover:not(.locked){border-color:var(--ink2);background:#fdfcfa}
+.opt .k{font-weight:700;flex-shrink:0;width:22px;color:var(--ink2)}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.right .k{color:var(--green)}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .k{color:var(--accent)}
+.opt.locked{cursor:default}
+.opt .pct{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink2);
+  flex-shrink:0;padding-left:10px;font-weight:600}
+.fb{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:16px;display:none}
+.fb.show{display:block;animation:rise .45s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb h4{margin:0 0 8px;font-size:15px;letter-spacing:.06em}
+.fb p:last-child{margin:0}
+
+.locked-zone{opacity:.3;pointer-events:none;filter:blur(4px) saturate(.2);user-select:none}
+.revealed{animation:reveal .6s ease both}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.lab{background:linear-gradient(#fff,#fdfbf7);border:1px solid var(--line);border-radius:16px;
+  padding:22px;margin:26px 0;box-shadow:var(--shadow)}
+.lab-t{font-size:12px;letter-spacing:.18em;color:var(--blue);font-weight:700;margin-bottom:16px}
+.readout{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 12px;
+  background:#fff;border:1px solid var(--line);border-radius:9px}
+.row .lb{font-size:13.5px;color:var(--ink2)}
+.row .vl{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px}
+.row.hi{background:var(--accent-soft);border-color:#f0c9ae}
+.row.hi .vl{color:var(--accent);font-size:19px}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px}
+.slider-lab{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);margin-bottom:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;
+  cursor:pointer;font-size:14px;font-family:inherit;color:var(--ink2);transition:all .15s;
+  display:flex;align-items:center;gap:7px}
+.chip:hover{border-color:var(--ink2)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sw{width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.25);display:inline-block}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:15px;line-height:1.7;
+  background:var(--blue-soft);border:1px solid #cfe0e8}
+.verdict.bad{background:var(--accent-soft);border-color:#f0c9ae}
+.verdict.good{background:var(--green-soft);border-color:#c8dcc4}
+
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-weight:700;font-size:13.5px;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:24px -20px;padding:0 20px}
+.scroll table{margin:0;min-width:520px}
+
+.dist{margin:18px 0}
+.dbar{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:14px}
+.dbar .dk{width:26px;font-weight:700;flex-shrink:0}
+.dtrack{flex:1;height:26px;background:#f0eade;border-radius:6px;overflow:hidden;position:relative}
+.dfill{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.dbar .dv{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);flex-shrink:0;font-weight:600}
+
+.done{text-align:center;padding:52px 0 20px}
+.done h2{font-size:27px}
+.reset{background:none;border:1px solid var(--line);color:var(--ink2);padding:9px 18px;
+  border-radius:99px;cursor:pointer;font-size:13px;font-family:inherit;margin-top:28px}
+.reset:hover{border-color:var(--ink2)}
+footer{padding:36px 0;color:var(--ink2);font-size:13px;line-height:1.9;text-align:center}
+svg{max-width:100%;height:auto;display:block}
+.svg-cap{text-align:center;font-size:13px;color:var(--ink2);margin-top:6px}
+
+details.pre{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;overflow:hidden}
+details.pre summary{padding:13px 16px;cursor:pointer;font-size:16px;font-weight:600;list-style:none;
+  display:flex;align-items:center;gap:10px}
+details.pre summary::-webkit-details-marker{display:none}
+details.pre summary::before{content:"?";flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700}
+details.pre[open] summary::before{content:"✓";background:var(--green);color:#fff}
+details.pre[open] summary{border-bottom:1px solid var(--line)}
+details.pre .bd{padding:14px 16px;font-size:15.5px;line-height:1.8;color:var(--ink2)}
+details.pre .bd strong{color:var(--ink)}
+details.pre .bd p{margin:0 0 10px}
+details.pre .bd p:last-child{margin:0}
+
+.dl{background:#fff;border:2px solid var(--accent);border-radius:14px;padding:20px 22px;margin:24px 0;text-align:left}
+.dl h4{margin:0 0 8px;font-size:17px;color:var(--ink)}
+.dl p{font-size:15px;line-height:1.8;margin:0 0 14px;color:var(--ink2)}
+.dl a.get{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;
+  text-decoration:none;padding:11px 20px;border-radius:99px;font-size:15px;font-weight:700;transition:opacity .15s}
+.dl a.get:hover{opacity:.86}
+.dl .meta{font-size:13px;color:var(--ink2);margin:10px 0 0}
+/* ── 本頁追加：兩杯並排的控制區、分類卡、題目內小圖 ── */
+/* 進度列在 .wrap 外，原本的 margin:0 -20px 會讓頁面多出 20px 橫向捲動，本頁歸零 */
+body>.bar{margin:0}
+.cups{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+@media(max-width:560px){.cups{grid-template-columns:1fr}}
+.cup{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.cup h5{margin:0 0 8px;font-size:15px;display:flex;align-items:center;gap:8px}
+.cup .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.cup .chips{margin-bottom:8px}
+.cup .chip{padding:5px 10px;font-size:13px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two .row{flex-direction:column;align-items:flex-start;gap:2px}
+.two .row .vl{font-size:16px}
+.sort{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.scard{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+.scard .st{font-size:15.5px;line-height:1.7;margin-bottom:8px}
+.scard .bs{display:flex;gap:6px;flex-wrap:wrap}
+.scard .bs button{font-family:inherit;font-size:14px;padding:6px 14px;border-radius:99px;border:1.5px solid var(--line);
+  background:#fff;color:var(--ink2);cursor:pointer}
+.scard .bs button:hover{border-color:var(--ink2)}
+.scard .bs button.ok{background:var(--green);border-color:var(--green);color:#fff}
+.scard .bs button.no{background:var(--bad-soft,#fde8e8);border-color:var(--bad,#d64545);color:var(--bad,#d64545)}
+.scard .swhy{font-size:14px;color:var(--ink2);margin-top:8px;display:none;line-height:1.75}
+.scard.fin .swhy{display:block}
+.scard.fin.good{border-color:#c8dcc4}
+.opt .mini{display:block;width:100%;max-width:230px;margin-top:4px}
+.book{font-size:13.5px;color:var(--ink2);border:1px solid var(--line);border-radius:99px;display:inline-block;
+  padding:3px 12px;background:#fff;margin:0 0 16px}
+.formula{font-size:20px;font-weight:700;text-align:center;margin:20px 0;padding:16px;background:#fff;
+  border:2px solid var(--ink);border-radius:14px;line-height:1.7}
+.formula small{display:block;font-size:14px;font-weight:400;color:var(--ink2)}
+</style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+<div class="bar"><div class="bar-inner">
+  <b id="pnum">0 / 8</b>
+  <div class="track"><div class="fill" id="pfill"></div></div>
+</div></div>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">八年級上 · 第五章 溫度與熱</div>
+  <h1>燒得比較燙的，<br>比熱比較大嗎？</h1>
+  <p class="sub">這一課不從公式開始。<br>我們先看一張很簡單的圖——三塊金屬、同一個爐子，<strong>全國有一半的人看錯了</strong>。<br>錯的人不是不會算，是把三個長得很像的詞混在一起了：<strong>溫度、熱量、比熱</strong>。</p>
+  <div class="meta">
+    <span class="tag">8 題</span>
+    <span class="tag">升溫曲線實驗台</span>
+    <span class="tag">熱平衡混合器</span>
+    <span class="tag">水的怪脾氣</span>
+    <span class="tag">熱的三種走法</span>
+    <span class="tag">會考 115-30</span>
+    <span class="tag">約 30 分鐘</span>
+  </div>
+</header>
+
+<!-- ═══ 開始之前 ═══ -->
+<section>
+  <div class="step">開始之前</div>
+  <h2>這一課不是考試，是一場「誰比較難燒熱」的調查</h2>
+  <p class="dim">下面三件事都很熟，就直接往下跳。點開有 30 秒說明。</p>
+
+  <details class="pre">
+    <summary>① 溫度：溫度計量到的「多冷多熱」</summary>
+    <div class="bd">
+      <p>溫度的單位是 <strong>°C</strong>（攝氏度）。溫度計告訴你的是<em>現在有多熱</em>——就像體重計告訴你現在幾公斤。</p>
+      <p>這一課最常用到的不是「溫度」本身，而是<strong>溫度變了多少</strong>：從 20 °C 升到 80 °C，就是<em>升了 60 °C</em>。課本會寫成 ΔT（讀作 delta T），意思就是「溫度的變化量」。</p>
+      <p>想複習溫度計怎麼讀：翻康軒課本 5-1 溫度與溫度計 p.134。</p>
+    </div>
+  </details>
+
+  <details class="pre">
+    <summary>② 熱量：會從熱的地方流到冷的地方的「東西」</summary>
+    <div class="bd">
+      <p>熱量的單位是<strong>卡</strong>（cal）。規定的方法很簡單：<strong>讓 1 公克的水升高 1 °C，需要 1 卡</strong>。</p>
+      <p>同一個爐子，燒 2 分鐘給的熱量就是燒 1 分鐘的 2 倍——所以題目說「用相同的熱源加熱」，你就可以把<em>加熱時間當成熱量</em>來看。</p>
+    </div>
+  </details>
+
+  <details class="pre">
+    <summary>③ 看圖：線越陡＝升得越快</summary>
+    <div class="bd">
+      <p>「溫度—時間」圖上，線<strong>越陡</strong>，代表同樣的時間裡溫度<strong>升得越多</strong>。</p>
+      <p>注意兩條線可以<em>起點不同</em>。比較誰升得快，要看「陡不陡」，不是看「誰在比較上面」。這一句就是第一題的鑰匙——但先別急著用，先猜。</p>
+    </div>
+  </details>
+
+  <div class="aside">
+    <p><strong>三個提醒：</strong><br>
+    ① 開場那一題，全國有一半的人答錯，選錯的那個選項有四分之一的人選。猜錯完全正常。<br>
+    ② 這一課<strong>幾乎不用計算</strong>，只要會看「升了多少」，最多用到一次乘法。<br>
+    ③ 每答完一題才會打開下一段——先讓自己卡住一下，後面的說明才會「卡得進去」。</p>
+  </div>
+</section>
+
+<!-- ═══ ① 案發 ═══ -->
+<section>
+  <div class="step"><span>①</span>　案發</div>
+  <h2>同一個爐子、一樣重的三塊金屬，燒了 500 秒</h2>
+  <p class="book">翻課本：康軒 5-2 熱量與比熱 p.139</p>
+
+  <p>甲、乙、丙三塊金屬一樣重，放在<strong>一模一樣的爐子</strong>上加熱。甲一開始就比較熱（40 °C），乙和丙都從 20 °C 開始。</p>
+  <p>500 秒後：甲到了 100 °C，乙到了 80 °C，丙到了 70 °C。</p>
+
+  <div class="quote">
+    <p>「比熱」這個詞你可能聽過，但先別管定義。<br>直覺告訴你：<em>哪一塊最「耐燒」、最不容易變熱？</em></p>
+    <p style="margin-top:10px">先猜一個。這不是考試。</p>
+  </div>
+
+  <div class="q" id="q0">
+    <div class="q-src">115 年會考自然科 第 30 題（原題，附圖重繪）</div>
+    <div class="q-body">將甲、乙、丙三個<strong>質量相等</strong>的金屬塊，分別以<strong>相同的穩定熱源</strong>加熱，其溫度（T）與加熱時間（t）的關係如下圖。若加熱過程中無熱量散失，甲、乙、丙的比熱分別為 S<sub>甲</sub>、S<sub>乙</sub>、S<sub>丙</sub>，則下列比熱的大小關係何者最合理？
+      <svg viewBox="0 0 360 250" role="img" aria-label="甲乙丙三塊金屬的溫度與時間關係圖" style="max-width:360px;margin:14px auto 0">
+        <line x1="50" y1="215" x2="340" y2="215" stroke="#2b2622" stroke-width="1.6"/>
+        <line x1="50" y1="215" x2="50" y2="14" stroke="#2b2622" stroke-width="1.6"/>
+        <path d="M340 215 l-8 -4 v8 z M50 14 l-4 8 h8 z" fill="#2b2622"/>
+        <g font-size="12.5" fill="#5c5349" text-anchor="end">
+          <text x="44" y="219">0</text><text x="44" y="181">20</text><text x="44" y="143">40</text>
+          <text x="44" y="105">60</text><text x="44" y="67">80</text><text x="44" y="29">100</text>
+        </g>
+        <text x="56" y="14" font-size="12.5" fill="#5c5349">T（°C）</text>
+        <text x="300" y="236" font-size="12.5" fill="#5c5349" text-anchor="middle">500</text>
+        <text x="352" y="236" font-size="12.5" fill="#5c5349" text-anchor="end">t（s）</text>
+        <g stroke="#8b8275" stroke-dasharray="4 4" stroke-width="1">
+          <line x1="50" y1="25" x2="300" y2="25"/><line x1="50" y1="63" x2="300" y2="63"/>
+          <line x1="50" y1="82" x2="300" y2="82"/><line x1="300" y1="25" x2="300" y2="215"/>
+        </g>
+        <line x1="50" y1="139" x2="300" y2="25" stroke="#2b2622" stroke-width="2.4"/>
+        <line x1="50" y1="177" x2="300" y2="63" stroke="#2b2622" stroke-width="2.4"/>
+        <line x1="50" y1="177" x2="300" y2="82" stroke="#2b2622" stroke-width="2.4"/>
+        <g font-size="14" font-weight="700" fill="#2b2622">
+          <text x="306" y="29">甲</text><text x="306" y="62">乙</text><text x="306" y="88">丙</text>
+        </g>
+      </svg>
+    </div>
+    <div class="opts" data-q="0" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>S<sub>甲</sub>＝S<sub>乙</sub>＜S<sub>丙</sub></span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>S<sub>甲</sub>＝S<sub>乙</sub>＞S<sub>丙</sub></span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>S<sub>甲</sub>＜S<sub>乙</sub>＝S<sub>丙</sub></span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>S<sub>甲</sub>＞S<sub>乙</sub>＝S<sub>丙</sub></span></button>
+    </div>
+    <div class="fb" id="fb0"></div>
+  </div>
+</section>
+
+<!-- ═══ ② 分布 ═══ -->
+<section class="locked-zone" id="z2">
+  <div class="step"><span>②</span>　全國怎麼選</div>
+  <h2>四個人裡面，就有一個人把答案整個反過來</h2>
+  <div class="card">
+    <div class="dist" id="dist"></div>
+    <p class="dim" style="font-size:14px;margin:14px 0 0">
+      資料：國家教育研究院 115 年會考自然科官方試題分析（通過率 0.5098、鑑別度 0.65）。<br>
+      <span style="font-size:13px">鑑別度：越高代表越能分出「真的懂」和「只是猜對」的人。0.65 在 115 年全卷 50 題裡並列第二高。</span></p>
+  </div>
+
+  <p>選 B 的人，<strong>不是看錯圖</strong>——他們看出了「甲、乙升得一樣多，丙升得比較少」。錯在最後一步：他們以為<em>升得多＝比熱大</em>。</p>
+  <p>這題的鑑別度很高，代表它分人分得很乾淨：會考成績最高一級（精熟）的考生有 <strong>97.32%</strong> 答對；最低一級（待加強）只有 <strong>15.52%</strong>，比亂猜（25%）還低——他們的選擇大多落在 B（30.74%）和 D（30.73%），<em>不是亂猜，是被一個聽起來很合理的想法帶走了</em>。</p>
+
+  <div class="note">
+    <p><b>這一課要拆開的，就是這三個詞：</b></p>
+    <p style="margin-top:10px"><strong>溫度</strong>（現在多熱）、<strong>熱量</strong>（吃進去多少）、<strong>比熱</strong>（多難被燒熱）。<br>它們在日常說話裡常常混用——「好熱」可以指溫度高，也可以指吸了很多熱。但在這一章，<em>混用一次就會選錯一次</em>。</p>
+  </div>
+</section>
+
+<!-- ═══ ③ 自己加熱 ═══ -->
+<section class="locked-zone" id="z3">
+  <div class="step"><span>③</span>　自己加熱看看</div>
+  <h2>同一個爐子，誰升得快，是誰決定的？</h2>
+
+  <p>下面是兩杯東西放在兩個一模一樣的爐子上（每秒都給 20 卡）。<strong>換材質、改重量、改起始溫度</strong>，再拉時間滑桿，看兩條線怎麼走。</p>
+
+  <div class="lab">
+    <div class="lab-t">實驗台 A　升溫曲線</div>
+    <svg id="hsvg" viewBox="0 0 640 330" role="img" aria-label="兩杯物質的溫度與加熱時間關係"></svg>
+
+    <div class="cups">
+      <div class="cup">
+        <h5><span class="dot" style="background:#1d5b79"></span>甲杯</h5>
+        <div class="chips" id="chA"></div>
+        <div class="slider-lab"><span>質量</span><span id="mAv">100 g</span></div>
+        <input type="range" id="mA" min="50" max="300" step="10" value="100">
+        <div class="slider-lab"><span>起始溫度</span><span id="tAv">20 °C</span></div>
+        <input type="range" id="tA" min="10" max="50" step="5" value="20">
+      </div>
+      <div class="cup">
+        <h5><span class="dot" style="background:#c2410c"></span>乙杯</h5>
+        <div class="chips" id="chB"></div>
+        <div class="slider-lab"><span>質量</span><span id="mBv">100 g</span></div>
+        <input type="range" id="mB" min="50" max="300" step="10" value="100">
+        <div class="slider-lab"><span>起始溫度</span><span id="tBv">20 °C</span></div>
+        <input type="range" id="tB" min="10" max="50" step="5" value="20">
+      </div>
+    </div>
+
+    <div style="margin-top:18px">
+      <div class="slider-lab"><span>加熱時間</span><span id="timev">120 秒</span></div>
+      <input type="range" id="time" min="0" max="240" step="5" value="120">
+    </div>
+
+    <div class="readout">
+      <div class="row hi"><span class="lb">兩杯都吃進了</span><span class="vl" id="hQ">2400 卡</span></div>
+      <div class="two">
+        <div class="row"><span class="lb">甲：升 1 °C 要幾卡</span><span class="vl" id="hCA">—</span></div>
+        <div class="row"><span class="lb">乙：升 1 °C 要幾卡</span><span class="vl" id="hCB">—</span></div>
+        <div class="row"><span class="lb">甲：升了多少</span><span class="vl" id="hdA">—</span></div>
+        <div class="row"><span class="lb">乙：升了多少</span><span class="vl" id="hdB">—</span></div>
+        <div class="row"><span class="lb">甲：現在幾度</span><span class="vl" id="hTA">—</span></div>
+        <div class="row"><span class="lb">乙：現在幾度</span><span class="vl" id="hTB">—</span></div>
+      </div>
+    </div>
+    <div class="verdict" id="hverd">先試試預設：100 g 的水和 100 g 的沙拉油。</div>
+    <p class="dim" style="font-size:13px;margin:10px 0 0">實驗台假設熱量全部被吸收、不會散失，也不會沸騰或熔化；到 100 °C 圖就先停。比熱數值取自課本常見物質表，沙拉油約 0.47 卡／公克‧°C（不同油品略有差異）。</p>
+  </div>
+
+  <p>你應該發現了：<strong>「升 1 °C 要幾卡」那一格比較大的，線就比較平</strong>。而那一格是兩個東西乘出來的——<em>材質</em>和<em>重量</em>。</p>
+  <p>試一個：甲杯放 100 g 的水，乙杯放沙拉油，把乙的質量拉到 210 g 左右。兩條線幾乎一樣陡了——<strong>材質不一樣，也可以升得一樣快</strong>。</p>
+
+  <h3>同一種東西，只差在重量</h3>
+  <p>下一題兩杯都是水，所以只剩一個東西在作怪。用實驗台把兩杯都選「水」、質量調成 150 g 和 100 g（＝ 3：2），先看一次再答。</p>
+
+  <div class="q" id="q1">
+    <div class="q-src">111 年會考自然科 第 28 題（原題，選項圖重繪）</div>
+    <div class="q-body">小禮將一杯 20 °C 的純水分為甲、乙兩杯，甲、乙兩杯純水的質量分別為 M<sub>甲</sub>、M<sub>乙</sub>，他將兩杯水分別以相同的熱源加熱，並記錄其加熱時間與上升溫度。已知 <strong>M<sub>甲</sub>：M<sub>乙</sub>＝3：2</strong>，若熱源發出的熱量完全被水吸收，且水的蒸發忽略不計，則水的<strong>上升溫度</strong>與加熱時間之關係圖最接近下列何者？</div>
+    <div class="opts" data-q="1" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>10 分鐘時：甲上升 30 °C、乙上升 20 °C<svg class="mini" id="m111A" viewBox="0 0 230 120"></svg></span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>10 分鐘時：乙上升 30 °C、甲上升 20 °C<svg class="mini" id="m111B" viewBox="0 0 230 120"></svg></span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>10 分鐘時：甲上升 50 °C、乙上升 20 °C<svg class="mini" id="m111C" viewBox="0 0 230 120"></svg></span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>10 分鐘時：乙上升 50 °C、甲上升 20 °C<svg class="mini" id="m111D" viewBox="0 0 230 120"></svg></span></button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+</section>
+
+<!-- ═══ ④ 命名 ═══ -->
+<section class="locked-zone" id="z4">
+  <div class="step"><span>④</span>　這時候才給名字</div>
+  <h2>三個長得很像的詞，其實在講三件不同的事</h2>
+
+  <div class="scroll">
+  <table>
+    <tr><th>名字</th><th>它在問什麼</th><th>單位</th><th>像什麼</th></tr>
+    <tr><td><b>溫度</b></td><td>現在有多熱</td><td>°C</td><td>水桶裡的<strong>水位高度</strong></td></tr>
+    <tr><td><b>熱量</b></td><td>吸進去（或放出）多少熱</td><td>卡</td><td>倒進水桶的<strong>水有幾杯</strong></td></tr>
+    <tr><td><b>比熱</b></td><td>1 公克要吃幾卡才升 1 °C</td><td>卡／公克‧°C</td><td>水桶<strong>有多粗</strong>——越粗，倒一樣多水，水位升得越少</td></tr>
+  </table>
+  </div>
+
+  <p>你在實驗台算的「升 1 °C 要幾卡」，就是 <strong>質量 × 比熱</strong>。把它乘上「升了幾度」，就是吃進去的熱量：</p>
+  <div class="formula">熱量 ＝ 質量 × 比熱 × 溫度變化
+    <small>課本寫成 H ＝ M × S × ΔT（H 單位：卡；M：公克；S：卡／公克‧°C；ΔT：°C）</small></div>
+
+  <p>回頭看開場那題：甲、乙、丙一樣重、吃一樣多的熱量，所以<strong>升得越少的，比熱越大</strong>。丙升最少（50 °C），比熱最大；甲、乙都升 60 °C，比熱一樣。</p>
+  <p class="big">比熱大，不是「比較熱」，<br>是<em>比較難被燒熱</em>。</p>
+
+  <div class="note">
+    <p><b>水是「最粗的水桶」之一。</b></p>
+    <p style="margin-top:10px">水的比熱 1.0，沙子只有 0.19、鐵 0.113、銅 0.093。所以夏天中午<strong>沙灘燙腳、海水卻還涼涼的</strong>——太陽給一樣多的熱，沙子升溫是水的五倍多。暖暖包、熱水袋用水，也是因為水「存得住熱、慢慢放」。</p>
+  </div>
+
+  <h3>那要怎麼設計實驗，比較兩種金屬的比熱？</h3>
+  <p>比熱是「<strong>1 公克</strong>」要吃幾卡。所以想比比熱，你要先把另外兩個會影響升溫的東西綁住。</p>
+
+  <div class="q" id="q2">
+    <div class="q-src">114 年會考自然科 第 26 題（原題）</div>
+    <div class="q-body">阿偉想要藉由實驗比較鋁和銅的比熱大小關係，若加熱條件相同，且忽略熱量散失，則下列四種方式，哪一種最合理？</div>
+    <div class="opts" data-q="2" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>分別加熱相同<strong>體積</strong>的鋁和銅，<strong>先開始熔化</strong>者比熱較小</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>分別加熱相同<strong>體積</strong>的鋁和銅，<strong>溫度上升較快</strong>者比熱較小</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>分別加熱相同<strong>質量</strong>的鋁和銅，<strong>先開始熔化</strong>者比熱較小</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>分別加熱相同<strong>質量</strong>的鋁和銅，<strong>溫度上升較快</strong>者比熱較小</span></button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="locked-zone" id="z4b">
+  <h3>用公式算一次——其實只要一次乘法</h3>
+  <p>下一題兩塊<strong>材質相同</strong>，比熱一樣，所以比熱可以整個不管。只剩「重量 × 升幾度」在決定要吃多少熱、燒多久。</p>
+
+  <div class="q" id="q3">
+    <div class="q-src">110 年會考自然科 第 18 題（原題，表格重排）</div>
+    <div class="q-body">由相同材質組成的甲、乙兩物體，兩者均為固態，分別以相同的穩定熱源均勻加熱，其質量、上升溫度與加熱所需的時間如下表。若甲、乙兩物體在加熱過程中，溫度均未達到熔點，熱源所提供的熱量均被兩者完全吸收，則表中的 X 應為多少？
+      <table style="margin:14px 0 0;font-size:15px">
+        <tr><th>物體</th><th>質量（g）</th><th>上升溫度（°C）</th><th>加熱所需的時間（s）</th></tr>
+        <tr><td>甲</td><td>100</td><td>20</td><td>120</td></tr>
+        <tr><td>乙</td><td>300</td><td>10</td><td>X</td></tr>
+      </table>
+    </div>
+    <div class="opts" data-q="3" data-ans="C">
+      <button class="opt" data-k="A"><span class="k">A</span><span>60</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>120</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>180</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>360</span></button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+  <p class="dim" style="font-size:13.5px">110 年以前官方沒有公布各選項的選答比例，所以這一題不附百分比。</p>
+  </div>
+</section>
+
+<!-- ═══ ⑤ 熱平衡 ═══ -->
+<section class="locked-zone" id="z5">
+  <div class="step"><span>⑤</span>　倒在一起會怎樣</div>
+  <h2>熱水碰到冷東西：熱量只會往一個方向跑</h2>
+  <p class="book">翻課本：康軒 5-2 熱量與比熱 p.139（熱平衡）</p>
+
+  <p>把熱水倒進冷水裡，熱水會變涼、冷水會變溫，最後兩邊<strong>一樣溫度</strong>就停了——這叫<strong>熱平衡</strong>。</p>
+  <p>重點是：<em>熱水放出去的熱量，剛好等於冷的那一邊吸進來的熱量</em>（沒有散失的話）。熱量不會憑空變多或變少，它只是搬家。</p>
+
+  <div class="lab">
+    <div class="lab-t">實驗台 B　熱平衡混合器</div>
+    <svg id="msvg" viewBox="0 0 640 160" role="img" aria-label="混合前後的溫度位置"></svg>
+    <div class="cups">
+      <div class="cup">
+        <h5><span class="dot" style="background:#c2410c"></span>熱水</h5>
+        <div class="slider-lab"><span>質量</span><span id="mhv">100 g</span></div>
+        <input type="range" id="mh" min="50" max="300" step="10" value="100">
+        <div class="slider-lab"><span>溫度</span><span id="thv">80 °C</span></div>
+        <input type="range" id="th" min="40" max="100" step="1" value="80">
+      </div>
+      <div class="cup">
+        <h5><span class="dot" style="background:#1d5b79"></span>冷的那一邊</h5>
+        <div class="chips" id="chC"></div>
+        <div class="slider-lab"><span>質量</span><span id="mcv">100 g</span></div>
+        <input type="range" id="mc" min="50" max="300" step="10" value="100">
+        <div class="slider-lab"><span>溫度</span><span id="tcv">20 °C</span></div>
+        <input type="range" id="tc" min="0" max="39" step="1" value="20">
+      </div>
+    </div>
+    <div class="readout">
+      <div class="row hi"><span class="lb">最後的溫度（熱平衡）</span><span class="vl" id="mTf">—</span></div>
+      <div class="two">
+        <div class="row"><span class="lb">熱水放出</span><span class="vl" id="mOut">—</span></div>
+        <div class="row"><span class="lb">冷的吸進</span><span class="vl" id="mIn">—</span></div>
+      </div>
+    </div>
+    <div class="verdict" id="mverd">拉拉看。注意最後的溫度永遠夾在哪裡。</div>
+  </div>
+
+  <p>你會發現兩件事：<strong>最後的溫度一定夾在兩者中間</strong>；而且會<em>比較靠近「升 1 °C 要比較多卡」的那一邊</em>——等重的熱水和冷水，剛好停在正中間；換成一塊銅，它根本拉不太動熱水。</p>
+
+  <div class="q" id="q4">
+    <div class="q-src">107 年會考自然科 第 34 題（原題）</div>
+    <div class="q-body">有甲、乙、丙三杯水，將三杯水混合，當混合後的水達熱平衡時，水溫為 <strong>50 °C</strong>。若混合過程中，水與外界無熱量的吸收與散失，則下列四組何者最有可能是甲、乙、丙三杯水混合前的溫度？</div>
+    <div class="opts" data-q="4" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>0 °C、50 °C、50 °C</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>20 °C、90 °C、95 °C</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>10 °C、15 °C、25 °C</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>50 °C、60 °C、70 °C</span></button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+</section>
+
+<!-- ═══ ⑥ 熱對物質的影響 ═══ -->
+<section class="locked-zone" id="z6">
+  <div class="step"><span>⑥</span>　熱量去哪了？</div>
+  <h2>一直加熱，溫度卻停住不動</h2>
+  <p class="book">翻課本：康軒 5-3 熱對物質的影響 p.146</p>
+
+  <p>到目前為止，吃進熱量就會升溫。但有一種時候，<strong>爐子一直在燒，溫度計卻卡住不動</strong>——冰在熔化、水在沸騰的時候。</p>
+  <p>熱量沒有消失，它被拿去做另一件事：<em>把固體拆成液體、把液體拆成氣體</em>。拆完之前，溫度不會往上走。</p>
+
+  <div class="q" id="q5">
+    <div class="q-src">113 年會考自然科 第 27 題（原題，附圖重繪）</div>
+    <div class="q-body">在一大氣壓下，將一塊質量 100 g 的冰塊置於燒杯中，以穩定熱源均勻加熱，其溫度與加熱時間的關係如下圖。根據此圖判斷下列何者正確？
+      <svg viewBox="0 0 360 220" role="img" aria-label="冰塊加熱的溫度與時間關係圖" style="max-width:360px;margin:14px auto 0">
+        <line x1="50" y1="190" x2="340" y2="190" stroke="#2b2622" stroke-width="1.6"/>
+        <line x1="50" y1="200" x2="50" y2="14" stroke="#2b2622" stroke-width="1.6"/>
+        <path d="M340 190 l-8 -4 v8 z M50 14 l-4 8 h8 z" fill="#2b2622"/>
+        <text x="56" y="16" font-size="12.5" fill="#5c5349">溫度（°C）</text>
+        <text x="44" y="194" font-size="12.5" fill="#5c5349" text-anchor="end">−20</text>
+        <text x="44" y="95" font-size="13" fill="#2b2622" text-anchor="end" font-style="italic">T₁</text>
+        <text x="52" y="207" font-size="12" fill="#5c5349">0</text>
+        <text x="80" y="207" font-size="12.5" fill="#5c5349" text-anchor="middle">t₁</text>
+        <text x="262" y="207" font-size="12.5" fill="#5c5349" text-anchor="middle">t₂</text>
+        <text x="340" y="212" font-size="12.5" fill="#5c5349" text-anchor="end">時間（s）</text>
+        <g stroke="#8b8275" stroke-dasharray="4 4" stroke-width="1">
+          <line x1="50" y1="91" x2="80" y2="91"/><line x1="80" y1="91" x2="80" y2="190"/><line x1="262" y1="91" x2="262" y2="190"/>
+        </g>
+        <polyline points="50,190 80,91 262,91 300,30" fill="none" stroke="#2b2622" stroke-width="2.4"/>
+      </svg>
+    </div>
+    <div class="opts" data-q="5" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>T₁ 的數值為 0</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>t₁ 可以表示冰塊的熔點</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>當時間大於 t₂，燒杯中的水只會以氣態存在</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>在 t₁～t₂ 期間，燒杯中的水是以固體與氣體共存的狀態</span></button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <h3>水還有一個怪脾氣：4 °C 的時候最「擠」</h3>
+  <p>大部分東西都是熱脹冷縮——越冷越小。水在 4 °C 以上也是這樣。但從 4 °C 再往下降，水<strong>反而開始變大</strong>，結成冰時更是一口氣脹大將近一成。拉滑桿看看 1000 公克的水在 0～10 °C 的體積。</p>
+
+  <div class="lab">
+    <div class="lab-t">實驗台 C　水在 0～10 °C 的體積</div>
+    <svg id="wsvg" viewBox="0 0 640 290" role="img" aria-label="1000 公克水在 0 到 10 度的體積變化"></svg>
+    <div style="margin-top:14px">
+      <div class="slider-lab"><span>水溫</span><span id="wtv">10 °C</span></div>
+      <input type="range" id="wt" min="0" max="10" step="0.5" value="10">
+    </div>
+    <div class="readout">
+      <div class="two">
+        <div class="row"><span class="lb">1000 g 水的體積</span><span class="vl" id="wV">—</span></div>
+        <div class="row"><span class="lb">密度</span><span class="vl" id="wD">—</span></div>
+      </div>
+    </div>
+    <div class="verdict" id="wverd">從 10 °C 慢慢往左拉到 0 °C。</div>
+    <p class="dim" style="font-size:13px;margin:10px 0 0">體積差只有零點幾毫升，所以圖的縱軸放大了很多倍才看得出來。數值依純水在一大氣壓下的標準密度計算。</p>
+  </div>
+
+  <div class="note">
+    <p><b>為什麼冬天湖面結冰，魚還活得下去？</b></p>
+    <p style="margin-top:10px">4 °C 的水最重，會沉到湖底。表面的水冷到 4 °C 以下反而變輕、浮在上面，最後在<strong>最上層</strong>結冰。冰又比水輕，像一片蓋子浮在湖面，把下面的水和冷空氣隔開——湖底一直維持在 4 °C 左右。如果水像其他東西一樣越冷越重，湖就會從底下開始結凍。</p>
+  </div>
+</section>
+
+<!-- ═══ ⑦ 熱的傳播 ═══ -->
+<section class="locked-zone" id="z7">
+  <div class="step"><span>⑦</span>　熱怎麼跑過去</div>
+  <h2>熱量搬家，只有三種走法</h2>
+  <p class="book">翻課本：康軒 5-4 熱的傳播方式 p.152</p>
+
+  <div class="scroll">
+  <table>
+    <tr><th>走法</th><th>怎麼搬</th><th>要不要有東西在中間</th><th>主要發生在</th></tr>
+    <tr><td><b>傳導</b></td><td>一顆粒子推下一顆，熱量一棒一棒往前傳，<strong>東西本身不移動</strong></td><td>要</td><td>固體（金屬特別快）</td></tr>
+    <tr><td><b>對流</b></td><td>熱的部分變輕往上跑、冷的往下補，<strong>整團流體一起搬熱</strong></td><td>要</td><td>液體、氣體</td></tr>
+    <tr><td><b>輻射</b></td><td>直接射過去，<strong>中間可以什麼都沒有</strong></td><td>不用（真空也行）</td><td>所有東西都會發出、吸收</td></tr>
+  </table>
+  </div>
+
+  <div class="lab">
+    <div class="lab-t">實驗台 D　分類卡（每張選一個）</div>
+    <div class="sort" id="sort"></div>
+    <div class="verdict" id="sverd">答對幾張：0 / 8</div>
+  </div>
+
+  <p>最後一張卡和下一題有關：<strong>顏色會影響輻射</strong>——深色、粗糙的表面容易吸收輻射，淺色、光亮的表面容易把它反射掉。但小心，顏色會改變的是「吸收多少熱」，不是……先作答。</p>
+
+  <div class="q" id="q6">
+    <div class="q-src">105 年會考自然科 第 4 題（原題）</div>
+    <div class="q-body">取溫度、材質及體積相同的甲、乙兩金屬球，將甲球漆成白色，乙球漆成黑色，再將兩球以細線並排懸吊於空中，放置在陽光下曝曬，20 分鐘後測量兩者溫度，結果乙球比甲球高 3 °C，下列何者是此現象發生的主要原因？</div>
+    <div class="opts" data-q="6" data-ans="D">
+      <button class="opt" data-k="A"><span class="k">A</span><span>白色可增加金屬球的比熱</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>黑色可增加金屬球的比熱</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>白色金屬球較易吸收輻射熱</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>黑色金屬球較易吸收輻射熱</span></button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+</section>
+
+<!-- ═══ ⑧ 歷史 ═══ -->
+<section class="locked-zone" id="z8">
+  <div class="step"><span>⑧</span>　是誰把它們分開的</div>
+  <h2>一個看著冰塊慢慢融化的教授</h2>
+
+  <p>你今天花了一整課分開「溫度」和「熱量」。其實在 1750 年以前，<strong>科學家自己也沒有分清楚</strong>——大家都覺得溫度計量的就是「熱有多少」。</p>
+
+  <div class="card">
+    <p style="margin:0 0 10px"><strong>Joseph Black（約瑟夫‧布拉克），1760 年前後，蘇格蘭格拉斯哥大學。</strong></p>
+    <p style="margin:0 0 10px">他注意到一件大家每天看、卻沒人追問的事：<em>把冰塊放在溫暖的房間裡，它要很久很久才融完；而在融化的整段時間裡，插在冰水裡的溫度計一直停在冰點，動也不動。</em></p>
+    <p style="margin:0">房間明明一直在把熱送進去。熱量跑去哪裡了？</p>
+  </div>
+
+  <p>他的回答是：熱量被冰<strong>「藏」起來，拿去把冰變成水</strong>了，所以溫度計看不到。他把這種看不見的熱叫做 <em>latent heat</em>（潛熱，「潛」就是躲起來的意思）——就是你在第 ⑥ 段那張圖上看到的平台。</p>
+  <p>他也發現，同樣重的不同東西，要升高同樣的溫度，需要的熱量不一樣——這就是今天的<strong>比熱</strong>。從他開始，「溫度」和「熱量」才正式成為兩個不同的詞。</p>
+  <p class="dim">一個小插曲：當時在格拉斯哥大學修理儀器的年輕人<strong>瓦特</strong>常去找他討論。後來瓦特改良蒸汽機，要對付的正是「水變成蒸汽要吃掉大量的熱」這件事。</p>
+
+  <div class="q" id="q7">
+    <div class="q-src">收尾題</div>
+    <div class="q-body">布拉克看到「冰塊融化時一直吸收熱量，溫度計卻一直停在冰點不動」。這個現象<strong>最能說明</strong>下列哪一件事？</div>
+    <div class="opts" data-q="7" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>溫度計在低溫時不準，所以讀不出溫度的變化</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>熱量和溫度是兩件不同的事——吸收了熱量，溫度不一定會上升</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>冰的比熱是 0，所以吸熱也不會升溫</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>冰在融化時其實是在放出熱量，所以溫度沒有上升</span></button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+</section>
+
+<!-- ═══ 結案 ═══ -->
+<section class="locked-zone" id="z9">
+  <div class="done">
+    <div class="step">結案</div>
+    <h2>看到「熱」的題目，先問四句話</h2>
+
+    <div style="text-align:left">
+      <div class="card">
+        <p style="margin:0 0 8px">① 題目問的是<strong>升了多少</strong>，還是<strong>升到幾度</strong>？　<span class="dim">比熱只看「升了多少」，起點不同的線不要比高低</span></p>
+        <p style="margin:0 0 8px">② 誰「<strong>升 1 °C 要比較多卡</strong>」？　<span class="dim">質量 × 比熱越大，越難變溫——線越平</span></p>
+        <p style="margin:0 0 8px">③ 有兩個東西<strong>碰在一起</strong>嗎？　<span class="dim">熱從高溫流向低溫，最後一樣溫度；放出＝吸收，答案一定夾在中間</span></p>
+        <p style="margin:0;color:var(--accent)"><strong>④ 溫度停住不動了？</strong>　<span class="dim">熱量沒消失，正在被拿去換狀態（熔化、沸騰）</span></p>
+      </div>
+    </div>
+
+    <p class="big" style="text-align:left">比熱大，不是比較熱，<br>是<em>比較難被燒熱</em>。</p>
+
+    <div class="dl">
+      <h4>接著做段考題</h4>
+      <p>這一章和第 6 章是<strong>第 3 次段考</strong>的範圍。第 5 章分段練習收了學校原題 56 題，考最多的就是熱量與比熱。</p>
+      <a class="get" href="review-ch5.html">去做第 5 章分段練習 →</a>
+      <p class="meta">想做整張考卷：<a href="exam.html" style="color:var(--accent)">整卷模擬</a>　·　照課本複習：<a href="book.html" style="color:var(--accent)">課本地圖</a></p>
+    </div>
+
+    <div style="text-align:left">
+      <div class="aside">
+        <p><strong>回頭看：</strong>開場那一題，選錯的人大多數不是不會看圖，而是把「比熱大」讀成了「比較熱」。<br>
+        一個詞裡面有「熱」字，不代表它在講熱不熱——<em>這一章的分數，有一大半就在這個字上。</em></p>
+      </div>
+    </div>
+    <button class="reset" id="rst">清除進度，重新開始</button>
+  </div>
+</section>
+
+<footer>
+  題目、通過率與選項百分比引自國家教育研究院歷年國中教育會考自然科試題及官方試題分析（百分比僅 111～115 年有官方資料）。<br>
+  115-30、113-27、111-28 的附圖重繪；110-18 表格重排。所有圖示自繪，未使用課本內容。<br>
+  <a href="index.html" style="color:#1d5b79">← 回自學站首頁</a>　·　<span style="color:#a09789">為自學而做 · 2026</span>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+/* 進度：8 題（q0～q7），首頁 data-total="8" */
+const KEY="jhs8-heat-v1", TOTAL=8;
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+
+/* 官方選項百分比（只有 111～115 年；其他題不放） */
+const PCT={0:{A:"50.98%",B:"25.82%",C:"8.75%",D:"14.32%"},
+           1:{A:"21.73%",B:"54.77%",C:"14.03%",D:"9.36%"},
+           2:{A:"6.94%",B:"16.34%",C:"14.87%",D:"61.72%"},
+           5:{A:"44.81%",B:"30.12%",C:"13.66%",D:"11.28%"}};
+
+const FB={
+ 0:{A:["答對了","<p>先把三條線各<strong>升了多少</strong>算出來：<br>甲：40 → 100，升 <strong>60 °C</strong><br>乙：20 → 80，升 <strong>60 °C</strong><br>丙：20 → 70，升 <strong>50 °C</strong></p><p>三塊一樣重、爐子一樣、時間一樣 → <em>吃進去的熱量一樣多</em>。吃一樣多，升得越少的，就是越「難燒熱」的那一塊——比熱越大。</p><p>所以甲＝乙（都升 60），丙升最少 → 丙的比熱最大。</p><p class='dim' style='font-size:15px'>甲雖然最後最燙（100 °C），但那只是因為它<strong>起點就比較高</strong>。比熱看的是「升了多少」，不是「升到幾度」。</p>"],
+    B:["你和全國 25.82% 的人選了同一個","<p>你其實看對了一半：甲、乙升得一樣多（都 60 °C），丙升得最少（50 °C）。</p><p>錯在最後一步——你把「<strong>升得多</strong>」當成「<strong>比熱大</strong>」。剛好相反：</p><p><em>比熱大＝比較難被燒熱。</em>吃一樣多的熱，比熱大的那一塊升得<strong>比較少</strong>。丙升最少，所以丙的比熱最大。</p><p>這個錯很自然：「比熱」裡有個「熱」字，聽起來像「比較熱」。下一段的實驗台會讓你親手看到它其實在講什麼。</p>"],
+    C:["你比的是終點，不是升了多少","<p>甲最後到 100 °C、最高，所以看起來和乙、丙不一樣。但甲<strong>起點也最高</strong>（40 °C）。</p><p>扣掉起點：甲升 60、乙升 60、丙升 50。<em>甲和乙其實一模一樣</em>，只是甲先熱了 20 度才開始。</p><p>吃一樣多的熱，升得少的比熱大 → 丙最大，甲＝乙。</p>"],
+    D:["你比的是終點，不是升了多少","<p>甲最後最燙（100 °C），乙和丙的起點又一樣，所以很容易把甲單獨拉出來。</p><p>但比熱看的是<strong>升了多少</strong>：甲 60、乙 60、丙 50。甲和乙其實一樣。</p><p>而且方向也要反過來：升得<em>越少</em>，比熱<em>越大</em>。全國有 14.32% 的人選這個。</p>"]},
+ 1:{A:["你和全國 21.73% 的人選了同一個","<p>這是最多人選的錯誤選項：<strong>水比較多的那杯，升得比較快</strong>。</p><p>想一下真實的廚房：同一個爐子，燒一大鍋水和燒一小杯水，<em>哪個先滾？</em>當然是小杯。水越多，同樣的熱量要分給越多的水，每一公克分到的就越少。</p><p>甲比較重（3 份），所以甲升得比較<strong>慢</strong>。</p>"],
+    B:["答對了","<p>兩杯都是水，比熱一樣，只差在重量。同一個爐子、同樣 10 分鐘 → 吃進一樣多的熱。</p><p>甲：乙＝3：2，甲比較重，升得比較少。而且升溫要剛好<strong>反過來</strong>：甲升 2 份、乙升 3 份。</p><p>B 的圖：乙升 30、甲升 20 → 30：20＝3：2 ✓。</p><p class='dim' style='font-size:15px'>熱量一樣時：重量變成 3 倍，升溫就變成三分之一——這叫「成反比」。</p>"],
+    C:["方向反了，比例也不對","<p>甲比較重，應該升得比較<strong>慢</strong>，不是比較快。</p><p>而且 50：20＝5：2，和題目的 3：2 對不起來。</p>"],
+    D:["方向對了，但比例不對","<p>乙升得比較快——這個方向是對的。</p><p>但 50：20＝5：2。重量是 3：2，升溫就要是 2：3，也就是乙：甲＝<strong>3：2</strong>。B 的 30：20 才剛好。</p>"]},
+ 2:{A:["熔化是另一回事","<p>「先開始熔化」看的是<strong>熔點</strong>——熔點低的先熔，和比熱沒有關係。</p><p>而且相同體積的鋁和銅<strong>重量差很多</strong>（銅的密度大約是鋁的三倍多），根本沒有公平比。</p>"],
+    B:["你和全國 16.34% 的人選了同一個","<p>「溫度上升較快者比熱較小」這半句是對的。錯在前面：<strong>相同體積</strong>。</p><p>同樣大小的鋁塊和銅塊，銅重了三倍多（密度不同）。這樣一比，升得快慢同時受<em>材質</em>和<em>重量</em>兩件事影響，你分不出是誰造成的。</p><p>比熱的定義是「<strong>1 公克</strong>」要吃幾卡，所以要比比熱，就要讓<strong>質量</strong>一樣。</p>"],
+    C:["熔化看的是熔點","<p>質量相同這一步做對了。但「先開始熔化」比的是<strong>熔點</strong>：誰的熔點低、誰先熔。</p><p>鋁的熔點比銅低很多，所以鋁會先熔——可是鋁的比熱其實比銅<strong>大</strong>。用熔化來判斷，會得到完全相反的答案。全國有 14.87% 的人選這個。</p>"],
+    D:["答對了","<p>兩個條件都對：</p><p>① <strong>相同質量</strong>——比熱是「每 1 公克」的事，重量不一樣就不公平。<br>② <strong>看溫度上升的快慢</strong>——同樣的熱，升得快＝比較容易燒熱＝<em>比熱小</em>。</p><p>這其實就是緒論教的「控制變因」：想比比熱，就把質量和加熱條件都固定住，只讓材質不同。</p><p class='dim' style='font-size:15px'>答案：銅會升得比較快（銅 0.093，鋁 0.217）。你可以回實驗台 A 試：甲選鋁、乙選銅，質量一樣。</p>"]},
+ 3:{A:["你可能把它當成「越重越快」了","<p>乙比較重，又要升溫，怎麼可能比甲還快？</p><p>算一次「重量 × 升幾度」：甲 100 × 20 ＝ <strong>2000</strong>；乙 300 × 10 ＝ <strong>3000</strong>。乙要吃的熱比甲多，燒的時間一定比 120 秒長。</p>"],
+    B:["只看到「重 3 倍、升一半」互相抵消？","<p>重 3 倍、溫度只要升一半，不是剛好抵消——3 ×（1/2）＝ 1.5 倍。</p><p>甲：100 × 20 ＝ 2000 → 120 秒<br>乙：300 × 10 ＝ 3000 → 是甲的 1.5 倍 → <strong>180 秒</strong>。</p>"],
+    C:["答對了","<p>同材質，比熱一樣，不用管。剩下「<strong>重量 × 升幾度</strong>」決定要吃多少熱：</p><p>甲：100 × 20 ＝ 2000<br>乙：300 × 10 ＝ 3000</p><p>乙要吃的是甲的 1.5 倍。同一個爐子 → 時間也是 1.5 倍 → 120 × 1.5 ＝ <strong>180 秒</strong>。</p><p class='dim' style='font-size:15px'>整題只用到「熱量＝質量 × 比熱 × 溫度變化」，而且比熱還被消掉了。</p>"],
+    D:["只算了重量，忘了溫度","<p>乙重 3 倍，所以 120 × 3 ＝ 360——但乙只要升 <strong>10 °C</strong>，是甲的一半。</p><p>兩件事都要算進去：300 × 10 ＝ 3000，是甲（2000）的 1.5 倍 → 180 秒。</p>"]},
+ 4:{A:["0 °C 會把大家往下拉","<p>兩杯 50 °C、一杯 0 °C。混在一起，0 °C 那杯會吸熱，另外兩杯放熱——最後一定<strong>低於</strong> 50 °C。</p><p>要剛好停在 50 °C，必須<em>有人比 50 低、也有人比 50 高</em>（或全部都是 50）。</p>"],
+    B:["答對了","<p>熱平衡的溫度一定<strong>夾在最冷和最熱的中間</strong>。要停在 50 °C，就要有人在 50 以下、有人在 50 以上。</p><p>只有 B 符合：20 °C 在下面，90、95 °C 在上面。至於會不會剛好 50，要看三杯各有多少水——題目沒給，所以只說「最有可能」。</p><p class='dim' style='font-size:15px'>可以用實驗台 B 試：熱水 90 °C、冷水 20 °C，把冷水的量調多一點，就能讓它停在 50 °C。</p>"],
+    C:["三杯都比 50 °C 冷","<p>最熱的才 25 °C。熱量只會從熱的流到冷的，<strong>不會憑空生出來</strong>——混完最多也只有 25 °C，到不了 50。</p>"],
+    D:["三杯都不比 50 °C 冷","<p>最冷的就是 50 °C，另外兩杯更熱。混完一定<strong>高於</strong> 50 °C，沒有任何一杯能把溫度拉下來。</p>"]},
+ 5:{A:["答對了","<p>中間那段<strong>平平的</strong>，就是冰正在融化：熱量全拿去把冰拆成水，溫度停住。</p><p>一大氣壓下冰的熔點是 <strong>0 °C</strong>，所以 T₁ ＝ 0。</p><p class='dim' style='font-size:15px'>其他三個也順便拆：t₁ 是<em>時間</em>（開始融化的那一刻），不是溫度；t₂ 以後是<em>液態的水</em>在升溫；t₁～t₂ 是固體和<strong>液體</strong>一起存在。</p>"],
+    B:["你和全國 30.12% 的人選了同一個","<p>t₁ 確實是「開始熔化」的那個點——但它在<strong>橫軸</strong>上，是一個<em>時間</em>（幾秒）。</p><p>熔點是一個<strong>溫度</strong>（幾 °C），要看縱軸：平台對到的 T₁ 才是熔點。</p><p>這是看圖題最常見的陷阱：<em>點對了，軸看錯了</em>。讀圖時先問一句：這個符號在哪一條軸上？</p>"],
+    C:["t₂ 以後還是液體","<p>t₂ 是冰<strong>剛好全部融完</strong>的時候。之後那段往上的線，是<em>液態的水</em>在升溫。</p><p>要變成氣體，得等水升到 100 °C，再出現第二段平台（沸騰）——這張圖還沒畫到那裡。</p>"],
+    D:["中間是固體和液體","<p>t₁～t₂ 是冰<strong>正在融化</strong>，杯子裡同時有冰（固體）和水（<strong>液體</strong>），不是氣體。</p><p>溫度一直停在 0 °C，熱量都拿去「把冰變成水」了。</p>"]},
+ 6:{A:["比熱是材質決定的","<p>兩顆球材質一樣，比熱就一樣。油漆只是在外面塗一層，<strong>不會改變裡面金屬的比熱</strong>。</p><p>而且如果白色真的讓比熱變大，白球應該升得更慢——那也對不上「黑球比較熱」的原因是什麼。</p>"],
+    B:["比熱是材質決定的","<p>這個想法很接近開場那題的錯：<em>看到誰比較熱，就去改它的比熱</em>。</p><p>但兩顆球是同一種金屬，比熱一樣。而且就算黑色讓比熱變大，黑球應該升得<strong>更慢</strong>才對，和實驗結果相反。</p>"],
+    C:["白色是反射的那一邊","<p>白色、光亮的表面容易<strong>反射</strong>輻射，所以白球吸收得比較少。</p><p>所以夏天穿白衣服比較涼、油槽漆成淺色。</p>"],
+    D:["答對了","<p>陽光的熱是用<strong>輻射</strong>傳過來的（太陽和地球之間幾乎是真空）。深色表面容易吸收輻射，所以黑球吃進比較多熱、溫度比較高。</p><p>注意兩顆球材質一樣——<em>比熱沒變，變的是吃進去的熱量</em>。這正是這一課的主線：<strong>熱量</strong>和<strong>比熱</strong>是兩件事。</p>"]},
+ 7:{A:["溫度計沒有壞","<p>如果是溫度計壞了，冰全部融完之後它應該也一樣不準。但冰一融完，溫度計<strong>馬上又開始往上走</strong>——所以它一直都是好的。</p>"],
+    B:["對","<p>這是溫度和熱量第一次被<strong>明確分開</strong>的時刻：</p><p>熱量一直進去（房間在送熱），溫度卻不動。如果「溫度＝熱量有多少」，這件事根本不可能發生。</p><p>布拉克的結論是：熱量被拿去<em>改變狀態</em>了。溫度計量的是「多熱」，量不到「吃了多少熱」。</p><p class='dim' style='font-size:15px'>這正是開場那題的病根：把「升到很高的溫度」當成「比熱大」——也是把溫度和熱量混在一起。</p>"],
+    C:["比熱不是 0","<p>冰的比熱約 0.55（課本的常見物質比熱表上有）。冰在融化<strong>之前</strong>，吸熱照樣會升溫——第 ⑥ 段那張圖的第一段斜線就是。</p><p>溫度停住，是因為<em>正在換狀態</em>，不是因為比熱是 0。</p>"],
+    D:["方向反了","<p>冰融化是<strong>吸熱</strong>——所以夏天拿冰塊放在手上會覺得冷，是你的手的熱被冰拿走了。</p><p>放熱的是反過來的那件事：水結成冰。</p>"]}
+};
+
+function done(){return Object.keys(state).filter(k=>/^q\d+$/.test(k)).length}
+function paint(){
+  document.getElementById("pnum").textContent=done()+" / "+TOTAL;
+  document.getElementById("pfill").style.width=(done()/TOTAL*100)+"%";
+}
+/* 解鎖時 remove class，不疊加（避免超高區段的合成層渲染問題） */
+function unlock(id){
+  const el=document.getElementById(id);
+  if(el&&el.classList.contains("locked-zone")){
+    el.classList.remove("locked-zone");el.classList.add("revealed");
+    setTimeout(()=>el.classList.remove("revealed"),700);
+  }
+}
+function gate(){
+  if(state.q0!==undefined){unlock("z2");unlock("z3");drawDist()}
+  if(state.q1!==undefined){unlock("z4")}
+  if(state.q2!==undefined){unlock("z4b")}
+  if(state.q3!==undefined){unlock("z5")}
+  if(state.q4!==undefined){unlock("z6")}
+  if(state.q5!==undefined){unlock("z7")}
+  if(state.q6!==undefined){unlock("z8")}
+  if(state.q7!==undefined){unlock("z9")}
+  paint();
+}
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, ans=box.dataset.ans;
+  box.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(box.dataset.locked)return;
+      const k=btn.dataset.k;
+      state["q"+qi]=k;
+      try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+      reveal(qi,k,ans,box,true);gate();
+    });
+  });
+});
+
+function reveal(qi,k,ans,box,scroll){
+  box.dataset.locked="1";
+  const P=PCT[qi];
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.classList.add("locked");
+    if(b.dataset.k===k)b.classList.add("picked",k===ans?"right":"wrong");
+    else if(b.dataset.k===ans)b.classList.add("right");
+    if(P&&P[b.dataset.k]&&!b.querySelector(".pct")){
+      const s=document.createElement("span");s.className="pct";s.textContent=P[b.dataset.k];b.appendChild(s);
+    }
+  });
+  const f=FB[qi][k], fb=document.getElementById("fb"+qi);
+  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+"<div class='sp-body'>"+f[1]+"</div>";
+  fb.classList.add("show");
+  if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
+}
+
+let distDone=false;
+function drawDist(){
+  if(distDone)return;distDone=true;
+  const box=document.getElementById("dist");
+  const rows=[
+    {k:"A",v:50.98,c:"#3f6d3a",t:"正確答案 ── 升得越少，比熱越大"},
+    {k:"B",v:25.82,c:"#c2410c",t:"最多人選錯 ── 看對了誰升得多，卻把「升得多」當成「比熱大」"},
+    {k:"D",v:14.32,c:"#b8ab93",t:"比的是終點溫度（甲到 100 °C 最高），不是升了多少"},
+    {k:"C",v:8.75,c:"#b8ab93",t:"同上，而且方向也反了"}
+  ];
+  box.innerHTML=rows.map(r=>
+    '<div class="dbar"><span class="dk">'+r.k+'</span>'+
+    '<div class="dtrack"><div class="dfill" data-w="'+r.v+'" style="background:'+r.c+'"></div></div>'+
+    '<span class="dv">'+r.v.toFixed(2)+'%</span></div>'+
+    '<div style="font-size:12px;color:var(--ink2);margin:-4px 0 10px 36px">'+r.t+'</div>'
+  ).join("");
+  setTimeout(()=>{box.querySelectorAll(".dfill").forEach(d=>d.style.width=d.dataset.w+"%")},80);
+}
+
+/* ── 共用：比熱表（卡／公克‧°C；課本常見物質表，沙拉油約略值） ── */
+const SH={"水":1.0,"沙拉油":0.47,"鋁":0.217,"沙子":0.19,"鐵":0.113,"銅":0.093};
+function chips(id,list,cur,cb){
+  const box=document.getElementById(id);
+  box.innerHTML=list.map(n=>'<button class="chip'+(n===cur?' on':'')+'" data-n="'+n+'">'+n+'</button>').join("");
+  box.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+    box.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===b));cb(b.dataset.n);
+  }));
+}
+function fmt(x,d){return (+x.toFixed(d)).toString()}
+
+/* ── 實驗台 A：升溫曲線 ── */
+const POW=20, TMAX=240;                // 熱源每秒 20 卡；時間軸 0～240 秒
+const X0=74,X1=616,Y0=44,Y1=268;       // 繪圖區
+const sx=t=>X0+(X1-X0)*t/TMAX, sy=T=>Y1-(Y1-Y0)*T/100;
+let subA="水", subB="沙拉油";
+chips("chA",Object.keys(SH),subA,n=>{subA=n;drawHeat()});
+chips("chB",Object.keys(SH),subB,n=>{subB=n;drawHeat()});
+function lineFor(T0,cap,color){
+  // 從 (0,T0) 以斜率 POW/cap 往上，碰到 100 °C 就停
+  const tEnd=Math.min(TMAX,(100-T0)*cap/POW);
+  const Tend=T0+POW*tEnd/cap;
+  return '<line x1="'+sx(0)+'" y1="'+sy(T0).toFixed(1)+'" x2="'+sx(tEnd).toFixed(1)+'" y2="'+sy(Tend).toFixed(1)+'" stroke="'+color+'" stroke-width="3.2" stroke-linecap="round"/>';
+}
+function drawHeat(){
+  const mA=+document.getElementById("mA").value, mB=+document.getElementById("mB").value;
+  const tA=+document.getElementById("tA").value, tB=+document.getElementById("tB").value;
+  const t=+document.getElementById("time").value;
+  document.getElementById("mAv").textContent=mA+" g";document.getElementById("mBv").textContent=mB+" g";
+  document.getElementById("tAv").textContent=tA+" °C";document.getElementById("tBv").textContent=tB+" °C";
+  document.getElementById("timev").textContent=t+" 秒";
+  const cA=mA*SH[subA], cB=mB*SH[subB], Q=POW*t;
+  const dA=Q/cA, dB=Q/cB;
+  const TA=Math.min(100,tA+dA), TB=Math.min(100,tB+dB);
+  let g="";
+  for(let T=0;T<=100;T+=20){g+='<line x1="'+X0+'" y1="'+sy(T)+'" x2="'+X1+'" y2="'+sy(T)+'" stroke="#ece5d8"/><text x="'+(X0-10)+'" y="'+(sy(T)+6)+'" font-size="18.1" fill="#8b8275" text-anchor="end">'+T+'</text>';}
+  for(let s=0;s<=TMAX;s+=60){g+='<text x="'+sx(s)+'" y="'+(Y1+24)+'" font-size="18.1" fill="#8b8275" text-anchor="middle">'+s+'</text>';}
+  g+='<line x1="'+X0+'" y1="'+Y1+'" x2="'+X1+'" y2="'+Y1+'" stroke="#2b2622" stroke-width="1.4"/>';
+  g+='<line x1="'+X0+'" y1="'+Y0+'" x2="'+X0+'" y2="'+Y1+'" stroke="#2b2622" stroke-width="1.4"/>';
+  g+='<text x="'+(X0+8)+'" y="'+(Y0-18)+'" font-size="18.1" fill="#5c5349">溫度（°C）</text>';
+  g+='<text x="'+X1+'" y="'+(Y1+48)+'" font-size="18.1" fill="#5c5349" text-anchor="end">加熱時間（秒）</text>';
+  g+=lineFor(tA,cA,"#1d5b79")+lineFor(tB,cB,"#c2410c");
+  g+='<line x1="'+sx(t)+'" y1="'+Y0+'" x2="'+sx(t)+'" y2="'+Y1+'" stroke="#5c5349" stroke-dasharray="5 4"/>';
+  g+='<circle cx="'+sx(t)+'" cy="'+sy(TA).toFixed(1)+'" r="6" fill="#1d5b79" stroke="#fff" stroke-width="2"/>';
+  g+='<circle cx="'+sx(t)+'" cy="'+sy(TB).toFixed(1)+'" r="6" fill="#c2410c" stroke="#fff" stroke-width="2"/>';
+  document.getElementById("hsvg").innerHTML=g;
+  document.getElementById("hQ").textContent=Q+" 卡";
+  document.getElementById("hCA").textContent=fmt(cA,1)+" 卡";
+  document.getElementById("hCB").textContent=fmt(cB,1)+" 卡";
+  document.getElementById("hdA").textContent=(tA+dA>100?"（已到 100）":fmt(dA,1)+" °C");
+  document.getElementById("hdB").textContent=(tB+dB>100?"（已到 100）":fmt(dB,1)+" °C");
+  document.getElementById("hTA").textContent=fmt(TA,1)+" °C";
+  document.getElementById("hTB").textContent=fmt(TB,1)+" °C";
+  const v=document.getElementById("hverd");
+  const near=Math.abs(cA-cB)/Math.max(cA,cB)<0.04;
+  const slowName=cA>cB?"甲":"乙", fastName=cA>cB?"乙":"甲";
+  let msg;
+  if(near){
+    v.className="verdict good";
+    msg="<strong>兩條線幾乎一樣陡。</strong>甲是 "+mA+" g 的"+subA+"、乙是 "+mB+" g 的"+subB+"，「升 1 °C 要幾卡」卻差不多（"+fmt(cA,1)+" 和 "+fmt(cB,1)+"）——<em>決定陡不陡的，是質量 × 比熱，不是只看材質</em>。";
+  }else{
+    v.className="verdict";
+    msg="<strong>"+fastName+"杯升得比較快。</strong>"+slowName+"杯「升 1 °C 要 "+fmt(Math.max(cA,cB),1)+" 卡」，比"+fastName+"杯的 "+fmt(Math.min(cA,cB),1)+" 卡多，所以吃一樣多的熱，"+slowName+"杯升得比較少、線比較平。";
+    if(subA===subB) msg+="<br>兩杯是同一種東西，差別只在重量：<em>越重越難燒熱</em>。";
+  }
+  // 起點不同時，提醒「終點高 ≠ 升得多」
+  if(tA!==tB&&t>0){
+    const hiEnd=TA>TB?"甲":(TB>TA?"乙":null), moreRise=dA>dB?"甲":(dB>dA?"乙":null);
+    if(hiEnd&&moreRise&&hiEnd!==moreRise){
+      v.className="verdict bad";
+      msg+="<br><strong>小心：</strong>"+hiEnd+"杯現在比較燙，但升得比較多的是"+moreRise+"杯——<em>終點比較高，不等於升得比較多</em>。開場那題就是這個陷阱。";
+    }else{
+      msg+="<br>兩杯起點不同。比較比熱時，要看「升了多少」，不是看「現在幾度」。";
+    }
+  }
+  v.innerHTML=msg;
+}
+["mA","mB","tA","tB","time"].forEach(id=>document.getElementById(id).addEventListener("input",drawHeat));
+drawHeat();
+
+/* ── 111-28 選項小圖（重繪） ── */
+function mini(id,yMax,top,topName,low,lowName){
+  const x0=40,x1=210,y0=12,y1=96, sy2=v=>y1-(y1-y0)*v/yMax;
+  let s='<line x1="'+x0+'" y1="'+y1+'" x2="'+x1+'" y2="'+y1+'" stroke="#2b2622" stroke-width="1.3"/>'+
+        '<line x1="'+x0+'" y1="'+y0+'" x2="'+x0+'" y2="'+y1+'" stroke="#2b2622" stroke-width="1.3"/>';
+  [top,low].forEach(v=>{s+='<line x1="'+x0+'" y1="'+sy2(v)+'" x2="'+x1+'" y2="'+sy2(v)+'" stroke="#c9c2b4" stroke-dasharray="3 3"/><text x="'+(x0-5)+'" y="'+(sy2(v)+4)+'" font-size="11" fill="#5c5349" text-anchor="end">'+v+'</text>';});
+  s+='<text x="'+(x0-5)+'" y="'+(y1+4)+'" font-size="11" fill="#5c5349" text-anchor="end">0</text>';
+  s+='<text x="'+(x1-24)+'" y="'+(y1+15)+'" font-size="11" fill="#5c5349" text-anchor="middle">10 分</text>';
+  s+='<line x1="'+(x1-24)+'" y1="'+y1+'" x2="'+(x1-24)+'" y2="'+(y1-3)+'" stroke="#2b2622"/>';
+  s+='<line x1="'+x0+'" y1="'+y1+'" x2="'+(x1-24)+'" y2="'+sy2(top)+'" stroke="#2b2622" stroke-width="2"/>';
+  s+='<line x1="'+x0+'" y1="'+y1+'" x2="'+(x1-24)+'" y2="'+sy2(low)+'" stroke="#2b2622" stroke-width="2"/>';
+  s+='<text x="'+(x1-20)+'" y="'+(sy2(top)+4)+'" font-size="12" font-weight="700" fill="#2b2622">'+topName+'</text>';
+  s+='<text x="'+(x1-20)+'" y="'+(sy2(low)+4)+'" font-size="12" font-weight="700" fill="#2b2622">'+lowName+'</text>';
+  s+='<text x="2" y="'+(y0+4)+'" font-size="10.5" fill="#8b8275">上升</text><text x="2" y="'+(y0+17)+'" font-size="10.5" fill="#8b8275">°C</text>';
+  document.getElementById(id).innerHTML=s;
+}
+mini("m111A",40,30,"甲",20,"乙");
+mini("m111B",40,30,"乙",20,"甲");
+mini("m111C",60,50,"甲",20,"乙");
+mini("m111D",60,50,"乙",20,"甲");
+
+/* ── 實驗台 B：熱平衡混合器 ── */
+let subC="水";
+chips("chC",["水","鋁","鐵","銅","沙子"],subC,n=>{subC=n;drawMix()});
+function drawMix(){
+  const mh=+document.getElementById("mh").value, th=+document.getElementById("th").value;
+  const mc=+document.getElementById("mc").value, tc=+document.getElementById("tc").value;
+  document.getElementById("mhv").textContent=mh+" g";document.getElementById("thv").textContent=th+" °C";
+  document.getElementById("mcv").textContent=mc+" g";document.getElementById("tcv").textContent=tc+" °C";
+  const ch=mh*1.0, cc=mc*SH[subC];
+  const Tf=(ch*th+cc*tc)/(ch+cc);
+  const out=ch*(th-Tf), inn=cc*(Tf-tc);
+  document.getElementById("mTf").textContent=fmt(Tf,1)+" °C";
+  document.getElementById("mOut").textContent=fmt(out,0)+" 卡";
+  document.getElementById("mIn").textContent=fmt(inn,0)+" 卡";
+  // 溫度尺：0～100 °C
+  const L=40,R=600,Y=82, px=T=>L+(R-L)*T/100;
+  let g='<rect x="'+L+'" y="'+(Y-7)+'" width="'+(R-L)+'" height="14" rx="7" fill="#f0eade"/>';
+  g+='<rect x="'+px(tc)+'" y="'+(Y-7)+'" width="'+(px(th)-px(tc))+'" height="14" fill="#fde2cf"/>';
+  for(let T=0;T<=100;T+=20){g+='<text x="'+px(T)+'" y="'+(Y+36)+'" font-size="18.6" fill="#8b8275" text-anchor="middle">'+T+'</text><line x1="'+px(T)+'" y1="'+(Y+8)+'" x2="'+px(T)+'" y2="'+(Y+14)+'" stroke="#c9c2b4"/>';}
+  g+='<defs><marker id="ma" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#5c5349"/></marker></defs>';
+  if(px(th)-px(Tf)>18)g+='<line x1="'+(px(th)-8)+'" y1="'+(Y-20)+'" x2="'+(px(Tf)+10)+'" y2="'+(Y-20)+'" stroke="#c2410c" stroke-width="2" marker-end="url(#ma)"/>';
+  if(px(Tf)-px(tc)>18)g+='<line x1="'+(px(tc)+8)+'" y1="'+(Y-20)+'" x2="'+(px(Tf)-10)+'" y2="'+(Y-20)+'" stroke="#1d5b79" stroke-width="2" marker-end="url(#ma)"/>';
+  g+='<circle cx="'+px(tc)+'" cy="'+Y+'" r="9" fill="#1d5b79"/><text x="'+px(tc)+'" y="'+(Y+64)+'" font-size="19.4" fill="#1d5b79" text-anchor="middle">冷 '+tc+'</text>';
+  g+='<circle cx="'+px(th)+'" cy="'+Y+'" r="9" fill="#c2410c"/><text x="'+px(th)+'" y="'+(Y+64)+'" font-size="19.4" fill="#c2410c" text-anchor="middle">熱 '+th+'</text>';
+  g+='<line x1="'+px(Tf)+'" y1="'+(Y-38)+'" x2="'+px(Tf)+'" y2="'+(Y+10)+'" stroke="#2b2622" stroke-width="2.4"/>';
+  g+='<text x="'+px(Tf)+'" y="'+(Y-46)+'" font-size="21.7" font-weight="700" fill="#2b2622" text-anchor="middle">最後 '+fmt(Tf,1)+' °C</text>';
+  document.getElementById("msvg").innerHTML=g;
+  const v=document.getElementById("mverd"), mid=(th+tc)/2;
+  if(Math.abs(Tf-mid)<0.6){
+    v.className="verdict good";
+    v.innerHTML="<strong>剛好停在正中間（"+fmt(mid,1)+" °C）。</strong>因為兩邊「升 1 °C 要幾卡」一樣多（都是 "+fmt(ch,0)+" 卡），誰也拉不贏誰。";
+  }else{
+    const closer=Tf>mid?"熱水":"冷的那一邊";
+    v.className="verdict";
+    v.innerHTML="<strong>停在 "+fmt(Tf,1)+" °C，比較靠近"+closer+"。</strong>熱水「升 1 °C 要 "+fmt(ch,0)+" 卡」，"+mc+" g 的"+subC+"只要 "+fmt(cc,1)+" 卡——<em>比較難變溫的那一邊，溫度被拉動得比較少</em>。<br>熱水放出 "+fmt(out,0)+" 卡＝冷的吸進 "+fmt(inn,0)+" 卡：熱量只是搬家，沒有變多變少。";
+  }
+}
+["mh","th","mc","tc"].forEach(id=>document.getElementById(id).addEventListener("input",drawMix));
+drawMix();
+
+/* ── 實驗台 C：水在 0～10 °C 的體積（純水標準密度 g/cm³） ── */
+const RHO=[0.99984,0.99990,0.99994,0.99997,0.99997,0.99996,0.99994,0.99990,0.99985,0.99978,0.99970];
+function rho(T){const i=Math.min(9,Math.floor(T)),f=T-i;return RHO[i]+(RHO[i+1]-RHO[i])*f}
+function drawWater(){
+  const T=+document.getElementById("wt").value;
+  document.getElementById("wtv").textContent=T+" °C";
+  const gx0=92,gx1=400,gy0=30,gy1=220, vmin=999.98,vmax=1000.34;
+  const px=t=>gx0+(gx1-gx0)*t/10, py=V=>gy1-(gy1-gy0)*(V-vmin)/(vmax-vmin);
+  let g='';
+  [1000.0,1000.1,1000.2,1000.3].forEach(V=>{g+='<line x1="'+gx0+'" y1="'+py(V)+'" x2="'+gx1+'" y2="'+py(V)+'" stroke="#ece5d8"/><text x="'+(gx0-8)+'" y="'+(py(V)+6)+'" font-size="17.8" fill="#8b8275" text-anchor="end">'+V.toFixed(1)+'</text>';});
+  for(let t=0;t<=10;t+=2){g+='<text x="'+px(t)+'" y="'+(gy1+26)+'" font-size="18.6" fill="#8b8275" text-anchor="middle">'+t+'</text>';}
+  g+='<line x1="'+gx0+'" y1="'+gy1+'" x2="'+gx1+'" y2="'+gy1+'" stroke="#2b2622" stroke-width="1.3"/><line x1="'+gx0+'" y1="'+gy0+'" x2="'+gx0+'" y2="'+gy1+'" stroke="#2b2622" stroke-width="1.3"/>';
+  g+='<text x="'+(gx0+4)+'" y="'+(gy0-10)+'" font-size="18.6" fill="#5c5349">體積（mL）</text><text x="'+gx1+'" y="'+(gy1+50)+'" font-size="18.6" fill="#5c5349" text-anchor="end">水溫（°C）</text>';
+  let pts=[];for(let t=0;t<=10;t+=0.25){pts.push(px(t).toFixed(1)+","+py(1000/rho(t)).toFixed(1))}
+  g+='<polyline points="'+pts.join(" ")+'" fill="none" stroke="#1d5b79" stroke-width="2.6"/>';
+  g+='<line x1="'+px(4)+'" y1="'+gy0+'" x2="'+px(4)+'" y2="'+gy1+'" stroke="#3f6d3a" stroke-dasharray="4 4"/><text x="'+(px(4)+4)+'" y="'+(gy0+20)+'" font-size="18.6" fill="#3f6d3a">4 °C 最小</text>';
+  const V=1000/rho(T);
+  g+='<circle cx="'+px(T)+'" cy="'+py(V).toFixed(1)+'" r="6.5" fill="#c2410c" stroke="#fff" stroke-width="2"/>';
+  // 右邊的量筒（水位放大顯示）
+  const bx=470,bw=110,btop=40,bbot=240, lvl=bbot-100-(V-1000)*300;
+  g+='<rect x="'+bx+'" y="'+lvl.toFixed(1)+'" width="'+bw+'" height="'+(bbot-lvl).toFixed(1)+'" fill="#cfe3ee"/>';
+  g+='<path d="M'+bx+' '+btop+' V'+bbot+' H'+(bx+bw)+' V'+btop+'" fill="none" stroke="#2b2622" stroke-width="2"/>';
+  g+='<line x1="'+(bx-8)+'" y1="'+(bbot-100)+'" x2="'+(bx+bw+8)+'" y2="'+(bbot-100)+'" stroke="#8b8275" stroke-dasharray="4 3"/><text x="'+(bx+bw+10)+'" y="'+(bbot-96)+'" font-size="17.1" fill="#8b8275">1000</text>';
+  g+='<text x="'+(bx+bw/2)+'" y="'+(bbot+26)+'" font-size="18.6" fill="#5c5349" text-anchor="middle">水位（放大）</text>';
+  document.getElementById("wsvg").innerHTML=g;
+  document.getElementById("wV").textContent=V.toFixed(2)+" mL";
+  document.getElementById("wD").textContent=rho(T).toFixed(5)+" g/cm³";
+  const v=document.getElementById("wverd");
+  if(T>4){v.className="verdict";v.innerHTML="<strong>"+T+" °C：</strong>往左拉（降溫），體積變小——和大部分東西一樣，<em>冷縮</em>。";}
+  else if(T===4){v.className="verdict good";v.innerHTML="<strong>4 °C：體積最小、密度最大。</strong>同樣 1000 公克，這時候最「擠」。所以湖底的水會停在 4 °C 左右。";}
+  else if(T>0){v.className="verdict bad";v.innerHTML="<strong>"+T+" °C：</strong>明明在降溫，體積卻<em>變大</em>了！4 °C 以下的水是「冷脹」——這就是水的怪脾氣。";}
+  else{v.className="verdict bad";v.innerHTML="<strong>0 °C 的水：</strong>"+V.toFixed(2)+" mL。如果再放出熱量結成冰，體積會一口氣跳到約 <strong>1090 mL</strong>（冰的密度約 0.92）——所以冰會浮在水上，冷凍庫裡裝太滿的玻璃瓶會被撐破。";}
+}
+document.getElementById("wt").addEventListener("input",drawWater);
+drawWater();
+
+/* ── 實驗台 D：分類卡 ── */
+const CARDS=[
+  ["炒菜時，鐵鍋的金屬把手越來越燙","傳導","熱沿著金屬一棒一棒傳到把手，鍋子本身沒有流動——傳導。所以把手常用木頭或塑膠，它們傳導很慢。"],
+  ["冷氣機都裝在房間比較高的地方","對流","冷空氣比較重會往下沉，熱空氣被擠上去，整個房間的空氣流動起來——對流。（110 年會考第 51 題考的就是這個例子）"],
+  ["太陽的熱穿過太空來到地球","輻射","太空幾乎什麼都沒有，沒有東西可以傳導或流動——只剩輻射。"],
+  ["燒開水時，整壺水會上下翻滾","對流","壺底的水先熱、變輕往上跑，上面的冷水沉下來補——水本身在搬熱。"],
+  ["站在營火旁邊，臉被烤得發燙","輻射","你沒有碰到火，也不是熱風吹過來（熱空氣其實是往上跑的）——是火直接射過來的輻射。"],
+  ["冬天赤腳踩磁磚，比踩木地板冷","傳導","兩種地板其實一樣溫度！磁磚傳導比較快，把腳的熱很快帶走，所以覺得冷。"],
+  ["保溫瓶的內膽做成亮亮的鏡面","輻射","光亮的表面會把輻射反射回去，熱就不容易用輻射的方式跑掉。（真空夾層則是擋傳導和對流）"],
+  ["夏天油槽、儲氣槽常漆成淺色","輻射","淺色表面比較會反射陽光的輻射，吸收得少，槽內就不容易過熱。"]
+];
+const sortBox=document.getElementById("sort");
+sortBox.innerHTML=CARDS.map((c,i)=>'<div class="scard" id="sc'+i+'"><div class="st">'+(i+1)+'. '+c[0]+'</div><div class="bs">'+
+  ["傳導","對流","輻射"].map(w=>'<button data-i="'+i+'" data-w="'+w+'">'+w+'</button>').join("")+'</div><div class="swhy"></div></div>').join("");
+let sortRight=0;
+sortBox.querySelectorAll(".bs button").forEach(b=>b.addEventListener("click",()=>{
+  const i=+b.dataset.i, card=document.getElementById("sc"+i);
+  if(card.classList.contains("fin"))return;
+  const ans=CARDS[i][1], ok=b.dataset.w===ans;
+  card.classList.add("fin");if(ok){card.classList.add("good");sortRight++}
+  card.querySelectorAll("button").forEach(x=>{if(x.dataset.w===ans)x.classList.add("ok");else if(x===b)x.classList.add("no")});
+  card.querySelector(".swhy").innerHTML=(ok?"<strong style='color:var(--green)'>對。</strong>":"<strong style='color:var(--accent)'>是"+ans+"。</strong>")+CARDS[i][2];
+  const n=sortBox.querySelectorAll(".scard.fin").length, v=document.getElementById("sverd");
+  v.innerHTML="答對幾張："+sortRight+" / "+CARDS.length+(n===CARDS.length?"　——<strong>全部翻完。</strong>判斷口訣：<em>東西沒動＝傳導；整團流體在動＝對流；中間什麼都不用＝輻射。</em>":"");
+  v.className="verdict"+(n===CARDS.length?" good":"");
+}));
+
+document.querySelectorAll(".opts").forEach(box=>{
+  const qi=box.dataset.q, saved=state["q"+qi];
+  if(saved!==undefined)reveal(qi,saved,box.dataset.ans,box,false);
+});
+gate();
+
+document.getElementById("rst").addEventListener("click",()=>{
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+});
+})();
+</script>
+<!--STEPPLAY-->
+<script>
+/* stepplay.js — 國中學習站共用「一步一步看」解說播放器（2026-10-24）
+ * 原始檔：D:\Zettelkasten\20_教學\_共用\stepplay.js。各站產生器 build 時把整支內嵌進網頁，🔴 改這支、不要改產出的 html。
+ *
+ * 做法：把一段解析 HTML 依「換行、＝、→、，。；：」切成好幾步（標籤不拆，根號、分數、SVG 跟著所在的步出現），
+ * 一次亮一步，新出現的那步有淡入＋螢光底；下方有 上一步／下一步／自動播放／全部顯示。
+ *
+ * 用法：
+ *   StepPlay.mount(el, html)          把 html 放進 el 並做成播放器
+ *   StepPlay.enhance(el)              把 el 現有內容做成播放器（已做過就重來一次）
+ *   StepPlay.watch("選擇器, 選擇器")   之後這些元素一出現或內容一換，就自動做成播放器（給手寫頁、各站引擎用）
+ *   在元素加 class="sp-skip" 或 data-sp="off" 就不切步。
+ */
+(function (root) {
+  "use strict";
+  if (root.StepPlay) return;
+
+  var CSS =
+    ".sp-u,.sp-e{transition:opacity .25s}" +
+    ".sp-off{display:none!important}" +
+    ".sp-new{animation:spIn .55s ease-out both;border-radius:4px}" +
+    "@keyframes spIn{0%{opacity:0;transform:translateY(6px);background:rgba(255,214,10,.55)}" +
+    "60%{opacity:1;transform:none;background:rgba(255,214,10,.45)}100%{opacity:1;background:transparent}}" +
+    ".sp-u{display:inline}" +
+    ".sp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 2px;font-size:14px}" +
+    ".sp-bar button{font:inherit;font-size:14px;padding:5px 11px;border-radius:999px;border:1px solid rgba(0,0,0,.18);" +
+    "background:#fff;color:#1f2937;cursor:pointer;line-height:1.3}" +
+    ".sp-bar button:disabled{opacity:.4;cursor:default}" +
+    ".sp-bar .sp-next{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:700}" +
+    ".sp-bar .sp-cnt{color:#6b7280;margin-left:auto;font-variant-numeric:tabular-nums}" +
+    ".sp-bar .sp-dots{display:inline-flex;gap:3px}" +
+    ".sp-bar .sp-dots i{width:7px;height:7px;border-radius:50%;background:#d1d5db;display:inline-block}" +
+    ".sp-bar .sp-dots i.on{background:#2563eb}" +
+    "@media (prefers-color-scheme:dark){.sp-bar button{background:#1f2937;color:#e5e7eb;border-color:#4b5563}" +
+    ".sp-bar .sp-next{background:#3b82f6;border-color:#3b82f6;color:#fff}.sp-bar .sp-cnt{color:#9ca3af}" +
+    "@keyframes spIn{0%{opacity:0;transform:translateY(6px);background:rgba(250,204,21,.35)}" +
+    "60%{opacity:1;transform:none;background:rgba(250,204,21,.28)}100%{opacity:1;background:transparent}}}" +
+    "@media (prefers-reduced-motion:reduce){.sp-new{animation:none}}";
+
+  function injectCss() {
+    if (document.getElementById("sp-css")) return;
+    var s = document.createElement("style");
+    s.id = "sp-css";
+    s.textContent = CSS;
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  // 每一步最少幾個字，太短的併到前一步（避免「＝72」單獨一步太碎時可調）
+  var MIN_CHARS = 3, MAX_STEPS = 9;
+  // 斷點：在 ＝ → ≈ ⇒ 之前斷；在 ，。；：！？ 之後斷
+  var SPLIT = /(?=[＝→≈⇒])|(?<=[，。；：！？])/;
+  // 不切開、整塊跟著出現的元素（SVG、圖、公式小圖）
+  var ATOMIC = { SVG: 1, IMG: 1, CANVAS: 1, VIDEO: 1, AUDIO: 1, INPUT: 1, BUTTON: 1, SELECT: 1 };
+
+  function splitText(t) {
+    try { return t.split(SPLIT); } catch (e) { return t.split(/(?=[＝→])/); } // 舊瀏覽器沒有 lookbehind
+  }
+
+  /* 走過 el 的所有節點，把文字切成 .sp-u，每個片段標第幾步；回傳總步數 */
+  function tag(el) {
+    var step = 0, chars = 0, started = false, units = [], needBr = false, prose = false; // prose＝這一行已經出現中文說明
+    function bump(soft, minc) { // 開新的一步（目前這步字太少就不開）；soft＝從句中切開的，要自己補換行
+      if (started && chars >= (minc || MIN_CHARS)) { step++; chars = 0; needBr = !!soft; }
+      else if (!soft) needBr = false;
+    }
+    function br() { // 每一步從新的一行開始（10/24 使用者要求）
+      needBr = false;
+      var b = document.createElement("br"); b.className = "sp-e sp-br"; b.dataset.s = step; units.push(b); return b;
+    }
+    function walk(node) {
+      var kids = Array.prototype.slice.call(node.childNodes);
+      kids.forEach(function (n) {
+        if (n.nodeType === 3) {
+          var t = n.nodeValue;
+          if (!t) return;
+          if (!t.trim()) { // 純空白：跟著前一步
+            var w = document.createElement("span"); w.className = "sp-u"; w.dataset.s = step;
+            n.parentNode.insertBefore(w, n); w.appendChild(n); units.push(w); return;
+          }
+          var parts = splitText(t), frag = document.createDocumentFragment();
+          parts.forEach(function (p, i) {
+            if (!p) return;
+            var eqHead = /^[＝→≈⇒]/.test(p);
+            // 說明句子裡的算式（這一行前面已經有中文）不在「＝」「→」拆行，整句留在同一行（10/24 使用者要求）
+            if (eqHead && prose) {
+              var last = frag.lastChild || (units.length ? units[units.length - 1] : null);
+              if (i > 0 && last && last.classList && last.classList.contains("sp-u")) { last.textContent += p; chars += p.length; return; }
+            } else if (i > 0 || eqHead) bump(true, eqHead ? 5 : 0); // 「1＋3＝4」這種短算式不拆
+            if (needBr) { frag.appendChild(br()); p = p.replace(/^\s+/, ""); if (!p) return; }
+            var s = document.createElement("span"); s.className = "sp-u"; s.dataset.s = step;
+            s.textContent = p; frag.appendChild(s); units.push(s);
+            if (/[一-鿿]/.test(p)) prose = true;
+            chars += p.replace(/\s/g, "").length; started = true;
+          });
+          n.parentNode.replaceChild(frag, n);
+        } else if (n.nodeType === 1) {
+          var tn = n.tagName.toUpperCase();
+          if (tn === "BR") { prose = false; bump(); n.classList.add("sp-e"); n.dataset.s = step; units.push(n); return; } // 換行跟著下一步出現
+          if (n.classList.contains("sp-bar")) return;
+          if (ATOMIC[tn] || n.classList.contains("xc") || n.classList.contains("sp-atom")) {
+            if (needBr) n.parentNode.insertBefore(br(), n);
+            n.classList.add("sp-e"); n.dataset.s = step; units.push(n); started = true; chars += 2; return;
+          }
+          var block = /^(P|DIV|LI|TR|H[1-6]|TABLE|UL|OL|BLOCKQUOTE)$/.test(tn);
+          if (block) { prose = false; bump(); }
+          walk(n);
+          if (block) bump();
+        }
+      });
+    }
+    walk(el);
+    var n = units.length ? (+units[units.length - 1].dataset.s + 1) : 0;
+    // 步數太多就等比例合併
+    if (n > MAX_STEPS) {
+      var r = n / MAX_STEPS;
+      units.forEach(function (u) { u.dataset.s = Math.floor(+u.dataset.s / r); });
+      n = MAX_STEPS;
+    }
+    // 每個元素的「出現步」＝它裡面最早的那一步（根號上的橫線、分數線才不會先跑出來）
+    var all = el.querySelectorAll("*");
+    for (var i = all.length - 1; i >= 0; i--) {
+      var e = all[i];
+      if (e.classList.contains("sp-u") || e.classList.contains("sp-e") || e.closest(".sp-bar")) continue;
+      var m = Infinity, d = e.querySelectorAll(".sp-u,.sp-e");
+      for (var j = 0; j < d.length; j++) m = Math.min(m, +d[j].dataset.s);
+      if (m !== Infinity) { e.dataset.s = m; e.classList.add("sp-w"); }
+    }
+    return n;
+  }
+
+  function show(p, k, anim) {
+    p.k = k;
+    var nodes = p.el.querySelectorAll(".sp-u,.sp-e,.sp-w");
+    for (var i = 0; i < nodes.length; i++) {
+      var x = nodes[i], s = +x.dataset.s;
+      x.classList.toggle("sp-on", s <= k);
+      x.classList.toggle("sp-off", s > k);
+      x.classList.remove("sp-new");
+      if (anim && s === k && !x.classList.contains("sp-w")) { void x.offsetWidth; x.classList.add("sp-new"); }
+    }
+    var b = p.bar;
+    b.querySelector(".sp-prev").disabled = k <= 0;
+    b.querySelector(".sp-next").disabled = k >= p.n - 1;
+    b.querySelector(".sp-all").disabled = k >= p.n - 1;
+    b.querySelector(".sp-cnt").textContent = "第 " + (k + 1) + " 步 / 共 " + p.n + " 步";
+    var dots = b.querySelectorAll(".sp-dots i");
+    for (var d = 0; d < dots.length; d++) dots[d].classList.toggle("on", d <= k);
+    if (k >= p.n - 1) stop(p);
+  }
+
+  function stop(p) {
+    if (p.timer) { clearTimeout(p.timer); p.timer = null; }
+    var a = p.bar.querySelector(".sp-auto");
+    a.textContent = p.k >= p.n - 1 ? "⟲ 重播" : "▶ 自動播放";
+  }
+  function stepLen(p, k) { // 字越多停越久
+    var t = 0, u = p.el.querySelectorAll('.sp-u[data-s="' + k + '"]');
+    for (var i = 0; i < u.length; i++) t += u[i].textContent.length;
+    return Math.min(4200, 1300 + t * 90);
+  }
+  function play(p) {
+    var a = p.bar.querySelector(".sp-auto");
+    if (p.k >= p.n - 1) show(p, 0, true);
+    a.textContent = "⏸ 暫停";
+    (function tick() {
+      p.timer = setTimeout(function () {
+        if (p.k < p.n - 1) { show(p, p.k + 1, true); if (p.k < p.n - 1) tick(); }
+      }, stepLen(p, p.k));
+    })();
+  }
+
+  function enhance(el, opts) {
+    if (!el || el.dataset.sp === "off" || el.classList.contains("sp-skip")) return null;
+    injectCss();
+    opts = opts || {};
+    el._spBusy = true;
+    if (el._sp) { // 做過一次：內容若還是切好的樣子，先還原成原本的 HTML 再切
+      if (el._sp.timer) clearTimeout(el._sp.timer);
+      if (el.querySelector(".sp-u,.sp-e")) el.innerHTML = el._spHtml;
+    }
+    el._spHtml = el.innerHTML;
+    var n = tag(el);
+    var p = { el: el, n: n, k: 0, timer: null };
+    el._sp = p;
+    if (n <= 1) { // 只有一步：不放按鈕，淡入就好
+      var bar0 = document.createElement("div"); bar0.className = "sp-bar"; bar0.style.display = "none";
+      bar0.innerHTML = '<button class="sp-prev"></button><button class="sp-next"></button><button class="sp-auto"></button><button class="sp-all"></button><span class="sp-dots"></span><span class="sp-cnt"></span>';
+      el.appendChild(bar0); p.bar = bar0; show(p, 0, true);
+      el._spBusy = false; return p;
+    }
+    var bar = document.createElement("div");
+    bar.className = "sp-bar";
+    var dots = ""; for (var i = 0; i < n; i++) dots += "<i></i>";
+    bar.innerHTML =
+      '<button type="button" class="sp-prev">◀ 上一步</button>' +
+      '<button type="button" class="sp-next">下一步 ▶</button>' +
+      '<button type="button" class="sp-auto">▶ 自動播放</button>' +
+      '<button type="button" class="sp-all">全部顯示</button>' +
+      '<span class="sp-dots">' + dots + '</span><span class="sp-cnt"></span>';
+    el.appendChild(bar);
+    p.bar = bar;
+    function on(cls, fn) { bar.querySelector(cls).addEventListener("click", function (ev) { ev.preventDefault(); ev.stopPropagation(); fn(); }); }
+    on(".sp-prev", function () { stop(p); if (p.k > 0) show(p, p.k - 1, false); });
+    on(".sp-next", function () { stop(p); if (p.k < p.n - 1) show(p, p.k + 1, true); });
+    on(".sp-all", function () { stop(p); show(p, p.n - 1, false); });
+    on(".sp-auto", function () { if (p.timer) stop(p); else play(p); });
+    show(p, 0, true);
+    if (opts.autoplay) play(p);
+    el._spVis = el.offsetParent !== null; // 記下做好時看不看得到；重新整理後已顯示的解析，第一次按下一步才不會被拉回第 1 步
+    el._spBusy = false;
+    return p;
+  }
+
+  function mount(el, html, opts) {
+    if (!el) return null;
+    el.innerHTML = html;
+    return enhance(el, opts);
+  }
+
+  /* 自動模式：選擇器命中的元素，內容一放進來（或換掉）就做成播放器；已做過且內容沒變就跳過 */
+  function watch(sel, opts) {
+    injectCss();
+    function scan(rootEl) {
+      var list = (rootEl.matches && rootEl.matches(sel)) ? [rootEl] : [];
+      if (rootEl.querySelectorAll) list = list.concat(Array.prototype.slice.call(rootEl.querySelectorAll(sel)));
+      list.forEach(function (el) {
+        if (el._spBusy || !el.textContent.trim()) return;
+        if (el._sp && el.querySelector(":scope > .sp-bar")) return; // 做過且內容沒被換掉
+        enhance(el, opts);
+      });
+    }
+    var pending = false;
+    var mo = new MutationObserver(function () {
+      if (pending) return; pending = true;
+      (root.requestAnimationFrame || setTimeout)(function () { pending = false; scan(document.body); });
+    });
+    function start() { scan(document.body); mo.observe(document.body, { childList: true, subtree: true }); }
+    if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+    // 元素從隱藏變成看得到（hidden 拿掉、加 .on/.show）時，從第 1 步重新開始
+    document.addEventListener("click", function () {
+      setTimeout(function () {
+        var els = document.querySelectorAll(sel);
+        for (var i = 0; i < els.length; i++) {
+          var e = els[i], vis = e.offsetParent !== null;
+          if (e._sp && vis && !e._spVis && e._sp.n > 1) show(e._sp, 0, true);
+          e._spVis = vis;
+        }
+      }, 30);
+    }, true);
+  }
+
+  root.StepPlay = { mount: mount, enhance: enhance, watch: watch };
+})(typeof window !== "undefined" ? window : this);
+</script>
+<script>StepPlay.watch(".sp-body");</script>
+<!--/STEPPLAY-->
+</body>
+</html>
