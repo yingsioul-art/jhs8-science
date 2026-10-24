@@ -676,7 +676,7 @@ function reveal(i,k,box,scroll){
     ? "<h4 style='color:var(--green)'>答對了</h4>"
     : "<h4 style='color:var(--accent)'>你選了 "+k+"，正解是 "+ans+"</h4>";
   var fb=document.getElementById("mxfb"+i);
-  fb.innerHTML=head+D[i].sol;
+  fb.innerHTML=head+"<div class='sp-body'>"+D[i].sol+"</div>";
   fb.classList.add("show");
   if(scroll)setTimeout(function(){fb.scrollIntoView({behavior:"smooth",block:"nearest"})},120);
 }
@@ -793,7 +793,7 @@ function reveal(qi,k,ans,box,scroll){
     }
   });
   const f=FB[qi][k], fb=document.getElementById("fb"+qi);
-  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+f[1];
+  fb.innerHTML="<h4 style='color:"+(k===ans?"var(--green)":"var(--accent)")+"'>"+f[0]+"</h4>"+"<div class='sp-body'>"+f[1]+"</div>";
   fb.classList.add("show");
   if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
 }
@@ -917,5 +917,262 @@ document.getElementById("rst").addEventListener("click",()=>{
 });
 })();
 </script>
+<!--STEPPLAY-->
+<script>
+/* stepplay.js — 國中學習站共用「一步一步看」解說播放器（2026-10-24）
+ * 原始檔：D:\Zettelkasten\20_教學\_共用\stepplay.js。各站產生器 build 時把整支內嵌進網頁，🔴 改這支、不要改產出的 html。
+ *
+ * 做法：把一段解析 HTML 依「換行、＝、→、，。；：」切成好幾步（標籤不拆，根號、分數、SVG 跟著所在的步出現），
+ * 一次亮一步，新出現的那步有淡入＋螢光底；下方有 上一步／下一步／自動播放／全部顯示。
+ *
+ * 用法：
+ *   StepPlay.mount(el, html)          把 html 放進 el 並做成播放器
+ *   StepPlay.enhance(el)              把 el 現有內容做成播放器（已做過就重來一次）
+ *   StepPlay.watch("選擇器, 選擇器")   之後這些元素一出現或內容一換，就自動做成播放器（給手寫頁、各站引擎用）
+ *   在元素加 class="sp-skip" 或 data-sp="off" 就不切步。
+ */
+(function (root) {
+  "use strict";
+  if (root.StepPlay) return;
+
+  var CSS =
+    ".sp-u,.sp-e{transition:opacity .25s}" +
+    ".sp-off{display:none!important}" +
+    ".sp-new{animation:spIn .55s ease-out both;border-radius:4px}" +
+    "@keyframes spIn{0%{opacity:0;transform:translateY(6px);background:rgba(255,214,10,.55)}" +
+    "60%{opacity:1;transform:none;background:rgba(255,214,10,.45)}100%{opacity:1;background:transparent}}" +
+    ".sp-u{display:inline}" +
+    ".sp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 2px;font-size:14px}" +
+    ".sp-bar button{font:inherit;font-size:14px;padding:5px 11px;border-radius:999px;border:1px solid rgba(0,0,0,.18);" +
+    "background:#fff;color:#1f2937;cursor:pointer;line-height:1.3}" +
+    ".sp-bar button:disabled{opacity:.4;cursor:default}" +
+    ".sp-bar .sp-next{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:700}" +
+    ".sp-bar .sp-cnt{color:#6b7280;margin-left:auto;font-variant-numeric:tabular-nums}" +
+    ".sp-bar .sp-dots{display:inline-flex;gap:3px}" +
+    ".sp-bar .sp-dots i{width:7px;height:7px;border-radius:50%;background:#d1d5db;display:inline-block}" +
+    ".sp-bar .sp-dots i.on{background:#2563eb}" +
+    "@media (prefers-color-scheme:dark){.sp-bar button{background:#1f2937;color:#e5e7eb;border-color:#4b5563}" +
+    ".sp-bar .sp-next{background:#3b82f6;border-color:#3b82f6;color:#fff}.sp-bar .sp-cnt{color:#9ca3af}" +
+    "@keyframes spIn{0%{opacity:0;transform:translateY(6px);background:rgba(250,204,21,.35)}" +
+    "60%{opacity:1;transform:none;background:rgba(250,204,21,.28)}100%{opacity:1;background:transparent}}}" +
+    "@media (prefers-reduced-motion:reduce){.sp-new{animation:none}}";
+
+  function injectCss() {
+    if (document.getElementById("sp-css")) return;
+    var s = document.createElement("style");
+    s.id = "sp-css";
+    s.textContent = CSS;
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  // 每一步最少幾個字，太短的併到前一步（避免「＝72」單獨一步太碎時可調）
+  var MIN_CHARS = 3, MAX_STEPS = 9;
+  // 斷點：在 ＝ → ≈ ⇒ 之前斷；在 ，。；：！？ 之後斷
+  var SPLIT = /(?=[＝→≈⇒])|(?<=[，。；：！？])/;
+  // 不切開、整塊跟著出現的元素（SVG、圖、公式小圖）
+  var ATOMIC = { SVG: 1, IMG: 1, CANVAS: 1, VIDEO: 1, AUDIO: 1, INPUT: 1, BUTTON: 1, SELECT: 1 };
+
+  function splitText(t) {
+    try { return t.split(SPLIT); } catch (e) { return t.split(/(?=[＝→])/); } // 舊瀏覽器沒有 lookbehind
+  }
+
+  /* 走過 el 的所有節點，把文字切成 .sp-u，每個片段標第幾步；回傳總步數 */
+  function tag(el) {
+    var step = 0, chars = 0, started = false, units = [], needBr = false, prose = false; // prose＝這一行已經出現中文說明
+    function bump(soft, minc) { // 開新的一步（目前這步字太少就不開）；soft＝從句中切開的，要自己補換行
+      if (started && chars >= (minc || MIN_CHARS)) { step++; chars = 0; needBr = !!soft; }
+      else if (!soft) needBr = false;
+    }
+    function br() { // 每一步從新的一行開始（10/24 使用者要求）
+      needBr = false;
+      var b = document.createElement("br"); b.className = "sp-e sp-br"; b.dataset.s = step; units.push(b); return b;
+    }
+    function walk(node) {
+      var kids = Array.prototype.slice.call(node.childNodes);
+      kids.forEach(function (n) {
+        if (n.nodeType === 3) {
+          var t = n.nodeValue;
+          if (!t) return;
+          if (!t.trim()) { // 純空白：跟著前一步
+            var w = document.createElement("span"); w.className = "sp-u"; w.dataset.s = step;
+            n.parentNode.insertBefore(w, n); w.appendChild(n); units.push(w); return;
+          }
+          var parts = splitText(t), frag = document.createDocumentFragment();
+          parts.forEach(function (p, i) {
+            if (!p) return;
+            var eqHead = /^[＝→≈⇒]/.test(p);
+            // 說明句子裡的算式（這一行前面已經有中文）不在「＝」「→」拆行，整句留在同一行（10/24 使用者要求）
+            if (eqHead && prose) {
+              var last = frag.lastChild || (units.length ? units[units.length - 1] : null);
+              if (i > 0 && last && last.classList && last.classList.contains("sp-u")) { last.textContent += p; chars += p.length; return; }
+            } else if (i > 0 || eqHead) bump(true, eqHead ? 5 : 0); // 「1＋3＝4」這種短算式不拆
+            if (needBr) { frag.appendChild(br()); p = p.replace(/^\s+/, ""); if (!p) return; }
+            var s = document.createElement("span"); s.className = "sp-u"; s.dataset.s = step;
+            s.textContent = p; frag.appendChild(s); units.push(s);
+            if (/[一-鿿]/.test(p)) prose = true;
+            chars += p.replace(/\s/g, "").length; started = true;
+          });
+          n.parentNode.replaceChild(frag, n);
+        } else if (n.nodeType === 1) {
+          var tn = n.tagName.toUpperCase();
+          if (tn === "BR") { prose = false; bump(); n.classList.add("sp-e"); n.dataset.s = step; units.push(n); return; } // 換行跟著下一步出現
+          if (n.classList.contains("sp-bar")) return;
+          if (ATOMIC[tn] || n.classList.contains("xc") || n.classList.contains("sp-atom")) {
+            if (needBr) n.parentNode.insertBefore(br(), n);
+            n.classList.add("sp-e"); n.dataset.s = step; units.push(n); started = true; chars += 2; return;
+          }
+          var block = /^(P|DIV|LI|TR|H[1-6]|TABLE|UL|OL|BLOCKQUOTE)$/.test(tn);
+          if (block) { prose = false; bump(); }
+          walk(n);
+          if (block) bump();
+        }
+      });
+    }
+    walk(el);
+    var n = units.length ? (+units[units.length - 1].dataset.s + 1) : 0;
+    // 步數太多就等比例合併
+    if (n > MAX_STEPS) {
+      var r = n / MAX_STEPS;
+      units.forEach(function (u) { u.dataset.s = Math.floor(+u.dataset.s / r); });
+      n = MAX_STEPS;
+    }
+    // 每個元素的「出現步」＝它裡面最早的那一步（根號上的橫線、分數線才不會先跑出來）
+    var all = el.querySelectorAll("*");
+    for (var i = all.length - 1; i >= 0; i--) {
+      var e = all[i];
+      if (e.classList.contains("sp-u") || e.classList.contains("sp-e") || e.closest(".sp-bar")) continue;
+      var m = Infinity, d = e.querySelectorAll(".sp-u,.sp-e");
+      for (var j = 0; j < d.length; j++) m = Math.min(m, +d[j].dataset.s);
+      if (m !== Infinity) { e.dataset.s = m; e.classList.add("sp-w"); }
+    }
+    return n;
+  }
+
+  function show(p, k, anim) {
+    p.k = k;
+    var nodes = p.el.querySelectorAll(".sp-u,.sp-e,.sp-w");
+    for (var i = 0; i < nodes.length; i++) {
+      var x = nodes[i], s = +x.dataset.s;
+      x.classList.toggle("sp-on", s <= k);
+      x.classList.toggle("sp-off", s > k);
+      x.classList.remove("sp-new");
+      if (anim && s === k && !x.classList.contains("sp-w")) { void x.offsetWidth; x.classList.add("sp-new"); }
+    }
+    var b = p.bar;
+    b.querySelector(".sp-prev").disabled = k <= 0;
+    b.querySelector(".sp-next").disabled = k >= p.n - 1;
+    b.querySelector(".sp-all").disabled = k >= p.n - 1;
+    b.querySelector(".sp-cnt").textContent = "第 " + (k + 1) + " 步 / 共 " + p.n + " 步";
+    var dots = b.querySelectorAll(".sp-dots i");
+    for (var d = 0; d < dots.length; d++) dots[d].classList.toggle("on", d <= k);
+    if (k >= p.n - 1) stop(p);
+  }
+
+  function stop(p) {
+    if (p.timer) { clearTimeout(p.timer); p.timer = null; }
+    var a = p.bar.querySelector(".sp-auto");
+    a.textContent = p.k >= p.n - 1 ? "⟲ 重播" : "▶ 自動播放";
+  }
+  function stepLen(p, k) { // 字越多停越久
+    var t = 0, u = p.el.querySelectorAll('.sp-u[data-s="' + k + '"]');
+    for (var i = 0; i < u.length; i++) t += u[i].textContent.length;
+    return Math.min(4200, 1300 + t * 90);
+  }
+  function play(p) {
+    var a = p.bar.querySelector(".sp-auto");
+    if (p.k >= p.n - 1) show(p, 0, true);
+    a.textContent = "⏸ 暫停";
+    (function tick() {
+      p.timer = setTimeout(function () {
+        if (p.k < p.n - 1) { show(p, p.k + 1, true); if (p.k < p.n - 1) tick(); }
+      }, stepLen(p, p.k));
+    })();
+  }
+
+  function enhance(el, opts) {
+    if (!el || el.dataset.sp === "off" || el.classList.contains("sp-skip")) return null;
+    injectCss();
+    opts = opts || {};
+    el._spBusy = true;
+    if (el._sp) { // 做過一次：內容若還是切好的樣子，先還原成原本的 HTML 再切
+      if (el._sp.timer) clearTimeout(el._sp.timer);
+      if (el.querySelector(".sp-u,.sp-e")) el.innerHTML = el._spHtml;
+    }
+    el._spHtml = el.innerHTML;
+    var n = tag(el);
+    var p = { el: el, n: n, k: 0, timer: null };
+    el._sp = p;
+    if (n <= 1) { // 只有一步：不放按鈕，淡入就好
+      var bar0 = document.createElement("div"); bar0.className = "sp-bar"; bar0.style.display = "none";
+      bar0.innerHTML = '<button class="sp-prev"></button><button class="sp-next"></button><button class="sp-auto"></button><button class="sp-all"></button><span class="sp-dots"></span><span class="sp-cnt"></span>';
+      el.appendChild(bar0); p.bar = bar0; show(p, 0, true);
+      el._spBusy = false; return p;
+    }
+    var bar = document.createElement("div");
+    bar.className = "sp-bar";
+    var dots = ""; for (var i = 0; i < n; i++) dots += "<i></i>";
+    bar.innerHTML =
+      '<button type="button" class="sp-prev">◀ 上一步</button>' +
+      '<button type="button" class="sp-next">下一步 ▶</button>' +
+      '<button type="button" class="sp-auto">▶ 自動播放</button>' +
+      '<button type="button" class="sp-all">全部顯示</button>' +
+      '<span class="sp-dots">' + dots + '</span><span class="sp-cnt"></span>';
+    el.appendChild(bar);
+    p.bar = bar;
+    function on(cls, fn) { bar.querySelector(cls).addEventListener("click", function (ev) { ev.preventDefault(); ev.stopPropagation(); fn(); }); }
+    on(".sp-prev", function () { stop(p); if (p.k > 0) show(p, p.k - 1, false); });
+    on(".sp-next", function () { stop(p); if (p.k < p.n - 1) show(p, p.k + 1, true); });
+    on(".sp-all", function () { stop(p); show(p, p.n - 1, false); });
+    on(".sp-auto", function () { if (p.timer) stop(p); else play(p); });
+    show(p, 0, true);
+    if (opts.autoplay) play(p);
+    el._spVis = el.offsetParent !== null; // 記下做好時看不看得到；重新整理後已顯示的解析，第一次按下一步才不會被拉回第 1 步
+    el._spBusy = false;
+    return p;
+  }
+
+  function mount(el, html, opts) {
+    if (!el) return null;
+    el.innerHTML = html;
+    return enhance(el, opts);
+  }
+
+  /* 自動模式：選擇器命中的元素，內容一放進來（或換掉）就做成播放器；已做過且內容沒變就跳過 */
+  function watch(sel, opts) {
+    injectCss();
+    function scan(rootEl) {
+      var list = (rootEl.matches && rootEl.matches(sel)) ? [rootEl] : [];
+      if (rootEl.querySelectorAll) list = list.concat(Array.prototype.slice.call(rootEl.querySelectorAll(sel)));
+      list.forEach(function (el) {
+        if (el._spBusy || !el.textContent.trim()) return;
+        if (el._sp && el.querySelector(":scope > .sp-bar")) return; // 做過且內容沒被換掉
+        enhance(el, opts);
+      });
+    }
+    var pending = false;
+    var mo = new MutationObserver(function () {
+      if (pending) return; pending = true;
+      (root.requestAnimationFrame || setTimeout)(function () { pending = false; scan(document.body); });
+    });
+    function start() { scan(document.body); mo.observe(document.body, { childList: true, subtree: true }); }
+    if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+    // 元素從隱藏變成看得到（hidden 拿掉、加 .on/.show）時，從第 1 步重新開始
+    document.addEventListener("click", function () {
+      setTimeout(function () {
+        var els = document.querySelectorAll(sel);
+        for (var i = 0; i < els.length; i++) {
+          var e = els[i], vis = e.offsetParent !== null;
+          if (e._sp && vis && !e._spVis && e._sp.n > 1) show(e._sp, 0, true);
+          e._spVis = vis;
+        }
+      }, 30);
+    }, true);
+  }
+
+  root.StepPlay = { mount: mount, enhance: enhance, watch: watch };
+})(typeof window !== "undefined" ? window : this);
+</script>
+<script>StepPlay.watch(".sp-body");</script>
+<!--/STEPPLAY-->
 </body>
 </html>
