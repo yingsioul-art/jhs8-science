@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>密涅瓦思考練習 · 第三次段考</title>
+<style>
+:root{--paper:#faf7f0;--ink:#2b2622;--ink2:#5c5349;--line:#ded5c6;--accent:#c2410c;--accent-soft:#fff1e7;
+  --green:#3f6d3a;--green-soft:#eef4ec;--warn:#8a6a1e;--warn-soft:#fdf6e6;--blue:#2f5d7c;--blue-soft:#eaf2f7}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16.5px;line-height:1.8}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px 80px}
+header{padding:36px 0 18px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:13px;letter-spacing:.18em;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:28px;line-height:1.35;margin:0 0 10px}
+h2{font-size:20px;margin:36px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h2 small{font-size:13px;color:var(--ink2);font-weight:400;margin-left:8px}
+p{margin:0 0 12px}
+.dim{color:var(--ink2)}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600}
+a{color:var(--accent)}
+button{font-family:inherit}
+details.howto{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;font-size:15px}
+details.howto summary{cursor:pointer;font-weight:700}
+details.howto[open] summary{margin-bottom:8px}
+details.howto ol{margin:6px 0 12px;padding-left:22px}
+details.howto li{margin-bottom:4px}
+/* 思考習慣 */
+.habits{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:14px 0}
+.habit{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:14.5px;line-height:1.65;cursor:pointer;text-align:left;color:var(--ink)}
+.habit:hover{border-color:var(--ink)}
+.habit.on{border:2px solid var(--blue);background:var(--blue-soft)}
+.habit b{display:block;font-size:15.5px;margin-bottom:2px}
+.habit .q{color:var(--ink2)}
+.habit .cnt{float:right;font-size:12.5px;color:var(--green);font-weight:700}
+.htag{display:inline-block;font-size:12.5px;border-radius:99px;padding:0 9px;background:var(--blue-soft);color:var(--blue);border:1px solid #c5d9e6;font-weight:600}
+/* 儀表 */
+.dash{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:14.5px}
+.panel h3{font-size:15px;margin:0 0 8px}
+.bar{height:10px;background:#efe9de;border-radius:99px;overflow:hidden;margin:6px 0 4px}
+.bar i{display:block;height:100%;background:var(--green);width:0}
+table.cal{border-collapse:collapse;width:100%;font-size:14px}
+table.cal th,table.cal td{border:1px solid var(--line);padding:4px 6px;text-align:center}
+table.cal th{background:#f6f2ea;font-weight:600}
+table.cal td.hot{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.calmsg{margin:8px 0 0;font-size:13.5px;color:var(--ink2)}
+@media(max-width:640px){.dash{grid-template-columns:1fr}}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:4px 13px;font-size:14px;cursor:pointer;color:var(--ink2);font-weight:600}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.toc a{font-size:13px;color:var(--ink2);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:2px 10px;background:#fff}
+.toc a:hover{border-color:var(--ink);color:var(--ink)}
+.toc a .st{color:var(--green);font-weight:700;margin-left:4px}
+h2.sech{scroll-margin-top:10px}
+.chip.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.btn{border:1.5px solid var(--ink);background:#fff;color:var(--ink);border-radius:99px;padding:7px 15px;font-size:14.5px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ink);color:#fff}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{filter:brightness(.92)}
+.btn[disabled]{opacity:.4;cursor:default;background:#fff;color:var(--ink)}
+.btn.sm{padding:3px 11px;font-size:13px;font-weight:500}
+/* 題卡 */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 18px}
+.card.done{border-color:#b9cfb5}
+.chead{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;cursor:pointer}
+.tag{border-radius:99px;padding:1px 9px;border:1px solid var(--line);color:var(--ink2);background:#f6f2ea}
+.tag.no{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.tag.self{border-color:#d8b46a;background:var(--warn-soft);color:var(--warn)}
+.tag.ok{background:var(--green-soft);border-color:#b9cfb5;color:var(--green);font-weight:700}
+.ctitle{font-size:16.5px;font-weight:700;margin:6px 0 0;cursor:pointer}
+.ctitle .arrow{color:var(--ink2);font-weight:400;font-size:13px;margin-left:6px}
+.cbody{margin-top:12px}
+.qimg{display:block;width:var(--w);max-width:100%;height:auto;cursor:zoom-in;margin:4px 0 6px}
+.stage{border-top:1px dashed var(--line);padding-top:12px;margin-top:12px}
+.stage>.lab{font-size:13px;letter-spacing:.12em;font-weight:700;color:var(--accent);margin-bottom:6px}
+.stage.s2>.lab{color:var(--blue)}
+.stage.s3>.lab,.stage.s4>.lab{color:var(--green)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0}
+.row .lb{font-size:14px;color:var(--ink2);min-width:56px}
+.opts{display:flex;gap:6px}
+.opts button{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:15px;color:var(--ink2);cursor:pointer;padding:0}
+.opts button:hover{border-color:var(--ink)}
+.opts button.pick{background:var(--ink);border-color:var(--ink);color:#fff}
+.opts button.ok{background:var(--green);border-color:var(--green);color:#fff}
+.opts button.bad{background:var(--accent);border-color:var(--accent);color:#fff}
+.opts button.miss{border:2.5px solid var(--green);color:var(--green);font-weight:700}
+.opts button[disabled]{cursor:default}
+.conf{display:flex;gap:6px;flex-wrap:wrap}
+.conf button{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:4px 12px;font-size:14px;cursor:pointer;color:var(--ink2)}
+.conf button.pick{background:var(--ink);border-color:var(--ink);color:#fff}
+.locked{font-size:14.5px;background:#f6f2ea;border-radius:8px;padding:6px 10px;display:inline-block}
+.step{margin:10px 0 0;padding:10px 12px;border-left:3px solid var(--blue);background:var(--blue-soft);border-radius:0 10px 10px 0}
+.step .sq{font-weight:600;margin-bottom:6px}
+.step .sq .n{color:var(--blue);margin-right:4px}
+.ch{display:flex;flex-direction:column;gap:6px}
+.ch button{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-size:15px;cursor:pointer;color:var(--ink);line-height:1.6}
+.ch button:hover{border-color:var(--ink)}
+.ch button.ok{border-color:var(--green);background:var(--green-soft);color:var(--green);font-weight:600}
+.ch button.bad{border-color:#f0b48a;background:var(--accent-soft);color:#8a3a12;text-decoration:line-through;text-decoration-color:rgba(194,65,12,.45)}
+.ch button[disabled]{cursor:default}
+.fb{margin-top:8px;font-size:14.5px;border-radius:8px;padding:6px 10px}
+.fb.ok{background:#fff;border:1px solid #b9cfb5;color:var(--green)}
+.fb.bad{background:#fff;border:1px solid #f0b48a;color:#8a3a12}
+.sol{margin-top:10px;background:var(--green-soft);border:1px solid #c8dcc4;border-radius:10px;padding:10px 14px;font-size:15px}
+.sol .key{font-weight:700;color:var(--green);margin-bottom:4px}
+.sol p:last-child{margin-bottom:0}
+.mirror{margin-top:8px;font-size:14.5px;background:var(--warn-soft);border:1px solid #e8d4a2;border-radius:8px;padding:8px 12px;color:#5f4810}
+.take{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px 14px;font-weight:600}
+textarea{width:100%;min-height:58px;font-family:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;resize:vertical;background:#fffdf9}
+.srcnote{font-size:13px;color:var(--warn);margin-top:6px}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(20,16,12,.92);overflow:auto;-webkit-overflow-scrolling:touch;padding:56px 10px 20px}
+.zoom img{display:block;width:1000px;max-width:none;background:#fff;border-radius:6px;margin:0 auto}
+.zoom .x{position:fixed;top:10px;right:10px;background:#fff;border:none;border-radius:99px;padding:6px 14px;font-size:15px;font-weight:700;cursor:pointer}
+.zoom .hint{position:fixed;top:14px;left:14px;color:#fff;font-size:13.5px}
+footer{margin-top:30px;font-size:13px;color:var(--ink2);line-height:1.8;border-top:1px solid var(--line);padding-top:16px}
+@media(max-width:600px){.qimg{width:100%}h1{font-size:24px}}
+</style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">第三次段考範圍 · 第 5 章＋第 6 章</div>
+  <h1>用密涅瓦的方式想：<br>第三次段考每一題，一步一步推出答案</h1>
+  <p class="dim">這一頁<strong>不直接給解析</strong>。每一題都照同一條路走：先憑直覺猜、說出你有多少把握 → 回答幾個小問題，把題目拆開 → 再答一次原題 → 換一個情境再考你一次。</p>
+  <p class="dim">你們學校 112～114 學年度<strong>第三次段考</strong>裡，屬於第 5 章、第 6 章的 <strong id="qtotal"></strong> 題全部都在這裡，照課本小節排好。很多題錯的原因不是不會算，而是<em>想的順序錯了</em>。</p>
+</header>
+
+<details class="howto">
+  <summary>什麼是「密涅瓦思考方式」？（第一次來看一下）</summary>
+  <p>密涅瓦大學（Minerva University）的課堂幾乎不講課。上課前先自己讀，上課時老師丟出問題，<strong>每個人先投票、再說理由</strong>，最後才討論。它把好的思考方式拆成一個個有名字的「思考習慣」，要求學生在每一個新情境裡<strong>叫得出名字、用得出來</strong>。</p>
+  <p>這一頁借用它最核心的三件事：</p>
+  <ol>
+    <li><strong>先表態，再學習。</strong>你先猜答案、說出把握有多大。猜錯不扣分——但你會記住自己<em>為什麼</em>錯。</li>
+    <li><strong>思考習慣有名字。</strong>下面 6 個習慣，每題都標出它在練哪一兩個。考試時卡住，就問自己：「這題該叫出哪一個？」</li>
+    <li><strong>學完要能搬家。</strong>每題最後有一道<strong>換了情境</strong>的新題。原題答對不算真的會，新題也答對才算。</li>
+  </ol>
+  <p class="dim" style="margin:0">「信心校準」是密涅瓦很重視的一件事：<strong>很有把握卻答錯</strong>的題目，比猜錯的題目危險得多，因為考試時你不會回頭檢查它。右邊的表會幫你記下來。</p>
+</details>
+
+<h2>6 個思考習慣<small>點一下可以只看練這個習慣的題目</small></h2>
+<div class="habits" id="habits"></div>
+
+<div class="dash">
+  <div class="panel">
+    <h3>進度</h3>
+    <div id="prog"></div>
+    <div class="bar"><i id="progbar"></i></div>
+    <div class="dim" style="font-size:13.5px" id="prog2"></div>
+  </div>
+  <div class="panel">
+    <h3>信心校準：你的直覺有多可靠？</h3>
+    <table class="cal" id="cal"></table>
+    <p class="calmsg" id="calmsg"></p>
+  </div>
+</div>
+
+<div class="filters" id="parts"></div>
+<div class="toc" id="toc"></div>
+<div id="list"></div>
+
+<p style="margin-top:24px"><button class="btn sm" id="resetAll">清除這一頁所有作答紀錄</button></p>
+
+<footer>
+  試題取自學校於段考後公布的試卷，僅供自學複習使用。引導問題與遷移題為自學站自編；標示「自行解出」者並非官方答案，請以老師講解為準。<br>
+  想一次練完整段：<a href="review-ch5.html">第 5 章分段練習</a>　·　<a href="review-ch6.html">第 6 章分段練習</a>　·　<a href="minerva.html">第一次段考的密涅瓦練習</a>　·　<a href="exam.html">整卷模擬</a>　·　<a href="index.html">← 回自學站首頁</a>
+</footer>
+</div>
+
+<script src="minerva-data-3.js"></script>
+<script>
+(function(){
+"use strict";
+/* ---------- 思考習慣 ---------- */
+var H={
+  right:{i:"🎯",n:"#問對問題",q:"題目真正問的是什麼？否定詞、「含量」還是「濃度」？"},
+  split:{i:"🧩",n:"#拆解",q:"把一大題拆成幾個小步驟，每一步只回答一件事。"},
+  info:{i:"🪤",n:"#篩資訊",q:"哪些數字有用、哪些是誘餌？資料夠不夠算？"},
+  vars:{i:"🔬",n:"#找真正的變因",q:"哪個因素真的影響結果？哪些會互相抵銷？"},
+  check:{i:"📏",n:"#合理性檢查",q:"答案的大小、位數合不合理？和題目的前提吻合嗎？"},
+  rule:{i:"🏷",n:"#一把尺分類",q:"分類只用一個標準，別被表面現象帶走。"}
+};
+/* ---------- 題目：資料在 minerva-data-3.js（由 _build_minerva3.py 從 minerva3\mv3_ch5／ch6.json 產生） ---------- */
+var Q=window.MQ||[];
+
+/* ---------- 狀態 ---------- */
+var KEY="jhs8-sci-minerva-3rd-v1";
+var S={};
+try{ var raw=localStorage.getItem(KEY); if(raw) S=JSON.parse(raw)||{}; }catch(e){}
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} }
+function st(id){ return S[id]||(S[id]={tries:{},step:0}); }
+var view={part:"all",habit:"",open:{}};
+var CONF=["猜的","有點把握","很有把握"];
+var L="ABCD";
+/* 作答鈕：題目可用 q.L 指定（是非題 "AB"、三選項 "ABC"；配合題用 q.choices 陣列如 ["A","AB",...]） */
+function letters(q){ if(q.choices) return q.choices; return q.L ? (Array.isArray(q.L) ? q.L : q.L.split("")) : L.split(""); }
+
+function $(id){ return document.getElementById(id); }
+function el(tag,cls,html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+
+/* ---------- 一題 ---------- */
+function renderCard(q){
+  var s=st(q.id), card=el("div","card"+(s.done?" done":"")); card.id="q-"+q.id;
+  var head=el("div","chead");
+  head.innerHTML='<span class="tag no">'+q.id+'</span><span class="tag">'+q.src+'</span>'+
+    (q.self?'<span class="tag self">自行解出</span>':'')+
+    q.hab.map(function(h){return '<span class="htag">'+H[h].i+' '+H[h].n+'</span>'}).join("")+
+    (s.done?'<span class="tag ok">✓ 完成</span>':'');
+  card.appendChild(head);
+  var open=!!view.open[q.id];
+  var t=el("div","ctitle","「"+q.title+"」<span class='arrow'>"+(open?"▲ 收起":"▼ 展開")+"</span>");
+  card.appendChild(t);
+  function toggle(){ view.open[q.id]=!view.open[q.id]; redraw(q); }
+  head.addEventListener("click",toggle); t.addEventListener("click",toggle);
+  if(!open) return card;
+
+  var body=el("div","cbody");
+  var img=el("img","qimg"); img.src=q.img; img.alt=q.src; img.style.setProperty("--w",q.w);
+  body.appendChild(img);
+
+  /* 1 預測 */
+  var s1=el("div","stage s1"); s1.appendChild(el("div","lab","① 先表態：憑直覺，你選哪一個？"));
+  if(s.pred){
+    s1.appendChild(el("div","locked","你的直覺：<strong>("+s.pred+")</strong>　·　"+CONF[s.conf]+(s.fin?"":"<span class='dim'>　（先不告訴你對不對）</span>")));
+  } else {
+    var tmp=s._tmp||(s._tmp={});
+    var r1=el("div","row"); r1.appendChild(el("span","lb","答案"));
+    var o=el("div","opts");
+    letters(q).forEach(function(c){
+      var b=el("button",tmp.p===c?"pick":"",c);
+      b.addEventListener("click",function(){ tmp.p=c; redraw(q); }); o.appendChild(b);
+    });
+    r1.appendChild(o); s1.appendChild(r1);
+    var r2=el("div","row"); r2.appendChild(el("span","lb","把握"));
+    var cf=el("div","conf");
+    CONF.forEach(function(n,i){
+      var b=el("button",tmp.c===i?"pick":"",n);
+      b.addEventListener("click",function(){ tmp.c=i; redraw(q); }); cf.appendChild(b);
+    });
+    r2.appendChild(cf); s1.appendChild(r2);
+    var go=el("button","btn pri","鎖定，開始一步一步想 →");
+    go.disabled=!(tmp.p && tmp.c!=null);
+    go.addEventListener("click",function(){ s.pred=tmp.p; s.conf=tmp.c; delete s._tmp; save(); paintDash(); redraw(q); });
+    var r3=el("div","row"); r3.appendChild(go); s1.appendChild(r3);
+    s1.appendChild(el("p","dim","<span style='font-size:13.5px'>不確定也沒關係，選「猜的」。重點是先讓自己表態。</span>"));
+    body.appendChild(s1); card.appendChild(body); return card;
+  }
+  body.appendChild(s1);
+
+  /* 2 引導 */
+  var s2=el("div","stage s2"); s2.appendChild(el("div","lab","② 拆開來想：一次只回答一個小問題"));
+  for(var i=0;i<q.s.length && i<=s.step;i++){
+    s2.appendChild(renderStep(q,s,i));
+  }
+  body.appendChild(s2);
+  if(s.step<q.s.length){ card.appendChild(body); return card; }
+
+  /* 3 再答一次 */
+  var s3=el("div","stage s3"); s3.appendChild(el("div","lab","③ 回到原題：現在你選哪一個？"));
+  var r=el("div","row"); r.appendChild(el("span","lb","答案"));
+  var o3=el("div","opts");
+  letters(q).forEach(function(c){
+    var cls="";
+    if(s.fin){ cls = c===s.fin ? (c===q.ans?"ok":"bad") : (c===q.ans?"miss":""); }
+    var b=el("button",cls,c); b.disabled=!!s.fin;
+    b.addEventListener("click",function(){ s.fin=c; save(); paintDash(); redraw(q); });
+    o3.appendChild(b);
+  });
+  r.appendChild(o3); s3.appendChild(r);
+  if(!s.fin){ body.appendChild(s3); card.appendChild(body); return card; }
+  var sol=el("div","sol","<div class='key'>答案：("+q.ans+")</div><p>"+q.key+"</p>"+(q.self?"<div class='srcnote'>※ 此卷無官方解答，答案為自行解出，請以老師講解為準。</div>":""));
+  s3.appendChild(sol);
+  s3.appendChild(el("div","mirror",mirror(q,s)));
+  body.appendChild(s3);
+
+  /* 4 遷移 */
+  var s4=el("div","stage s4"); s4.appendChild(el("div","lab","④ 換個情境：同一招，還用得出來嗎？"));
+  s4.appendChild(el("p","",q.tr.q));
+  var ch=el("div","ch");
+  q.tr.c.forEach(function(txt,k){
+    var cls="";
+    if(s.tr!=null){ cls = k===q.tr.a ? "ok" : (k===s.tr?"bad":""); }
+    var b=el("button",cls,"("+L[k]+") "+txt); b.disabled=s.tr!=null;
+    b.addEventListener("click",function(){ s.tr=k; save(); paintDash(); redraw(q); });
+    ch.appendChild(b);
+  });
+  s4.appendChild(ch);
+  if(s.tr!=null){
+    var ok=s.tr===q.tr.a;
+    s4.appendChild(el("div","fb "+(ok?"ok":"bad"),(ok?"✓ 搬得過去！":"✗ 這次沒搬過去，正解是 ("+L[q.tr.a]+")。")+" "+q.tr.e));
+  }
+  body.appendChild(s4);
+  if(s.tr==null){ card.appendChild(body); return card; }
+
+  /* 5 帶走 */
+  var s5=el("div","stage s5"); s5.appendChild(el("div","lab","⑤ 帶走一句話"));
+  s5.appendChild(el("div","take",q.hab.map(function(h){return H[h].i}).join("")+" "+q.take));
+  s5.appendChild(el("p","dim","<span style='font-size:14px;display:block;margin-top:10px'>用你自己的話寫一句：下次遇到這種題目，第一步要先做什麼？（只存在這台裝置上）</span>"));
+  var ta=el("textarea"); ta.value=s.note||""; ta.placeholder="例如：先看秤到的質量有沒有包含容器";
+  ta.addEventListener("input",function(){ s.note=ta.value; save(); });
+  s5.appendChild(ta);
+  var r5=el("div","row");
+  if(!s.done){
+    var dn=el("button","btn pri","完成這一題 ✓");
+    dn.addEventListener("click",function(){ s.done=true; save(); paintDash(); paintHabits(); view.open[q.id]=false; if(view.todo){ paintList(); } else { redraw(q); paintSecCounts(); nextOpen(q); } });
+    r5.appendChild(dn);
+  }
+  var rd=el("button","btn sm","重做這一題");
+  rd.addEventListener("click",function(){ delete S[q.id]; save(); paintDash(); paintHabits(); redraw(q); paintSecCounts(); });
+  r5.appendChild(rd);
+  s5.appendChild(r5);
+  body.appendChild(s5);
+  card.appendChild(body);
+  return card;
+}
+
+function renderStep(q,s,i){
+  var stp=q.s[i], box=el("div","step");
+  box.appendChild(el("div","sq","<span class='n'>Q"+(i+1)+"</span>"+stp.q));
+  var tried=s.tries[i]||[], solved=i<s.step, ch=el("div","ch");
+  order(q.id+"#"+i,stp.c.length).forEach(function(k){
+    var c=stp.c[k];
+    var cls = tried.indexOf(k)>=0 ? (c[1]?"ok":"bad") : "";
+    var b=el("button",cls,c[0]); b.disabled=solved || tried.indexOf(k)>=0;
+    b.addEventListener("click",function(){
+      (s.tries[i]=s.tries[i]||[]).push(k);
+      if(c[1]) s.step=i+1;
+      save(); redraw(q);
+    });
+    ch.appendChild(b);
+  });
+  box.appendChild(ch);
+  if(tried.length){
+    var last=stp.c[tried[tried.length-1]];
+    box.appendChild(el("div","fb "+(last[1]?"ok":"bad"),(last[1]?"✓ ":"✗ 再想想：")+last[2]));
+  }
+  return box;
+}
+
+/* 選項順序固定打亂（同一題每次看都一樣），避免「正解永遠在第一個」 */
+function order(seed,n){
+  var h=0; for(var j=0;j<seed.length;j++) h=(h*31+seed.charCodeAt(j))>>>0;
+  var a=[]; for(j=0;j<n;j++) a.push(j);
+  for(j=n-1;j>0;j--){ h=(h*1103515245+12345)>>>0; var r=(h>>>16)%(j+1), t=a[j]; a[j]=a[r]; a[r]=t; }
+  return a;
+}
+
+function mirror(q,s){
+  var p=s.pred, f=s.fin, a=q.ans, c=CONF[s.conf], hot=s.conf===2;
+  if(p===a && f===a) return "🪞 你的直覺（"+c+"）就是對的，拆完也確認了。"+(s.conf===0?"下次可以對自己多一點信心——但記得是因為想清楚了，不是因為運氣。":"");
+  if(p!==a && f===a) return "🪞 一開始直覺選 ("+p+")"+(hot?"，而且<strong>很有把握</strong>":"")+"；拆開之後改成 ("+a+")。<strong>這就是拆解的價值。</strong>回頭看一眼：當初是哪一步想漏了？"+(hot?"很有把握卻錯的題目最危險——考試時你不會回頭檢查它。":"");
+  if(p===a && f!==a) return "🪞 你的直覺本來是對的 ("+p+")，最後卻改成 ("+f+")。回頭看是哪一步把你帶偏了。";
+  return "🪞 直覺選 ("+p+")、最後選 ("+f+")，正解是 ("+a+")。把上面引導的小問題再讀一次，找出卡住的那一步。";
+}
+
+function redraw(q){
+  var old=$("q-"+q.id); if(old) old.replaceWith(renderCard(q));
+}
+function nextOpen(q){
+  var vis=visible(), k=vis.indexOf(q);
+  for(var j=k+1;j<vis.length;j++){ if(!st(vis[j].id).done){ view.open[vis[j].id]=true; redraw(vis[j]); var n=$("q-"+vis[j].id); if(n) n.scrollIntoView({behavior:"smooth",block:"start"}); return; } }
+}
+
+function paintSecCounts(){
+  [].slice.call(document.querySelectorAll("h2.sech")).forEach(function(h){
+    var k=h.id.slice(4), all=Q.filter(function(x){return x.sec===k}), d=all.filter(function(x){return st(x.id).done}).length;
+    h.querySelector("small").textContent=d+" / "+all.length+" 題完成";
+  });
+  paintToc();
+}
+/* ---------- 篩選、列表 ---------- */
+function visible(){
+  return Q.filter(function(q){
+    return (view.part==="all"||q.part===view.part) && (!view.habit||q.hab.indexOf(view.habit)>=0) && (!view.todo||!st(q.id).done);
+  });
+}
+function paintList(){
+  var list=$("list"); list.innerHTML="";
+  var vis=visible();
+  if(view.habit){
+    var h=H[view.habit];
+    list.appendChild(el("p","dim","正在看練習 <span class='htag'>"+h.i+" "+h.n+"</span> 的題目（"+vis.length+" 題）。再點一次上面的習慣卡可以取消。"));
+  }
+  if(!vis.length) list.appendChild(el("p","dim","這個篩選條件下沒有題目了。"));
+  var last="";
+  vis.forEach(function(q){
+    if(q.sec!==last){
+      last=q.sec;
+      var all=Q.filter(function(x){return x.sec===q.sec}), d=all.filter(function(x){return st(x.id).done}).length;
+      list.appendChild(el("h2","sech",q.secTitle+"<small>"+d+" / "+all.length+" 題完成</small>")).id="sec-"+q.sec;
+    }
+    list.appendChild(renderCard(q));
+  });
+  paintToc();
+}
+function paintToc(){
+  var box=$("toc"), seen={}; box.innerHTML="";
+  visible().forEach(function(q){
+    if(seen[q.sec]) return; seen[q.sec]=1;
+    var all=Q.filter(function(x){return x.sec===q.sec}), d=all.filter(function(x){return st(x.id).done}).length;
+    var a=el("a","",q.secTitle.replace(/^第 \d 章 /,"")+(d?"<span class='st'>"+d+"/"+all.length+"</span>":""));
+    a.href="#sec-"+q.sec; box.appendChild(a);
+  });
+}
+function paintParts(){
+  var box=$("parts"); box.innerHTML="";
+  function n(p){ return Q.filter(function(q){return p==="all"||q.part===p}).length; }
+  [["all","全部 "+n("all")+" 題"],["c5","第 5 章 溫度與熱（"+n("c5")+"）"],["c6","第 6 章 探索物質組成（"+n("c6")+"）"]].forEach(function(p){
+    var b=el("button","chip"+(view.part===p[0]?" on":""),p[1]);
+    b.addEventListener("click",function(){ view.part=p[0]; paintParts(); paintList(); });
+    box.appendChild(b);
+  });
+  var t=el("button","chip"+(view.todo?" on":""),"只看還沒完成的");
+  t.addEventListener("click",function(){ view.todo=!view.todo; paintParts(); paintList(); });
+  box.appendChild(t);
+}
+function paintHabits(){
+  var box=$("habits"); box.innerHTML="";
+  Object.keys(H).forEach(function(k){
+    var h=H[k], qs=Q.filter(function(q){return q.hab.indexOf(k)>=0}), d=qs.filter(function(q){return st(q.id).done}).length;
+    var b=el("button","habit"+(view.habit===k?" on":""),"<span class='cnt'>"+d+"/"+qs.length+"</span><b>"+h.i+" "+h.n+"</b><span class='q'>"+h.q+"</span>");
+    b.addEventListener("click",function(){ view.habit = view.habit===k ? "" : k; paintHabits(); paintList(); });
+    box.appendChild(b);
+  });
+}
+
+/* ---------- 儀表 ---------- */
+function paintDash(){
+  var done=0, fin=0, finOk=0, tr=0, trOk=0, m=[[0,0],[0,0],[0,0]];
+  Q.forEach(function(q){
+    var s=S[q.id]; if(!s) return;
+    if(s.done) done++;
+    if(s.fin){ fin++; if(s.fin===q.ans) finOk++; }
+    if(s.tr!=null){ tr++; if(s.tr===q.tr.a) trOk++; }
+    if(s.pred && s.fin) m[s.conf][s.pred===q.ans?0:1]++;
+  });
+  $("prog").innerHTML="完成 <strong>"+done+"</strong> / "+Q.length+" 題";
+  $("progbar").style.width=Math.round(done/Q.length*100)+"%";
+  $("prog2").textContent = fin ? "拆解後原題答對 "+finOk+"/"+fin+"　·　換情境題答對 "+trOk+"/"+tr : "還沒開始。從第一題展開就可以。";
+  var t="<tr><th>你的把握</th><th>直覺對</th><th>直覺錯</th></tr>";
+  CONF.forEach(function(n,i){
+    t+="<tr><th>"+n+"</th><td>"+m[i][0]+"</td><td"+(i===2&&m[i][1]?" class='hot'":"")+">"+m[i][1]+"</td></tr>";
+  });
+  $("cal").innerHTML=t;
+  var hot=m[2][1], cold=m[0][0], tot=m[0][0]+m[0][1]+m[1][0]+m[1][1]+m[2][0]+m[2][1];
+  $("calmsg").innerHTML = !tot ? "每做完一題，這裡會記下你的直覺準不準。" :
+    hot ? "⚠️ 有 <strong>"+hot+"</strong> 題你「很有把握」卻選錯——這些是段考最容易失分的地方，值得再做一次。" :
+    cold>=2 ? "你有好幾題「猜的」其實是對的：你懂的比你以為的多。" :
+    "目前沒有「很有把握卻錯」的題目，保持下去。";
+}
+
+$("resetAll").addEventListener("click",function(){
+  if(!confirm("確定要清除這一頁所有的作答紀錄和筆記嗎？")) return;
+  S={}; save(); view.open={}; paintDash(); paintHabits(); paintList();
+});
+
+/* ---------- 點圖放大 ---------- */
+document.addEventListener("click",function(e){
+  var im=e.target.closest && e.target.closest(".qimg"); if(!im) return;
+  var z=el("div","zoom");
+  var big=document.createElement("img"); big.src=im.src;
+  big.style.width=Math.round(im.naturalWidth*0.75)+"px";
+  z.innerHTML='<span class="hint">可左右滑動、雙指縮放</span><button class="x">✕ 關閉</button>';
+  z.appendChild(big);
+  z.addEventListener("click",function(ev){ if(ev.target===z||ev.target.classList.contains("x")) z.remove(); });
+  document.body.appendChild(z);
+});
+
+/* 第一次打開：展開第一題沒做完的 */
+for(var i=0;i<Q.length;i++){ if(!st(Q[i].id).done){ view.open[Q[i].id]=true; break; } }
+$("qtotal").textContent=Q.length;
+paintHabits(); paintDash(); paintParts(); paintList();
+})();
+</script>
+</body>
+</html>
