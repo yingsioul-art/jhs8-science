@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動手做實驗室｜八年級自然</title>
+<!--
+  八上自然 動手做實驗室（lab.html）
+  原始檔：D:\Zettelkasten\20_教學\國中自然科學\八上動手做\lab_src.html＋labs_*.js
+  產生：python _build_lab.py（內嵌 _共用\handlab.js，輸出到 C:\dev\jhs8-science\lab.html）
+  localStorage key：jhs8-lab-v1（只記哪些實驗做完）
+  實驗步驟照康軒第三冊課本轉錄（_課本實驗轉錄_四個樣品.md）
+-->
+<style>
+:root{
+  --bg:#f4f1ff; --card:#ffffff; --ink:#22203a; --sub:#5d5a78; --line:#e3def7;
+  --pri:#5b4bdb; --ok:#1f9d55; --okbg:#e3f7ea; --bad:#d64545; --badbg:#fde8e8; --gold:#f5a524;
+  --shadow:0 4px 0 rgba(40,30,110,.10), 0 8px 24px rgba(40,30,110,.07); --r:18px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16142a; --card:#221f3d; --ink:#f1efff; --sub:#b4b0d6; --line:#37335e;
+    --pri:#8f82ff; --okbg:#173b27; --badbg:#47202a; --shadow:0 4px 0 rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.25);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:820px;margin:0 auto;padding:0 16px 96px}
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .in{max-width:820px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:10px;min-height:56px}
+.top a,.top button{border:2px solid var(--line);background:var(--card);border-radius:14px;font-weight:800;padding:6px 14px;min-height:44px;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center}
+.top b{flex:1;text-align:right;font-size:.9em;color:var(--sub)}
+header{padding:28px 0 8px}
+.kicker{font-size:13px;letter-spacing:.2em;color:var(--pri);font-weight:800}
+h1{font-size:1.8em;margin:6px 0;line-height:1.3}
+h2{font-size:1.25em;margin:8px 0;line-height:1.35}
+h3{font-size:1.05em;margin:18px 0 6px}
+.muted{color:var(--sub);font-size:.9em}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;margin:16px 0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+.xp{border:0;text-align:left;background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center;min-height:96px;border-left:7px solid var(--c,var(--pri))}
+.xp .ic{font-size:34px;flex:none}
+.xp b{display:block}
+.xp small{color:var(--sub);display:block;line-height:1.45}
+.xp .done{color:var(--ok);font-weight:800}
+.soon{opacity:.55}
+.btn{border:0;border-radius:14px;padding:12px 20px;font-weight:800;background:var(--pri);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--pri) 60%,#000);min-height:48px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--pri) 60%,#000)}
+.btn.ghost{background:var(--card);color:var(--pri);border:2px solid var(--pri);box-shadow:none}
+.btn.gold{background:var(--gold);color:#3b2300;box-shadow:0 4px 0 #b97300}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-weight:700;min-height:44px}
+.chip.on{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 16%,var(--card))}
+.ex{background:color-mix(in srgb,var(--gold) 14%,transparent);border-radius:14px;padding:12px 14px;margin-top:8px}
+.warn{background:var(--badbg);border-radius:12px;padding:8px 12px;margin-top:8px;font-size:.92em}
+.readout{font-size:1.05em;font-weight:800;margin-top:8px}
+.sim{position:relative}
+.sim label{font-weight:700;display:block;margin-top:10px}
+.sim input[type=range]{width:100%;height:36px;accent-color:var(--pri)}
+.simview{background:color-mix(in srgb,var(--pri) 6%,var(--card));border-radius:16px;padding:10px;margin-top:10px;text-align:center}
+.simview svg{width:100%;height:auto}
+table.rec{border-collapse:collapse;width:100%;font-size:.9em;margin-top:8px}
+table.rec th,table.rec td{border:1px solid var(--line);padding:4px 6px;text-align:center}
+table.rec th{background:color-mix(in srgb,var(--pri) 10%,var(--card))}
+/* 動手做：拖曳器材、出事＋急救（與七上生物站同一套） */
+.hand svg{touch-action:none;user-select:none;-webkit-user-select:none;max-height:440px}
+.hand [data-it]{cursor:grab}
+.hand [data-it].sel{filter:drop-shadow(0 0 5px var(--gold)) drop-shadow(0 0 2px var(--gold))}
+.htask{background:color-mix(in srgb,var(--pri) 10%,var(--card));border-left:5px solid var(--pri);border-radius:12px;padding:8px 12px;margin-top:10px;font-weight:700}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flick .22s ease-in-out infinite alternate}
+.flame.out{animation:none;transform:scale(0);transition:transform 1.2s}
+@keyframes flick{from{transform:scale(1,1)}to{transform:scale(.9,1.12)}}
+.bub{animation:bub 1s linear infinite}
+@keyframes bub{from{transform:translateY(0);opacity:1}to{transform:translateY(-34px);opacity:0}}
+.acc{position:absolute;inset:0;z-index:6;border-radius:var(--r);background:rgba(42,10,5,.93);color:#fff;padding:72px 16px 16px;overflow:auto}
+.acc h2{color:#ffd23f;margin:4px 0}
+.accpic svg{width:100%;max-height:150px}
+.acc .ao{display:block;width:100%;text-align:left;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.08);color:#fff;border-radius:12px;padding:10px 12px;margin:6px 0;min-height:48px;font-weight:700}
+.acc .ao.bad{border-color:#ff8a8a;background:rgba(255,77,77,.25)}
+.acc .ao.ok{border-color:#7be3a1;background:rgba(31,157,85,.35)}
+.accnote{background:rgba(255,255,255,.12);border-radius:10px;padding:8px 12px;margin-top:8px}
+.accnote.ok{background:rgba(31,157,85,.35)}
+.hctl{position:sticky;top:64px;z-index:9;display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding:6px;border-radius:14px;background:color-mix(in srgb,var(--card) 92%,transparent)}
+.hctl .btn{flex:1;min-width:0;padding:8px 6px;font-size:.88em;min-height:44px}
+.hpause{position:absolute;inset:0;z-index:8;border-radius:var(--r);background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(3px);text-align:center;font-size:1.4em;font-weight:900;color:var(--ink);padding-top:230px}
+.hpause>div{position:sticky;top:260px;background:var(--card);border-radius:16px;padding:12px;margin:0 16px;box-shadow:var(--shadow)}
+.hpause small{font-size:.6em;font-weight:700;color:var(--sub)}
+.paused .flame,.paused .bub{animation-play-state:paused}
+.shake{animation:shake .45s 2}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){.flame,.bub,.shake{animation:none}}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;transition:transform .25s;z-index:50;max-width:90vw;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0)}
+.cf{position:fixed;top:-12px;width:10px;height:14px;z-index:60;animation:cf 1.6s linear forwards}
+@keyframes cf{to{transform:translateY(105vh) rotate(540deg)}}
+</style>
+</head>
+<body>
+<div class="top"><div class="in"><a href="index.html">← 首頁</a><button id="backlab" hidden>← 實驗清單</button><b id="pnum"></b></div></div>
+<div class="wrap" id="app"></div>
+<div id="toast"></div>
+<script>
+const $ = s => document.querySelector(s);
+function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove("on"), 2200); }
+let AC; function beep(ok){ try{ AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const o = AC.createOscillator(), g = AC.createGain(); o.frequency.value = ok ? 880 : 220; g.gain.value = .06; o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + (ok ? .12 : .25)); }catch(e){} }
+function shuffle(a){ a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function confetti(){ const C = ["#5b4bdb", "#f5a524", "#1f9d55", "#e84393", "#2f80ed"]; for(let i = 0; i < 40; i++){ const d = document.createElement("i"); d.className = "cf"; d.style.left = Math.random() * 100 + "vw"; d.style.background = C[i % 5]; d.style.animationDelay = Math.random() * .5 + "s"; document.body.appendChild(d); setTimeout(() => d.remove(), 2400); } }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const say = (t, ok) => `<div class="${ok ? "ex" : "warn"}">${t}</div>`;
+const KEY = "jhs8-lab-v1";
+let DONE = {}; try{ DONE = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ DONE = {}; }
+function labDone(id){ if(!DONE[id]){ DONE[id] = Date.now(); try{ localStorage.setItem(KEY, JSON.stringify(DONE)); }catch(e){} toast("🔬 完成這個實驗！"); } }
+/* 每個實驗：LABS.push({id, ch, icon, title, page, desc, run(pane)}) */
+const LABS = [];
+const CHAPTERS = [["intro1", "緒論＋第 1 章 基本測量"], ["ch2", "第 2 章 物質的世界"], ["ch34", "第 3、4 章 波動、聲音與光"], ["ch5", "第 5 章 溫度與熱"]];
+/* ═══ 動手做實驗引擎（七上生物站 sims3.js、八上自然 lab.html 共用；build 時內嵌） ═══
+   提供：handDnd 拖曳／點選放置、handAccident 出事＋急救關卡、handCtl 暫停／上一步／全部重來、flameP 火焰
+   頁面需先提供：toast(msg)、beep(ok)、shuffle(arr)、confetti() */
+/* 共用：拖曳或「先點器材、再點目的地」；cb.drop(id, x, y) 用 SVG 座標；cb.tap(id) 回傳 true 表示已當成動作處理 */
+function handDnd(svg, cb){
+  let sel = null;
+  const pt = e => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+  const mark = () => svg.querySelectorAll("[data-it]").forEach(x => x.classList.toggle("sel", x.dataset.it === sel));
+  svg.addEventListener("pointerdown", e => {
+    const g = e.target.closest("[data-it]");
+    if(!g){ if(sel){ const id = sel, p = pt(e); sel = null; cb.drop(id, p.x, p.y); } return; }
+    e.preventDefault();
+    const p0 = pt(e), base = g.getAttribute("transform") || ""; let moved = false;
+    svg.setPointerCapture(e.pointerId);
+    g.parentNode.appendChild(g);
+    const mv = ev => { const p = pt(ev), dx = p.x - p0.x, dy = p.y - p0.y; if(Math.hypot(dx, dy) > 5) moved = true; if(moved) g.setAttribute("transform", `translate(${dx} ${dy}) ${base}`); };
+    const up = ev => {
+      svg.removeEventListener("pointermove", mv); svg.removeEventListener("pointerup", up); svg.removeEventListener("pointercancel", up);
+      const id = g.dataset.it;
+      if(moved){ sel = null; g.setAttribute("transform", base); const p = pt(ev); cb.drop(id, p.x, p.y); return; }
+      if(sel && sel !== id){ const s0 = sel, p = pt(ev); sel = null; cb.drop(s0, p.x, p.y); return; }
+      if(cb.tap && cb.tap(id) === true){ sel = null; return; }
+      sel = sel === id ? null : id; mark();
+      if(sel && cb.name) toast(`已拿起「${cb.name(sel)}」，再點要放的位置`);
+    };
+    svg.addEventListener("pointermove", mv); svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
+  });
+}
+/* 按鈕列：內容變了才重建，點擊用事件委派。
+   畫面每秒重畫好幾次（倒液體、冒氣泡）時，按到一半的按鈕才不會被換掉而點不到 */
+function handBtns(box, html, act){
+  if(box._h !== html){ box._h = html; box.innerHTML = html; }
+  box.onclick = e => { const b = e.target.closest("[data-b]"); if(b && !b.disabled) act(b.dataset.b); };
+}
+const inR = (x, y, r) => x >= r[0] && x <= r[2] && y >= r[1] && y <= r[3];
+
+/* 火焰：(x, y) 是火焰底部中心 */
+function flameP(x, y, h, w, c1, c2, d){
+  const P = (H, W) => `M${x} ${y} C${x - W} ${y - H * .4} ${x - W * .25} ${y - H * .75} ${x} ${y - H} C${x + W * .25} ${y - H * .75} ${x + W} ${y - H * .4} ${x} ${y} Z`;
+  return `<g class="flame" style="animation-delay:${d || 0}s"><path d="${P(h, w)}" fill="${c1}"/><path d="${P(h * .55, w * .5)}" fill="${c2}"/></g>`;
+}
+const FIRE_SVG = `<svg viewBox="0 0 240 110"><rect x="0" y="92" width="240" height="18" rx="4" fill="#6b4a2f"/>
+  ${flameP(40, 94, 48, 20, "#ff6a1f", "#ffd23f", .1)}${flameP(80, 94, 78, 28, "#ff4d1f", "#ffcf3a", 0)}${flameP(122, 94, 96, 32, "#ff5a1f", "#ffe066", .15)}
+  ${flameP(165, 94, 70, 26, "#ff4d1f", "#ffcf3a", .05)}${flameP(205, 94, 44, 18, "#ff6a1f", "#ffd23f", .2)}</svg>`;
+const BREAK_SVG = `<svg viewBox="0 0 240 110"><rect x="0" y="92" width="240" height="18" rx="4" fill="#6b4a2f"/>
+  <ellipse cx="120" cy="92" rx="95" ry="7" fill="#8ecdf0" opacity=".8"/>
+  <path d="M85 92 l10 -40 l14 8 l-6 32 z M125 92 l4 -34 l16 6 l-4 28z M150 90 l18 -18 l8 10 l-12 10z M70 90 l-14 -10 l6 -6 l14 12z" fill="#dfe8ef" stroke="#fff" stroke-width="2" opacity=".9"/>
+  <g stroke="#fff" stroke-width="2" opacity=".7"><path d="M60 40 q6 -10 0 -20"/><path d="M120 34 q6 -10 0 -20"/><path d="M180 40 q6 -10 0 -20"/></g></svg>`;
+
+/* 出事畫面＋急救關卡：答對急救題才能回去重做 */
+function handAccident(card, cfg, onBack){
+  const el = document.createElement("div"); el.className = "acc";
+  const opts = shuffle(cfg.opts);
+  el.innerHTML = `<div class="accpic">${cfg.pic || FIRE_SVG}</div>
+    <h2>${cfg.title}</h2><p style="margin:0">${cfg.cause}</p>
+    <p style="margin:8px 0 0;font-weight:800">🚨 ${cfg.q}</p>
+    <div>${opts.map((o, i) => `<button class="ao" data-i="${i}">${o.t}</button>`).join("")}</div><div class="accfb"></div>`;
+  card.appendChild(el); card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake"); beep(false);
+  el.scrollIntoView({block: "nearest", behavior: "smooth"});
+  el.querySelectorAll(".ao").forEach(b => b.onclick = () => {
+    const o = opts[+b.dataset.i], fb = el.querySelector(".accfb");
+    if(!o.ok){ b.classList.add("bad"); b.disabled = true; beep(false); fb.innerHTML = `<div class="accnote">❌ ${o.why}</div>`; return; }
+    b.classList.add("ok"); beep(true);
+    el.querySelectorAll(".ao").forEach(x => x.disabled = true);
+    el.querySelectorAll(".flame").forEach(f => f.classList.add("out"));
+    fb.innerHTML = `<div class="accnote ok">✅ ${o.why}</div><div class="accnote">🔴 出事原因：${cfg.lesson}</div>
+      <button class="btn gold" style="margin-top:8px" data-back>🔁 回到出事前，再做一次</button>`;
+    fb.querySelector("[data-back]").onclick = () => { el.remove(); onBack(); };
+  });
+}
+const FIRE_Q = {q: "桌上起火了！你第一步要怎麼做？", opts: [
+  {t: "用濕抹布蓋住火焰，並大聲報告老師", ok: true, why: "蓋住火焰隔絕氧氣，火就會熄滅；同時報告老師處理。"},
+  {t: "趕快拿水潑上去", why: "酒精起火時潑水，燒著的酒精可能隨水流到處擴散，火反而變大。"},
+  {t: "用嘴用力把火吹熄", why: "吹氣會送進更多氧氣，還可能把火吹向自己。"},
+  {t: "把酒精燈拿起來丟進水槽", why: "拿起燃燒中的燈會燙傷，酒精灑出來火勢更大。"}]};
+
+/* 共用控制列：暫停／上一步／全部重來；o = {canUndo, undo, reset}
+   ctl.wait(ms, fn)：暫停時不倒數；按上一步或重來後，還沒到時間的動作一律作廢 */
+function handCtl(card, o){
+  const ctl = {paused: false, gen: 0};
+  const bar = document.createElement("div"); bar.className = "hctl";
+  bar.innerHTML = `<button class="btn ghost" data-c="pause">⏸ 暫停</button><button class="btn ghost" data-c="undo">↩ 上一步</button><button class="btn ghost" data-c="reset">🔁 全部重來</button>`;
+  card.insertBefore(bar, card.querySelector(".htask"));
+  const pz = document.createElement("div"); pz.className = "hpause";
+  pz.innerHTML = `<div>⏸ 已暫停<br><small>按上方「▶ 繼續」回到實驗</small></div>`;
+  const pb = bar.querySelector("[data-c=pause]");
+  const setPause = v => { ctl.paused = v; card.classList.toggle("paused", v); pb.textContent = v ? "▶ 繼續" : "⏸ 暫停"; if(v) card.appendChild(pz); else pz.remove(); };
+  bar.onclick = e => {
+    const b = e.target.closest("[data-c]"); if(!b) return;
+    if(b.dataset.c === "pause") return setPause(!ctl.paused);
+    setPause(false); ctl.gen++;
+    const acc = card.querySelector(".acc"); if(acc) acc.remove();
+    b.dataset.c === "undo" ? o.undo() : o.reset();
+  };
+  ctl.wait = (ms, fn) => { const g = ctl.gen; let left = ms; const t = setInterval(() => { if(g !== ctl.gen){ clearInterval(t); return; } if(ctl.paused) return; left -= 100; if(left <= 0){ clearInterval(t); fn(); } }, 100); };
+  ctl.upd = () => { bar.querySelector("[data-c=undo]").disabled = !o.canUndo(); };
+  return ctl;
+}
+
+
+/* ═════ 實驗 1-2 質量與體積的關係（康軒第三冊 p.24–26） ═════
+   甲：天平歸零 → 空量筒質量 → 水、酒精各 10.0～50.0 mL 的總質量 → 扣除空量筒 → 質量與體積關係圖
+   乙：金屬塊質量 → 排水法量體積（量筒要傾斜、緩緩滑入）→ 質量÷體積 對照附表（銅 8.96、鐵 7.87、鋁 2.70）
+   數值：空量筒 62.0 g；水 1.00、酒精 0.79 g/cm³（課本圖 1-8 酒精 50 cm³ 約 40 g）；金屬塊是鐵 5.0 cm³（7.87×5.0≈39.4 g）
+   沒歸零：天平多顯示 4.0 g；俯視讀數偏高、仰視偏低各 0.6 mL */
+LABS.push({id: "mass-volume", ch: "intro1", icon: "⚖️", title: "實驗 1-2 質量與體積的關係", page: "p.24–26",
+  desc: "天平歸零、讀量筒刻度、畫質量與體積關係圖，再用比值推測金屬塊是什麼金屬。",
+  run(pane, L){
+  const CYL = 62.0, OFF = 4.0, VOLS = [10, 20, 30, 40, 50], RHO = {water: 1.00, alc: 0.79}, BLOCK = {m: 39.4, v: 5.0};
+  const EYE = {up: [0.6, "俯視（從上往下看）"], mid: [0, "視線和液面中央等高"], down: [-0.6, "仰視（從下往上看）"]};
+  const METAL = [["銅", 8.96], ["鐵", 7.87], ["鋁", 2.70]];
+  const NAME = {cyl: "空量筒（50 mL）", water: "水", alc: "酒精（99%）", block: "金屬塊"};
+  let S, accN = 0;
+  function init(){ S = {phase: "tare", tared: false, onBal: null, liq: null, i: 0, pend: false, rows: {water: [], alc: []}, mCyl: null, sub: false, qSub: false, qProp: false, mBlock: null, v0: null, v1: null, slid: false}; }
+  init();
+  pane.innerHTML = `<div class="card sim hand">
+    <p class="muted" style="margin:0">把上排器材<b>拖到天平或量筒上</b>（或先點器材、再點位置）。讀刻度時要選視線位置。（課本 p.24–26）</p>
+    <div class="htask" id="mtask"></div>
+    <div class="simview"><svg viewBox="0 0 360 300" id="msv"></svg><div class="readout" id="mread"></div></div>
+    <div class="row" id="mbtn" style="margin-top:8px"></div>
+    <div id="mfb"></div>
+    <div id="mrec"></div>
+    <div class="simview" id="mgraph" style="display:none"><svg viewBox="0 0 340 236" id="mgv"></svg></div></div>`;
+  const card = pane.querySelector(".hand"), svg = pane.querySelector("#msv");
+  const hist = [], cur = () => JSON.stringify(S);
+  const track = fn => (...a) => { const pre = cur(); const r = fn(...a); if(pre !== cur()) hist.push(pre); ctl.upd(); return r; };
+  const ctl = handCtl(card, {
+    canUndo: () => hist.length > 0,
+    undo(){ let o; do { o = hist.pop(); } while(o && o === cur() && hist.length); if(o){ S = JSON.parse(o); draw(say("↩ 回到上一步。", true)); } },
+    reset(){ hist.length = 0; init(); accN = 0; draw(say("🔁 全部重來。", true)); }});
+  const off = () => S.tared ? 0 : OFF;
+  const f1 = x => (Math.round(x * 10) / 10).toFixed(1);
+  const TASK = {
+    tare: "甲-1 天平<b>歸零</b>後，把<b>空量筒</b>放上天平，測量空量筒的質量。",
+    water: "甲-2 把<b>水</b>拖到量筒裡，依序注入 10.0、20.0、30.0、40.0、50.0 mL，每次讀刻度、記錄總質量。",
+    alc: "甲-3 換一支同樣的空量筒（質量相同），把<b>酒精</b>拖進去，同樣做 5 次。",
+    graph: "甲-4 畫「質量與體積關係圖」。先看看沒扣除空量筒質量的圖長什麼樣子。",
+    metal: "乙-1 把<b>金屬塊</b>放上天平，測量質量。",
+    disp0: "乙-2 排水法：100 mL 量筒裡先裝了一些水，先<b>讀出水面的刻度</b>。",
+    slide: "乙-2 怎麼把金屬塊放進量筒？",
+    disp1: "乙-2 金屬塊沉到底了，再<b>讀一次水面的刻度</b>。",
+    ratio: "乙-3 計算金屬塊「質量÷體積」，對照附表推測是哪一種金屬。",
+    done: "🎉 實驗完成！"};
+  function cylSVG(x, bot, h, cap, vol, color, block){
+    // 量筒：x 中心、bot 底、h 高度、cap 容量（mL）
+    const W = 30, top = bot - h, sc = (h - 14) / cap, y = v => bot - 6 - v * sc;
+    let g = `<rect x="${x - 24}" y="${bot - 6}" width="48" height="6" rx="2" fill="#9aa3ad"/>`;
+    if(vol > 0) g += `<rect x="${x - W / 2 + 2}" y="${y(vol)}" width="${W - 4}" height="${vol * sc}" fill="${color}" opacity=".85"/><path d="M${x - W / 2 + 2} ${y(vol)} q${W / 2 - 2} 5 ${W - 4} 0" fill="none" stroke="#3b6b8a" stroke-width="1.5"/>`;
+    if(block) g += `<rect x="${x - 8}" y="${bot - 22}" width="16" height="16" rx="2" fill="#6f7680" stroke="#444"/>`;
+    for(let v = cap / 5; v <= cap; v += cap / 5) g += `<line x1="${x + W / 2 - 9}" x2="${x + W / 2}" y1="${y(v)}" y2="${y(v)}" stroke="var(--sub)" stroke-width="1.5"/><text x="${x + W / 2 + 3}" y="${y(v) + 4}" font-size="9" fill="var(--sub)">${v}</text>`;
+    return g + `<path d="M${x - W / 2} ${top} V${bot - 6} H${x + W / 2} V${top}" fill="#ffffff22" stroke="var(--sub)" stroke-width="2.5"/>`;
+  }
+  function scene(){
+    let g = `<rect x="0" y="282" width="360" height="18" fill="#b98a5a" opacity=".45"/>`;
+    const onB = S.onBal, show = ["tare", "water", "alc", "metal"].includes(S.phase) || (S.phase === "graph");
+    if(show){
+      const m = onB === "cyl" ? CYL + (S.liq ? RHO[S.liq] * (S.i > 0 || S.pend ? VOLS[S.pend ? S.i : S.i - 1] : 0) : 0) : onB === "block" ? BLOCK.m : 0;
+      g += `<rect x="30" y="236" width="160" height="46" rx="8" fill="#d9dee3" stroke="var(--sub)" stroke-width="2"/><rect x="50" y="226" width="120" height="10" rx="3" fill="#9aa3ad"/>
+        <rect x="68" y="246" width="84" height="26" rx="4" fill="#1d2b1f"/><text x="146" y="265" font-size="15" text-anchor="end" fill="#7dff9a" font-family="monospace">${f1(m + off())} g</text>
+        <text x="110" y="296" font-size="11" text-anchor="middle" fill="var(--ink)">電子天平</text>`;
+      if(onB === "cyl"){ const v = S.pend ? VOLS[S.i] : S.i > 0 ? VOLS[S.i - 1] : 0; g += cylSVG(110, 226, 136, 50, S.liq ? v : 0, S.liq === "alc" ? "#f3edcc" : "#8ecdf0"); }
+      if(onB === "block") g += `<rect x="96" y="208" width="28" height="18" rx="2" fill="#6f7680" stroke="#444"/>`;
+    }
+    if(["disp0", "slide", "disp1", "ratio", "done"].includes(S.phase)){
+      g += cylSVG(180, 282, 200, 100, S.slid ? 55 : 50, "#8ecdf0", S.slid);
+      g += `<text x="180" y="298" font-size="11" text-anchor="middle" fill="var(--ink)">100 mL 量筒</text>`;
+      if(S.phase === "slide") g += `<rect x="240" y="200" width="28" height="18" rx="2" fill="#6f7680" stroke="#444"/><text x="254" y="236" font-size="11" text-anchor="middle" fill="var(--ink)">金屬塊</text>`;
+    }
+    return g;
+  }
+  function trayKeys(){
+    if(S.phase === "tare") return ["cyl"];
+    if(S.phase === "water" && !S.pend) return ["water"];
+    if(S.phase === "alc" && !S.pend) return ["alc"];
+    if(S.phase === "metal") return ["block"];
+    return [];
+  }
+  const TX = {cyl: 60, water: 140, alc: 220, block: 300};
+  function trayIcon(k){
+    const ic = {cyl: `<path d="M-8 4 V42 H8 V4" fill="#ffffff30" stroke="var(--sub)" stroke-width="2.5"/><rect x="-14" y="42" width="28" height="4" fill="#9aa3ad"/>`,
+      water: `<rect x="-12" y="8" width="24" height="34" rx="4" fill="#8ecdf0" stroke="var(--sub)" stroke-width="2"/><rect x="-5" y="2" width="10" height="7" fill="#888"/><text x="0" y="30" font-size="11" text-anchor="middle" fill="#333" font-weight="700">水</text>`,
+      alc: `<rect x="-12" y="8" width="24" height="34" rx="4" fill="#f3edcc" stroke="var(--sub)" stroke-width="2"/><rect x="-5" y="2" width="10" height="7" fill="#888"/><text x="0" y="30" font-size="9" text-anchor="middle" fill="#333" font-weight="700">酒精</text>`,
+      block: `<rect x="-12" y="16" width="24" height="20" rx="2" fill="#6f7680" stroke="#444"/>`}[k];
+    return `<g data-it="${k}" transform="translate(${TX[k]} 8)"><rect x="-34" y="-4" width="68" height="70" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="60" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${NAME[k].replace("（50 mL）", "")}</text></g>`;
+  }
+  function recTable(){
+    if(S.mCyl == null) return "";
+    const row = (k, n) => S.rows[k].length ? `<tr><th>${n}</th>${S.rows[k].map(r => `<td${r.bad ? ' style="color:var(--bad)"' : ""}>${f1(r.v)} mL<br>${f1(r.M)} g</td>`).join("")}</tr>` : "";
+    let t = `<table class="rec"><tr><th>空量筒質量</th><td colspan="5">${f1(S.mCyl)} g${S.tared ? "" : ' <span style="color:var(--bad)">（天平沒歸零）</span>'}</td></tr>${row("water", "水＋量筒")}${row("alc", "酒精＋量筒")}`;
+    if(S.mBlock != null) t += `<tr><th>金屬塊質量</th><td colspan="5">${f1(S.mBlock)} g</td></tr>`;
+    if(S.v0 != null) t += `<tr><th>排水法</th><td colspan="5">放入前 ${f1(S.v0)} mL${S.v1 != null ? `；放入後 ${f1(S.v1)} mL；金屬塊體積 ${f1(S.v1 - S.v0)} cm³` : ""}</td></tr>`;
+    t += "</table>";
+    // 乙：推測金屬塊種類時要對照的附表（課本 p.25 結果與討論 3）
+    if(["metal", "disp0", "slide", "disp1", "ratio", "done"].includes(S.phase))
+      t += `<table class="rec" style="max-width:320px;margin-top:10px"><tr><th colspan="2">📎 附表（課本 p.25）</th></tr><tr><th>物質</th><th>質量與體積的比值</th></tr>${METAL.map(([n, v]) => `<tr><td>${n}</td><td>${v.toFixed(2)}</td></tr>`).join("")}</table>`;
+    return t;
+  }
+  function graph(){
+    const box = pane.querySelector("#mgraph");
+    if(!["graph", "metal", "disp0", "slide", "disp1", "ratio", "done"].includes(S.phase)){ box.style.display = "none"; return; }
+    box.style.display = "";
+    const ymax = S.sub ? 60 : 120, X = v => 40 + v * 5.6, Y = m => 200 - m * 180 / ymax;
+    let g = `<line x1="40" y1="200" x2="324" y2="200" stroke="var(--ink)"/><line x1="40" y1="200" x2="40" y2="14" stroke="var(--ink)"/>
+      <text x="324" y="232" font-size="11" text-anchor="end" fill="var(--ink)">體積（cm³）</text><text x="44" y="14" font-size="11" fill="var(--ink)">質量（g）</text>`;
+    for(let v = 10; v <= 50; v += 10) g += `<text x="${X(v)}" y="214" font-size="10" text-anchor="middle" fill="var(--sub)">${v}</text>`;
+    for(let m = ymax / 4; m <= ymax; m += ymax / 4) g += `<text x="34" y="${Y(m) + 4}" font-size="10" text-anchor="end" fill="var(--sub)">${m}</text><line x1="40" x2="324" y1="${Y(m)}" y2="${Y(m)}" stroke="var(--line)"/>`;
+    for(const [k, c, n] of [["water", "#2f80ed", "水"], ["alc", "#d64545", "酒精"]]){
+      const P = S.rows[k].map(r => [r.v, S.sub ? r.M - S.mCyl : r.M]);
+      if(!P.length) continue;
+      const rho = RHO[k], y0 = S.sub ? 0 : CYL + off();
+      g += `<line x1="${X(0)}" y1="${Y(y0)}" x2="${X(52)}" y2="${Y(y0 + rho * 52)}" stroke="${c}" stroke-width="2" opacity=".55"/>`;
+      g += P.map(([v, m]) => `<circle cx="${X(v)}" cy="${Y(m)}" r="4.5" fill="${c}"/>`).join("") + `<text x="${X(52)}" y="${Y(y0 + rho * 52) - 6}" font-size="11" text-anchor="end" fill="${c}" font-weight="700">${n}</text>`;
+    }
+    if(!S.sub) g += `<text x="182" y="30" font-size="11" text-anchor="middle" fill="var(--bad)">體積 0 時質量不是 0？直線沒有通過原點</text>`;
+    pane.querySelector("#mgv").innerHTML = g;
+  }
+  function draw(msg){
+    svg.innerHTML = scene() + trayKeys().map(trayIcon).join("");
+    pane.querySelector("#mtask").innerHTML = TASK[S.phase];
+    pane.querySelector("#mread").textContent = S.pend ? "量筒倒好了，選視線位置讀刻度 👇" : S.phase === "disp0" || S.phase === "disp1" ? "選視線位置讀刻度 👇" : "";
+    const B = [];
+    if(["tare", "water", "alc", "metal"].includes(S.phase) && !S.tared && !S.onBal) B.push(`<button class="btn ghost" data-b="tare">⚖️ 按歸零</button>`);
+    if(S.pend || S.phase === "disp0" || S.phase === "disp1") Object.keys(EYE).forEach(k => B.push(`<button class="btn ghost" data-b="eye-${k}">👁 ${EYE[k][1]}</button>`));
+    if(S.phase === "graph" && !S.sub) B.push(`<button class="btn" data-b="sub">➖ 扣除空量筒質量</button>`);
+    if(S.phase === "graph" && S.sub && S.qSub && !S.qProp) ["正比", "反比", "沒有關係"].forEach(t => B.push(`<button class="btn ghost" data-b="prop-${t}">${t}</button>`));
+    if(S.phase === "graph" && S.sub && !S.qSub) ["量筒也有質量，要扣掉才是液體的質量", "讓數字比較小、比較好畫", "因為量筒會吸水"].forEach((t, i) => B.push(`<button class="btn ghost" data-b="qs-${i}">${t}</button>`));
+    if(S.phase === "slide") B.push(`<button class="btn ghost" data-b="drop">直接把金屬塊丟進直立的量筒</button><button class="btn ghost" data-b="tilt">把量筒傾斜，讓金屬塊緩緩滑入</button>`);
+    if(S.phase === "ratio") METAL.forEach(([n]) => B.push(`<button class="btn ghost" data-b="metal-${n}">${n}</button>`));
+    if(S.phase === "done") B.push(`<button class="btn ghost" data-b="again">🔁 再做一次</button>`);
+    const box = pane.querySelector("#mbtn"); box.innerHTML = B.join("");
+    box.querySelectorAll("[data-b]").forEach(b => b.onclick = () => actT(b.dataset.b));
+    pane.querySelector("#mrec").innerHTML = recTable();
+    graph();
+    if(msg !== undefined) pane.querySelector("#mfb").innerHTML = msg;
+    ctl.upd();
+  }
+  function act(b){
+    if(b === "again"){ hist.length = 0; init(); accN = 0; return draw(""); }
+    if(b === "tare"){ S.tared = true; beep(true); return draw(say("✅ 天平歸零了，顯示 0.0 g。", true)); }
+    if(b.startsWith("eye-")){
+      const k = b.slice(4), [d, n] = EYE[k], bad = k !== "mid";
+      const why = bad ? `${n}讀到的刻度${d > 0 ? "偏高" : "偏低"}。讀量筒刻度時，<b>視線要和液面中央處等高</b>。` : "";
+      if(S.pend){
+        const v = VOLS[S.i], M = CYL + RHO[S.liq] * v + off();
+        S.rows[S.liq].push({v: v + d, M, bad}); S.i++; S.pend = false;
+        if(S.i === 5){ if(S.liq === "water"){ S.phase = "alc"; S.liq = null; S.i = 0; } else { S.phase = "graph"; S.onBal = null; } }
+        return draw(bad ? say("⚠️ " + why + "這一筆記錄的體積不準，圖上的點會偏離直線。") : say(`✅ 讀到 ${f1(v)} mL，總質量 ${f1(M)} g，記下來了。`, true));
+      }
+      if(S.phase === "disp0"){ S.v0 = 50 + d; S.phase = "slide"; return draw(bad ? say("⚠️ " + why) : say("✅ 水面在 50.0 mL。", true)); }
+      if(S.phase === "disp1"){ S.v1 = 55 + d; S.phase = "ratio"; return draw(bad ? say("⚠️ " + why) : say(`✅ 水面升到 55.0 mL，金屬塊體積＝55.0－${f1(S.v0)}＝${f1(S.v1 - S.v0)} cm³。<br>質量÷體積＝${f1(S.mBlock)}÷${f1(S.v1 - S.v0)}＝<b>${(S.mBlock / (S.v1 - S.v0)).toFixed(2)}</b>。對照附表，最接近哪一種？`, true)); }
+    }
+    if(b === "sub"){ S.sub = true; return draw(say("扣除空量筒質量以後，兩條線都通過原點了！想一想：為什麼要先扣除空量筒的質量？（步驟Q）")); }
+    if(b.startsWith("qs-")){
+      if(b !== "qs-0") return draw(say("再想想：沒扣除時，體積 0 的地方質量卻不是 0——多出來的是什麼？"));
+      S.qSub = true; return draw(say("✅ 量筒本身有質量，扣掉才是液體的質量。<br>再看圖：水和酒精都是<b>通過原點的直線</b>，體積變 3 倍、質量也變 3 倍。同一物質的質量和體積呈現什麼關係？", true));
+    }
+    if(b.startsWith("prop-")){
+      if(b !== "prop-正比") return draw(say("看圖：體積從 10 變 30（3 倍），質量也變 3 倍，而且直線通過原點。"));
+      S.qProp = true; S.phase = "metal"; beep(true);
+      return draw(say("✅ 物質的質量與體積<b>成正比</b>。同體積時水比酒精重，所以水的直線比較陡——用傾斜度可以分辨不同物質。", true));
+    }
+    if(b === "drop"){
+      accN++;
+      return setTimeout(() => handAccident(card, {pic: BREAK_SVG, title: "💥 量筒底部被砸破了！",
+        cause: "金屬塊直接丟進直立的量筒，重重撞到筒底，「啪」一聲，玻璃破了、水灑滿桌！",
+        q: "量筒破了，碎玻璃和水在桌上！你第一步要怎麼做？", opts: [
+          {t: "不要用手碰碎玻璃，立刻報告老師處理", ok: true, why: "碎玻璃很鋒利，用手撿會割傷；要報告老師，用掃把、畚箕清理。"},
+          {t: "趕快用手把碎玻璃撿起來", why: "碎玻璃很鋒利，徒手撿容易割傷。"},
+          {t: "用抹布直接把碎玻璃和水一起擦掉", why: "抹布會把碎片推來推去，手隔著布也可能被割傷。"},
+          {t: "換一支量筒，繼續把金屬塊丟進去", why: "沒改正做法就繼續，會再破一次。"}],
+        lesson: "放入金屬塊時，應<b>將量筒傾斜，緩緩滑入</b>金屬塊，以免損壞量筒。"},
+        () => draw(say("回到出事前。金屬塊要怎麼放進量筒才安全？"))), 400);
+    }
+    if(b === "tilt"){ S.slid = true; S.phase = "disp1"; beep(true); return draw(say("✅ 量筒傾斜、金屬塊沿著筒壁緩緩滑到底，水面上升了。", true)); }
+    if(b.startsWith("metal-")){
+      const n = b.slice(6), r = S.mBlock / (S.v1 - S.v0), near = METAL.reduce((a, c) => Math.abs(c[1] - r) < Math.abs(a[1] - r) ? c : a)[0];
+      if(n !== near) return draw(say(`你算出的比值是 ${r.toFixed(2)}，附表裡最接近的不是${n}喔，再比一比。`));
+      if(near !== "鐵"){
+        const cause = [!S.tared ? "一開始<b>天平沒歸零</b>，金屬塊的質量多了 4.0 g" : "", S.v0 !== 50 || S.v1 !== 55 ? "讀量筒刻度時<b>視線沒有和液面中央等高</b>" : ""].filter(Boolean).join("；");
+        return draw(say(`依你的數據會推測是${near}，但這塊其實是<b>鐵</b>（7.87）！原因：${cause || "數據有誤差"}。按「↩ 上一步」或「🔁 全部重來」，修正後再做一次。`));
+      }
+      S.phase = "done"; confetti(); beep(true); labDone(L.id);
+      return draw(say(`🎉 比值 ${r.toFixed(2)} 最接近<b>鐵</b>（7.87）！每種物質的質量與體積比值是固定的，可以用來分辨物質種類。${accN ? `（途中出事 ${accN} 次，都靠急救化解了）` : ""}`, true));
+    }
+    draw();
+  }
+  const setTimeout = (fn, ms) => ctl.wait(ms, fn);
+  const actT = track(act);
+  handDnd(svg, {
+    name: k => NAME[k],
+    drop: track(function(k, x, y){
+      const BAL = [30, 80, 200, 286];
+      if(k === "cyl"){
+        if(!inR(x, y, BAL)){ toast("放到天平的秤盤上"); return draw(); }
+        S.onBal = "cyl"; S.mCyl = CYL + off(); S.phase = "water";
+        return draw(S.tared ? say(`✅ 空量筒質量 ${f1(S.mCyl)} g，記下來了。量筒要放穩再離手，以免摔落。`, true)
+          : say(`⚠️ 天平沒有歸零就放量筒，顯示 ${f1(S.mCyl)} g——比真正的質量多了 ${f1(OFF)} g。這個錯誤會跟著後面每一次秤重……`));
+      }
+      if(k === "water" || k === "alc"){
+        if(!inR(x, y, [70, 60, 160, 230])){ toast("倒進天平上的量筒"); return draw(); }
+        if(S.phase === "alc" && !S.liq) S.liq = "alc";
+        if(S.phase === "water" && !S.liq) S.liq = "water";
+        if(S.liq !== k){ toast(`這一步要倒${NAME[S.liq]}`); return draw(); }
+        S.pend = true; return draw("");
+      }
+      if(k === "block"){
+        if(!inR(x, y, BAL)){ toast("放到天平的秤盤上"); return draw(); }
+        S.onBal = "block"; S.mBlock = BLOCK.m + off(); S.phase = "disp0";
+        return draw(say(`金屬塊質量 ${f1(S.mBlock)} g，記下來了。`, S.tared));
+      }
+      draw();
+    })});
+  draw("");
+}});
+
+/* ═════ 實驗 2-1 混合物的分離（康軒第三冊 p.39–41） ═════
+   1 製作混合物（食鹽、沙子各約 2 g）→ 2 直接以濾紙過濾 → 3 溶解過濾（20 mL 蒸餾水、玻璃棒攪拌；
+   濾紙摺成 1/4→外層撕去一小角→展開成錐狀→放入漏斗以蒸餾水潤溼；漏斗頸下端緊貼燒杯內壁；沿玻璃棒倒；液面不超過濾紙 2/3）
+   → 4 蒸發結晶（約 5 mL 濾液、蓋漏斗或錶玻璃、完全蒸乾即熄火、降溫後才取下）→ 5 紗布過濾比較 */
+LABS.push({id: "separate", ch: "ch2", icon: "🧂", title: "實驗 2-1 混合物的分離", page: "p.39–41",
+  desc: "食鹽和沙子混在一起，怎麼分開？摺濾紙、架過濾裝置、蒸發結晶，做錯會濺出、乾燒或燙傷。",
+  run(pane, L){
+  const NAME = {salt: "食鹽 2 g", sand: "沙子 2 g", mix: "混合物（秤量紙）", rod: "玻璃棒", funnel: "漏斗（已放濾紙）", beaker: "空燒杯", filt: "濾液約 5 mL", cover: "漏斗（倒蓋）", watch: "錶玻璃"};
+  const FOLD = ["濾紙對摺再對摺，摺成 1/4", "外層撕去一小角", "展開成錐狀", "放入漏斗，用蒸餾水潤溼"];
+  let S, accN = 0, holdT = null;
+  function init(){ S = {phase: "mix", salt: false, sand: false, direct: false, inWater: false, stirred: false, fold: [], foldOrder: shuffle([0, 1, 2, 3]),
+    funnel: false, beaker: null, rod: false, lvl: 0, poured: 0, filt: 0, cloudy: false,
+    dish: false, cover: null, heat: false, w: 1, dry: 0, temp: 25, salted: false, gauze: false}; }
+  init();
+  pane.innerHTML = `<div class="card sim hand">
+    <p class="muted" style="margin:0">把上排器材<b>拖到實驗桌</b>上的正確位置（或先點器材、再點位置）。做錯會出事喔！（課本 p.39–41）</p>
+    <div class="htask" id="stask"></div>
+    <div class="simview"><svg viewBox="0 0 360 310" id="ssv"></svg><div class="readout" id="sread"></div></div>
+    <div class="row" id="sbtn" style="margin-top:8px"></div>
+    <div id="sfb"></div></div>`;
+  const card = pane.querySelector(".hand"), svg = pane.querySelector("#ssv");
+  const hist = [], cur = () => JSON.stringify(S);
+  const stopHold = () => { clearInterval(holdT); holdT = null; };
+  const track = fn => (...a) => { const pre = cur(); const r = fn(...a); if(pre !== cur() && !["heating", "cooling"].includes(JSON.parse(pre).phase)) hist.push(pre); ctl.upd(); return r; };
+  const ctl = handCtl(card, {
+    canUndo: () => hist.length > 0,
+    undo(){ stopHold(); let o; do { o = hist.pop(); } while(o && o === cur() && hist.length); if(o){ S = JSON.parse(o); S.heat = false; if(S.phase === "heating") S.phase = "evap"; if(S.phase === "cooling") S.phase = "evap"; draw(say("↩ 回到上一步。", true)); } },
+    reset(){ stopHold(); hist.length = 0; init(); accN = 0; draw(say("🔁 全部重來。", true)); }});
+  const setTimeout = (fn, ms) => ctl.wait(ms, fn);
+  const TASK = {
+    mix: "① 製作混合物：把<b>食鹽</b>和<b>沙子</b>倒在中間的秤量紙上。",
+    direct: "② 把混合物直接倒進濾紙裡，觀察食鹽與沙子能否通過濾紙。",
+    dissolve: "③ 把混合物倒進裝有 20 mL 蒸餾水的燒杯，再用<b>玻璃棒</b>攪拌。",
+    fold: "③ 準備濾紙：依正確順序點下每一個步驟。",
+    stand: "③ 架設過濾裝置：把<b>漏斗</b>放到鐵架的鐵環上，再把<b>空燒杯</b>放到漏斗下面。漏斗頸下端要放在哪裡？",
+    pour: "③ 過濾：先擺好<b>玻璃棒</b>，再<b>按住「倒入」</b>把混合液倒進濾紙，注意液面高度。",
+    evap: "④ 蒸發結晶：把<b>濾液</b>倒進蒸發皿，決定要不要蓋東西，再點火加熱。",
+    heating: "④ 加熱中……水分完全蒸乾就要熄火！",
+    cooling: "④ 熄火了。蒸發皿什麼時候可以拿下來？",
+    gauze: "⑤ 把濾紙換成紗布，過濾成分相同的混合物，比一比濾液。",
+    done: "🎉 實驗完成！"};
+  /* ── 畫面 ── */
+  const bench = `<rect x="0" y="292" width="360" height="18" fill="#b98a5a" opacity=".45"/>`;
+  const pile = (x, y, c, n) => Array.from({length: n}, (_, i) => `<circle cx="${x + (i % 5) * 5 - 10 + (i % 2)}" cy="${y - Math.floor(i / 5) * 3}" r="2.6" fill="${c}"/>`).join("");
+  function beakerG(x, w, h, liq, extra){
+    const bot = 290, top = bot - h;
+    return `${liq ? `<rect x="${x + 3}" y="${bot - h * liq.lv}" width="${w - 6}" height="${h * liq.lv - 3}" fill="${liq.c}" opacity=".85"/>` : ""}${extra || ""}
+      <path d="M${x - 4} ${top} h4 V${bot - 5} q0 5 5 5 H${x + w - 5} q5 0 5 -5 V${top} h4" fill="#ffffff18" stroke="var(--sub)" stroke-width="2.5"/>`;
+  }
+  function standG(){
+    return `<rect x="262" y="284" width="70" height="8" rx="2" fill="#5b5f66"/><rect x="292" y="60" width="6" height="226" fill="#5b5f66"/>
+      <rect x="214" y="146" width="80" height="5" fill="#5b5f66"/><ellipse cx="180" cy="148" rx="36" ry="5" fill="none" stroke="#5b5f66" stroke-width="4"/>`;
+  }
+  function funnelG(){
+    // 漏斗：上緣 y=118（x146–214），尖端 (180,170)，漏斗頸到 y=212
+    const L = S.lvl, yl = 170 - L * 50, hw = (170 - yl) / 52 * 34;
+    let g = `<path d="M150 122 L180 166 L210 122 Z" fill="#fbfaf6" stroke="#cfc8b8"/>`;
+    if(S.phase === "direct" && S.direct) g += pile(180, 160, "#d8b37a", 8) + pile(176, 156, "#fff", 6);
+    if(S.poured > .05) g += pile(180, 163, "#c9a46a", Math.min(14, Math.round(S.poured * 14)));
+    if(L > .01) g += `<path d="M${180 - hw} ${yl} L180 170 L${180 + hw} ${yl} Z" fill="${S.cloudy ? "#c8b48a" : "#a7d3ee"}" opacity=".85"/>`;
+    g += `<line x1="160" x2="200" y1="${170 - .67 * 50}" y2="${170 - .67 * 50}" stroke="#d64545" stroke-dasharray="3 3"/><text x="214" y="${170 - .67 * 50 + 4}" font-size="9" fill="#d64545">2/3</text>`;
+    g += `<path d="M146 118 L177 170 V212 H183 V170 L214 118" fill="#ffffff20" stroke="var(--sub)" stroke-width="2.5"/>`;
+    if(S.rod) g += `<line x1="120" y1="70" x2="168" y2="152" stroke="#9fd6ff" stroke-width="5" stroke-linecap="round"/>`;
+    return g;
+  }
+  function scene(){
+    let g = bench;
+    const P = S.phase;
+    if(P === "mix"){
+      g += `<path d="M120 268 L180 250 L240 268 L180 286 Z" fill="#fff" stroke="#cfc8b8"/>`;
+      if(S.sand) g += pile(170, 270, "#d8b37a", 12);
+      if(S.salt) g += pile(192, 268, "#ffffff", 12).replace(/fill="#ffffff"/g, 'fill="#fff" stroke="#bbb" stroke-width=".6"');
+      g += `<text x="180" y="304" font-size="11" text-anchor="middle" fill="var(--ink)">秤量紙</text>`;
+    }
+    if(P === "direct"){ g += standG() + funnelG() + beakerG(145, 70, 70, null); }
+    if(P === "dissolve" || P === "fold"){
+      const liq = {c: S.inWater && !S.stirred ? "#cbbd96" : "#cfe8f7", lv: .5};
+      g += beakerG(140, 80, 90, liq, (S.inWater ? pile(180, 284, "#c9a46a", 14) : "") + (S.stirred ? `<line x1="168" y1="190" x2="186" y2="282" stroke="#9fd6ff" stroke-width="5" stroke-linecap="round"/>` : ""));
+      g += `<text x="180" y="306" font-size="11" text-anchor="middle" fill="var(--ink)">${S.inWater ? (S.stirred ? "食鹽溶解，沙子沉在杯底" : "還沒攪拌") : "20 mL 蒸餾水"}</text>`;
+    }
+    if(P === "stand" || P === "pour" || P === "gauze"){
+      g += standG();
+      if(S.funnel) g += funnelG();
+      else g += `<path d="M146 118 L177 170 V212 H183 V170 L214 118" fill="none" stroke="var(--pri)" stroke-dasharray="5 5" opacity=".5"/>`;
+      if(S.beaker){
+        const x = S.beaker === "wall" ? 181 : 145;
+        g += beakerG(x, 70, 70, S.filt > .01 ? {c: S.cloudy ? "#c8b48a" : "#cfe8f7", lv: Math.min(.6, S.filt * .6)} : null);
+        if(S.lvl > .02 && S.beaker === "wall") g += `<line x1="181" y1="212" x2="181" y2="${290 - Math.max(4, Math.min(.6, S.filt * .6) * 70)}" stroke="#a7d3ee" stroke-width="3"/>`;
+      } else g += `<rect x="150" y="222" width="60" height="66" rx="4" fill="none" stroke="var(--pri)" stroke-dasharray="5 5" opacity=".4"/>`;
+    }
+    if(["evap", "heating", "cooling", "done"].includes(P) && !(P === "done" && S.gauze === "show")){
+      g += `<rect x="150" y="248" width="60" height="44" rx="16" fill="#bfe3ff" stroke="var(--sub)" stroke-width="2.5"/><rect x="171" y="238" width="18" height="10" fill="#9aa3ad"/><rect x="177" y="230" width="6" height="9" fill="#f4f1e6"/>`;
+      if(S.heat) g += flameP(180, 230, 30, 10, "#ff9f1c", "#5aa9ff");
+      g += `<g stroke="#5b5f66" stroke-width="5" stroke-linecap="round"><line x1="126" y1="205" x2="110" y2="292"/><line x1="234" y1="205" x2="250" y2="292"/></g><rect x="118" y="201" width="124" height="7" rx="3" fill="#5b5f66"/><rect x="112" y="195" width="136" height="6" fill="#e8e3da" stroke="#9a948a"/>`;
+      if(S.dish){
+        g += `<path d="M140 176 Q180 206 220 176 Z" fill="#f4f1ea" stroke="var(--sub)" stroke-width="2.5"/>`;
+        if(S.w > .02) g += `<path d="M${152 + (1 - S.w) * 14} ${180 + (1 - S.w) * 6} Q180 ${202} ${208 - (1 - S.w) * 14} ${180 + (1 - S.w) * 6} Z" fill="#cfe8f7"/>`;
+        if(S.w < .6) g += pile(180, 193, "#fff", Math.round((1 - S.w) * 12)).replace(/fill="#fff"/g, 'fill="#fff" stroke="#aaa" stroke-width=".6"');
+        if(S.heat && S.w > .02) g += `<g class="bub">${[166, 180, 194].map(x => `<circle cx="${x}" cy="186" r="2.5" fill="#fff"/>`).join("")}</g>`;
+        if(S.cover === "cover") g += `<path d="M146 176 L177 130 V104 H183 V130 L214 176" fill="#ffffff30" stroke="var(--sub)" stroke-width="2.5"/>`;
+        if(S.cover === "watch") g += `<path d="M138 172 Q180 160 222 172" fill="none" stroke="var(--sub)" stroke-width="3"/>`;
+        if(S.heat && S.cover) g += `<g opacity=".6" stroke="#9fb8c8" stroke-width="3" fill="none"><path d="M170 ${S.cover === "cover" ? 100 : 156} q5 -8 0 -16"/><path d="M190 ${S.cover === "cover" ? 100 : 156} q5 -8 0 -16"/></g>`;
+      } else g += `<path d="M140 176 Q180 206 220 176" fill="none" stroke="var(--pri)" stroke-dasharray="5 5" opacity=".5"/><text x="180" y="170" font-size="11" text-anchor="middle" fill="var(--pri)">蒸發皿</text>`;
+    }
+    if(P === "done" && S.gauze === "show"){
+      g += beakerG(70, 70, 80, {c: "#cfe8f7", lv: .5}) + `<text x="105" y="306" font-size="11" text-anchor="middle" fill="var(--ink)">濾紙過濾的濾液</text>`;
+      g += beakerG(220, 70, 80, {c: "#d5c69c", lv: .5}, pile(255, 284, "#c9a46a", 6)) + `<text x="255" y="306" font-size="11" text-anchor="middle" fill="var(--ink)">紗布過濾的濾液</text>`;
+    }
+    return g;
+  }
+  function trayKeys(){
+    const P = S.phase;
+    if(P === "mix") return ["salt", "sand"].filter(k => !S[k]);
+    if(P === "direct") return S.direct ? [] : ["mix"];
+    if(P === "dissolve") return S.inWater ? (S.stirred ? [] : ["rod"]) : ["mix"];
+    if(P === "stand") return ["funnel", "beaker"].filter(k => k === "funnel" ? !S.funnel : !S.beaker);
+    if(P === "pour") return S.rod ? [] : ["rod"];
+    if(P === "evap") return [!S.dish && "filt", S.dish && !S.cover && "cover", S.dish && !S.cover && "watch"].filter(Boolean);
+    return [];
+  }
+  const TX = [50, 130, 210, 290];
+  function trayIcon(k, i){
+    const ic = {salt: pile(0, 34, "#fff", 10).replace(/fill="#fff"/g, 'fill="#fff" stroke="#999" stroke-width=".6"'), sand: pile(0, 34, "#d8b37a", 10),
+      mix: `<path d="M-22 34 L0 26 L22 34 L0 42 Z" fill="#fff" stroke="#cfc8b8"/>${pile(0, 34, "#d8b37a", 6)}${pile(3, 31, "#fff", 4)}`,
+      rod: `<line x1="-16" y1="40" x2="16" y2="4" stroke="#9fd6ff" stroke-width="5" stroke-linecap="round"/>`,
+      funnel: `<path d="M-18 4 L-2 26 V44 H2 V26 L18 4" fill="#fbfaf6" stroke="var(--sub)" stroke-width="2"/>`,
+      beaker: `<path d="M-14 8 V42 H14 V8" fill="#ffffff30" stroke="var(--sub)" stroke-width="2.5"/>`,
+      filt: `<path d="M-12 12 V42 H12 V12" fill="#ffffff30" stroke="var(--sub)" stroke-width="2.5"/><rect x="-10" y="30" width="20" height="11" fill="#cfe8f7"/>`,
+      cover: `<path d="M-18 40 L-2 16 V2 H2 V16 L18 40" fill="#ffffff30" stroke="var(--sub)" stroke-width="2"/>`,
+      watch: `<path d="M-20 30 Q0 18 20 30" fill="none" stroke="var(--sub)" stroke-width="3"/>`}[k];
+    return `<g data-it="${k}" transform="translate(${TX[i]} 8)"><rect x="-36" y="-4" width="72" height="70" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="60" font-size="9.5" text-anchor="middle" fill="var(--ink)" font-weight="700">${NAME[k]}</text></g>`;
+  }
+  function readout(){
+    const P = S.phase;
+    pane.querySelector("#sread").textContent = P === "pour" ? `已倒入 ${Math.round(Math.min(S.poured, 1) * 100)}%　濾紙內液面 ${Math.round(S.lvl * 100)}%（不可超過 2/3）` : P === "heating" ? `蒸發皿裡的水：${Math.max(0, Math.round(S.w * 100))}%` : P === "cooling" ? `蒸發皿溫度：約 ${Math.round(S.temp)}℃` : "";
+  }
+  // 倒入、加熱、冷卻時只重畫圖與讀數，不重建按鈕（按住中的「倒入」鈕才收得到放開）
+  function drawLite(){ svg.innerHTML = scene() + trayKeys().map(trayIcon).join(""); readout(); }
+  function draw(msg){
+    drawLite();
+    pane.querySelector("#stask").innerHTML = TASK[S.phase];
+    const P = S.phase;
+    const B = [];
+    if(P === "direct" && S.direct) B.push(`<button class="btn" data-b="next">下一步：溶解過濾</button>`);
+    if(P === "fold") S.foldOrder.forEach(i => B.push(`<button class="btn ghost" data-b="fold-${i}" ${S.fold.includes(i) ? "disabled" : ""}>${S.fold.includes(i) ? `${S.fold.indexOf(i) + 1}. ` : ""}${FOLD[i]}</button>`));
+    if(P === "pour") B.push(`<button class="btn" id="spour">🫗 按住倒入</button>`);
+    if(P === "pour" && S.cloudy) B.push(`<button class="btn ghost" data-b="refilt">🔁 換新濾紙重新過濾</button>`);
+    if(P === "evap" && S.dish) B.push(`<button class="btn" data-b="heat">🔥 點火加熱</button>`);
+    if(P === "heating") B.push(`<button class="btn" data-b="off">🧢 熄火</button>`);
+    if(P === "cooling") B.push(`<button class="btn ghost" data-b="grab">✋ 用手拿起蒸發皿</button>`);
+    if(P === "gauze" && !S.gauze) B.push(`<button class="btn" data-b="gauze">改用紗布過濾</button>`);
+    if(P === "gauze" && S.gauze === "ask") ["濾紙", "紗布", "一樣好"].forEach(t => B.push(`<button class="btn ghost" data-b="q-${t}">${t}過濾效果比較好</button>`));
+    if(P === "done") B.push(`<button class="btn ghost" data-b="again">🔁 再做一次</button>`);
+    const box = pane.querySelector("#sbtn"); box.innerHTML = B.join("");
+    box.querySelectorAll("[data-b]").forEach(b => b.onclick = () => actT(b.dataset.b));
+    const pb = box.querySelector("#spour");
+    if(pb){
+      pb.onpointerdown = e => { e.preventDefault(); if(holdT || S.cloudy) return; hist.push(cur()); ctl.upd(); pourStart(); };
+      ["pointerup", "pointerleave", "pointercancel"].forEach(ev => pb.addEventListener(ev, () => stopHold()));
+      window.addEventListener("pointerup", stopHold, {once: true});
+    }
+    if(msg !== undefined) pane.querySelector("#sfb").innerHTML = msg;
+    ctl.upd();
+  }
+  /* ── 過濾：按住倒入，液面上升；同時濾液慢慢流下 ── */
+  function pourStart(){
+    if(!S.rod){
+      S.poured = 0;
+      return draw(say("💦 沒有沿著<b>玻璃棒</b>倒，混合液直接衝進漏斗，濺到外面去了！先把玻璃棒輕靠在濾紙上，讓液體沿著玻璃棒緩緩流下。"));
+    }
+    holdT = setInterval(() => { if(ctl.paused) return; if(S.poured >= 1){ stopHold(); return; } S.lvl += .028; S.poured += .02; tickFilter(); }, 60);
+  }
+  function tickFilter(){
+    S.lvl = Math.max(0, S.lvl - .009);
+    if(S.lvl > 0) S.filt = Math.min(1, S.filt + .009);
+    if(S.lvl > .67 && !S.cloudy){
+      stopHold(); S.cloudy = true;
+      return draw(say("😱 液面超過濾紙 2/3，混合物從濾紙和漏斗之間的縫隙流下去，<b>濾液變混濁了</b>！倒的時候液面不要超過濾紙 2/3 高度。"));
+    }
+    if(S.filt > .04 && S.beaker === "center" && !S.cloudy){
+      stopHold(); S.lvl = 0; S.filt = 0; S.poured = 0; S.beaker = null; S.phase = "stand";
+      return draw(say("💦 濾液從漏斗頸滴下來，掉進燒杯中央<b>濺起來</b>了！架設時<b>漏斗頸下端要緊貼燒杯內壁</b>，讓濾液沿杯壁流下。重新放一次燒杯。"));
+    }
+    if(S.poured >= 1 && S.lvl < .02 && !S.cloudy){
+      stopHold(); S.poured = 1; S.lvl = 0; S.phase = "evap"; beep(true);
+      return draw(say("✅ 過濾完成：<b>沙子</b>顆粒大，留在濾紙上；<b>食鹽水溶液</b>是微小粒子，通過濾紙孔隙流進燒杯。", true));
+    }
+    drawLite();
+  }
+  // 放開按鈕後，濾紙內剩下的液體繼續流下（離開本頁就停）
+  const drain = window.setInterval(() => { if(!document.body.contains(svg)) return clearInterval(drain); if(ctl.paused || S.phase !== "pour" || holdT) return; if(S.lvl > 0 || (S.poured >= 1 && !S.cloudy)) tickFilter(); }, 120);
+  /* ── 蒸發結晶 ── */
+  function heatLoop(){
+    setTimeout(() => {
+      if(S.phase !== "heating") return;
+      if(S.w > 0){
+        S.w = Math.max(0, +(S.w - .05).toFixed(2));
+        if(!S.cover && S.w <= .45){ S.heat = false; accN++; draw(""); return handAccident(card, {title: "💥 食鹽晶體噴濺！",
+          cause: "蒸發皿上面沒有蓋東西，濾液越來越少時，析出的食鹽晶體被熱氣頂得劈啪噴出來，濺到手和臉！",
+          q: "熱的晶體和液體濺到皮膚、靠近眼睛！第一步要怎麼做？", opts: [
+            {t: "立刻用大量清水沖洗，並報告老師", ok: true, why: "大量清水能把燙熱的晶體與鹽水沖掉、降溫；接著報告老師處理。"},
+            {t: "用手揉一揉眼睛和皮膚", why: "揉會讓晶體更深入眼睛、磨傷皮膚。"},
+            {t: "塗牙膏或醬油", why: "牙膏、醬油不能治燙傷，還可能造成感染。"},
+            {t: "沒關係，繼續加熱", why: "沒有處理傷口、也沒有改正做法，會再被噴到。"}],
+          lesson: "加熱蒸發皿時要<b>蓋上漏斗或錶玻璃</b>，避免液體與晶體噴濺。"},
+          () => { S.phase = "evap"; S.w = 1; draw(say("回到加熱前。蒸發皿上面應該先做什麼？")); }); }
+        if(S.w === 0) S.dry = 0;
+        if(S.w === 0) pane.querySelector("#sfb").innerHTML = say("💡 水分完全蒸乾了！");
+        drawLite();
+      } else {
+        S.dry++;
+        if(S.dry >= 6){ S.heat = false; accN++; draw(""); return handAccident(card, {pic: BREAK_SVG, title: "💥 蒸發皿乾燒裂開了！",
+          cause: "水分早就蒸乾了還繼續加熱，空的蒸發皿被燒得太燙，「啪」一聲裂開，碎片和鹽粒彈出來！",
+          q: "蒸發皿裂開了，還在加熱！第一步要怎麼做？", opts: [
+            {t: "先熄滅酒精燈，不要碰碎片，報告老師", ok: true, why: "先移除熱源；碎片又燙又利，要等降溫後由老師處理。"},
+            {t: "用手把裂開的碎片撿起來", why: "碎片溫度很高又鋒利，會燙傷、割傷。"},
+            {t: "趕快倒冷水讓它降溫", why: "冷水碰到高溫的瓷器會讓它碎得更厲害，還會噴出熱蒸氣。"},
+            {t: "再換一個蒸發皿繼續燒", why: "沒有熄火、沒有處理碎片就繼續，非常危險。"}],
+          lesson: "<b>水分完全蒸乾即可熄滅酒精燈</b>，以免乾燒。"},
+          () => { S.phase = "evap"; S.w = 1; S.dry = 0; draw(say("回到加熱前。這次蒸乾就要馬上熄火。")); }); }
+      }
+      heatLoop();
+    }, 400);
+  }
+  function coolLoop(){
+    setTimeout(() => {
+      if(S.phase !== "cooling") return;
+      S.temp = Math.max(28, S.temp - 4);
+      if(S.temp <= 40 && !S.salted){
+        S.salted = true; S.phase = "gauze"; beep(true);
+        return draw(say("✅ 等降溫後才取下蒸發皿，裡面留下白色的<b>食鹽晶體</b>。水的沸點較低先蒸發，食鹽沸點較高留在皿中——這就是<b>蒸發結晶法</b>。", true));
+      }
+      drawLite(); coolLoop();
+    }, 400);
+  }
+  function act(b){
+    if(b === "again"){ hist.length = 0; init(); accN = 0; return draw(""); }
+    if(b === "next"){ S.phase = "dissolve"; return draw(""); }
+    if(b.startsWith("fold-")){
+      const i = +b.slice(5);
+      if(i !== S.fold.length){ S.fold = []; beep(false); return draw(say(`❌ 順序不對，濾紙摺壞了，換一張重摺。提示：先摺、再撕、再展開，最後才放進漏斗。`)); }
+      S.fold.push(i);
+      if(S.fold.length === 4){ S.phase = "stand"; beep(true); return draw(say("✅ 濾紙摺好、放進漏斗並潤溼，附著在漏斗內壁了。", true)); }
+      return draw("");
+    }
+    if(b === "refilt"){ S.cloudy = false; S.lvl = 0; S.poured = 0; S.filt = 0; return draw(say("換了新濾紙、新燒杯。這次倒慢一點，液面別超過 2/3。")); }
+    if(b === "heat"){
+      if(!S.dish) return;
+      S.phase = "heating"; S.heat = true; S.w = 1; S.dry = 0;
+      draw(S.cover ? "" : say("沒有蓋漏斗或錶玻璃就開始加熱了……"));
+      return heatLoop();
+    }
+    if(b === "off"){
+      if(S.w > .15) return toast("還有不少水，再加熱一下");
+      S.heat = false; S.phase = "cooling"; S.temp = 96; draw(say("✅ 水分蒸乾就熄火，正確！不過器材溫度很高……"));
+      return coolLoop();
+    }
+    if(b === "grab"){
+      if(S.temp <= 40) return;
+      accN++;
+      return handAccident(card, {title: "🔥 手被燙傷了！", pic: FIRE_SVG.replace(/<g class="flame"[\s\S]*$/, "</svg>"),
+        cause: `蒸發皿剛熄火、還有約 ${Math.round(S.temp)}℃，用手直接去拿，手指立刻燙紅起水泡！`,
+        q: "手被高溫的蒸發皿燙到了！第一步要怎麼做？", opts: [
+          {t: "立刻用大量冷水沖，並報告老師", ok: true, why: "冷水沖能帶走熱、減輕燙傷，再請老師處理。"},
+          {t: "塗牙膏或醬油", why: "這些偏方不能治燙傷，還可能感染。"},
+          {t: "把水泡戳破", why: "戳破水泡容易感染。"},
+          {t: "忍一下，繼續做實驗", why: "燙傷要立刻處理，拖延會更嚴重。"}],
+        lesson: "加熱後<b>器材溫度很高，降溫後方可取下</b>。"},
+        () => draw(say("回到出事前。看著溫度，等它降下來再拿。")));
+    }
+    if(b === "gauze"){ S.gauze = "ask"; return draw(say("紗布過濾的濾液<b>比較混濁</b>，還看得到細小的沙粒；濾紙過濾的濾液清澈。哪一種過濾效果比較好？")); }
+    if(b.startsWith("q-")){
+      if(b !== "q-濾紙") return draw(say("看看兩杯濾液：哪一杯比較清澈？想想濾紙和紗布的孔隙哪個比較小。"));
+      S.gauze = "show"; S.phase = "done"; confetti(); beep(true); labDone(L.id);
+      return draw(say(`🎉 濾紙的孔隙比紗布小，細小的沙粒過不去，所以<b>濾紙過濾效果比較好</b>。<br>整理：食鹽可溶於水、沙子不溶 → <b>溶解過濾</b>；水和食鹽沸點不同 → <b>蒸發結晶</b>。${accN ? `（途中出事 ${accN} 次，都靠急救化解了）` : ""}`, true));
+    }
+    draw();
+  }
+  const actT = track(act);
+  handDnd(svg, {
+    name: k => NAME[k],
+    drop: track(function(k, x, y){
+      const P = S.phase;
+      if(P === "mix"){
+        if(!inR(x, y, [100, 200, 260, 300])){ toast("倒在中間的秤量紙上"); return draw(); }
+        S[k] = true;
+        if(S.salt && S.sand){ S.phase = "direct"; return draw(say("混合物做好了：食鹽約 2 g＋沙子約 2 g。", true)); }
+        return draw("");
+      }
+      if(k === "mix" && P === "direct"){
+        if(!inR(x, y, [130, 100, 230, 220])){ toast("倒進漏斗裡的濾紙"); return draw(); }
+        S.direct = true; return draw(say("🔍 食鹽和沙子<b>都留在濾紙上</b>，一顆也沒通過——兩種顆粒都比濾紙孔隙大，直接過濾分不開。"));
+      }
+      if(k === "mix" && P === "dissolve"){
+        if(!inR(x, y, [120, 180, 240, 300])){ toast("倒進燒杯裡"); return draw(); }
+        S.inWater = true; return draw(say("混合物倒進水裡了，水變混濁。用玻璃棒攪拌看看。"));
+      }
+      if(k === "rod" && P === "dissolve"){
+        if(!inR(x, y, [120, 180, 240, 300])){ toast("放進燒杯裡攪拌"); return draw(); }
+        S.stirred = true; S.phase = "fold"; return draw(say("✅ 攪拌後，<b>食鹽溶解</b>在水中，<b>沙子不溶</b>，沉在杯底。", true));
+      }
+      if(k === "funnel"){
+        if(!inR(x, y, [130, 90, 240, 220])){ toast("放到鐵架的鐵環上"); return draw(); }
+        S.funnel = true; draw(""); if(S.beaker){ S.phase = "pour"; draw(""); } return;
+      }
+      if(k === "beaker"){
+        if(!inR(x, y, [110, 200, 290, 300])){ toast("放到漏斗下方"); return draw(); }
+        S.beaker = x > 196 ? "wall" : "center";
+        draw(S.beaker === "wall" ? say("燒杯放好了：漏斗頸下端緊貼燒杯內壁。", true) : say("燒杯放好了：漏斗頸懸在燒杯中央。"));
+        if(S.funnel){ S.phase = "pour"; draw(); }
+        return;
+      }
+      if(k === "rod" && P === "pour"){
+        if(!inR(x, y, [110, 60, 240, 220])){ toast("把玻璃棒輕靠在漏斗裡的濾紙上"); return draw(); }
+        S.rod = true; return draw(say("✅ 玻璃棒輕靠濾紙，混合液可以沿著玻璃棒緩緩流下。", true));
+      }
+      if(k === "filt"){
+        if(!inR(x, y, [120, 140, 240, 220])){ toast("倒進三腳架上的蒸發皿"); return draw(); }
+        S.dish = true; S.w = 1; return draw(say("沿著玻璃棒把約 5 mL 濾液倒進蒸發皿（剩下的濾液保留，最後要和紗布比較）。蒸發皿上面要不要蓋東西？"));
+      }
+      if(k === "cover" || k === "watch"){
+        if(!inR(x, y, [120, 100, 240, 220])){ toast("蓋在蒸發皿上"); return draw(); }
+        S.cover = k; return draw(say(`✅ 蓋上${k === "cover" ? "漏斗" : "錶玻璃"}，加熱時液體和晶體就不會噴到外面。`, true));
+      }
+      draw();
+    })});
+  draw("");
+}});
+
+/* ═════ 實驗 2-3 氧氣的製備及性質（課本 p.50–53） ═════
+   出錯情境：廣口瓶沒裝滿水／沒蓋玻璃片就倒立、長管沒沒入液面下、雙氧水加太快（溢出傷皮膚）、
+   收集剛產生的氣體、沒在水中蓋玻璃片就移出 → 線香檢驗時看得出氧氣不純 */
+LABS.push({id: "oxygen", ch: "ch2", icon: "🫧", title: "實驗 2-3 氧氣的製備及性質", page: "p.50–53",
+  desc: "排水集氣法收集氧氣，再用線香分辨氧氣和空氣。", run(pane, L){
+  const TRAY = {kettle: [36, "水壺"], glass: [100, "玻璃片"], mno2: [164, "二氧化錳"], water: [228, "少許水"], funnel: [292, "薊頭漏斗"],
+                pure: [36, "純水滴管"], h2o2: [100, "雙氧水滴管"], tube: [0, "橡皮管"], stick: [180, "點燃的線香"]};
+  let S, phase, accN = 0, pourT = null;
+  function init(){
+    S = {lvl: 0, cover: false, inv: false, mno2: false, wet: false, funnel: 0, pure: 0, h2o2: 0, bub: false, bubT: 0, fast: false, tubeIn: false,
+         early: false, gas: 0, sealed: false, pulled: false, out: false, lost: false, test: {o2: null, air: null}};
+    phase = "bottle";
+  }
+  init();
+  pane.innerHTML = `<div class="card sim hand">
+    <p class="muted" style="margin:0">把上排器材<b>拖到正確位置</b>（或先點器材、再點位置）。步驟照課本 p.50–53。</p>
+    <div class="htask" id="otask"></div>
+    <div class="simview"><svg viewBox="0 0 360 330" id="osv"></svg><div class="readout" id="oread"></div></div>
+    <div class="row" id="obtn" style="margin-top:8px"></div>
+    <div id="ofb"></div></div>`;
+  const card = pane.querySelector(".hand"), svg = pane.querySelector("#osv");
+  const hist = [], cur = () => JSON.stringify({S, phase});
+  const restore = o => { clearInterval(pourT); pourT = null; ({S, phase} = JSON.parse(o)); };
+  const track = fn => (...a) => { const pre = cur(); const r = fn(...a); if(!pourT && pre !== cur() && !["react", "collect"].includes(JSON.parse(pre).phase)) hist.push(pre); ctl.upd(); return r; };
+  const ctl = handCtl(card, {
+    canUndo: () => hist.length > 0,
+    undo(){ let o; do { o = hist.pop(); } while(o && o === cur() && hist.length); if(o){ restore(o); draw(say("↩ 回到上一步。", true)); } },
+    reset(){ hist.length = 0; restore(cur()); init(); accN = 0; draw(say("🔁 全部重來。", true)); }});
+  const setTimeout = (fn, ms) => ctl.wait(ms, fn);
+  let dragging = false;                               // 拖曳中不重畫，免得手上的器材被換掉
+  svg.addEventListener("pointerdown", () => { dragging = true; });
+  window.addEventListener("pointerup", () => { dragging = false; });
+  let tick = setInterval(() => {                      // 反應中的氣泡與排水；暫停時不動
+    if(!document.body.contains(svg)){ clearInterval(tick); return; }
+    if(ctl.paused || !S.bub) return;
+    S.bubT++;
+    if(S.tubeIn && !S.sealed && !S.out){ S.gas = Math.min(1, S.gas + .025); }
+    if((phase === "react" || phase === "collect") && !dragging) draw();
+  }, 200);
+  const TASK = {
+    bottle: "① 設置氧氣收集瓶：把<b>廣口瓶裝滿水</b>、蓋緊玻璃片，再倒立放入水槽。",
+    setup: "② 架設裝置：吸濾瓶裡放<b>二氧化錳</b>和<b>少許水</b>，再插上<b>薊頭漏斗</b>。",
+    react: "③ 製備氧氣：先由薊頭漏斗緩慢加約 2 mL <b>純水</b>，再緩慢加<b>雙氧水</b>。水槽冒氣泡一段時間後，把<b>橡皮管</b>拖進廣口瓶。",
+    collect: "④ 收集氧氣：瓶中的水<b>即將完全被排出</b>時，在水中蓋好玻璃片再移出水面，瓶口朝上放好。",
+    test: "⑤ 檢驗：把<b>點燃的線香</b>分別放進氧氣瓶和空氣瓶（瓶底都留少許水），比較燃燒情形。觀察時不可太靠近。",
+    done: "🎉 實驗完成！"};
+  /* ── 繪圖 ── */
+  const FL = {x: 90, top: 196, bot: 298};               // 吸濾瓶
+  const TR = [190, 200, 350, 310], WT = 237;            // 水槽、水面
+  function flask(){
+    let g = `<rect x="30" y="300" width="130" height="10" rx="3" fill="#3d5a8a"/><rect x="138" y="110" width="5" height="192" fill="#8a8f96"/>
+      <rect x="100" y="206" width="40" height="4" fill="#8a8f96"/>`;
+    const liq = S.wet || S.pure ? 280 - Math.min(14, (S.pure + S.h2o2) * 1.5) : null;
+    if(liq) g += `<path d="M${FL.x - 33 + (liq - 225) * .02} ${liq} L${FL.x + 33} ${liq} L${FL.x + 35} ${FL.bot} L${FL.x - 35} ${FL.bot} Z" fill="#cde8f7"/>`;
+    if(S.mno2) g += `<g fill="#222">${[0, 1, 2, 3, 4, 5, 6].map(i => `<circle cx="${FL.x - 20 + i * 7}" cy="${FL.bot - 3 - (i % 2) * 2}" r="2.4"/>`).join("")}</g>`;
+    if(S.h2o2 && S.funnel === 2) g += [0, 1, 2, 3].map(i => `<circle class="bub" cx="${FL.x - 15 + i * 10}" cy="${FL.bot - 8}" r="2.5" fill="#fff" style="animation-delay:${i * .2}s"/>`).join("");
+    g += `<path d="M${FL.x - 10} ${FL.top + 8} V225 L${FL.x - 35} ${FL.bot} H${FL.x + 35} L${FL.x + 10} 225 V${FL.top + 8} M${FL.x + 10} 214 h22" fill="#ffffff22" stroke="var(--sub)" stroke-width="2.5"/>`;
+    if(S.funnel){
+      const end = S.funnel === 2 ? FL.bot - 6 : 252;
+      g += `<rect x="${FL.x - 11}" y="${FL.top}" width="22" height="10" rx="2" fill="#d23c3c"/><line x1="${FL.x}" y1="146" x2="${FL.x}" y2="${end}" stroke="var(--sub)" stroke-width="3"/>
+        <circle cx="${FL.x}" cy="136" r="11" fill="#ffffff44" stroke="var(--sub)" stroke-width="2.5"/><path d="M${FL.x - 9} 128 L${FL.x - 16} 112 H${FL.x + 16} L${FL.x + 9} 128" fill="none" stroke="var(--sub)" stroke-width="2.5"/>`;
+      if(S.h2o2 && S.funnel === 1) g += [0, 1, 2].map(i => `<circle class="bub" cx="${FL.x - 6 + i * 6}" cy="118" r="2.5" fill="#cfe9ff" style="animation-delay:${i * .25}s"/>`).join("");
+    } else g += `<rect x="${FL.x - 18}" y="${FL.top - 20}" width="36" height="30" rx="6" fill="none" stroke="var(--pri)" stroke-dasharray="4 4" opacity=".6"/>`;
+    return g;
+  }
+  function trough(){
+    let g = `<rect x="${TR[0]}" y="${WT}" width="${TR[2] - TR[0]}" height="${TR[3] - WT}" fill="#bfe3ff" opacity=".8"/><path d="M${TR[0]} ${TR[1]} V${TR[3]} H${TR[2]} V${TR[1]}" fill="none" stroke="var(--sub)" stroke-width="3"/>`;
+    if(S.inv && !S.out){
+      const bx = 280, top = 228, bot = 306, h = bot - top, air = Math.max(1 - S.lvl, 0) + S.gas * S.lvl;  // 瓶內氣體比例
+      g += `<rect x="${bx - 26}" y="${top + 2}" width="52" height="${h - 4}" fill="#bfe3ff"/><rect x="${bx - 26}" y="${top + 2}" width="52" height="${(h - 4) * Math.min(air, 1)}" fill="#ffffff"/>
+        <path d="M${bx - 20} ${bot} V${top + 8} q0 -8 8 -8 H${bx + 12} q8 0 8 8 V${bot}" fill="none" stroke="var(--sub)" stroke-width="3"/>`;
+      if(S.sealed) g += `<rect x="${bx - 24}" y="${bot}" width="48" height="4" fill="#d9eef7" stroke="var(--sub)"/>`;
+    }
+    // 橡皮管
+    if(S.funnel){
+      const end = S.tubeIn ? [272, 300] : S.pulled ? [205, 222] : [228, 292];
+      g += `<path d="M${FL.x + 32} 214 C 175 200, 185 190, 200 205 S ${end[0] - 10} ${end[1] - 30}, ${end[0]} ${end[1]}" fill="none" stroke="#e0b44a" stroke-width="5" stroke-linecap="round"/>`;
+      if(S.bub && !S.pulled && S.funnel === 2) g += [0, 1, 2].map(i => `<circle class="bub" cx="${end[0] + i * 3}" cy="${end[1] - 4}" r="3" fill="#fff" style="animation-delay:${i * .3}s"/>`).join("");
+      if(phase === "react" && S.bub && !S.tubeIn) g += `<circle data-it="tube" cx="${end[0]}" cy="${end[1]}" r="14" fill="var(--gold)" opacity=".35" stroke="var(--gold)" stroke-width="2"/>`;
+    }
+    return g;
+  }
+  function stage(){                                    // 步驟 1：桌上直立的廣口瓶
+    if(S.inv) return "";
+    const bx = 270, top = 110, bot = 190, h = bot - top;
+    return `<rect x="${bx - 26}" y="${bot - (h - 4) * S.lvl}" width="52" height="${(h - 4) * S.lvl}" fill="#bfe3ff"/>
+      <path d="M${bx - 20} ${top} V${bot - 8} q0 8 8 8 H${bx + 12} q8 0 8 -8 V${top}" fill="#ffffff22" stroke="var(--sub)" stroke-width="3"/>
+      ${S.cover ? `<rect x="${bx - 26}" y="${top - 5}" width="52" height="5" fill="#d9eef7" stroke="var(--sub)"/>` : ""}
+      <text x="${bx}" y="${bot + 16}" text-anchor="middle" font-size="11" fill="var(--ink)">廣口瓶</text>`;
+  }
+  function testScene(){
+    const bottle = (x, lab, k) => {
+      const r = S.test[k], glow = r === "big" ? flameP(x, 196, 34, 10, "#ff9f1c", "#fff3a0") : r === "mid" ? flameP(x, 196, 16, 6, "#ff9f1c", "#ffe08a") : r ? `<circle cx="${x}" cy="196" r="3.5" fill="#ff5a1f"/>` : "";
+      return `<rect x="${x - 34}" y="270" width="68" height="16" fill="#bfe3ff"/><path d="M${x - 34} 150 V280 q0 8 8 8 H${x + 26} q8 0 8 -8 V150" fill="#ffffff22" stroke="var(--sub)" stroke-width="3"/>
+        <rect x="${x - 38}" y="144" width="${r ? 40 : 76}" height="5" fill="#d9eef7" stroke="var(--sub)"/>
+        ${r ? `<line x1="${x}" y1="80" x2="${x}" y2="196" stroke="#8a5a2b" stroke-width="3"/>` + glow : `<rect data-zone="${k}" x="${x - 40}" y="140" width="80" height="150" fill="transparent"/>`}
+        <text x="${x}" y="306" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="700">${lab}</text><text x="${x}" y="322" text-anchor="middle" font-size="10" fill="var(--sub)">瓶底留少許水</text>`;
+    };
+    return bottle(100, "氧氣瓶", "o2") + bottle(260, "空氣瓶", "air");
+  }
+  function trayIcon(k){
+    const [x, n] = TRAY[k];
+    const ic = {
+      kettle: `<path d="M-14 12 h22 v26 h-22z M8 18 q10 0 12 -10" fill="#bfe3ff" stroke="var(--sub)" stroke-width="2"/>`,
+      glass: `<rect x="-18" y="24" width="36" height="5" fill="#d9eef7" stroke="var(--sub)"/>`,
+      mno2: `<line x1="-14" y1="36" x2="12" y2="14" stroke="#888" stroke-width="3"/><ellipse cx="13" cy="13" rx="6" ry="4" fill="#222"/>`,
+      water: `<rect x="-6" y="4" width="12" height="10" rx="3" fill="#555"/><path d="M-5 14 h10 v22 l-5 8 l-5 -8z" fill="#cde8f7" stroke="var(--sub)"/>`,
+      funnel: `<circle cx="0" cy="12" r="7" fill="none" stroke="var(--sub)" stroke-width="2"/><line x1="0" y1="19" x2="0" y2="44" stroke="var(--sub)" stroke-width="2.5"/><rect x="-6" y="28" width="12" height="6" fill="#d23c3c"/>`,
+      pure: `<rect x="-6" y="4" width="12" height="10" rx="3" fill="#555"/><path d="M-5 14 h10 v22 l-5 8 l-5 -8z" fill="#e9f5ff" stroke="var(--sub)"/>`,
+      h2o2: `<rect x="-6" y="4" width="12" height="10" rx="3" fill="#a33"/><path d="M-5 14 h10 v22 l-5 8 l-5 -8z" fill="#fde2e2" stroke="var(--sub)"/>`,
+      stick: `<line x1="-12" y1="40" x2="10" y2="8" stroke="#8a5a2b" stroke-width="3"/><circle cx="10" cy="8" r="3.5" fill="#ff5a1f"/>`}[k];
+    return `<g data-it="${k}" transform="translate(${x} 12)"><rect x="-30" y="-6" width="60" height="74" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="61" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${n}</text></g>`;
+  }
+  function trayKeys(){
+    if(phase === "bottle") return S.inv ? [] : ["kettle", "glass"].filter(k => !(k === "glass" && S.cover));
+    if(phase === "setup") return ["mno2", "water", "funnel"].filter(k => !(k === "mno2" && S.mno2) && !(k === "water" && S.wet) && !(k === "funnel" && S.funnel));
+    if(phase === "react") return ["pure", "h2o2"];
+    if(phase === "test") return ["stick"];
+    return [];
+  }
+  function draw(msg){
+    svg.innerHTML = (phase === "test" || phase === "done" ? testScene() : flask() + trough() + stage()) + trayKeys().map(trayIcon).join("");
+    pane.querySelector("#otask").innerHTML = TASK[phase];
+    const rd = {bottle: S.inv ? "" : `瓶內的水：約 ${Math.round(S.lvl * 100)}%`, react: `已加純水 ${S.pure} mL、雙氧水 ${S.h2o2} mL${S.bub ? `｜冒氣泡 ${Math.floor(S.bubT / 5)} 秒` : ""}`,
+                collect: `瓶內收集到的氣體：約 ${Math.round(Math.min(1, (1 - S.lvl) + S.gas * S.lvl) * 100)}%`}[phase] || "";
+    pane.querySelector("#oread").textContent = rd;
+    const B = [];
+    if(pourT) B.push(`<button class="btn" data-b="stop">✋ 停！</button>`);
+    if(phase === "bottle" && !S.inv && S.lvl > 0 && !pourT) B.push(`<button class="btn" data-b="invert">🔄 倒立放入水槽</button>`);
+    if(phase === "setup" && S.funnel === 1) B.push(`<button class="btn" data-b="push">⬇ 漏斗往下推</button>`, `<button class="btn ghost" data-b="next">就這樣，開始加藥品</button>`);
+    if(phase === "setup" && S.funnel === 2) B.push(`<button class="btn" data-b="next">開始製備氧氣 ▶</button>`);
+    if(phase === "react" && S.fast && !S.pulled) B.push(`<button class="btn gold" data-b="pull">⤴ 把橡皮管拉出水面</button>`);
+    if(phase === "react" && S.pulled) B.push(`<button class="btn" data-b="putback">⤵ 氣泡變慢了，把橡皮管放回水槽</button>`);
+    if(phase === "collect") B.push(S.sealed ? `<button class="btn" data-b="lift">⬆ 移出水面、瓶口朝上</button>` : `<button class="btn" data-b="seal">🪟 在水中蓋上玻璃片</button>`, ...(S.sealed ? [] : [`<button class="btn ghost" data-b="lift">⬆ 直接移出水面</button>`]));
+    if(phase === "done") B.push(`<button class="btn ghost" data-b="again">🔁 再做一次</button>`);
+    handBtns(pane.querySelector("#obtn"), B.join(""), actT);
+    if(msg !== undefined) pane.querySelector("#ofb").innerHTML = msg;
+    ctl.upd();
+  }
+  /* ── 動作 ── */
+  let lastAdd = [];
+  function addH2O2(){
+    if(!S.pure){ toast("先由薊頭漏斗緩慢加約 2 mL 純水"); return draw(); }
+    const now = Date.now(); lastAdd = lastAdd.filter(t => now - t < 6000); lastAdd.push(now);
+    S.h2o2++; beep(true);
+    if(S.funnel === 1){
+      S.bub = true;
+      return draw(say("😮 吸濾瓶裡冒出大量氣泡，可是水槽裡<b>一個氣泡也沒有</b>——氣體從薊頭漏斗的管口跑掉了！<br>薊頭漏斗的長管要<b>沒入液面下</b>，液體把管口封住，氧氣才只能從側管跑到水槽。按「↩ 上一步」回去調整。"));
+    }
+    if(!S.bub){ S.bub = true; S.bubT = 0; }
+    if(lastAdd.length >= 3 && !S.fast){
+      S.fast = true;
+      draw(say("⚠️ 雙氧水加太快，氣泡越冒越急！再這樣下去，雙氧水會從薊頭漏斗上方<b>溢出來</b>——快處理！"));
+      const at = S.h2o2;
+      setTimeout(() => { if(S.fast && !S.pulled && S.h2o2 >= at) overflow(); }, 3000);
+      return;
+    }
+    draw(say(`加入雙氧水（共 ${S.h2o2} mL）。吸濾瓶裡的二氧化錳讓雙氧水加速分解，產生氧氣。${S.h2o2 >= 3 ? "" : "慢慢加，觀察吸濾瓶內的變化。"}`, true));
+  }
+  function overflow(){
+    accN++;
+    handAccident(card, {pic: `<svg viewBox="0 0 240 110"><rect x="0" y="92" width="240" height="18" rx="4" fill="#6b4a2f"/><path d="M110 20 q10 -14 20 0 v60 h-20z" fill="#fde2e2" stroke="#fff" stroke-width="2"/><path d="M118 8 q-20 30 -40 70 M124 8 q16 30 30 72" stroke="#ffd3d3" stroke-width="5" fill="none"/><text x="120" y="104" fill="#fff" font-size="12" text-anchor="middle">雙氧水溢出</text></svg>`,
+      title: "💥 雙氧水從漏斗上方溢出！", cause: "雙氧水加太快、氣泡太急，瓶內壓力把液體從薊頭漏斗上方推出來，噴到手上了！",
+      q: "雙氧水沾到手上，第一步要怎麼做？", opts: [
+        {t: "立刻用大量清水沖洗，並報告老師", ok: true, why: "雙氧水會傷害皮膚，要馬上用大量清水沖洗，再請老師處理。"},
+        {t: "用衛生紙擦乾就好", why: "擦掉表面還是有殘留，會繼續傷害皮膚；要用大量清水沖洗。"},
+        {t: "先把實驗做完再處理", why: "拖越久皮膚傷害越大，要立刻處理。"},
+        {t: "塗上藥膏蓋住", why: "沒有先沖掉藥品就塗藥膏，藥品會被悶在皮膚上。"}],
+      lesson: "雙氧水要用滴管<b>緩慢</b>加入；若氣泡生成太快，應<b>將水槽中的橡皮管拉出水面</b>，避免雙氧水從薊頭漏斗上方溢出。"},
+      () => { S.fast = false; S.h2o2 = Math.max(1, S.h2o2 - 3); lastAdd = []; draw(say("回到出事前。這次雙氧水一滴一滴<b>慢慢</b>加。")); });
+  }
+  function act(b){
+    if(b === "stop"){ clearInterval(pourT); pourT = null; return draw(S.lvl >= .97 ? say("👍 裝滿了。", true) : say(`瓶子只裝了約 ${Math.round(S.lvl * 100)}% 的水。這樣可以嗎？想清楚再繼續（也可以再倒一些）。`)); }
+    if(b === "again"){ hist.length = 0; init(); accN = 0; return draw(""); }
+    if(b === "invert"){
+      if(!S.cover){ S.lvl = 0; return draw(say("😱 沒有蓋玻璃片就倒過來，<b>水全部流光了</b>，瓶子裡又裝滿空氣。重新裝水、蓋緊玻璃片再倒立。")); }
+      S.inv = true; S.cover = false;
+      draw(say(S.lvl >= .97 ? "✅ 廣口瓶倒立在水槽裡，瓶裡滿滿是水。" : "廣口瓶倒立放進水槽了，瓶子上方留著一段<b>空氣</b>……", S.lvl >= .97));
+      phase = "setup"; return setTimeout(() => draw(), 1200);
+    }
+    if(b === "push"){ S.funnel = 2; return draw(say("✅ 長管沒入液面下了。", true)); }
+    if(b === "next"){ phase = "react"; return draw(""); }
+    if(b === "pull"){ S.pulled = true; S.fast = false; return draw(say("✅ 把橡皮管拉出水面，氣體直接排掉，瓶內壓力不會升高，雙氧水就不會溢出。", true)); }
+    if(b === "putback"){ S.pulled = false; lastAdd = []; return draw(say("橡皮管放回水槽了。雙氧水記得慢慢加。", true)); }
+    if(b === "seal"){ S.sealed = true; return draw(say(S.gas >= .85 ? "✅ 在水中用玻璃片蓋好瓶口。" : "蓋上玻璃片了……可是瓶裡的水還沒排完，收集到的氧氣不多。", S.gas >= .85)); }
+    if(b === "lift"){
+      if(!S.sealed) S.lost = true;
+      S.out = true; S.bub = false; phase = "test";
+      return draw(say(S.lost ? "直接把瓶子提出水面……瓶口一離開水，瓶裡的氣體就和外面的空氣混在一起了。" : "✅ 瓶口朝上放在桌上，保存氧氣。接著另取一瓶裝空氣、瓶底留少許水的廣口瓶。", !S.lost));
+    }
+  }
+  function pour(){
+    pourT = setInterval(() => {
+      if(ctl.paused) return;
+      S.lvl = Math.min(1, S.lvl + .02);
+      if(S.lvl >= 1){ clearInterval(pourT); pourT = null; draw(say("👍 裝滿了。", true)); return; }
+      draw();
+    }, 60);
+    draw("");
+  }
+  const actT = track(act);
+  handDnd(svg, {
+    name: k => TRAY[k][1],
+    drop: track(function(k, x, y){
+      if(phase === "bottle"){
+        const onB = inR(x, y, [230, 90, 310, 210]);
+        if(!onB){ toast("拖到廣口瓶上"); return draw(); }
+        if(k === "kettle"){ if(S.cover){ toast("玻璃片蓋著，倒不進去"); return draw(); } if(S.lvl >= 1){ toast("已經滿了"); return draw(); } return pour(); }
+        if(k === "glass"){ S.cover = true; return draw(say("玻璃片蓋緊瓶口了。", true)); }
+      }
+      if(phase === "setup"){
+        if(!inR(x, y, [40, 100, 140, 300])){ toast("放進吸濾瓶"); return draw(); }
+        if(k === "funnel"){
+          if(!S.mno2 || !S.wet){ toast("先放二氧化錳和少許水，再塞上薊頭漏斗"); return draw(); }
+          S.funnel = 1; return draw(say("薊頭漏斗穿過單孔橡皮塞、塞上瓶口了。看看長管的下端在哪裡？"));
+        }
+        if(k === "mno2"){ S.mno2 = true; return draw(say("放入約 0.5 g 二氧化錳。", true)); }
+        if(k === "water"){ S.wet = true; return draw(say("加入少許水。", true)); }
+      }
+      if(phase === "react"){
+        if(k === "tube"){
+          if(!inR(x, y, [245, 220, 315, 312])){ toast("把橡皮管口移到倒立的廣口瓶瓶口裡"); return draw(); }
+          S.tubeIn = true; S.early = S.bubT < 15; phase = "collect";
+          return draw(say(S.early ? "橡皮管移進廣口瓶，開始收集……（氣泡才剛冒出來沒多久喔）" : "✅ 氣泡冒了一段時間才開始收集。", !S.early));
+        }
+        if(!inR(x, y, [60, 100, 120, 160])){ toast("由薊頭漏斗上方加入"); return draw(); }
+        if(k === "pure"){ if(S.pure >= 2){ toast("純水已經加約 2 mL 了"); return draw(); } S.pure = 2; return draw(say("加入約 2 mL 純水。接著<b>緩慢</b>加入雙氧水。", true)); }
+        if(k === "h2o2") return addH2O2();
+      }
+      if(phase === "test" && k === "stick"){
+        const z = inR(x, y, [60, 130, 140, 300]) ? "o2" : inR(x, y, [220, 130, 300, 300]) ? "air" : null;
+        if(!z){ toast("放進廣口瓶裡"); return draw(); }
+        if(S.test[z]){ toast("這瓶已經試過了"); return draw(); }
+        const bad = S.lvl < .97 || S.early || S.lost || S.gas < .85;
+        S.test[z] = z === "air" ? "dot" : bad ? "mid" : "big";
+        if(S.test.o2 && S.test.air){
+          phase = "done"; confetti(); beep(true); labDone(L.id);
+          const why = [S.lvl < .97 && "廣口瓶一開始沒有裝滿水，瓶裡本來就有空氣", S.early && "收集了剛產生的氣體——那是吸濾瓶裡原本的空氣", S.lost && "沒有在水中蓋好玻璃片就移出水面", S.gas < .85 && "瓶裡的水還沒排完就停止收集"].filter(Boolean);
+          return draw(say(bad ? `😕 線香在氧氣瓶裡只亮了一點點，和空氣瓶差不多——<b>收集到的氧氣不純</b>。原因：${why.join("；")}。<br>按「🔁 全部重來」再做一次，看看純氧會怎樣！`
+            : `🎉 線香放進<b>氧氣瓶</b>立刻冒出明亮火焰，在<b>空氣瓶</b>只有小紅點：氧氣具有<b>助燃性</b>。<br>氧氣不易溶於水，所以能用<b>排水集氣法</b>收集。${accN ? `（途中出事 ${accN} 次）` : ""}`, !bad));
+        }
+        return draw(say(z === "air" ? "空氣瓶：線香只剩一個小紅點，慢慢悶燒。" : bad ? "氧氣瓶：線香稍微亮了一點……" : "氧氣瓶：線香一下子冒出明亮的火焰！", true));
+      }
+      draw();
+    })});
+  draw("");
+}});
+
+/* ═════ 實驗 4-3 透鏡的成像觀察（課本 p.112–115，圖 4-36、4-37） ═════
+   拖曳蠟燭（物距）與紙屏（像距）找最清楚的像，再把成像性質填進記錄表。
+   焦距固定 10 cm；像的位置用透鏡公式算（課本不教公式，畫面只呈現結果）。
+   出錯：像還模糊就記錄、蠟燭不在該列的位置、紙屏接不到就以為沒有像、性質勾錯 */
+LABS.push({id: "lens", ch: "ch34", icon: "🔍", title: "實驗 4-3 透鏡的成像觀察", page: "p.112–115",
+  desc: "移動蠟燭和紙屏找出最清楚的像，比較凸透鏡、凹透鏡的成像。", run(pane, L){
+  const F = 10, PX = 5.6, LX = 180, AX = 150;            // 焦距 cm、每 cm 幾 px、透鏡 x、主軸 y
+  const ROWS = [
+    {k: "A", lens: "convex", n: "2 倍焦距外", ok: p => p > 2 * F + .5, ans: {kind: "實像", dir: "倒立", size: "縮小", pos: "鏡後的焦距與 2 倍焦距間"}},
+    {k: "B", lens: "convex", n: "2 倍焦距上", ok: p => Math.abs(p - 2 * F) <= .5, ans: {kind: "實像", dir: "倒立", size: "等大", pos: "鏡後的 2 倍焦距上"}},
+    {k: "C", lens: "convex", n: "焦距～2 倍焦距間", ok: p => p > F + .5 && p < 2 * F - .5, ans: {kind: "實像", dir: "倒立", size: "放大", pos: "鏡後的 2 倍焦距外"}},
+    {k: "D", lens: "convex", n: "焦距上", ok: p => Math.abs(p - F) <= .5, ans: {kind: "無法成像"}},
+    {k: "E", lens: "convex", n: "焦距內", ok: p => p < F - .5, ans: {kind: "虛像", dir: "正立", size: "放大", pos: "鏡前（和物體同側）"}},
+    {k: "凹A", lens: "concave", n: "焦距外", ok: p => p > F + .5, ans: {kind: "虛像", dir: "正立", size: "縮小", pos: "鏡前（和物體同側）"}},
+    {k: "凹B", lens: "concave", n: "焦距內", ok: p => p < F - .5, ans: {kind: "虛像", dir: "正立", size: "縮小", pos: "鏡前（和物體同側）"}}];
+  const OPT = {kind: ["實像", "虛像", "無法成像"], dir: ["正立", "倒立"], size: ["放大", "縮小", "等大"],
+               pos: ["鏡後的焦距與 2 倍焦距間", "鏡後的 2 倍焦距上", "鏡後的 2 倍焦距外", "鏡前（和物體同側）"]};
+  let S;
+  function init(){ S = {lens: "convex", p: 30, s: 15, rec: {}, look: false, row: 0}; }
+  init();
+  pane.innerHTML = `<div class="card sim hand">
+    <p class="muted" style="margin:0">左右拖曳<b>🕯️ 蠟燭</b>改變物距、拖曳<b>紙屏</b>改變像距（也可以用下面的滑桿）。凸透鏡焦距 10 cm，F＝焦點、2F＝2 倍焦距。</p>
+    <div class="htask" id="ltask"></div>
+    <div class="chips" id="lens"></div>
+    <div class="simview"><svg viewBox="0 0 360 230" id="lsv"></svg><div class="readout" id="lread"></div></div>
+    <label>物距（蠟燭到透鏡）：<span id="pv"></span></label><input type="range" id="pr" min="3" max="30" step="0.5">
+    <label>像距（紙屏到透鏡）：<span id="sv"></span></label><input type="range" id="sr" min="3" max="30" step="0.5">
+    <div class="row" style="margin-top:8px"><button class="btn ghost" id="look">👁 從紙屏那一端透過透鏡看</button></div>
+    <div id="lform"></div><div id="lfb"></div>
+    <h3>📋 記錄表</h3><div id="ltab"></div></div>`;
+  const card = pane.querySelector(".hand"), svg = pane.querySelector("#lsv");
+  const hist = [], cur = () => JSON.stringify(S);
+  const ctl = handCtl(card, {
+    canUndo: () => hist.length > 0,
+    undo(){ let o; do { o = hist.pop(); } while(o && o === cur() && hist.length); if(o){ S = JSON.parse(o); draw(say("↩ 回到上一步。", true)); } },
+    reset(){ hist.length = 0; init(); draw(say("🔁 全部重來。", true)); }});
+  const push = () => { if(hist[hist.length - 1] !== cur()) hist.push(cur()); };
+  /* 成像計算：回傳 {real, q（cm，鏡後為正）, m（放大率）}；蠟燭在焦點上回傳 {none} */
+  function image(){
+    const p = S.p;
+    if(S.lens === "concave"){ const q = -1 / (1 / F + 1 / p); return {real: false, q, m: -q / p}; }
+    if(Math.abs(p - F) < .01) return {none: true};
+    const q = 1 / (1 / F - 1 / p);
+    return {real: q > 0, q, m: -q / p};
+  }
+  const X = cm => LX + cm * PX;
+  function candle(x, h, inv, dash, blur){
+    const s = h / 40, g = inv ? -1 : 1;
+    return `<g transform="translate(${x} ${AX}) scale(${s} ${s * g})" ${inv || dash ? 'pointer-events="none"' : ""} ${dash ? 'opacity=".55"' : ""} ${blur ? `filter="url(#bl${Math.min(6, Math.max(1, Math.round(blur)))})"` : ""}>
+      <rect x="-5" y="-30" width="10" height="30" fill="#f4e7c3" stroke="${dash ? "#888" : "#b89b5e"}" ${dash ? 'stroke-dasharray="3 2"' : ""}/>
+      <path d="M0 -44 C-6 -36 -5 -31 0 -30 C5 -31 6 -36 0 -44Z" fill="#ff9f1c"/><path d="M0 -40 C-3 -35 -2 -32 0 -31 C2 -32 3 -35 0 -40Z" fill="#fff3a0"/></g>`;
+  }
+  const fmt = a => a.kind === "無法成像" ? "無法成像" : `${a.kind}、${a.dir}、${a.size}；${a.pos}`;
+  function draw(msg){
+    const im = image(), pX = X(-S.p), sX = X(S.s);
+    let g = `<defs>${[1, 2, 3, 4, 5, 6].map(i => `<filter id="bl${i}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${i * .9}"/></filter>`).join("")}</defs>`
+      + `<line x1="8" x2="352" y1="${AX}" y2="${AX}" stroke="var(--sub)" stroke-dasharray="4 4"/><rect x="8" y="${AX + 34}" width="344" height="8" rx="3" fill="#8a8f96"/>`;
+    [-2, -1, 1, 2].forEach(k => { const x = X(k * F); g += `<line x1="${x}" x2="${x}" y1="${AX - 4}" y2="${AX + 4}" stroke="#d64545" stroke-width="2"/><text x="${x}" y="${AX + 30}" text-anchor="middle" font-size="12" fill="#d64545" font-weight="700">${Math.abs(k) === 2 ? "2F" : "F"}</text>`; });
+    g += S.lens === "convex" ? `<path d="M${LX} ${AX - 60} Q${LX + 14} ${AX} ${LX} ${AX + 60} Q${LX - 14} ${AX} ${LX} ${AX - 60}Z" fill="#bfe3ff" stroke="#2f80ed" stroke-width="2" opacity=".85"/>`
+      : `<path d="M${LX - 9} ${AX - 60} H${LX + 9} Q${LX + 2} ${AX} ${LX + 9} ${AX + 60} H${LX - 9} Q${LX - 2} ${AX} ${LX - 9} ${AX - 60}Z" fill="#bfe3ff" stroke="#2f80ed" stroke-width="2" opacity=".85"/>`;
+    g += `<g data-it="candle">${candle(pX, 40)}<rect x="${pX - 14}" y="${AX - 50}" width="28" height="84" fill="transparent"/></g>`;
+    g += `<g data-it="screen"><rect x="${sX - 3}" y="${AX - 62}" width="6" height="124" fill="#ffffff" stroke="var(--sub)" stroke-width="1.5"/><rect x="${sX - 14}" y="${AX - 62}" width="28" height="124" fill="transparent"/></g>`;
+    let read;
+    if(im.none) read = "蠟燭在焦點上：光線經透鏡後平行射出，紙屏上只有一片模糊的光。";
+    else if(im.real){
+      const blur = Math.abs(S.s - im.q) * 1.2, h = Math.min(110, 40 * Math.abs(im.m));
+      if(im.q > 30) read = "像在很遠的地方，紙屏移到最遠也接不到清楚的像。";
+      else read = blur < .7 ? "✨ 紙屏上的像很清楚！" : blur < 4 ? "紙屏上看得到像，但有點模糊……前後移動紙屏" : "紙屏上一片模糊的光";
+      if(im.q <= 30 && blur < 8) g += `<g opacity="${Math.max(.25, 1 - blur / 9)}">${candle(sX - 5, h, true, false, blur > .7 ? blur : 0)}</g>`;
+    } else read = S.look ? "👁 透過透鏡看：看到一個正立的像（虛像，紙屏接不到）。" : "紙屏上接不到像。試試「從紙屏那一端透過透鏡看」。";
+    if(S.look && im.real === false){ const h = Math.min(120, 40 * Math.abs(im.m)); g += candle(X(im.q), h, false, true) + `<text x="${X(im.q)}" y="${AX - h * 1.1 - 6}" text-anchor="middle" font-size="11" fill="var(--sub)">虛像</text><text x="350" y="${AX - 40}" font-size="20" text-anchor="end">👁</text>`; }
+    svg.innerHTML = g;
+    pane.querySelector("#lread").textContent = read;
+    pane.querySelector("#pr").value = S.p; pane.querySelector("#sr").value = S.s;
+    pane.querySelector("#pv").textContent = `${S.p} cm`; pane.querySelector("#sv").textContent = `${S.s} cm`;
+    pane.querySelector("#lens").innerHTML = [["convex", "凸透鏡（圖 4-36）"], ["concave", "凹透鏡（圖 4-37）"]].map(([k, n]) => `<button class="chip ${S.lens === k ? "on" : ""}" data-l="${k}">${n}</button>`).join("");
+    pane.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { push(); S.lens = b.dataset.l; S.look = false; const i = ROWS.findIndex(r => r.lens === S.lens && !S.rec[r.k]); if(i >= 0) S.row = i; draw(""); });
+    const row = ROWS[S.row];
+    pane.querySelector("#ltask").innerHTML = row ? `把蠟燭放在<b>${row.lens === "convex" ? "凸" : "凹"}透鏡的${row.n}</b>（記錄表第 ${row.k} 列），找到像以後按「記錄」。` : "🎉 記錄表全部完成！";
+    pane.querySelector("#lform").innerHTML = row ? `<div class="row" style="margin-top:8px"><button class="btn" id="lrec">📝 記錄第 ${row.k} 列</button></div>` : "";
+    const rb = pane.querySelector("#lrec"); if(rb) rb.onclick = record;
+    pane.querySelector("#ltab").innerHTML = `<table class="rec"><tr><th>列</th><th>透鏡</th><th>物體位置</th><th>成像</th></tr>${ROWS.map((r, i) => `<tr style="${i === S.row ? "background:color-mix(in srgb,var(--gold) 18%,transparent)" : ""}"><td>${r.k}</td><td>${r.lens === "convex" ? "凸" : "凹"}</td><td>${r.n}</td><td>${S.rec[r.k] ? fmt(r.ans) : "＿＿＿"}</td></tr>`).join("")}</table>`;
+    pane.querySelector("#look").textContent = S.look ? "🙈 不看了" : "👁 從紙屏那一端透過透鏡看";
+    if(msg !== undefined) pane.querySelector("#lfb").innerHTML = msg;
+    ctl.upd();
+  }
+  function record(){
+    const row = ROWS[S.row], im = image();
+    if(S.lens !== row.lens){ toast(`這一列要用${row.lens === "convex" ? "凸" : "凹"}透鏡`); return; }
+    if(!row.ok(S.p)){ draw(say(`蠟燭現在離透鏡 ${S.p} cm，不在「${row.n}」。焦距是 10 cm，看清楚 F 和 2F 的位置再移動蠟燭。`)); return; }
+    if(im.real && Math.abs(S.s - im.q) * 1.2 >= .7){ draw(say("紙屏上的像還是模糊的，這時候記下的大小和位置都不準。<b>前後移動紙屏</b>，直到像最清楚再記錄。")); return; }
+    if(im.real === false && !S.look){ draw(say("紙屏上接不到像，不代表什麼都沒有。課本提醒：若無法在紙屏上成像，可以<b>從紙屏所在的一端透過透鏡觀察</b>。")); return; }
+    const pick = {}, keys = row.ans.kind === "無法成像" ? ["kind"] : ["kind", "dir", "size", "pos"];
+    const form = pane.querySelector("#lform");
+    form.innerHTML = `<div class="card" style="margin:10px 0;padding:12px"><b>第 ${row.k} 列的成像性質：</b>${["kind", "dir", "size", "pos"].map(k => `<div class="chips" data-k="${k}">${OPT[k].map(o => `<button class="chip" data-o="${o}">${o}</button>`).join("")}</div>`).join("")}
+      <div class="row" style="margin-top:8px"><button class="btn" id="lchk">檢查</button></div></div>`;
+    form.querySelectorAll("[data-k]").forEach(box => box.querySelectorAll("[data-o]").forEach(b => b.onclick = () => {
+      pick[box.dataset.k] = b.dataset.o; box.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c === b));
+      if(box.dataset.k === "kind") form.querySelectorAll("[data-k]:not([data-k=kind])").forEach(x => x.style.opacity = b.dataset.o === "無法成像" ? .35 : 1);
+    }));
+    form.querySelector("#lchk").onclick = () => {
+      const need = pick.kind === "無法成像" ? ["kind"] : ["kind", "dir", "size", "pos"];
+      if(need.some(k => !pick[k])){ toast("每一行都要選"); return; }
+      const wrong = new Set(keys.filter(k => pick[k] !== row.ans[k]));
+      if(pick.kind === "無法成像" && keys.length > 1) wrong.add("kind");
+      if(wrong.size){
+        beep(false);
+        const hint = {kind: "能在紙屏上接到的是實像；只能透過透鏡看到的是虛像；光線平行射出就無法成像。", dir: "看清楚像的燭焰朝上還是朝下。", size: "和左邊的蠟燭比大小。", pos: "像在透鏡的哪一側、離透鏡多遠？對照 F 和 2F。"};
+        pane.querySelector("#lfb").innerHTML = say("還有地方不對：" + [...wrong].map(k => hint[k]).join(" "));
+        return;
+      }
+      push(); S.rec[row.k] = true; beep(true);
+      const next = ROWS.findIndex(r => !S.rec[r.k]);
+      if(next < 0){
+        S.row = ROWS.length; confetti(); labDone(L.id);
+        return draw(say("🎉 記錄表完成！<b>成像和物距有關</b>：凸透鏡焦距外→紙屏上的倒立實像；焦點上→無法成像；焦距內和凹透鏡→只能透過透鏡看到正立虛像。", true));
+      }
+      S.row = next; if(ROWS[next].lens !== S.lens){ S.lens = ROWS[next].lens; S.look = false; }
+      draw(say(`✅ 第 ${row.k} 列：${fmt(row.ans)}。`, true));
+    };
+  }
+  pane.querySelector("#pr").oninput = e => { S.p = +e.target.value; draw(); };
+  pane.querySelector("#sr").oninput = e => { S.s = +e.target.value; draw(); };
+  pane.querySelector("#pr").onpointerdown = pane.querySelector("#sr").onpointerdown = () => push();
+  pane.querySelector("#look").onclick = () => { push(); S.look = !S.look; draw(); };
+  // 蠟燭、紙屏跟著手指沿光具座左右移動（不用 handDnd，因為要即時看到像的變化）
+  svg.addEventListener("pointerdown", e => {
+    const it = e.target.closest("[data-it]"); if(!it || ctl.paused) return;
+    e.preventDefault(); svg.setPointerCapture(e.pointerId); push();
+    const k = it.dataset.it;
+    const toCm = ev => { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; return (p.matrixTransform(svg.getScreenCTM().inverse()).x - LX) / PX; };
+    const mv = ev => {
+      const c = Math.round(toCm(ev) * 2) / 2;
+      if(k === "candle") S.p = Math.min(30, Math.max(3, -c)); else S.s = Math.min(30, Math.max(3, c));
+      draw();
+    };
+    const up = () => { svg.removeEventListener("pointermove", mv); svg.removeEventListener("pointerup", up); svg.removeEventListener("pointercancel", up); };
+    svg.addEventListener("pointermove", mv); svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
+  });
+  draw("");
+}});
+
+function home(){
+  $("#backlab").hidden = true;
+  $("#pnum").textContent = `完成 ${LABS.filter(l => DONE[l.id]).length} / ${LABS.length}`;
+  $("#app").innerHTML = `<header><div class="kicker">八年級上 · 動手做實驗室</div><h1>🔬 自己動手做實驗</h1>
+    <p class="muted">把器材拖到正確的位置（或先點器材、再點位置）。做錯會出事——出事以後要先選對急救方法，才能回到出事前重做。每個實驗都有「⏸ 暫停」「↩ 上一步」「🔁 全部重來」。步驟照康軒第三冊課本。</p></header>`
+    + CHAPTERS.map(([c, n]) => { const L = LABS.filter(l => l.ch === c); return `<h3>${n}</h3>` + (L.length ? `<div class="grid">${L.map(l => `<button class="xp" onclick="location.hash='#/${l.id}'"><span class="ic">${l.icon}</span><span><b>${esc(l.title)}</b><small>${esc(l.desc)}</small><small>課本 ${l.page}${DONE[l.id] ? ' · <span class="done">✅ 做完了</span>' : ""}</small></span></button>`).join("")}</div>` : `<p class="muted soon">製作中，敬請期待。</p>`); }).join("");
+}
+function route(){
+  const id = location.hash.replace(/^#\/?/, ""), L = LABS.find(l => l.id === id);
+  window.scrollTo(0, 0);
+  if(!L) return home();
+  $("#backlab").hidden = false; $("#pnum").textContent = "課本 " + L.page;
+  $("#app").innerHTML = `<header><div class="kicker">${esc(CHAPTERS.find(c => c[0] === L.ch)[1])}</div><h1>${L.icon} ${esc(L.title)}</h1></header><div id="lpane"></div>`;
+  L.run($("#lpane"), L);
+}
+$("#backlab").onclick = () => { location.hash = ""; };
+window.addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>
