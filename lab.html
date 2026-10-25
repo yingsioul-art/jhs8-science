@@ -776,11 +776,13 @@ LABS.push({id: "separate", ch: "ch2", icon: "🧂", title: "實驗 2-1 混合物
 LABS.push({id: "oxygen", ch: "ch2", icon: "🫧", title: "實驗 2-3 氧氣的製備及性質", page: "p.50–53",
   desc: "排水集氣法收集氧氣，再用線香分辨氧氣和空氣。", run(pane, L){
   const TRAY = {kettle: [36, "水壺"], glass: [100, "玻璃片"], mno2: [164, "二氧化錳"], water: [228, "少許水"], funnel: [292, "薊頭漏斗"],
-                pure: [36, "純水滴管"], h2o2: [100, "雙氧水滴管"], tube: [0, "橡皮管"], stick: [180, "點燃的線香"]};
+                pure: [36, "純水滴管"], h2o2: [100, "雙氧水滴管"], tube: [0, "橡皮管"], stick: [180, "點燃的線香"],
+                mgspoon: [110, "燃燒匙＋鎂帶"], mghand: [250, "鎂帶（用手拿）"], mgon: [0, "燃燒中的鎂帶"]};
   let S, phase, accN = 0, pourT = null;
   function init(){
     S = {lvl: 0, cover: false, inv: false, mno2: false, wet: false, funnel: 0, pure: 0, h2o2: 0, bub: false, bubT: 0, fast: false, tubeIn: false,
-         early: false, gas: 0, sealed: false, pulled: false, out: false, lost: false, test: {o2: null, air: null}};
+         early: false, gas: 0, sealed: false, pulled: false, out: false, lost: false, test: {o2: null, air: null},
+         mg: {heat: false, lit: false, where: null, out: false, air: false}};
     phase = "bottle";
   }
   init();
@@ -815,7 +817,35 @@ LABS.push({id: "oxygen", ch: "ch2", icon: "🫧", title: "實驗 2-3 氧氣的�
     react: "③ 製備氧氣：先由薊頭漏斗緩慢加約 2 mL <b>純水</b>，再緩慢加<b>雙氧水</b>。水槽冒氣泡一段時間後，把<b>橡皮管</b>拖進廣口瓶。",
     collect: "④ 收集氧氣：瓶中的水<b>即將完全被排出</b>時，在水中蓋好玻璃片再移出水面，瓶口朝上放好。",
     test: "⑤ 檢驗：把<b>點燃的線香</b>分別放進氧氣瓶和空氣瓶（瓶底都留少許水），比較燃燒情形。觀察時不可太靠近。",
+    mg: "⑥ 延伸（課本沒有這一步）：把<b>鎂帶放在燃燒匙上</b>，先在<b>酒精燈</b>上加熱到發出白光，再放進<b>另一瓶氧氣</b>，比較亮度。不要直視強光。",
     done: "🎉 實驗完成！"};
+  /* 延伸：鎂帶燃燒（使用者 10/25 要求加入；課本 p.50–53 只用線香）。
+     燃燒匙上的鎂帶在酒精燈上加熱 → 發出白光 → 放進氧氣瓶發出更亮的白光 → 燒完熄滅，留下白色粉末（氧化鎂） */
+  // 白光：黃色光暈＋金色光芒線，淺色背景上也看得出亮度差異；r＝光的大小
+  const burst = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r * 1.7}" fill="#ffe066" opacity=".45"/>`
+    + `<g stroke="#f5a524" stroke-width="${r > 20 ? 3 : 2}" stroke-linecap="round">${[0, 1, 2, 3, 4, 5, 6, 7].map(i => { const a = i * Math.PI / 4; return `<line x1="${x + Math.cos(a) * r * .9}" y1="${y + Math.sin(a) * r * .9}" x2="${x + Math.cos(a) * r * 1.9}" y2="${y + Math.sin(a) * r * 1.9}"/>`; }).join("")}</g>`
+    + `<circle cx="${x}" cy="${y}" r="${r}" fill="#ffffff" stroke="#ffd23f" stroke-width="2"/>`;
+  function mgScene(){
+    const M = S.mg, LX = 180;
+    const bottle = (x, lab, k) => {
+      const here = M.where === k;
+      const glow = here && !M.out ? burst(x, 215, k === "o2" ? 26 : 11) : "";
+      const ash = here && M.out ? `<ellipse cx="${x}" cy="215" rx="9" ry="4" fill="#f4f4f4" stroke="#bbb"/>` : "";
+      return `${k === "o2" && M.where === "o2" && !M.out ? `<rect x="0" y="0" width="360" height="330" fill="#fffbe6" opacity=".35"/>` : ""}
+        <rect x="${x - 34}" y="270" width="68" height="16" fill="#bfe3ff"/><path d="M${x - 34} 150 V280 q0 8 8 8 H${x + 26} q8 0 8 -8 V150" fill="#ffffff22" stroke="var(--sub)" stroke-width="3"/>
+        ${here ? `<line x1="${x}" y1="96" x2="${x}" y2="212" stroke="#888" stroke-width="3"/><path d="M${x - 8} 212 q8 8 16 0" fill="none" stroke="#888" stroke-width="3"/>` + glow + ash : `<rect x="${x - 38}" y="144" width="76" height="5" fill="#d9eef7" stroke="var(--sub)"/>`}
+        <text x="${x}" y="306" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="700">${lab}</text><text x="${x}" y="322" text-anchor="middle" font-size="10" fill="var(--sub)">瓶底留少許水</text>`;
+    };
+    let g = bottle(70, "另一瓶氧氣", "o2") + bottle(290, "空氣瓶", "air");
+    g += `<rect x="${LX - 26}" y="246" width="52" height="40" rx="14" fill="#bfe3ff" stroke="var(--sub)" stroke-width="2"/><rect x="${LX - 7}" y="238" width="14" height="9" fill="#9aa3ad"/><rect x="${LX - 2}" y="231" width="4" height="8" fill="#f4f1e6"/>`
+      + flameP(LX, 231, 30, 9, "#ff9f1c", "#5aa9ff");
+    if(M.heat && !M.where){
+      g += `<g data-it="mgon"><line x1="${LX + 40}" y1="150" x2="${LX + 4}" y2="200" stroke="#888" stroke-width="3"/><path d="M${LX - 6} 200 q8 8 16 0" fill="none" stroke="#888" stroke-width="3"/>`
+        + (M.lit ? burst(LX + 2, 203, 10) : `<line x1="${LX - 4}" y1="203" x2="${LX + 8}" y2="203" stroke="#ccc" stroke-width="3"/>`)
+        + `<rect x="${LX - 20}" y="140" width="80" height="80" fill="transparent"/></g>`;
+    }
+    return g;
+  }
   /* ── 繪圖 ── */
   const FL = {x: 90, top: 196, bot: 298};               // 吸濾瓶
   const TR = [190, 200, 350, 310], WT = 237;            // 水槽、水面
@@ -880,7 +910,9 @@ LABS.push({id: "oxygen", ch: "ch2", icon: "🫧", title: "實驗 2-3 氧氣的�
       funnel: `<circle cx="0" cy="12" r="7" fill="none" stroke="var(--sub)" stroke-width="2"/><line x1="0" y1="19" x2="0" y2="44" stroke="var(--sub)" stroke-width="2.5"/><rect x="-6" y="28" width="12" height="6" fill="#d23c3c"/>`,
       pure: `<rect x="-6" y="4" width="12" height="10" rx="3" fill="#555"/><path d="M-5 14 h10 v22 l-5 8 l-5 -8z" fill="#e9f5ff" stroke="var(--sub)"/>`,
       h2o2: `<rect x="-6" y="4" width="12" height="10" rx="3" fill="#a33"/><path d="M-5 14 h10 v22 l-5 8 l-5 -8z" fill="#fde2e2" stroke="var(--sub)"/>`,
-      stick: `<line x1="-12" y1="40" x2="10" y2="8" stroke="#8a5a2b" stroke-width="3"/><circle cx="10" cy="8" r="3.5" fill="#ff5a1f"/>`}[k];
+      stick: `<line x1="-12" y1="40" x2="10" y2="8" stroke="#8a5a2b" stroke-width="3"/><circle cx="10" cy="8" r="3.5" fill="#ff5a1f"/>`,
+      mgspoon: `<line x1="-14" y1="40" x2="8" y2="10" stroke="#888" stroke-width="3"/><path d="M2 8 q8 8 14 -2" fill="none" stroke="#888" stroke-width="3"/><line x1="4" y1="9" x2="15" y2="7" stroke="#ccc" stroke-width="3"/>`,
+      mghand: `<text x="-4" y="38" font-size="22" text-anchor="middle">✋</text><line x1="2" y1="20" x2="18" y2="6" stroke="#ccc" stroke-width="3"/>`}[k];
     return `<g data-it="${k}" transform="translate(${x} 12)"><rect x="-30" y="-6" width="60" height="74" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="61" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${n}</text></g>`;
   }
   function trayKeys(){
@@ -888,10 +920,11 @@ LABS.push({id: "oxygen", ch: "ch2", icon: "🫧", title: "實驗 2-3 氧氣的�
     if(phase === "setup") return ["mno2", "water", "funnel"].filter(k => !(k === "mno2" && S.mno2) && !(k === "water" && S.wet) && !(k === "funnel" && S.funnel));
     if(phase === "react") return ["pure", "h2o2"];
     if(phase === "test") return ["stick"];
+    if(phase === "mg") return S.mg.heat || S.mg.where ? [] : ["mgspoon", "mghand"];
     return [];
   }
   function draw(msg){
-    svg.innerHTML = (phase === "test" || phase === "done" ? testScene() : flask() + trough() + stage()) + trayKeys().map(trayIcon).join("");
+    svg.innerHTML = (phase === "mg" || (phase === "done" && S.mg.where) ? mgScene() : phase === "test" || phase === "done" ? testScene() : flask() + trough() + stage()) + trayKeys().map(trayIcon).join("");
     pane.querySelector("#otask").innerHTML = TASK[phase];
     const rd = {bottle: S.inv ? "" : `瓶內的水：約 ${Math.round(S.lvl * 100)}%`, react: `已加純水 ${S.pure} mL、雙氧水 ${S.h2o2} mL${S.bub ? `｜冒氣泡 ${Math.floor(S.bubT / 5)} 秒` : ""}`,
                 collect: `瓶內收集到的氣體：約 ${Math.round(Math.min(1, (1 - S.lvl) + S.gas * S.lvl) * 100)}%`}[phase] || "";
@@ -1005,6 +1038,10 @@ LABS.push({id: "oxygen", ch: "ch2", icon: "🫧", title: "實驗 2-3 氧氣的�
         if(S.test[z]){ toast("這瓶已經試過了"); return draw(); }
         const bad = S.lvl < .97 || S.early || S.lost || S.gas < .85;
         S.test[z] = z === "air" ? "dot" : bad ? "mid" : "big";
+        if(S.test.o2 && S.test.air && !bad){
+          phase = "mg"; beep(true);
+          return draw(say(`✅ 線香放進<b>氧氣瓶</b>立刻冒出明亮火焰，在<b>空氣瓶</b>只有小紅點：氧氣具有<b>助燃性</b>。氧氣不易溶於水，所以能用<b>排水集氣法</b>收集。<br>接著做延伸：用<b>鎂帶</b>再比一次。`, true));
+        }
         if(S.test.o2 && S.test.air){
           phase = "done"; confetti(); beep(true); labDone(L.id);
           const why = [S.lvl < .97 && "廣口瓶一開始沒有裝滿水，瓶裡本來就有空氣", S.early && "收集了剛產生的氣體——那是吸濾瓶裡原本的空氣", S.lost && "沒有在水中蓋好玻璃片就移出水面", S.gas < .85 && "瓶裡的水還沒排完就停止收集"].filter(Boolean);
@@ -1012,6 +1049,45 @@ LABS.push({id: "oxygen", ch: "ch2", icon: "🫧", title: "實驗 2-3 氧氣的�
             : `🎉 線香放進<b>氧氣瓶</b>立刻冒出明亮火焰，在<b>空氣瓶</b>只有小紅點：氧氣具有<b>助燃性</b>。<br>氧氣不易溶於水，所以能用<b>排水集氣法</b>收集。${accN ? `（途中出事 ${accN} 次）` : ""}`, !bad));
         }
         return draw(say(z === "air" ? "空氣瓶：線香只剩一個小紅點，慢慢悶燒。" : bad ? "氧氣瓶：線香稍微亮了一點……" : "氧氣瓶：線香一下子冒出明亮的火焰！", true));
+      }
+      if(phase === "mg"){
+        const M = S.mg, onLamp = inR(x, y, [140, 150, 220, 290]);
+        const z = inR(x, y, [30, 130, 110, 300]) ? "o2" : inR(x, y, [250, 130, 330, 300]) ? "air" : null;
+        if(k === "mghand"){
+          if(!onLamp){ toast("拿到酒精燈的火焰上加熱"); return draw(); }
+          accN++; draw("");
+          return handAccident(card, {title: "💥 手被燙傷了！", cause: "直接用手拿著鎂帶靠近火焰，鎂帶一點著就發出高溫強光，手指被燙傷了！",
+            q: "手被燙到了，第一步要怎麼做？", opts: [
+              {t: "立刻用流動的冷水沖洗患部，並報告老師", ok: true, why: "冷水可以帶走熱、減輕燙傷；同時請老師處理。"},
+              {t: "塗牙膏或醬油", why: "牙膏、醬油不能散熱，還可能造成感染。"},
+              {t: "用嘴吹一吹就好", why: "吹氣降溫效果很差，燙傷會繼續加深。"},
+              {t: "把起水泡的地方弄破", why: "弄破水泡容易感染。"}],
+            lesson: "燃燒鎂帶要用<b>燃燒匙</b>（或坩堝鉗）夾持，不可以用手拿。（這是一般安全常識）"},
+            () => draw(say("回到出事前。這次用燃燒匙。")));
+        }
+        if(k === "mgspoon"){
+          if(z){ return draw(say("鎂帶還沒點燃，直接放進瓶子裡<b>沒有任何反應</b>。先在酒精燈上加熱，等它發出白光。")); }
+          if(!onLamp){ toast("把燃燒匙放到酒精燈的火焰上"); return draw(); }
+          M.heat = true; draw(say("燃燒匙放在火焰上加熱鎂帶……"));
+          setTimeout(() => { if(S.mg.heat && !S.mg.where){ S.mg.lit = true; beep(true); draw(say("✨ 鎂帶燒起來了，發出<b>刺眼的白光</b>！不要直視。現在把燃燒匙放進氧氣瓶。", true)); } }, 2000);
+          return;
+        }
+        if(k === "mgon"){
+          if(!z){ toast("把燃燒匙放進廣口瓶裡"); return draw(); }
+          if(!M.lit){ return draw(say("鎂帶還沒點燃，放進去沒有反應。再加熱一下，等它發出白光。")); }
+          M.where = z; draw(z === "o2" ? say("💥 放進氧氣瓶，發出<b>更強烈、更亮的白光</b>！", true) : say("放進空氣瓶，鎂帶繼續燃燒發出白光……"));
+          setTimeout(() => {
+            S.mg.out = true;
+            if(z === "air"){
+              S.mg.air = true;
+              draw(say("鎂帶在空氣中也能燃燒（空氣裡約有 21% 的氧氣），但亮度比不上純氧。燒完熄滅，留下白色粉末。<br>換一條新的鎂帶，放進<b>氧氣瓶</b>比比看。"));
+              return setTimeout(() => { S.mg = {heat: false, lit: false, where: null, out: false, air: true}; draw(); }, 1800);
+            }
+            phase = "done"; confetti(); beep(true); labDone(L.id);
+            draw(say(`🎉 鎂帶在氧氣中燒得比在空氣中<b>更劇烈、更亮</b>，燒完就熄滅，留下<b>白色粉末</b>（氧化鎂）。再次證明氧氣具有<b>助燃性</b>。<br>瓶底留少許水，可以防止高溫的燃燒物掉落，讓瓶底受熱破裂。${accN ? `（途中出事 ${accN} 次）` : ""}`, true));
+          }, 2500);
+          return;
+        }
       }
       draw();
     })});
