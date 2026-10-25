@@ -221,6 +221,200 @@ function handCtl(card, o){
 }
 
 
+/* ═════ 緒論 實驗器材、熱源、容器、藥品的使用（課本 p.5–8） ═════
+   一關一關把器材拖到正確的地方；每關的規則照課本原文（_課本實驗轉錄_其餘實驗.md）。
+   康軒酒精燈的酒精量是 1/2～2/3（七上南一是 1/3～2/3），這裡照康軒。
+   急救題的處置：p.8 第 7 條「大量清水沖洗並立即就醫」是課本原文，其餘（燙傷、碎玻璃、吸入）是一般安全常識。 */
+LABS.push({id: "intro-tools", ch: "intro1", icon: "🧰", title: "緒論 器材與熱源的使用", page: "p.5–8",
+  desc: "認識器材、熱源與容器的使用、藥品調配，做錯會出事。", run(pane, L){
+  /* ── 器材小圖（中心在 0,0，約 50×50） ── */
+  const G = "fill=\"#ffffff30\" stroke=\"var(--sub)\" stroke-width=\"2.5\" stroke-linejoin=\"round\"";
+  const IC = {
+    燒杯: `<path d="M-16 -18 h3 V16 H13 V-18 h3" ${G}/><path d="M-16 -18 l-4 -3" stroke="var(--sub)" stroke-width="2.5"/>`,
+    錐形瓶: `<path d="M-5 -20 V-8 L-17 18 H17 L5 -8 V-20" ${G}/>`,
+    吸濾瓶: `<path d="M-5 -20 V-8 L-17 18 H17 L5 -8 V-20 M5 -14 h12" ${G}/>`,
+    試管: `<path d="M-5 -22 V14 a5 5 0 0 0 10 0 V-22" ${G}/>`,
+    蒸發皿: `<path d="M-20 0 q20 22 40 0 Z" fill="#f4efe6" stroke="var(--sub)" stroke-width="2.5"/>`,
+    研缽及杵: `<path d="M-18 0 q18 24 36 0 Z" fill="#f4efe6" stroke="var(--sub)" stroke-width="2.5"/><line x1="4" y1="6" x2="16" y2="-20" stroke="var(--sub)" stroke-width="5" stroke-linecap="round"/>`,
+    廣口瓶: `<path d="M-14 -16 V16 q0 4 4 4 H10 q4 0 4 -4 V-16" ${G}/><rect x="-16" y="-20" width="32" height="4" fill="var(--sub)"/>`,
+    錶玻璃: `<path d="M-20 4 q20 -14 40 0" fill="none" stroke="var(--sub)" stroke-width="3"/>`,
+    燃燒匙: `<line x1="-14" y1="-20" x2="6" y2="10" stroke="var(--sub)" stroke-width="3"/><path d="M0 10 q8 10 16 0" fill="none" stroke="var(--sub)" stroke-width="3"/>`,
+    薊頭漏斗: `<circle cx="0" cy="-12" r="7" ${G}/><path d="M-6 -18 L-11 -24 H11 L6 -18" ${G}/><line x1="0" y1="-5" x2="0" y2="22" stroke="var(--sub)" stroke-width="2.5"/>`,
+    滴管: `<rect x="-5" y="-22" width="10" height="10" rx="4" fill="#555"/><path d="M-4 -12 h8 v26 l-4 8 l-4 -8z" ${G}/>`,
+    漏斗: `<path d="M-18 -16 L-2 4 V20 H2 V4 L18 -16 Z" ${G}/>`,
+    酒精燈: `<rect x="-18" y="-2" width="36" height="22" rx="9" fill="#bfe3ff" stroke="var(--sub)" stroke-width="2"/><rect x="-5" y="-9" width="10" height="7" fill="#9aa3ad"/>`,
+    火柴: `<rect x="-14" y="2" width="28" height="16" rx="2" fill="#e0533d"/><line x1="-2" y1="2" x2="10" y2="-16" stroke="#d8b37a" stroke-width="4"/><circle cx="11" cy="-17" r="4" fill="#7a1f12"/>`,
+    試管夾: `<path d="M-20 4 H14 M-20 10 H14" stroke="#8a6a3a" stroke-width="4"/><path d="M14 2 q8 5 0 10" fill="none" stroke="#8a6a3a" stroke-width="3"/>`,
+    玻璃棒: `<line x1="-16" y1="18" x2="16" y2="-18" stroke="#9fd6ff" stroke-width="5" stroke-linecap="round"/>`,
+    溫度計: `<line x1="-14" y1="16" x2="14" y2="-18" stroke="var(--sub)" stroke-width="4" stroke-linecap="round"/><circle cx="-15" cy="18" r="4" fill="#e03131"/>`,
+    量筒: `<path d="M-8 -22 V18 H8 V-22" ${G}/><rect x="-14" y="18" width="28" height="4" fill="var(--sub)"/><g stroke="var(--sub)">${[-14, -6, 2, 10].map(y => `<line x1="-8" x2="-2" y1="${y}" y2="${y}"/>`).join("")}</g>`,
+    試液瓶: `<path d="M-12 -10 V18 H12 V-10 L6 -16 V-22 H-6 V-16 Z" fill="#fde2e2" stroke="var(--sub)" stroke-width="2.5"/>`,
+    濃酸: `<path d="M-12 -10 V18 H12 V-10 L6 -16 V-22 H-6 V-16 Z" fill="#fff3bf" stroke="#c92a2a" stroke-width="2.5"/><text x="0" y="8" font-size="10" text-anchor="middle" fill="#c92a2a">酸</text>`,
+    水: `<path d="M-16 -18 h3 V16 H13 V-18 h3" ${G}/><rect x="-12" y="0" width="24" height="15" fill="#bfe3ff"/>`,
+    鼻子: `<text x="0" y="10" font-size="30" text-anchor="middle">👃</text>`,
+    手: `<text x="0" y="10" font-size="30" text-anchor="middle">👋</text>`,
+    同學: `<text x="0" y="10" font-size="30" text-anchor="middle">🧑‍🎓</text>`,
+    牆壁: `<rect x="-20" y="-20" width="40" height="40" fill="#e9e4da" stroke="var(--sub)"/><text x="0" y="6" font-size="11" text-anchor="middle" fill="var(--sub)">沒人</text>`,
+    眼睛: `<text x="0" y="10" font-size="28" text-anchor="middle">👁</text>`,
+    通風櫥: `<rect x="-20" y="-22" width="40" height="44" rx="3" fill="#dfe8ef" stroke="var(--sub)" stroke-width="2"/><rect x="-14" y="-6" width="28" height="22" fill="#fff" stroke="var(--sub)"/><g stroke="var(--sub)"><line x1="-10" y1="-16" x2="10" y2="-16"/><line x1="-10" y1="-12" x2="10" y2="-12"/></g>`,
+    實驗桌: `<rect x="-22" y="-2" width="44" height="8" fill="#b98a5a"/><line x1="-18" y1="6" x2="-18" y2="22" stroke="#7a5a3a" stroke-width="3"/><line x1="18" y1="6" x2="18" y2="22" stroke="#7a5a3a" stroke-width="3"/>`,
+    水龍頭: `<path d="M-16 -12 H8 V-2" fill="none" stroke="var(--sub)" stroke-width="5"/><g fill="#74c0fc">${[0, 1, 2].map(i => `<circle cx="8" cy="${6 + i * 7}" r="2.5"/>`).join("")}</g>`,
+    衛生紙: `<rect x="-16" y="-12" width="32" height="26" rx="3" fill="#fff" stroke="var(--sub)"/><path d="M-6 -12 q6 -10 12 0" fill="#fff" stroke="var(--sub)"/>`,
+    架無網: `<rect x="-22" y="-10" width="44" height="4" fill="#5b5f66"/><line x1="-18" y1="-6" x2="-22" y2="22" stroke="#5b5f66" stroke-width="3"/><line x1="18" y1="-6" x2="22" y2="22" stroke="#5b5f66" stroke-width="3"/>${flameP(0, 22, 18, 6, "#ff9f1c", "#5aa9ff")}`,
+    架有網: `<rect x="-24" y="-14" width="48" height="4" fill="#e8e3da" stroke="#9a948a"/><rect x="-22" y="-10" width="44" height="4" fill="#5b5f66"/><line x1="-18" y1="-6" x2="-22" y2="22" stroke="#5b5f66" stroke-width="3"/><line x1="18" y1="-6" x2="22" y2="22" stroke="#5b5f66" stroke-width="3"/>${flameP(0, 22, 18, 6, "#ff9f1c", "#5aa9ff")}`,
+    糖水量筒: `<path d="M-8 -22 V18 H8 V-22" ${G}/><rect x="-7" y="-4" width="14" height="21" fill="#fff3bf"/><rect x="-14" y="18" width="28" height="4" fill="var(--sub)"/>`,
+    糖水燒杯: `<path d="M-16 -18 h3 V16 H13 V-18 h3" ${G}/><rect x="-12" y="0" width="24" height="15" fill="#fff3bf"/>`,
+    小燒杯: `<path d="M-11 -8 h2 V16 H9 V-8 h2" ${G}/>`,
+  };
+  const lamp = lv => `${IC["酒精燈"]}<rect x="-17" y="${20 - 20 * lv}" width="34" height="${20 * lv}" rx="6" fill="#4dabf7" opacity=".6"/><g stroke="#d64545"><line x1="12" x2="18" y1="10" y2="10"/><line x1="12" x2="18" y1="6.7" y2="6.7"/></g>`;
+  const ACC = {
+    fire: {q: "桌上起火了！第一步要怎麼做？", opts: [
+      {t: "用溼抹布覆蓋火焰，並報告老師", ok: true, why: "課本 p.7：若不慎打翻酒精燈而著火，應盡速用溼抹布覆蓋火焰滅火。"},
+      {t: "拿水潑上去", why: "燒著的酒精可能隨水流到處擴散。"}, {t: "用嘴吹熄", why: "吹氣送進更多氧氣，火更大。"}, {t: "趕快跑走", why: "要先處理火源並報告老師。"}]},
+    chem: {q: "藥品沾到皮膚、濺到臉上了！第一步要怎麼做？", opts: [
+      {t: "盡快用大量清水沖洗，並立即就醫", ok: true, why: "課本 p.8 第 7 條：身體或眼睛不小心沾到藥品，應盡快使用大量清水沖洗並立即就醫。"},
+      {t: "用衛生紙擦乾就好", why: "擦不乾淨，藥品會繼續傷害皮膚。"}, {t: "先把實驗做完", why: "拖越久傷害越大。"}, {t: "塗藥膏蓋住", why: "藥品被悶在皮膚上。"}]},
+    glass: {q: "玻璃破了，碎片和液體灑在桌上！第一步要怎麼做？", opts: [
+      {t: "先熄滅火源，不碰碎片，報告老師處理", ok: true, why: "先移除危險源，碎玻璃很燙又鋒利，由老師用工具清理。"},
+      {t: "用手把碎玻璃撿起來", why: "會割傷、燙傷。"}, {t: "用抹布直接擦", why: "碎片會刺穿抹布。"}, {t: "換一個再繼續", why: "沒找出原因會再破一次。"}]},
+    gas: {q: "吸到刺鼻的氣體，頭暈想咳嗽！第一步要怎麼做？", opts: [
+      {t: "離開到空氣流通的地方，並報告老師", ok: true, why: "先離開有毒氣體，呼吸新鮮空氣，再請老師處理。"},
+      {t: "再聞一次確認是什麼味道", why: "會吸入更多。"}, {t: "喝水壓下去", why: "沒有離開氣體來源。"}, {t: "忍著繼續做", why: "症狀可能加重。"}]}};
+  /* ── 關卡：items＝上排可拖的東西；zones＝下方的目標；rule(item, zone) 回傳結果 ──
+     結果：{ok, msg}（這個動作對了）、{warn}（不對，說明原因）、{acc:{title,cause,lesson,type}}（出事＋急救題） */
+  const NAMES = ["燒杯", "錐形瓶", "吸濾瓶", "蒸發皿", "研缽及杵", "廣口瓶", "錶玻璃", "薊頭漏斗"];
+  const DESC = {燒杯: "頂部尖脣可便於傾倒液體，外壁刻度可粗略估計體積。", 錐形瓶: "可直接搖晃內容物，使之充分混合。", 吸濾瓶: "瓶口處多一個側管，可連接抽氣裝置或導管收集氣體。", 蒸發皿: "用來蒸發溶液的陶瓷器具。", 研缽及杵: "把物質放入缽內用杵研磨；研缽不可加熱。", 廣口瓶: "口徑大，常作為集氣瓶使用。", 錶玻璃: "盛裝少量物質供觀察，或當燒杯、蒸發皿的蓋子。", 薊頭漏斗: "添加液體到會產生氣體的容器；長管末端要置於液體中。"};
+  const STEPS = [
+    {part: "一、認識器材", page: "p.5–6", task: "把上面的<b>器材名稱</b>拖到下面對應的器材上。", text: true, need: 8, items: shuffle(NAMES), zones: NAMES.map(n => ({id: n, icon: IC[n], label: "?"})),
+      rule: (k, z) => k === z ? {ok: true, msg: `✅ ${k}：${DESC[k]}`} : {warn: `這個不是「${k}」。提示：${DESC[k]}`}},
+    {part: "二、熱源的使用", page: "p.7", task: "酒精燈裡的酒精量要剛好才能用。把<b>火柴</b>拖到可以點燃的那一盞。", need: 1, items: ["火柴"],
+      zones: [{id: "low", icon: lamp(.25), label: "約 1/4"}, {id: "ok", icon: lamp(.6), label: "約 3/5"}, {id: "full", icon: lamp(1), label: "全滿"}],
+      rule: (k, z) => z === "ok" ? {ok: true, msg: "✅ 酒精量在 <b>1/2～2/3</b> 之間，可以用打火機或火柴點燃（課本 p.7）。"} : z === "low" ? {warn: "酒精不足 1/2，要先<b>用漏斗添加酒精</b>到 1/2～2/3 再用（課本 p.7）。"}
+        : {acc: {type: "fire", title: "💥 酒精溢出起火！", cause: "酒精裝太滿，點燃後受熱膨脹溢出，流到桌上燒起來！", lesson: "酒精燈的酒精應維持在 <b>1/2～2/3</b>。"}}},
+    {part: "二、熱源的使用", page: "p.7", task: "用完酒精燈要熄滅。把正確的<b>熄滅方法</b>拖到酒精燈上。", need: 1, items: ["手", "燈罩"], zones: [{id: "lamp", icon: lamp(.6) + flameP(0, -9, 16, 5, "#ff9f1c", "#5aa9ff"), label: "點著的酒精燈"}],
+      rule: k => k === "燈罩" ? {ok: true, msg: "✅ 以<b>燈罩</b>將酒精燈蓋熄（課本 p.7）。"} : {acc: {type: "fire", title: "💥 火被吹進燈裡！", cause: "用嘴吹熄，火焰被吹進燈內引燃酒精蒸氣！", lesson: "不可用口吹熄，要以<b>燈罩</b>蓋熄。"}}},
+    {part: "三、容器的使用", page: "p.7", task: "要加熱一杯水。把<b>燒杯</b>放到正確的三腳架上。", need: 1, items: ["燒杯"],
+      zones: [{id: "bare", icon: IC["架無網"], label: "沒墊網子"}, {id: "net", icon: IC["架有網"], label: "墊陶瓷纖維網"}],
+      rule: (k, z) => z === "net" ? {ok: true, msg: "✅ 除了試管，燒杯、蒸發皿等容器要放在<b>陶瓷纖維網</b>上，或用隔水加熱法加熱（課本 p.7）。"} : {acc: {type: "glass", title: "💥 燒杯破裂！", cause: "燒杯直接放在火上，受熱不均勻，啪一聲破了，熱水灑滿桌！", lesson: "燒杯要放在<b>陶瓷纖維網</b>上加熱。"}}},
+    {part: "三、容器的使用", page: "p.7", task: "要直接加熱試管。<b>試管夾</b>要夾在試管哪裡？", need: 1, items: ["試管夾"],
+      zones: [{id: "mouth", icon: IC["試管"], label: "靠近管口"}, {id: "mid", icon: IC["試管"], label: "中間"}, {id: "bottom", icon: IC["試管"], label: "底部"}],
+      rule: (k, z) => z === "mouth" ? {ok: true, msg: "✅ 以試管夾夾住<b>近管口處</b>，再從底部加熱（課本 p.7）。"} : {warn: z === "bottom" ? "夾在底部，要加熱的地方被夾子擋住，手也離火太近。" : "夾在中間，手離火焰太近，而且加熱的範圍變小。課本：夾住<b>近管口處</b>。"}},
+    {part: "三、容器的使用", page: "p.7", task: "試管在火焰上加熱，管口要朝哪裡？把<b>加熱中的試管</b>拖過去。", need: 1, items: ["試管"],
+      zones: [{id: "mate", icon: IC["同學"], label: "朝同學"}, {id: "wall", icon: IC["牆壁"], label: "朝沒人的方向"}],
+      rule: (k, z) => z === "wall" ? {ok: true, msg: "✅ 試管微傾、輕移使均勻受熱，<b>管口不可對著人體</b>（課本 p.7）。"} : {acc: {type: "chem", title: "💥 液體噴出來了！", cause: "試管口對著同學，裡面的液體突然沸騰噴出，濺到同學臉上！", lesson: "加熱試管時，<b>試管口不可對著人體</b>。"}}},
+    {part: "三、容器的使用", page: "p.7", task: "要配製一杯糖水。把<b>玻璃棒</b>拖到可以攪拌配製的容器。", need: 1, items: ["玻璃棒"],
+      zones: [{id: "cyl", icon: IC["糖水量筒"], label: "量筒"}, {id: "bk", icon: IC["糖水燒杯"], label: "燒杯"}],
+      rule: (k, z) => z === "bk" ? {ok: true, msg: "✅ 在燒杯裡攪拌配製。"} : {warn: "🚫 量筒的正確用法是<b>測量液體體積</b>，不可在量筒中配製溶液或進行反應（課本 p.7）。"}},
+    {part: "三、容器的使用", page: "p.7", task: "量筒裡的水其實是 50.0 mL。把<b>眼睛</b>放到正確的高度讀刻度。", need: 1, items: ["眼睛"],
+      zones: [{id: "hi", icon: IC["量筒"], label: "比液面高"}, {id: "eq", icon: IC["量筒"], label: "和液面中央等高"}, {id: "lo", icon: IC["量筒"], label: "比液面低"}],
+      rule: (k, z) => z === "eq" ? {ok: true, msg: "✅ 讀到 50.0 mL：視線必須和<b>液面中央處等高</b>（課本 p.7）。"} : {warn: z === "hi" ? "讀到 50.6 mL——<b>視線太高，測量數值會大於實際值</b>（課本 p.7）。" : "讀到 49.4 mL——<b>視線太低，測量數值會小於實際值</b>（課本 p.7）。"}},
+    {part: "四、藥品的調配與觀察", page: "p.8", task: "要取一點試液。先把<b>試液瓶</b>倒一點到小燒杯，再用<b>滴管</b>吸取。", need: 2, items: ["試液瓶", "滴管"],
+      zones: [{id: "bottle", icon: IC["試液瓶"], label: "試液瓶"}, {id: "small", icon: IC["小燒杯"], label: "小燒杯"}],
+      rule: (k, z, st) => k === "試液瓶" && z === "small" ? {ok: true, msg: "倒少許藥品到小燒杯。", once: "pour"} : k === "滴管" && z === "small" ? (st.pour ? {ok: true, msg: "✅ 從小燒杯用滴管吸取，試液瓶裡的藥品不會被汙染（課本 p.8）。", once: "drop"} : {warn: "小燒杯還是空的，先倒一點試液進去。"})
+        : k === "滴管" && z === "bottle" ? {warn: "🚫 不可將滴管直接伸入試液瓶中吸取藥品，<b>以免汙染藥品</b>（課本 p.8）。"} : null},
+    {part: "四、藥品的調配與觀察", page: "p.8", task: "要攪拌混合燒杯裡的藥品。拖一樣東西去攪拌。", need: 1, items: ["溫度計", "玻璃棒"], zones: [{id: "bk", icon: IC["水"], label: "燒杯裡的藥品"}],
+      rule: k => k === "玻璃棒" ? {ok: true, msg: "✅ 混合藥品時應使用<b>玻璃棒</b>攪拌（課本 p.8）。"} : {acc: {type: "glass", title: "💥 溫度計斷了！", cause: "用溫度計攪拌，細細的玻璃管撞到杯壁，啪一聲斷掉，碎片掉進燒杯！", lesson: "<b>不可使用溫度計攪拌</b>，要用玻璃棒（課本 p.8）。"}}},
+    {part: "四、藥品的調配與觀察", page: "p.8", task: "要稀釋濃酸。把<b>濃酸</b>或<b>水</b>倒進另一個燒杯。", need: 1, items: ["濃酸", "水"],
+      zones: [{id: "water", icon: IC["水"], label: "裝水的燒杯"}, {id: "acid", icon: `<path d="M-16 -18 h3 V16 H13 V-18 h3" ${G}/><rect x="-12" y="0" width="24" height="15" fill="#fff3bf"/>`, label: "裝濃酸的燒杯"}],
+      rule: (k, z) => k === "濃酸" && z === "water" ? {ok: true, msg: "✅ 稀釋濃酸時，須將濃酸<b>緩緩加入水中</b>（課本 p.8）。"} : k === "水" && z === "acid" ? {acc: {type: "chem", title: "💥 酸液濺射！", cause: "把水倒進濃酸裡，瞬間放出大量的熱，酸液劈啪濺出來！", lesson: "稀釋濃酸要把<b>酸緩緩加入水中</b>，避免燒杯破裂或酸液濺射（課本 p.8）。"}} : {warn: "同一種東西倒在一起沒有意義，再想想。"}},
+    {part: "四、藥品的調配與觀察", page: "p.8", task: "要知道燒杯裡藥品的氣味。拖一樣東西到燒杯旁。", need: 1, items: ["鼻子", "手"], zones: [{id: "bk", icon: IC["水"], label: "不知名藥品"}],
+      rule: k => k === "手" ? {ok: true, msg: "✅ 不可將眼鼻湊近，必要時<b>以手搧聞</b>氣味（課本 p.8）。"} : {acc: {type: "gas", title: "💥 吸到刺鼻氣體！", cause: "鼻子直接湊到燒杯口用力聞，吸進大量刺鼻氣體！", lesson: "觀察藥品時不可將眼鼻湊近，要<b>以手搧聞</b>（課本 p.8）。"}}},
+    {part: "四、藥品的調配與觀察", page: "p.8", task: "這瓶藥品有毒、又很容易揮發。把它拿到正確的地方操作。", need: 1, items: ["試液瓶"],
+      zones: [{id: "desk", icon: IC["實驗桌"], label: "一般實驗桌"}, {id: "hood", icon: IC["通風櫥"], label: "通風櫥"}],
+      rule: (k, z) => z === "hood" ? {ok: true, msg: "✅ 使用有毒或高揮發性藥品時，應在<b>通風櫥</b>內進行操作（課本 p.8）。"} : {acc: {type: "gas", title: "💥 教室裡瀰漫有毒氣體！", cause: "在一般實驗桌打開有毒又易揮發的藥品，氣體散到整間教室！", lesson: "有毒或高揮發性藥品要在<b>通風櫥</b>內操作（課本 p.8）。"}}},
+    {part: "四、藥品的調配與觀察", page: "p.8", task: "手不小心沾到藥品了！把<b>手</b>拖到正確的地方。", need: 1, items: ["手"],
+      zones: [{id: "paper", icon: IC["衛生紙"], label: "衛生紙擦一擦"}, {id: "tap", icon: IC["水龍頭"], label: "水龍頭"}],
+      rule: (k, z) => z === "tap" ? {ok: true, msg: "✅ 盡快使用<b>大量清水沖洗並立即就醫</b>（課本 p.8）。"} : {warn: "用衛生紙擦不乾淨，藥品還留在皮膚上。課本：盡快使用<b>大量清水沖洗</b>並立即就醫。"}},
+  ];
+  IC["燈罩"] = `<path d="M-14 16 v-14 a14 14 0 0 1 28 0 v14 z" fill="#d9dee3" stroke="var(--sub)" stroke-width="2"/>`;
+  let S, accN = 0;
+  function init(){ S = {i: 0, done: [], st: {}}; }
+  init();
+  pane.innerHTML = `<div class="card sim hand">
+    <p class="muted" style="margin:0">一共 ${STEPS.length} 關。把上排的東西<b>拖到下面正確的地方</b>（或先點、再點目標）。規則照課本 p.5–8。</p>
+    <div class="htask" id="itask"></div>
+    <div class="simview"><svg viewBox="0 0 360 320" id="isv"></svg></div>
+    <div class="row" id="ibtn" style="margin-top:8px"></div>
+    <div id="ifb"></div></div>`;
+  const card = pane.querySelector(".hand"), svg = pane.querySelector("#isv");
+  const hist = [], cur = () => JSON.stringify(S);
+  const track = fn => (...a) => { const pre = cur(); const r = fn(...a); if(pre !== cur()) hist.push(pre); ctl.upd(); return r; };
+  const ctl = handCtl(card, {
+    canUndo: () => hist.length > 0,
+    undo(){ let o; do { o = hist.pop(); } while(o && o === cur() && hist.length); if(o){ S = JSON.parse(o); draw(say("↩ 回到上一步。", true)); } },
+    reset(){ hist.length = 0; init(); accN = 0; draw(say("🔁 全部重來。", true)); }});
+  const step = () => STEPS[S.i];
+  /* 版面：上排拖曳物（文字名牌一排 4 個，圖示一排最多 4 個）；下方目標（最多 4 個一排） */
+  function trayPos(n, text){
+    const per = 4, w = 360 / Math.min(per, Math.max(n, 1));
+    return i => [w * (i % per) + w / 2, text ? 8 + Math.floor(i / per) * 36 : 8];
+  }
+  function zonePos(n){
+    const per = Math.min(4, n), rows = Math.ceil(n / per), w = 340 / per, h = rows > 1 ? 104 : 170, y0 = rows > 1 ? 96 : 120;
+    return i => ({x: 10 + w * (i % per), y: y0 + Math.floor(i / per) * (h + 8), w: w - 8, h});
+  }
+  function draw(msg){
+    const s = step();
+    if(!s){
+      svg.innerHTML = `<text x="180" y="150" text-anchor="middle" font-size="40">🏅</text><text x="180" y="190" text-anchor="middle" font-size="16" fill="var(--ink)" font-weight="700">${STEPS.length} 關全部完成！</text>`;
+      pane.querySelector("#itask").innerHTML = "🎉 器材與安全守則全部過關！";
+      handBtns(pane.querySelector("#ibtn"), `<button class="btn ghost" data-b="again">🔁 再玩一次</button>`, actT);
+      if(msg !== undefined) pane.querySelector("#ifb").innerHTML = msg;
+      return ctl.upd();
+    }
+    const left = s.items.filter(k => !S.done.includes(k));
+    const tp = trayPos(s.items.length, s.text), zp = zonePos(s.zones.length);
+    let g = "";
+    s.zones.forEach((z, i) => {
+      const p = zp(i), cx = p.x + p.w / 2, cy = p.y + p.h / 2 - 10, sc = s.zones.length > 4 ? .9 : 1.25;
+      const lab = s.text ? (S.done.includes(z.id) ? z.id : "?") : z.label;
+      g += `<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="12" fill="var(--card)" stroke="${s.text && S.done.includes(z.id) ? "var(--ok)" : "var(--line)"}" stroke-width="2"/>
+        <g transform="translate(${cx} ${cy}) scale(${sc})">${z.icon}</g><text x="${cx}" y="${p.y + p.h - 10}" text-anchor="middle" font-size="${s.text ? 11 : 12}" fill="var(--ink)" font-weight="700">${lab}</text>`;
+    });
+    s.items.forEach((k, i) => {
+      if(!left.includes(k)) return;
+      const [x, y] = tp(i);
+      g += s.text ? `<g data-it="${k}" transform="translate(${x} ${y})"><rect x="-40" y="0" width="80" height="30" rx="15" fill="#ece9ff" stroke="var(--pri)" stroke-width="2"/><text x="0" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#3b2f9e">${k}</text></g>`
+        : `<g data-it="${k}" transform="translate(${x} ${y})"><rect x="-34" y="-2" width="68" height="74" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><g transform="translate(0 30)">${IC[k] || ""}</g><text x="0" y="66" font-size="11" text-anchor="middle" fill="var(--ink)" font-weight="700">${k}</text></g>`;
+    });
+    svg.innerHTML = g;
+    pane.querySelector("#itask").innerHTML = `<span class="muted">第 ${S.i + 1} / ${STEPS.length} 關・${s.part}（課本 ${s.page}）</span><br>${s.task}`;
+    handBtns(pane.querySelector("#ibtn"), "", actT);
+    if(msg !== undefined) pane.querySelector("#ifb").innerHTML = msg;
+    ctl.upd();
+  }
+  function act(b){ if(b === "again"){ hist.length = 0; init(); accN = 0; draw(""); } }
+  const actT = track(act);
+  const setTimeout = (fn, ms) => ctl.wait(ms, fn);
+  handDnd(svg, {
+    name: k => k,
+    drop: track(function(k, x, y){
+      const s = step(); if(!s) return;
+      const zp = zonePos(s.zones.length);
+      const zi = s.zones.findIndex((z, i) => { const p = zp(i); return inR(x, y, [p.x, p.y, p.x + p.w, p.y + p.h]); });
+      if(zi < 0){ toast("拖到下面的目標上"); return draw(); }
+      const z = s.zones[zi].id;
+      if(s.text && S.done.includes(z)){ toast("這個已經配對好了"); return draw(); }
+      const r = s.rule(k, z, S.st);
+      if(!r){ toast("這樣放沒有意義，再想想"); return draw(); }
+      if(r.warn){ beep(false); return draw(say(r.warn)); }
+      if(r.acc){
+        accN++; draw("");
+        return handAccident(card, {...ACC[r.acc.type], title: r.acc.title, cause: r.acc.cause, lesson: r.acc.lesson, pic: r.acc.type === "glass" ? BREAK_SVG : r.acc.type === "fire" ? FIRE_SVG : undefined},
+          () => draw(say("回到出事前。想想正確的做法。")));
+      }
+      beep(true);
+      if(r.once) S.st[r.once] = true;
+      if(s.text || r.once) S.done.push(s.text ? z : k);
+      const okN = s.text ? S.done.length : r.once ? Object.keys(S.st).length : 1;
+      if(okN < s.need) return draw(say(r.msg, true));
+      S.i++; S.done = []; S.st = {};
+      if(S.i >= STEPS.length){ confetti(); labDone(L.id); return draw(say(`${r.msg}<br>🎉 全部過關！${accN ? `（途中出事 ${accN} 次，都靠急救化解了）` : "一次都沒出事！"}`, true)); }
+      draw(say(r.msg + "<br>➡ 下一關！", true));
+    })});
+  draw("");
+}});
+
 /* ═════ 實驗 1-2 質量與體積的關係（康軒第三冊 p.24–26） ═════
    甲：天平歸零 → 空量筒質量 → 水、酒精各 10.0～50.0 mL 的總質量 → 扣除空量筒 → 質量與體積關係圖
    乙：金屬塊質量 → 排水法量體積（量筒要傾斜、緩緩滑入）→ 質量÷體積 對照附表（銅 8.96、鐵 7.87、鋁 2.70）
