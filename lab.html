@@ -466,7 +466,7 @@ LABS.push({id: "separate", ch: "ch2", icon: "🧂", title: "實驗 2-1 混合物
     direct: "② 把混合物直接倒進濾紙裡，觀察食鹽與沙子能否通過濾紙。",
     dissolve: "③ 把混合物倒進裝有 20 mL 蒸餾水的燒杯，再用<b>玻璃棒</b>攪拌。",
     fold: "③ 準備濾紙：依正確順序點下每一個步驟。",
-    stand: "③ 架設過濾裝置：把<b>漏斗</b>放到鐵架的鐵環上，再把<b>空燒杯</b>放到漏斗下面。漏斗頸下端要放在哪裡？",
+    stand: "③ 架設過濾裝置：把<b>漏斗</b>放到鐵架的鐵環上，再把<b>空燒杯</b>放到漏斗下面。漏斗頸下端要放在哪裡？（燒杯放好後還可以拖曳或按「↔ 移動燒杯」調整）",
     pour: "③ 過濾：先擺好<b>玻璃棒</b>，再<b>按住「倒入」</b>把混合液倒進濾紙，注意液面高度。",
     evap: "④ 蒸發結晶：把<b>濾液</b>倒進蒸發皿，決定要不要蓋東西，再點火加熱。",
     heating: "④ 加熱中……水分完全蒸乾就要熄火！",
@@ -481,6 +481,8 @@ LABS.push({id: "separate", ch: "ch2", icon: "🧂", title: "實驗 2-1 混合物
     return `${liq ? `<rect x="${x + 3}" y="${bot - h * liq.lv}" width="${w - 6}" height="${h * liq.lv - 3}" fill="${liq.c}" opacity=".85"/>` : ""}${extra || ""}
       <path d="M${x - 4} ${top} h4 V${bot - 5} q0 5 5 5 H${x + w - 5} q5 0 5 -5 V${top} h4" fill="#ffffff18" stroke="var(--sub)" stroke-width="2.5"/>`;
   }
+  // 燒杯放好、還沒開始倒（沒有倒過、手也沒按著）時可以移動
+  const canMove = () => (S.phase === "stand" || S.phase === "pour") && S.beaker && !S.poured && !holdT;
   function standG(){
     return `<rect x="262" y="284" width="70" height="8" rx="2" fill="#5b5f66"/><rect x="292" y="60" width="6" height="226" fill="#5b5f66"/>
       <rect x="214" y="146" width="80" height="5" fill="#5b5f66"/><ellipse cx="180" cy="148" rx="36" ry="5" fill="none" stroke="#5b5f66" stroke-width="4"/>`;
@@ -518,7 +520,9 @@ LABS.push({id: "separate", ch: "ch2", icon: "🧂", title: "實驗 2-1 混合物
       else g += `<path d="M146 118 L177 170 V212 H183 V170 L214 118" fill="none" stroke="var(--pri)" stroke-dasharray="5 5" opacity=".5"/>`;
       if(S.beaker){
         const x = S.beaker === "wall" ? 181 : 145;
-        g += beakerG(x, 70, 70, S.filt > .01 ? {c: S.cloudy ? "#c8b48a" : "#cfe8f7", lv: Math.min(.6, S.filt * .6)} : null);
+        const bg = beakerG(x, 70, 70, S.filt > .01 ? {c: S.cloudy ? "#c8b48a" : "#cfe8f7", lv: Math.min(.6, S.filt * .6)} : null);
+        // 還沒開始倒之前，燒杯可以再拖曳調整位置
+        g += canMove() ? `<g data-it="beakerOn">${bg}<rect x="${x}" y="220" width="70" height="70" fill="transparent"/></g>` : bg;
         if(S.lvl > .02 && S.beaker === "wall") g += `<line x1="181" y1="212" x2="181" y2="${290 - Math.max(4, Math.min(.6, S.filt * .6) * 70)}" stroke="#a7d3ee" stroke-width="3"/>`;
       } else g += `<rect x="150" y="222" width="60" height="66" rx="4" fill="none" stroke="var(--pri)" stroke-dasharray="5 5" opacity=".4"/>`;
     }
@@ -577,6 +581,7 @@ LABS.push({id: "separate", ch: "ch2", icon: "🧂", title: "實驗 2-1 混合物
     const B = [];
     if(P === "direct" && S.direct) B.push(`<button class="btn" data-b="next">下一步：溶解過濾</button>`);
     if(P === "fold") S.foldOrder.forEach(i => B.push(`<button class="btn ghost" data-b="fold-${i}" ${S.fold.includes(i) ? "disabled" : ""}>${S.fold.includes(i) ? `${S.fold.indexOf(i) + 1}. ` : ""}${FOLD[i]}</button>`));
+    if(canMove()) B.push(`<button class="btn ghost" data-b="movebk">↔ 移動燒杯：${S.beaker === "wall" ? "移回中央" : "往右移，讓漏斗頸貼住杯壁"}</button>`);
     if(P === "pour") B.push(`<button class="btn" id="spour">🫗 按住倒入</button>`);
     if(P === "pour" && S.cloudy) B.push(`<button class="btn ghost" data-b="refilt">🔁 換新濾紙重新過濾</button>`);
     if(P === "evap" && S.dish) B.push(`<button class="btn" data-b="heat">🔥 點火加熱</button>`);
@@ -669,6 +674,10 @@ LABS.push({id: "separate", ch: "ch2", icon: "🧂", title: "實驗 2-1 混合物
   }
   function act(b){
     if(b === "again"){ hist.length = 0; init(); accN = 0; return draw(""); }
+    if(b === "movebk"){
+      S.beaker = S.beaker === "wall" ? "center" : "wall";
+      return draw(S.beaker === "wall" ? say("燒杯往右移：漏斗頸下端緊貼燒杯內壁。", true) : say("燒杯移回中央：漏斗頸懸在燒杯中央。"));
+    }
     if(b === "next"){ S.phase = "dissolve"; return draw(""); }
     if(b.startsWith("fold-")){
       const i = +b.slice(5);
@@ -737,7 +746,7 @@ LABS.push({id: "separate", ch: "ch2", icon: "🧂", title: "實驗 2-1 混合物
         if(!inR(x, y, [130, 90, 240, 220])){ toast("放到鐵架的鐵環上"); return draw(); }
         S.funnel = true; draw(""); if(S.beaker){ S.phase = "pour"; draw(""); } return;
       }
-      if(k === "beaker"){
+      if(k === "beaker" || k === "beakerOn"){
         if(!inR(x, y, [110, 200, 290, 300])){ toast("放到漏斗下方"); return draw(); }
         S.beaker = x > 196 ? "wall" : "center";
         draw(S.beaker === "wall" ? say("燒杯放好了：漏斗頸下端緊貼燒杯內壁。", true) : say("燒杯放好了：漏斗頸懸在燒杯中央。"));
@@ -1148,6 +1157,208 @@ LABS.push({id: "lens", ch: "ch34", icon: "🔍", title: "實驗 4-3 透鏡的成
     const up = () => { svg.removeEventListener("pointermove", mv); svg.removeEventListener("pointerup", up); svg.removeEventListener("pointercancel", up); };
     svg.addEventListener("pointermove", mv); svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
   });
+  draw("");
+}});
+
+/* ═════ 實驗 4-5 色光與顏色的關係（課本 p.123–125，圖 4-49、4-50） ═════
+   製作觀察箱（內部貼白紙、放五色色紙、蓋箱蓋）→ 無光源觀察 → 白／紅／綠／藍光照射，先預測再從側面洞口看。
+   呈色規則照圖 4-49：色紙與光同色或是白紙 → 呈該色光；其他 → 黑色。
+   出錯：沒關燈拉窗簾（外界光干擾）、箱內沒貼白紙（畫面偏暗，對應步驟Q）、兩張玻璃紙疊在一起（光被擋光，對應動腦時間）、
+   玻璃紙直接包住燈泡（烤焦冒煙；課本沒寫，屬一般安全常識） */
+LABS.push({id: "color-light", ch: "ch34", icon: "🌈", title: "實驗 4-5 色光與顏色的關係", page: "p.123–125",
+  desc: "用紅、綠、藍光照射五色色紙，看哪些顏色會變黑。", run(pane, L){
+  const PAPERS = [["red", "紅", "#e03131"], ["green", "綠", "#2f9e44"], ["blue", "藍", "#1c7ed6"], ["white", "白", "#ffffff"], ["black", "黑", "#222222"]];
+  const LIGHT = {white: ["白光", "#ffffff"], red: ["紅光", "#ff4d4d"], green: ["綠光", "#40c057"], blue: ["藍光", "#4dabf7"]};
+  const TRAY = {wpaper: [30, "白紙"], papers: [90, "五色色紙"], lid: [150, "紙箱蓋"], book: [210, "課本"], red: [30, "紅玻璃紙"], green: [90, "綠玻璃紙"], blue: [150, "藍玻璃紙"], lamp: [270, "檯燈"]};
+  let S, accN = 0;
+  function init(){ S = {phase: "build", lined: false, papers: false, lid: false, room: true, book: false, film: [], wrap: false, lampOn: false, seen: {}, ans: {}, pending: null, q2: false}; }
+  init();
+  pane.innerHTML = `<div class="card sim hand">
+    <p class="muted" style="margin:0">把上排器材<b>拖到正確位置</b>（或先點器材、再點位置）。步驟照課本 p.123。</p>
+    <div class="htask" id="ctask"></div>
+    <div class="simview"><svg viewBox="0 0 360 300" id="csv"></svg></div>
+    <div class="simview" id="cview" style="display:none"><b>👁 從側面洞口看到的</b><svg viewBox="0 0 360 90" id="ceye"></svg></div>
+    <div class="row" id="cbtn" style="margin-top:8px"></div>
+    <div id="cq"></div><div id="cfb"></div>
+    <h3>📋 記錄表（色紙看起來的顏色）</h3><div id="ctab"></div></div>`;
+  const card = pane.querySelector(".hand"), svg = pane.querySelector("#csv");
+  const hist = [], cur = () => JSON.stringify(S);
+  const track = fn => (...a) => { const pre = cur(); const r = fn(...a); if(pre !== cur()) hist.push(pre); ctl.upd(); return r; };
+  const ctl = handCtl(card, {
+    canUndo: () => hist.length > 0,
+    undo(){ let o; do { o = hist.pop(); } while(o && o === cur() && hist.length); if(o){ S = JSON.parse(o); draw(say("↩ 回到上一步。", true)); } },
+    reset(){ hist.length = 0; init(); accN = 0; draw(say("🔁 全部重來。", true)); }});
+  /* 現在照進箱子的光：null＝沒有光；兩張以上不同色玻璃紙疊在一起幾乎不透光 */
+  function boxLight(){
+    if(S.book || !S.lampOn) return null;
+    if(S.film.length >= 2) return "dark";
+    return S.film[0] || "white";
+  }
+  const seen = (paper, light) => !light || light === "dark" ? "黑" : light === "white" ? {red: "紅", green: "綠", blue: "藍", white: "白", black: "黑"}[paper] : (paper === light || paper === "white") ? LIGHT[light][0][0] : "黑";
+  const colorOf = (paper, light) => { const s = seen(paper, light); return {紅: "#e03131", 綠: "#2f9e44", 藍: "#1c7ed6", 白: "#ffffff", 黑: "#1b1b1b"}[s]; };
+  const TASK = {
+    build: "① 製作觀察箱：紙箱內部<b>貼上白紙</b>，放進<b>五色色紙</b>，再蓋上<b>紙箱蓋</b>（蓋子上有 15 cm × 15 cm 的洞，側面有 3 cm × 3 cm 的小洞）。",
+    dark: "② 無光源：用<b>課本</b>遮住蓋子上的洞口，關燈、拉上窗簾，從側面洞口看——看得見色紙的顏色嗎？",
+    light: "③ 把<b>課本</b>拖開，把<b>玻璃紙</b>蓋在檯燈燈罩口，打開檯燈照進箱子。每種光都先預測，再從側面洞口看。白光（不加玻璃紙）也要看。",
+    done: "🎉 實驗完成！"};
+  function draw(msg){
+    const lt = boxLight(), dim = !S.lined;
+    let g = `<rect x="0" y="268" width="360" height="32" fill="#c8a67a" opacity=".5"/>`;
+    // 紙箱
+    const inside = S.room && !S.book ? "#d8cdb8" : lt && lt !== "dark" ? LIGHT[lt][1] : "#161616";
+    g += `<rect x="70" y="150" width="200" height="118" fill="#b07a45" stroke="#7a4f27" stroke-width="2"/>
+      <rect x="80" y="160" width="180" height="98" fill="${S.lid ? inside : (S.lined ? "#ffffff" : "#c99a63")}" opacity="${S.lid ? (dim ? .45 : .85) : 1}"/>`;
+    if(S.papers) PAPERS.forEach(([k, n, c], i) => { const x = 92 + i * 34; g += `<rect x="${x}" y="226" width="28" height="26" fill="${S.lid ? colorOf(k, S.room && !S.book ? "white" : lt) : c}" stroke="#999" ${S.lid && dim ? 'opacity=".6"' : ""}/>${S.lid ? "" : `<text x="${x + 14}" y="244" text-anchor="middle" font-size="11" fill="${k === "white" ? "#333" : "#fff"}">${n}</text>`}`; });
+    // 側面小洞＋眼睛
+    g += `<rect x="266" y="200" width="8" height="14" fill="#111"/>${S.lid ? `<text x="300" y="214" font-size="22">👁</text>` : ""}`;
+    if(S.lid) g += `<rect x="62" y="138" width="216" height="14" fill="#c08a52" stroke="#7a4f27" stroke-width="2"/><rect x="140" y="138" width="60" height="14" fill="${S.book ? "#3a5ba0" : lt && lt !== "dark" ? LIGHT[lt][1] : "#2a2a2a"}"/>`
+      + (S.book ? `<text x="170" y="134" text-anchor="middle" font-size="11" fill="var(--ink)">課本</text>` : "");
+    // 檯燈
+    if(S.phase === "light" || S.phase === "done"){
+      g += `<path d="M300 268 h40 M320 268 V110 L250 95" stroke="#555" stroke-width="5" fill="none"/><path d="M215 72 L265 82 L255 118 L205 108 Z" fill="#666"/>`;
+      const fc = S.film.length ? (S.film.length >= 2 ? "#5a3a5a" : LIGHT[S.film[0]][1]) : null;
+      if(fc && !S.wrap) g += `<path d="M205 108 L255 118" stroke="${fc}" stroke-width="7" opacity=".85"/>`;
+      if(S.lampOn && !S.book){ const c = lt === "dark" ? "#444" : LIGHT[lt][1]; g += `<path d="M205 110 L255 120 L205 150 L150 150 Z" fill="${c}" opacity=".35"/>`; }
+      if(S.wrap) g += `<circle cx="232" cy="104" r="12" fill="${fc || "#ccc"}" opacity=".8"/>`;
+    }
+    // 房間燈
+    g += `<text x="16" y="120" font-size="22">${S.room ? "💡" : "🌑"}</text><text x="14" y="138" font-size="10" fill="var(--sub)">${S.room ? "室內燈亮著" : "已關燈"}</text>`;
+    svg.innerHTML = g + trayKeys().map(trayIcon).join("");
+    // 從側面看到的畫面
+    const vw = pane.querySelector("#cview");
+    if(S.lid && S.papers){
+      vw.style.display = "";
+      const L2 = S.room && !S.book ? "white" : lt, bg = L2 && L2 !== "dark" ? LIGHT[L2][1] : "#0d0d0d";
+      pane.querySelector("#ceye").innerHTML = `<rect width="360" height="90" rx="10" fill="${bg}" opacity="${dim && L2 ? .5 : .9}"/>` + PAPERS.map(([k, n], i) => `<rect x="${22 + i * 66}" y="18" width="56" height="54" rx="4" fill="${colorOf(k, L2)}" opacity="${dim ? .55 : 1}" stroke="#777"/>`).join("")
+        + (S.pending ? `<rect width="360" height="90" rx="10" fill="var(--card)"/><text x="180" y="52" text-anchor="middle" font-size="14" fill="var(--ink)">先預測，再看 👇</text>` : "");
+    } else vw.style.display = "none";
+    pane.querySelector("#ctask").innerHTML = TASK[S.phase];
+    const B = [];
+    B.push(`<button class="btn ghost" data-b="room">${S.room ? "🌑 關燈、拉上窗簾" : "💡 打開室內燈"}</button>`);
+    if(S.phase === "dark" && S.book) B.push(`<button class="btn" data-b="lookdark">👁 從側面洞口看</button>`);
+    if(S.phase === "light"){
+      B.push(`<button class="btn" data-b="lamp">${S.lampOn ? "⏻ 關掉檯燈" : "⏻ 打開檯燈"}</button>`);
+      if(S.film.length) B.push(`<button class="btn ghost" data-b="unfilm">拿掉玻璃紙</button>`);
+      if(S.lampOn && !S.pending && !S.book) B.push(`<button class="btn gold" data-b="look">👁 先預測，再從洞口看</button>`);
+    }
+    if(S.phase === "done") B.push(`<button class="btn ghost" data-b="again">🔁 再做一次</button>`);
+    handBtns(pane.querySelector("#cbtn"), B.join(""), actT);
+    question();
+    table();
+    if(msg !== undefined) pane.querySelector("#cfb").innerHTML = msg;
+    ctl.upd();
+  }
+  function trayIcon(k){
+    const [x, n] = TRAY[k];
+    const film = c => `<rect x="-16" y="10" width="32" height="30" rx="3" fill="${c}" opacity=".55" stroke="${c}"/>`;
+    const ic = {wpaper: `<rect x="-14" y="8" width="28" height="34" fill="#fff" stroke="#999"/>`,
+      papers: PAPERS.map(([, , c], i) => `<rect x="${-20 + i * 8}" y="${10 + i * 3}" width="18" height="22" fill="${c}" stroke="#999"/>`).join(""),
+      lid: `<rect x="-22" y="20" width="44" height="10" fill="#c08a52" stroke="#7a4f27"/><rect x="-7" y="20" width="14" height="10" fill="#2a2a2a"/>`,
+      book: `<rect x="-14" y="8" width="28" height="36" rx="2" fill="#3a5ba0"/><text x="0" y="31" font-size="8" fill="#fff" text-anchor="middle">自然</text>`,
+      red: film(LIGHT.red[1]), green: film(LIGHT.green[1]), blue: film(LIGHT.blue[1])}[k];
+    return `<g data-it="${k}" transform="translate(${x} 8)"><rect x="-28" y="-4" width="56" height="70" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="60" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${n}</text></g>`;
+  }
+  function trayKeys(){
+    if(S.phase === "build") return ["wpaper", "papers", "lid"].filter(k => !(k === "wpaper" && S.lined) && !(k === "papers" && S.papers) && !(k === "lid" && S.lid));
+    if(S.phase === "dark") return S.book ? [] : ["book"];
+    if(S.phase === "light") return ["red", "green", "blue"].filter(k => !S.film.includes(k)).concat(S.book ? ["book"] : []);
+    return [];
+  }
+  /* 預測題：這種光下哪些色紙看起來是黑色？ */
+  function question(){
+    const box = pane.querySelector("#cq");
+    if(S.q2 && S.phase === "light" && Object.keys(S.seen).length === 4){
+      box.innerHTML = `<div class="card" style="margin:10px 0;padding:12px"><b>課本問題：紅色的色紙在哪些光源照射下，依然保持原來的顏色？（可複選）</b><div class="chips">${Object.keys(LIGHT).map(k => `<button class="chip" data-q="${k}">${LIGHT[k][0]}</button>`).join("")}</div><div class="row" style="margin-top:8px"><button class="btn" id="cq2">檢查</button></div></div>`;
+      const pick = new Set();
+      box.querySelectorAll("[data-q]").forEach(b => b.onclick = () => { const k = b.dataset.q; pick.has(k) ? pick.delete(k) : pick.add(k); b.classList.toggle("on"); });
+      box.querySelector("#cq2").onclick = () => {
+        if(pick.size === 2 && pick.has("white") && pick.has("red")){
+          hist.push(cur()); S.phase = "done"; S.q2 = false; confetti(); beep(true); labDone(L.id);
+          return draw(say(`🎉 白光和紅光下，紅色紙都會<b>反射紅光</b>，所以仍是紅色；綠光、藍光下紅色紙把光吸收、幾乎不反射，看起來接近<b>黑色</b>。<br>不透明物體的顏色，取決於它<b>吸收和反射</b>哪些色光（圖 4-50）。${accN ? `（途中出事 ${accN} 次）` : ""}`, true));
+        }
+        beep(false); pane.querySelector("#cfb").innerHTML = say("看看記錄表的「紅」那一欄：哪幾種光下它還是紅色？");
+      };
+      return;
+    }
+    if(!S.pending){ box.innerHTML = ""; return; }
+    const lt = S.pending;
+    box.innerHTML = `<div class="card" style="margin:10px 0;padding:12px"><b>預測：在<span style="color:${lt === "white" ? "inherit" : LIGHT[lt][1]}">${LIGHT[lt][0]}</span>下，哪些色紙會看起來是<b>黑色</b>？（可複選，都不會就不選）</b>
+      <div class="chips">${PAPERS.map(([k, n]) => `<button class="chip" data-p="${k}">${n}色紙</button>`).join("")}</div><div class="row" style="margin-top:8px"><button class="btn" id="cgo">預測好了，看結果</button></div></div>`;
+    const pick = new Set();
+    box.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { const k = b.dataset.p; pick.has(k) ? pick.delete(k) : pick.add(k); b.classList.toggle("on"); });
+    box.querySelector("#cgo").onclick = () => {
+      hist.push(cur());
+      const truth = PAPERS.filter(([k]) => seen(k, lt) === "黑").map(([k]) => k);
+      const right = truth.length === pick.size && truth.every(k => pick.has(k));
+      S.seen[lt] = true; S.pending = null;
+      if(Object.keys(S.seen).length === 4) S.q2 = true;
+      beep(right);
+      const nm = arr => arr.map(k => PAPERS.find(p => p[0] === k)[1]).join("、") || "沒有";
+      draw(say(right ? `✅ 預測正確！${LIGHT[lt][0]}下變黑的是：${nm(truth)}。` : `你預測變黑的是：${nm([...pick])}；實際是：${nm(truth)}。<br>想想看：色紙只會反射和自己同色的光，白紙什麼光都反射，黑紙什麼光都吸收。`, right));
+    };
+  }
+  function table(){
+    const rows = Object.keys(LIGHT).filter(k => S.seen[k]);
+    pane.querySelector("#ctab").innerHTML = `<table class="rec"><tr><th>光源</th>${PAPERS.map(([, n]) => `<th>${n}色紙</th>`).join("")}</tr>`
+      + (S.ans.dark ? `<tr><td>無光源</td>${PAPERS.map(() => `<td>看不見</td>`).join("")}</tr>` : "")
+      + rows.map(k => `<tr><td>${LIGHT[k][0]}</td>${PAPERS.map(([p]) => { const s = seen(p, k); return `<td style="font-weight:700;color:${s === "白" ? "inherit" : colorOf(p, k)}">${s}</td>`; }).join("")}</tr>`).join("")
+      + (rows.length || S.ans.dark ? "" : `<tr><td colspan="6" class="muted">還沒有記錄</td></tr>`) + "</table>";
+  }
+  function act(b){
+    if(b === "room"){ S.room = !S.room; return draw(S.room ? say("室內燈打開了。") : say("✅ 關燈、拉上窗簾，減少室內光源。", true)); }
+    if(b === "again"){ hist.length = 0; init(); accN = 0; return draw(""); }
+    if(b === "lookdark"){
+      if(S.room) return draw(say("😕 室內燈還亮著，光從縫隙漏進箱子，色紙隱約看得見——這樣看不出「沒有光源」時的真正情形。課本提醒：<b>需減少室內光源</b>，例如拉上窗簾及關燈。"));
+      S.ans.dark = true; S.phase = "light";
+      return draw(say("✅ 一片漆黑，<b>什麼顏色都看不見</b>：沒有光照到色紙，色紙就沒有光可以反射進眼睛。", true));
+    }
+    if(b === "lamp"){ S.lampOn = !S.lampOn; return draw(""); }
+    if(b === "unfilm"){ S.film = []; S.wrap = false; return draw(""); }
+    if(b === "look"){
+      const lt = boxLight();
+      if(S.room) return draw(say("室內燈還亮著，外面的白光也照進箱子，看到的不只是檯燈的色光。先<b>關燈、拉上窗簾</b>。"));
+      if(lt === "dark") return draw(say("😮 兩張不同顏色的玻璃紙疊在一起，箱子裡<b>幾乎一片黑</b>！紅玻璃紙只讓紅光通過、綠玻璃紙只讓綠光通過……疊起來就幾乎沒有光能穿過（課本「動腦時間」）。拿掉多的玻璃紙再看。"));
+      if(S.seen[lt]){ toast(`${LIGHT[lt][0]}已經記錄過了，換一種光`); return draw(); }
+      S.pending = lt;
+      return draw(S.lined ? "" : say("箱子內部沒有貼白紙，看起來暗暗的。為什麼課本要讓紙箱內部是白色？白色能把照進來的光反射到各處，色紙才看得清楚。"));
+    }
+  }
+  const actT = track(act);
+  handDnd(svg, {
+    name: k => TRAY[k][1],
+    drop: track(function(k, x, y){
+      const inBox = inR(x, y, [60, 130, 280, 270]), onLamp = inR(x, y, [190, 60, 280, 130]), onBulb = inR(x, y, [215, 85, 250, 120]);
+      if(S.phase === "build"){
+        if(!inBox){ toast("放進紙箱"); return draw(); }
+        if(k === "lid"){
+          if(!S.papers){ toast("先把色紙放進去再蓋蓋子"); return draw(); }
+          S.lid = true; S.phase = "dark";
+          return draw(S.lined ? say("✅ 觀察箱做好了。", true) : say("蓋上蓋子了……紙箱內部是牛皮紙色，沒有貼白紙。課本提醒：<b>若紙箱內部不是白色，須黏貼白紙</b>。（可以按「↩ 上一步」回去貼）"));
+        }
+        if(k === "wpaper"){ if(S.papers){ toast("色紙已經放進去了，先拿出來才好貼（按上一步）"); return draw(); } S.lined = true; return draw(say("紙箱內部貼好白紙。", true)); }
+        if(k === "papers"){ S.papers = true; return draw(""); }
+      }
+      if(S.phase === "dark" && k === "book"){ if(!inR(x, y, [120, 110, 220, 165])){ toast("遮住蓋子上的洞口"); return draw(); } S.book = true; return draw(""); }
+      if(S.phase === "light"){
+        if(k === "book"){ S.book = false; return draw(say("課本拿開了，洞口打開，光可以照進箱子。", true)); }
+        if(!onLamp){ toast("把玻璃紙放到檯燈上"); return draw(); }
+        if(onBulb && S.lampOn){
+          S.film = [k]; S.wrap = true; accN++; draw("");
+          return handAccident(card, {pic: `<svg viewBox="0 0 240 110"><rect x="0" y="92" width="240" height="18" rx="4" fill="#6b4a2f"/><circle cx="120" cy="50" r="22" fill="#ffd23f"/><path d="M98 50 q22 -30 44 0" fill="${LIGHT[k][1]}" opacity=".7"/><g stroke="#bbb" stroke-width="4" fill="none" opacity=".8"><path d="M110 22 q8 -10 0 -20"/><path d="M128 20 q8 -10 0 -20"/></g></svg>`,
+            title: "💥 玻璃紙烤焦冒煙！", cause: "玻璃紙直接包住發燙的燈泡，被烤得捲曲、發出焦味冒煙！",
+            q: "玻璃紙開始冒煙了，第一步要怎麼做？", opts: [
+              {t: "先關掉檯燈、拔掉插頭，再報告老師", ok: true, why: "先切斷熱源，玻璃紙就不會繼續被烤；等燈泡冷了再處理。"},
+              {t: "直接用手把玻璃紙扯下來", why: "燈泡和玻璃紙都很燙，徒手去拿會燙傷。"},
+              {t: "拿水潑在燈泡上", why: "燈泡是通電的電器，潑水可能觸電、燈泡也可能破裂。"},
+              {t: "繼續做實驗，等一下再說", why: "繼續加熱可能起火，要立刻處理。"}],
+            lesson: "玻璃紙要<b>蓋在燈罩口</b>，不要直接貼著或包住發燙的燈泡。（這是一般安全常識，課本沒有寫）"},
+            () => { S.film = []; S.wrap = false; S.lampOn = false; draw(say("回到出事前。玻璃紙蓋在燈罩口就好。")); });
+        }
+        S.film.push(k); S.wrap = false;
+        return draw(S.film.length >= 2 ? say("又疊上一張玻璃紙……兩張疊在一起，會怎樣呢？") : say(`${LIGHT[k][0].replace("光", "")}玻璃紙蓋在燈罩口。`, true));
+      }
+      draw();
+    })});
   draw("");
 }});
 
