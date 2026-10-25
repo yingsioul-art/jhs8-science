@@ -79,6 +79,7 @@ h2.sect{font-size:15px;letter-spacing:.12em;color:var(--sub);margin:30px 0 4px;f
 .k.unit{background:color-mix(in srgb,var(--pri) 14%,transparent);color:var(--pri)}
 .k.note{background:color-mix(in srgb,var(--c24) 16%,transparent);color:var(--c24)}
 .k.exam{background:color-mix(in srgb,var(--gold) 26%,transparent);color:#8a5a00}
+.k.lab{background:color-mix(in srgb,#1f9d55 16%,transparent);color:#1f7a45}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .k.exam{color:#ffd36b}}
 :root[data-theme="dark"] .k.exam{color:#ffd36b}
 .pg .t{font-weight:800;line-height:1.4;display:block}
@@ -147,7 +148,7 @@ footer{padding:30px 0 0;font-size:13px;color:var(--sub);line-height:1.9;border-t
 </details>
 
 <h2 class="sect">🏝️ 照章節走 · 每座島＝一章</h2>
-<p style="font-size:14px;color:var(--sub);margin:0">每座島裡有三種東西：<b style="color:var(--pri)">互動單元</b>（先猜再拆）、<b style="color:var(--c24)">學校講義</b>（對答案）、<b style="color:#b97300">段考練習</b>（學校原題）。</p>
+<p style="font-size:14px;color:var(--sub);margin:0">每座島裡有四種東西：<b style="color:var(--pri)">互動單元</b>（先猜再拆）、<b style="color:#1f7a45">動手做</b>（自己擺器材做實驗）、<b style="color:var(--c24)">學校講義</b>（對答案）、<b style="color:#b97300">段考練習</b>（學校原題）。</p>
 
 <div class="islands">
 
@@ -155,12 +156,16 @@ footer{padding:30px 0 0;font-size:13px;color:var(--sub);line-height:1.9;border-t
   <div class="isl-h"><span class="ic">📏</span><div><span class="ch">緒論＋第 1 章</span><b>科學方法與基本測量</b></div></div>
   <a class="pg" href="variables.html" data-key="jhs8-variables-v1" data-total="6"><span class="k unit">互動單元</span><span><span class="t">① 找出沒被固定的那一項</span><span class="d">「加食鹽的熱水拖地比較快乾」——你要怎麼證明？五年 28 題、佔全卷 11%，什麼都不用背。</span></span></a>
   <a class="pg" href="density.html" data-key="jhs8-density-v1" data-total="10"><span class="k unit">互動單元</span><span><span class="t">② 一顆會說謊的銅球</span><span class="d">純銅球、準確的天平，算出來卻不是 8.96。10 題、4 個互動實驗。</span></span></a>
+  <a class="pg" href="lab.html#/intro-tools"><span class="k lab">🔬 動手做</span><span><span class="t">緒論 器材與熱源的使用（p.5–8）</span><span class="d">14 關：認識器材、酒精燈、加熱容器、藥品調配；做錯會起火、濺出，要先選對急救方法。</span></span></a>
+  <a class="pg" href="lab.html#/mass-volume"><span class="k lab">🔬 動手做</span><span><span class="t">實驗 1-2 質量與體積的關係（p.24–26）</span><span class="d">天平歸零、平視讀刻度、排水法量金屬塊，畫出質量與體積關係圖。</span></span></a>
   <a class="pg" href="review-intro-ch1.html"><span class="k exam">段考練習</span><span><span class="t">緒論＋第 1 章 分段練習</span><span class="d">第一次段考原題 58 題，分 5 段：器材、測量紀錄、排水法、天平、密度；附錯題本。另加南一類題（改寫）25 題。</span></span></a>
 </section>
 
 <section class="isl" style="--c:var(--c22)">
   <div class="isl-h"><span class="ic">🧪</span><div><span class="ch">第 2 章</span><b>物質的世界</b></div></div>
   <a class="pg" href="solution.html" data-key="jhs8-solution-v1" data-total="6"><span class="k unit">互動單元</span><span><span class="t">③ 一杯糖水裡的科學</span><span class="d">分母是「水」還是「糖水」？32.6% 的人寫錯了那個字。附溶解度曲線。</span></span></a>
+  <a class="pg" href="lab.html#/separate"><span class="k lab">🔬 動手做</span><span><span class="t">實驗 2-1 混合物的分離（p.39–41）</span><span class="d">溶解、摺濾紙、過濾、蒸發結晶；液面超過濾紙 2/3、沒蓋蒸發皿都會出狀況。</span></span></a>
+  <a class="pg" href="lab.html#/oxygen"><span class="k lab">🔬 動手做</span><span><span class="t">實驗 2-3 氧氣的製備及性質（p.50–53）</span><span class="d">排水集氣法收集氧氣，用線香和鎂帶檢驗；雙氧水加太快會溢出。</span></span></a>
   <a class="pg" href="review-ch2.html"><span class="k exam">段考練習</span><span><span class="t">第 2 章 分段練習</span><span class="d">第一次段考原題 58 題，照課本小節分 9 段；考最多的是濃度（20 題）和飽和（10 題）；另加南一類題（改寫）25 題。</span></span></a>
 </section>
 
@@ -176,6 +181,8 @@ footer{padding:30px 0 0;font-size:13px;color:var(--sub);line-height:1.9;border-t
 <section class="isl" style="--c:var(--c23)">
   <div class="isl-h"><span class="ic">💡</span><div><span class="ch">第 4 章</span><b>光</b></div></div>
   <a class="pg" href="light.html" data-key="jhs8-light-v1" data-total="6"><span class="k unit">互動單元</span><span><span class="t">⑤ 你為什麼看得見這本書？</span><span class="d">「觀眾眼睛發出光線」是柏拉圖相信了一輩子的答案。附反射角度器、顏色調色台。</span></span></a>
+  <a class="pg" href="lab.html#/lens"><span class="k lab">🔬 動手做</span><span><span class="t">實驗 4-3 透鏡的成像觀察（p.112–115）</span><span class="d">移動蠟燭和紙屏找最清楚的像，填完凸透鏡、凹透鏡的成像記錄表。</span></span></a>
+  <a class="pg" href="lab.html#/color-light"><span class="k lab">🔬 動手做</span><span><span class="t">實驗 4-5 色光與顏色的關係（p.123–125）</span><span class="d">紅、綠、藍光照五色色紙，先預測哪些會變黑再觀察。</span></span></a>
   <a class="pg" href="review-ch4.html"><span class="k exam">段考練習</span><span><span class="t">第 4 章 分段練習</span><span class="d">第二次段考原題 59 題（含是非題）分 8 段；考最多的是透鏡成像（16 題）；另加南一類題（改寫）27 題。</span></span></a>
 </section>
 
