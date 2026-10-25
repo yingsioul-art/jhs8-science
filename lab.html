@@ -93,6 +93,10 @@ table.rec th{background:color-mix(in srgb,var(--pri) 10%,var(--card))}
 .shake{animation:shake .45s 2}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @media (prefers-reduced-motion:reduce){.flame,.bub,.shake{animation:none}}
+/* 強光閃白（鎂帶在氧氣中燃燒）：整個畫面瞬間變白、停一下、再慢慢恢復 */
+.whiteout{position:fixed;inset:0;z-index:40;pointer-events:none;background:radial-gradient(circle,#ffffff 0%,#ffffff 55%,#fff8d6 100%);animation:whiteout 2.6s ease-out forwards}
+@keyframes whiteout{0%{opacity:0}6%{opacity:1}40%{opacity:.95}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.whiteout{animation-duration:1.2s}}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;transition:transform .25s;z-index:50;max-width:90vw;text-align:center}
 #toast.on{transform:translateX(-50%) translateY(0)}
 .cf{position:fixed;top:-12px;width:10px;height:14px;z-index:60;animation:cf 1.6s linear forwards}
@@ -1076,6 +1080,10 @@ LABS.push({id: "oxygen", ch: "ch2", icon: "🫧", title: "實驗 2-3 氧氣的�
           if(!z){ toast("把燃燒匙放進廣口瓶裡"); return draw(); }
           if(!M.lit){ return draw(say("鎂帶還沒點燃，放進去沒有反應。再加熱一下，等它發出白光。")); }
           M.where = z; draw(z === "o2" ? say("💥 放進氧氣瓶，發出<b>更強烈、更亮的白光</b>！", true) : say("放進空氣瓶，鎂帶繼續燃燒發出白光……"));
+          if(z === "o2"){                              // 整個畫面閃白：強光刺眼的感覺
+            const w = document.createElement("div"); w.className = "whiteout"; document.body.appendChild(w);
+            window.setTimeout(() => w.remove(), 2700);
+          }
           setTimeout(() => {
             S.mg.out = true;
             if(z === "air"){
