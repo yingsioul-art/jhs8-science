@@ -2451,6 +2451,1916 @@ LABS.push({id: "elements", ch: "ch6", icon: "🧲", title: "實驗 6-1 元素性
   draw("");
 }});
 
+/* ═════ 活動站框架：正式實驗以外的課本動手活動（每章一站、一關一個活動） ═════
+   handStation(pane, L, ACTS)：上方關卡列（做完打 ✅），下方放目前這一關；全部關卡做完才算完成這一站
+     ACTS = [{key, title, page, run(box, done)}]；關卡做完呼叫 done()
+   handKit(box, html, init)：一關的小實驗骨架，內含暫停／上一步／全部重來
+     html 必須含 <div class="htask"></div>；回傳 K：K.S 狀態、K.track(fn) 包住會改狀態的動作、
+     K.draw 由關卡自己指定、K.ctl.wait(ms, fn) 可暫停的計時、K.alive() 這關還在畫面上、K.dragging 正在拖曳（計時重畫要跳過）
+   handTone(f, ms, g)：發出頻率 f 的聲音（音叉、直尺、聲納用） */
+function handKit(box, html, init){
+  box.innerHTML = `<div class="card sim hand">${html}</div>`;
+  const card = box.querySelector(".hand");
+  const K = {S: init(), hist: [], card, draw: () => {}};
+  const cur = () => JSON.stringify(K.S);
+  K.track = fn => (...a) => { const pre = cur(); const r = fn(...a); if(pre !== cur()) K.hist.push(pre); K.ctl.upd(); return r; };
+  K.ctl = handCtl(card, {
+    canUndo: () => K.hist.length > 0,
+    undo(){ let o; do { o = K.hist.pop(); } while(o && o === cur() && K.hist.length); if(o){ K.S = JSON.parse(o); K.draw(say("↩ 回到上一步。", true)); } },
+    reset(){ K.hist.length = 0; K.S = init(); K.draw(say("🔁 全部重來。", true)); }});
+  K.alive = () => document.body.contains(card);
+  K.dragging = false;                                // 拖曳中不重畫，免得手上的器材被換掉
+  card.addEventListener("pointerdown", () => { K.dragging = true; });
+  window.addEventListener("pointerup", () => { K.dragging = false; });
+  return K;
+}
+/* 選擇題卡片：opts = [[文字, 是否正確, 答錯說明], ...]；答對呼叫 ok() */
+function handMC(box, q, opts, ok){
+  box.innerHTML = `<div class="card" style="margin:10px 0;padding:12px"><b>${q}</b><div>${shuffle(opts).map(([t, r, why], i) => `<button class="qo" data-r="${r ? 1 : 0}" data-w="${esc(why || "")}">${t}</button>`).join("")}</div><div class="mcfb"></div></div>`;
+  box.querySelectorAll(".qo").forEach(b => b.onclick = () => {
+    if(b.dataset.r === "1"){ beep(true); box.querySelectorAll(".qo").forEach(x => x.disabled = true); b.style.borderColor = "#2f9e44"; ok(); return; }
+    b.classList.add("bad"); b.disabled = true; beep(false);
+    if(b.dataset.w) box.querySelector(".mcfb").innerHTML = say(b.dataset.w);
+  });
+}
+function handTone(f, ms, g){
+  try{
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    const o = AC.createOscillator(), v = AC.createGain(), t = AC.currentTime;
+    o.frequency.value = f; v.gain.setValueAtTime(g || .08, t); v.gain.exponentialRampToValueAtTime(.0001, t + ms / 1000);
+    o.connect(v); v.connect(AC.destination); o.start(t); o.stop(t + ms / 1000);
+  }catch(e){}
+}
+function handStation(pane, L, ACTS){
+  const key = a => L.id + "/" + a.key;
+  let cur = ACTS.findIndex(a => !DONE[key(a)]); if(cur < 0) cur = 0;
+  pane.innerHTML = `<p class="muted" style="margin:0 0 6px">課本裡不是正式實驗、但可以動手試的活動。一關一個，點上面的按鈕可以換關；全部做完才算完成這一站。</p>
+    <div class="chips" id="stc"></div><div id="stb"></div><div id="stn"></div>`;
+  function chips(){
+    pane.querySelector("#stc").innerHTML = ACTS.map((a, i) => `<button class="chip${i === cur ? " on" : ""}" data-i="${i}">${DONE[key(a)] ? "✅ " : ""}${i + 1}. ${esc(a.title)}</button>`).join("");
+    pane.querySelectorAll("#stc .chip").forEach(b => b.onclick = () => show(+b.dataset.i));
+  }
+  function show(i){
+    cur = i; chips();
+    const a = ACTS[i], box = pane.querySelector("#stb");
+    box.innerHTML = `<p class="kicker" style="margin:12px 0 0">第 ${i + 1} 關 · 課本 ${a.page}</p><h2 style="margin:2px 0 8px">${esc(a.title)}</h2><div></div>`;
+    pane.querySelector("#stn").innerHTML = "";
+    a.run(box.lastElementChild, () => finish(i));
+  }
+  function finish(i){
+    const a = ACTS[i];
+    if(!DONE[key(a)]){ DONE[key(a)] = Date.now(); try{ localStorage.setItem(KEY, JSON.stringify(DONE)); }catch(e){} }
+    chips();
+    const all = ACTS.every(x => DONE[key(x)]);
+    if(all){ confetti(); labDone(L.id); }
+    const nx = ACTS.findIndex((x, j) => j > i && !DONE[key(x)]), nx2 = nx >= 0 ? nx : ACTS.findIndex(x => !DONE[key(x)]);
+    pane.querySelector("#stn").innerHTML = all ? say("🎉 這一站全部完成！", true)
+      : `<div class="row" style="margin-top:10px"><button class="btn gold" id="stgo">下一關：${esc(ACTS[nx2].title)} ▶</button></div>`;
+    const g = pane.querySelector("#stgo"); if(g) g.onclick = () => { show(nx2); pane.scrollIntoView({block: "start"}); };
+  }
+  show(cur);
+}
+
+/* ═════ 緒論＋第 1 章 活動站：科學方法與測量（正式實驗以外的課本活動） ═════
+   ① 畫關係圖（p.10–11：水溫 30／40／50 ℃、砂糖溶解時間 63／49／36 秒）② 直尺讀數（p.17 圖 1-1、1-2：準確數值＋估計數值）
+   ③ 排水法三關（p.19–20 圖 1-3、例題 1-2、動腦時間：綠豆／桌球／砂糖）④ 天平（p.22–23 圖 1-5～1-7：上皿天平、電子天平） */
+LABS.push({id: "st-ch1", ch: "intro1", icon: "📏", title: "緒論＋第 1 章 活動站：科學方法與測量", page: "p.10–23",
+  desc: "畫關係圖、讀直尺、排水法量綠豆和桌球、操作上皿天平與電子天平。", run(pane, L){
+  /* 上排器材格子 */
+  const tile = (k, x, y, n, ic) => `<g data-it="${k}" transform="translate(${x} ${y})"><rect x="-28" y="-4" width="56" height="66" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="56" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${n}</text></g>`;
+  const svgPt = (svg, e) => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+
+  handStation(pane, L, [
+    {key: "graph", title: "畫關係圖", page: "p.10–11", run: actGraph},
+    {key: "ruler", title: "直尺讀數", page: "p.16–17", run: actRuler},
+    {key: "disp", title: "排水法三關", page: "p.19–20", run: actDisp},
+    {key: "bal", title: "上皿天平與電子天平", page: "p.22–23", run: actBal}]);
+  /* ① 關係圖：先決定橫軸／縱軸 → 點擊描點 → 選一條最適合的線 */
+  function actGraph(box, done){
+    const D = [[30, 63], [40, 49], [50, 36]];
+    const K = handKit(box, `<div class="htask"></div>
+      <table class="rec"><tr><th>水溫（℃）</th><td>30</td><td>40</td><td>50</td></tr><tr><th>砂糖溶解時間（s）</th><td>63</td><td>49</td><td>36</td></tr></table>
+      <div class="simview"><svg viewBox="0 0 360 230"></svg></div><div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({step: 0, pts: [], bad: null, line: null}));
+    const svg = box.querySelector("svg"), X = c => 50 + (c - 20) * 7, Y = s => 200 - s * 2.4;
+    function draw(msg){
+      const S = K.S; let g = "";
+      if(S.step >= 1){
+        for(let c = 20; c <= 60; c += 5) g += `<line x1="${X(c)}" x2="${X(c)}" y1="${Y(70)}" y2="${Y(0)}" stroke="var(--line)"/><text x="${X(c)}" y="214" font-size="9" text-anchor="middle" fill="var(--sub)">${c}</text>`;
+        for(let s = 0; s <= 70; s += 10) g += `<line x1="${X(20)}" x2="${X(60)}" y1="${Y(s)}" y2="${Y(s)}" stroke="var(--line)"/><text x="${X(20) - 4}" y="${Y(s) + 3}" font-size="9" text-anchor="end" fill="var(--sub)">${s}</text>`;
+        g += `<text x="${X(60)}" y="228" font-size="10" text-anchor="end" fill="var(--ink)">水溫（℃）</text><text x="6" y="22" font-size="10" fill="var(--ink)">溶解時間（s）</text>`;
+        g += `<rect x="${X(20)}" y="${Y(70)}" width="${X(60) - X(20)}" height="${Y(0) - Y(70)}" fill="transparent"/>`;
+        if(S.line === "zig") g += `<polyline points="${D.map(([c, s]) => X(c) + "," + Y(s)).join(" ")}" fill="none" stroke="#e03131" stroke-width="2.5"/>`;
+        if(S.line === "fit") g += `<line x1="${X(25)}" y1="${Y(103.33 - 1.35 * 25)}" x2="${X(55)}" y2="${Y(103.33 - 1.35 * 55)}" stroke="#2f9e44" stroke-width="2.5"/>`;
+        if(S.line === "orig") g += `<line x1="${X(20)}" y1="${Y(0)}" x2="${X(55)}" y2="${Y(63)}" stroke="#e03131" stroke-width="2.5"/>`;
+        S.pts.forEach(([c, s]) => { g += `<circle cx="${X(c)}" cy="${Y(s)}" r="4.5" fill="#1c7ed6"/>`; });
+        if(S.bad) g += `<g stroke="#e03131" stroke-width="2.5"><line x1="${X(S.bad[0]) - 5}" y1="${Y(S.bad[1]) - 5}" x2="${X(S.bad[0]) + 5}" y2="${Y(S.bad[1]) + 5}"/><line x1="${X(S.bad[0]) + 5}" y1="${Y(S.bad[1]) - 5}" x2="${X(S.bad[0]) - 5}" y2="${Y(S.bad[1]) + 5}"/></g>`;
+      } else g += `<text x="180" y="115" text-anchor="middle" font-size="13" fill="var(--sub)">先決定橫軸、縱軸要放什麼</text>`;
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = ["① 設定座標軸：橫軸、縱軸各放哪一個變因？", "② 描點：在方格紙上<b>點出表格裡的 3 個數據點</b>。", "③ 畫線：數據點的趨勢比較接近直線，要畫哪一種線？", "④ 看圖說結論。", "🎉 完成！"][S.step];
+      handBtns(box.querySelector("[data-btn]"), S.step === 2 ? `<button class="btn ghost" data-b="zig">把點一個一個連起來</button><button class="btn ghost" data-b="fit">畫一條盡量靠近所有點的直線</button><button class="btn ghost" data-b="orig">從原點畫一條直線</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    svg.addEventListener("pointerdown", K.track(e => {
+      const S = K.S; if(S.step !== 1) return;
+      const p = svgPt(svg, e), c = Math.round(20 + (p.x - 50) / 7), s = Math.round((200 - p.y) / 2.4);
+      if(c < 20 || c > 60 || s < 0 || s > 70) return;
+      const hit = D.find(([dc, ds]) => Math.abs(dc - c) <= 1 && Math.abs(ds - s) <= 2 && !S.pts.some(q => q[0] === dc));
+      if(!hit){ S.bad = [c, s]; return draw(say(`（${c} ℃，${s} 秒）不在表格裡。橫軸找水溫、往上找到溶解時間那一格再點。`)); }
+      S.bad = null; S.pts.push(hit);
+      if(S.pts.length === 3){ S.step = 2; return draw(say("✅ 3 個點都描好了。", true)); }
+      draw(say(`✅（${hit[0]} ℃，${hit[1]} 秒）`, true));
+    }));
+    const act = K.track(b => {
+      const S = K.S; S.line = b;
+      if(b === "zig") return draw(say("課本 p.11：趨勢接近直線時，要畫<b>一條盡量靠近數據點的直線</b>，不是把每個點連成折線——測量本來就有一點誤差。"));
+      if(b === "orig") return draw(say("線不一定要通過原點。水溫 0 ℃ 不代表溶解時間是 0 秒，這條線離數據點太遠了。"));
+      S.step = 3; draw(say("✅ 這條直線讓數據點平均分布在線的兩側。", true));
+    });
+    let shown = -1;
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.step === 0 || S.step === 3 ? S.step : -1;
+      if(shown === k) return; shown = k;
+      if(k < 0){ q.innerHTML = ""; return; }
+      if(k === 0) handMC(q, "要畫「水溫與砂糖溶解時間」的關係圖，橫軸、縱軸各放什麼？", [["橫軸放水溫（操縱變因）、縱軸放溶解時間（應變變因）", 1], ["橫軸放溶解時間、縱軸放水溫", 0, "橫軸放你<b>主動改變</b>的操縱變因（水溫），縱軸放<b>跟著改變</b>的應變變因。"], ["橫軸放水量、縱軸放砂糖量", 0, "水量、砂糖量是控制變因，三杯都一樣，不用畫。"]],
+        K.track(() => { S.step = 1; shown = null; draw(say("✅ 橫軸＝操縱變因、縱軸＝應變變因（p.11）。", true)); }));
+      else handMC(q, "從關係圖可以看出什麼？", [["水溫越高，砂糖溶解時間越短", 1], ["水溫越高，砂糖溶解時間越長", 0, "看線的方向：往右（水溫升高）時線往下（時間變短）。"], ["水溫和溶解時間沒有關係", 0, "線明顯往右下斜。"]],
+        K.track(() => { S.step = 4; shown = null; draw(say("✅ 關係圖讓趨勢一眼就看得出來。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ② 直尺讀數：鉛筆一端對齊 0 刻度 → 讀數＝準確數值＋估計數值（估計到最小刻度的下一位） */
+  function actRuler(box, done){
+    const R = [{u: "cm", min: 10, len: 113.4, ans: [11.3, 1], unit: "公分", acc: "11", est: "0.3"}, {u: "mm", min: 1, len: 86.4, ans: [86.4, 1], unit: "毫米", acc: "86", est: "0.4"}];
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 200"></svg></div>
+      <div class="row" style="margin-top:8px;gap:8px;align-items:center;flex-wrap:wrap"><label>讀數 <input data-r inputmode="decimal" style="width:70px"></label><label>＝準確數值 <input data-a inputmode="decimal" style="width:52px"></label><label>＋估計數值 <input data-e inputmode="decimal" style="width:52px"></label><span data-u></span><button class="btn gold" data-chk>檢查</button></div>
+      <div data-q></div><div data-fb></div>`, () => ({r: 0, off: 15, step: 0}));
+    const svg = box.querySelector("svg"), PX = 2.6, X0 = 30;
+    function draw(msg){
+      const S = K.S, c = R[Math.min(S.r, 1)], x0 = X0 + S.off * PX;
+      let g = `<rect x="${X0 - 6}" y="110" width="${130 * PX + 12}" height="34" fill="#fff3bf" stroke="#c9a227"/>`;
+      for(let m = 0; m <= 130; m += c.min){ const big = m % 10 === 0; g += `<line x1="${X0 + m * PX}" x2="${X0 + m * PX}" y1="110" y2="${110 + (c.u === "cm" ? 12 : big ? 12 : 6)}" stroke="#333"/>`; if(big) g += `<text x="${X0 + m * PX}" y="138" font-size="9" text-anchor="middle">${m / 10}</text>`; }
+      g += `<text x="${X0 + 130 * PX}" y="156" font-size="9" text-anchor="end" fill="var(--sub)">（公分）最小刻度 ${c.u === "cm" ? "1 公分" : "1 毫米"}</text>`;
+      g += `<g data-it="pencil"><polygon points="${x0},98 ${x0 + (c.len - 12) * PX},92 ${x0 + c.len * PX},98 ${x0 + (c.len - 12) * PX},104 ${x0},104" fill="#f59f00" stroke="#a05a00"/><rect x="${x0}" y="92" width="${(c.len - 12) * PX}" height="12" fill="#ffd43b" stroke="#a05a00"/><rect x="${x0 - 4}" y="84" width="${c.len * PX + 8}" height="28" fill="transparent"/></g>`;
+      const tip = x0 + c.len * PX, zx = Math.max(60, Math.min(300, tip));            // 放大鏡：筆尖附近放大 3 倍
+      g += `<g transform="translate(${zx} 46)"><circle r="34" fill="#fff" stroke="#555" stroke-width="2"/><clipPath id="zc"><circle r="33"/></clipPath><g clip-path="url(#zc)"><g transform="scale(3) translate(${-tip} -104)">
+        <rect x="${X0 - 6}" y="110" width="${130 * PX + 12}" height="34" fill="#fff3bf"/>${Array.from({length: 131 / c.min | 0}, (_, i) => i * c.min).filter(m => m <= 130).map(m => `<line x1="${X0 + m * PX}" x2="${X0 + m * PX}" y1="110" y2="${110 + (m % 10 === 0 ? 12 : 6)}" stroke="#333" stroke-width=".4"/>`).join("")}
+        <polygon points="${x0 + (c.len - 12) * PX},92 ${tip},98 ${x0 + (c.len - 12) * PX},104" fill="#f59f00"/></g></g><text y="48" font-size="9" text-anchor="middle" fill="var(--sub)">🔍 筆尖放大</text></g>`;
+      svg.innerHTML = g;
+      box.querySelector("[data-u]").textContent = c.unit;
+      box.querySelector(".htask").innerHTML = S.r > 1 ? "🎉 完成！" : `第 ${S.r + 1} 把尺（最小刻度 ${c.u === "cm" ? "1 公分" : "1 毫米"}）：把鉛筆<b>拖到左端對齊 0 刻度</b>（或先點鉛筆、再點尺上的 0），再讀出筆的長度（單位：${c.unit}），並拆成準確數值＋估計數值。`;
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      K.ctl.upd();
+    }
+    /* 拖曳：鉛筆跟著手移動的距離；點選後再點尺：點的位置＝鉛筆左端 */
+    let down = null;
+    svg.addEventListener("pointerdown", e => { down = e.target.closest('[data-it="pencil"]') ? svgPt(svg, e).x : null; }, true);
+    handDnd(svg, {name: () => "鉛筆", drop: K.track((k, x) => {
+      const S = K.S, c = R[Math.min(S.r, 1)], left = down !== null ? S.off + (x - down) / PX : (x - X0) / PX;
+      S.off = Math.abs(left) <= 3 ? 0 : Math.max(-5, Math.min(30, Math.round(left)));
+      draw(S.off === 0 ? say("✅ 鉛筆一端對齊 0 刻度。看筆尖落在哪兩條刻度之間。", true) : "");
+    })});
+    box.querySelector("[data-chk]").onclick = K.track(() => {
+      const S = K.S; if(S.r > 1) return;
+      const c = R[S.r], v = box.querySelector("[data-r]").value.trim(), a = box.querySelector("[data-a]").value.trim(), e = box.querySelector("[data-e]").value.trim();
+      const dec = (v.split(".")[1] || "").length, f = parseFloat(v), want = c.u === "cm" ? c.len / 10 : c.len, readW = S.off ? want + (c.u === "cm" ? S.off / 10 : S.off) : want;
+      if(isNaN(f)) return draw(say("先填讀數。"));
+      if(S.off) return draw(say(`😕 鉛筆的一端沒有對齊 0 刻度，筆尖的刻度不等於鉛筆長度（差了 ${c.u === "cm" ? (S.off / 10).toFixed(1) + " 公分" : S.off + " 毫米"}）。先把鉛筆拖到對齊 0。`));
+      if(dec === 0) return draw(say(`少了<b>估計數值</b>！筆尖在兩條刻度之間，要再估計一位（最小刻度的下一位）。`));
+      if(dec > 1) return draw(say(`估計數值<b>只估一位</b>就好（最小刻度的下一位），再多位數也估不準。`));
+      if(Math.abs(f - c.ans[0]) > .1 + 1e-9) return draw(say(`再看一次放大鏡：筆尖過了哪一條刻度？${c.u === "cm" ? "每一格是 1 公分。" : "每一小格是 1 毫米。"}`));
+      const fi = Math.floor(f + 1e-9);
+      if(parseFloat(a) !== fi || Math.abs(parseFloat(e) - (f - fi)) > 1e-6) return draw(say(`讀數 ${v} 對了！拆開來：準確數值是看得到的刻度（${fi}），估計數值是最後一位（${(f - fi).toFixed(1)}）。`));
+      S.r++; ["r", "a", "e"].forEach(x => box.querySelector(`[data-${x}]`).value = ""); S.off = 15;
+      if(S.r === 1) return draw(say(`✅ ${v} 公分＝準確數值 ${a} 公分＋估計數值 ${e} 公分。換一把最小刻度 1 毫米的尺。`, true));
+      draw(say(`✅ ${v} 毫米＝準確數值 ${a} 毫米＋估計數值 ${e} 毫米。`, true)); quiz();
+    });
+    function quiz(){
+      handMC(box.querySelector("[data-q]"), "同一枝筆，用最小刻度 1 公分的尺量和用 1 毫米的尺量，有什麼不同？", [["最小刻度越小，量得越精細，讀數的位數越多", 1], ["兩把尺讀數的位數一樣", 0, "11.3 公分只到 0.1 公分；86.4 毫米到 0.1 毫米。"], ["估計數值可以想估幾位就估幾位", 0, "估計數值只估到最小刻度的下一位。"]],
+        () => { draw(say("✅ 測量結果＝數值（準確數值＋估計數值）＋單位（圖 1-1）。", true)); done(); });
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ③ 排水法：綠豆（例題 1-2）→ 桌球會浮（要用細鐵絲壓入，動腦時間）→ 砂糖會溶（動腦時間） */
+  function actDisp(box, done){
+    const LV = [{n: "綠豆", items: ["bean", "w30"]}, {n: "桌球", items: ["ball", "wire"]}, {n: "砂糖", items: ["sugar"]}];
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 250"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({lv: 0, bean: false, water: 0, ball: 0, sugar: 0, read: null}));
+    const svg = box.querySelector("svg"), CY = v => 230 - v * 1.7;   // 量筒 0～100 mL
+    const level = () => { const S = K.S; if(S.lv === 0) return S.water ? (S.bean ? 40 : 30) : 0; if(S.lv === 1) return S.ball === 2 ? 83.5 : S.ball === 1 ? 52.7 : 50; return 50; };
+    function draw(msg){
+      const S = K.S, lv = level();
+      let g = `<rect x="150" y="${CY(100) - 8}" width="50" height="${CY(0) - CY(100) + 8}" fill="none" stroke="#5c7cfa" stroke-width="2"/>`;
+      if(lv) g += `<rect x="151" y="${CY(lv)}" width="48" height="${CY(0) - CY(lv)}" fill="#a5d8ff" opacity=".7"/>`;
+      for(let v = 0; v <= 100; v += 5) g += `<line x1="150" x2="${v % 10 ? 158 : 164}" y1="${CY(v)}" y2="${CY(v)}" stroke="#333"/>${v % 10 ? "" : `<text x="146" y="${CY(v) + 3}" font-size="8" text-anchor="end">${v}</text>`}`;
+      g += `<text x="175" y="246" font-size="9" text-anchor="middle" fill="var(--sub)">量筒（mL）</text>`;
+      if(S.lv === 0 && S.bean) for(let i = 0; i < 40; i++) g += `<circle cx="${156 + (i * 7) % 40}" cy="${CY(0) - 4 - Math.floor(i / 6) * 4.4}" r="2.6" fill="#5c940d"/>`;
+      if(S.lv === 1 && S.ball){ const by = S.ball === 2 ? CY(70) : CY(lv) - 4; g += `<circle cx="175" cy="${by}" r="14" fill="#fff" stroke="#f08c00" stroke-width="2"/>`; if(S.ball === 2) g += `<line x1="175" y1="${CY(100) - 20}" x2="175" y2="${by - 14}" stroke="#868e96" stroke-width="2"/>`; }
+      if(S.lv === 2 && S.sugar) g += `<rect x="168" y="${CY(0) - 12}" width="14" height="${S.sugar === 1 ? 12 : 3}" fill="#fff" stroke="#adb5bd" opacity="${S.sugar === 1 ? 1 : .5}"/>`;
+      // 放大鏡：液面附近
+      g += `<g transform="translate(290 120)"><circle r="44" fill="#fff" stroke="#555" stroke-width="2"/><clipPath id="dz"><circle r="43"/></clipPath><g clip-path="url(#dz)"><g transform="scale(3.5) translate(-175 ${-CY(lv || 50)})">
+        <rect x="150" y="${CY(100)}" width="50" height="${CY(0) - CY(100)}" fill="#fff"/>${lv ? `<path d="M151 ${CY(lv) - 1.2} Q175 ${CY(lv) + 1.5} 199 ${CY(lv) - 1.2} V${CY(0)} H151Z" fill="#a5d8ff"/>` : ""}${Array.from({length: 101}, (_, v) => `<line x1="150" x2="${v % 10 ? (v % 5 ? 155 : 158) : 164}" y1="${CY(v)}" y2="${CY(v)}" stroke="#333" stroke-width=".25"/>${v % 5 ? "" : `<text x="166" y="${CY(v) + 1}" font-size="2.6">${v}</text>`}`).join("")}</g></g><text y="58" font-size="9" text-anchor="middle" fill="var(--sub)">🔍 平視液面</text></g>`;
+      const T = {bean: ["綠豆", `<g fill="#5c940d">${[0, 1, 2, 3, 4, 5].map(i => `<circle cx="${-8 + (i % 3) * 8}" cy="${18 + Math.floor(i / 3) * 8}" r="3"/>`).join("")}</g>`], w30: ["量好的水 30.0 mL", `<rect x="-11" y="8" width="22" height="30" fill="#e7f5ff" stroke="#5c7cfa"/><rect x="-10" y="20" width="20" height="17" fill="#a5d8ff"/>`],
+        ball: ["桌球", `<circle cx="0" cy="22" r="13" fill="#fff" stroke="#f08c00" stroke-width="2"/>`], wire: ["細鐵絲", `<line x1="0" y1="2" x2="0" y2="42" stroke="#868e96" stroke-width="2"/>`], sugar: ["方糖", `<rect x="-9" y="13" width="18" height="18" fill="#fff" stroke="#adb5bd"/>`]};
+      const used = {bean: S.bean, w30: S.water, ball: S.ball, wire: S.ball === 2, sugar: S.sugar};
+      g += LV[S.lv].items.filter(k => !used[k] || (k === "wire" && S.ball === 1 && false)).map((k, i) => tile(k, 36 + i * 64, 10, T[k][0], T[k][1])).join("");
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = [`第 1 關 綠豆（例題 1-2）：把<b>綠豆</b>倒進空量筒，再倒入<b>量好的 30.0 mL 水</b>，讀水面刻度。`, `第 2 關 桌球（動腦時間）：量筒裡有 50.0 mL 水，用排水法量<b>桌球</b>的體積。`, `第 3 關 砂糖（動腦時間）：量筒裡有 50.0 mL 水，砂糖適合用排水法量體積嗎？把<b>方糖</b>放進去看看。`][S.lv];
+      handBtns(box.querySelector("[data-btn]"), (S.lv === 1 && S.ball) || (S.lv === 0 && S.water && S.bean) ? `<button class="btn gold" data-b="read">📝 記錄水位</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(b === "read"){
+        if(S.lv === 1 && S.ball === 1) return draw(say("😕 桌球<b>浮在水面</b>，只有一小部分泡進水裡，水位只上升到 52.7 mL——這不是整顆球的體積。想辦法讓球<b>完全沒入水中</b>。"));
+        S.read = level(); return quiz();
+      }
+    });
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]");
+      if(S.lv === 0) handMC(q, "水面在 40.0 mL。綠豆的總體積是多少？", [["10.0 mL（40.0 − 30.0）", 1], ["40.0 mL", 0, "40.0 mL 是綠豆＋水的體積，要減掉倒進去的 30.0 mL 水。"], ["30.0 mL", 0, "30.0 mL 是水的體積。"]],
+        K.track(() => { S.lv = 1; S.read = null; q.innerHTML = ""; draw(say("✅ 綠豆之間有空隙，倒水進去把空隙填滿，水面刻度減掉水的體積，就是綠豆本身的體積。", true)); }));
+      if(S.lv === 1) handMC(q, "桌球壓入水中後水面在 83.5 mL。桌球的體積是多少？", [["33.5 mL（83.5 − 50.0）", 1], ["2.7 mL", 0, "那是桌球浮著時的水位變化，球沒有完全沒入。"], ["83.5 mL", 0, "要減掉原來的 50.0 mL 水。"]],
+        K.track(() => { S.lv = 2; S.read = null; q.innerHTML = ""; draw(say("✅ 會浮的物體要讓它<b>完全沒入</b>才能用排水法；細鐵絲很細，它占的體積可以忽略。（課本動腦時間沒有給答案，這是一種做法）", true)); }));
+    }
+    handDnd(svg, {name: k => ({bean: "綠豆", w30: "量好的水", ball: "桌球", wire: "細鐵絲", sugar: "方糖"})[k], drop: K.track((k, x, y) => {
+      const S = K.S, inCyl = inR(x, y, [130, 40, 220, 240]);
+      if(!inCyl){ toast("放進量筒"); return draw(); }
+      if(k === "bean"){ S.bean = true; return draw(S.water ? say("綠豆沉到水底。") : ""); }
+      if(k === "w30"){ S.water = 1; return draw(""); }
+      if(k === "ball"){ S.ball = 1; return draw(say("桌球浮在水面上……")); }
+      if(k === "wire"){ if(S.ball !== 1){ toast("先把桌球放進去"); return draw(); } S.ball = 2; return draw(say("用細鐵絲把桌球輕輕壓到完全沒入水中，水位上升了。", true)); }
+      if(k === "sugar"){
+        S.sugar = 1; draw(say("方糖沉下去……"));
+        K.ctl.wait(1800, () => { S.sugar = 2; draw(say("方糖慢慢<b>溶解</b>不見了，水位也幾乎沒有變。")); handMC(box.querySelector("[data-q]"), "砂糖適合用排水法量體積嗎？", [["不適合：砂糖會溶在水裡，量不到它的體積", 1], ["適合：水位上升多少就是砂糖的體積", 0, "看看量筒：砂糖溶解後幾乎看不出水位變化。"], ["適合，只要動作快一點", 0, "砂糖一碰到水就開始溶解。"]],
+          () => { draw(say("✅ 會溶於水的物質不能用水做排水法。（課本動腦時間沒有給答案，這是依實驗結果推論）", true)); done(); }); });
+        return;
+      }
+      draw();
+    })});
+    K.draw = draw; draw("");
+  }
+
+  /* ④ 天平：上皿天平（歸零 → 左物右碼 → 砝碼夾由大到小）＋電子天平（放水平 → 秤量紙 → 歸零 → 秤藥品） */
+  function actBal(box, done){
+    const M = 23.7, W = [50, 20, 10, 5, 2, 1, .5, .2, .1];
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 260"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({part: "up", off: 3, obj: false, tw: false, pan: [], level: 2, paper: false, tare: false, salt: false}));
+    const svg = box.querySelector("svg"), sum = () => Math.round(K.S.pan.reduce((a, b) => a + b, 0) * 10) / 10;
+    const lab = w => w >= 1 ? w + " g" : w * 1000 + " mg";
+    function draw(msg){
+      const S = K.S; let g = "";
+      if(S.part === "up"){
+        const d = (S.obj ? M : 0) - sum(), ang = Math.max(-20, Math.min(20, S.off * 4 + (d > .05 ? 20 : d < -.05 ? -20 : 0)));
+        g += `<rect x="130" y="210" width="100" height="16" fill="#868e96"/><rect x="176" y="120" width="8" height="92" fill="#868e96"/>
+          <g transform="rotate(${-ang / 4} 180 120)"><rect x="80" y="116" width="200" height="6" fill="#495057"/><circle cx="84" cy="128" r="5" fill="#fab005"/><circle cx="276" cy="128" r="5" fill="#fab005"/></g>
+          <line x1="180" y1="122" x2="${180 + ang * 2}" y2="200" stroke="#e03131" stroke-width="2.5"/><path d="M168 204 h24" stroke="#333"/><line x1="180" y1="200" x2="180" y2="208" stroke="#333"/>
+          <ellipse cx="100" cy="${150 + ang / 2}" rx="36" ry="6" fill="#ced4da" stroke="#868e96"/><ellipse cx="260" cy="${150 - ang / 2}" rx="36" ry="6" fill="#ced4da" stroke="#868e96"/>
+          <text x="100" y="${172 + ang / 2}" font-size="10" text-anchor="middle" fill="var(--sub)">左盤</text><text x="260" y="${172 - ang / 2}" font-size="10" text-anchor="middle" fill="var(--sub)">右盤</text>`;
+        if(S.obj) g += `<rect x="86" y="${130 + ang / 2}" width="28" height="18" rx="3" fill="#8d6e63"/><text x="100" y="${126 + ang / 2}" font-size="9" text-anchor="middle">待測物</text>`;
+        S.pan.forEach((w, i) => { const px = 230 + (i % 4) * 16, py = 136 - ang / 2 - Math.floor(i / 4) * 16; g += `<g data-pw="${i}" style="cursor:pointer"><rect x="${px}" y="${py}" width="14" height="11" rx="2" fill="#adb5bd" stroke="#495057"/><text x="${px + 7}" y="${py + 8}" font-size="5.5" text-anchor="middle">${lab(w)}</text></g>`; });
+        g += `<text x="260" y="${192 - ang / 2}" font-size="10" text-anchor="middle" fill="var(--ink)">${S.pan.length ? "砝碼 " + sum() + " g" : ""}</text>`;
+        if(S.tw) g += `<text x="300" y="250" font-size="11" fill="#2f9e44">🥢 拿著砝碼夾</text>`;
+        g += (S.obj ? [] : ["obj"]).concat(W.filter(w => !S.pan.includes(w)).map(w => "w" + w)).map((k, i) => k === "obj"
+          ? tile("obj", 22, 10, "待測物", `<rect x="-14" y="14" width="28" height="18" rx="3" fill="#8d6e63"/>`)
+          : tile(k, 22 + i * 35, 10, lab(+k.slice(1)), `<rect x="-9" y="12" width="18" height="${10 + Math.min(14, +k.slice(1) / 4)}" rx="2" fill="#adb5bd" stroke="#495057"/>`).replace('x="-28"', 'x="-17"').replace('width="56"', 'width="34"')).join("");
+      } else {
+        const rd = (S.paper ? .4 : 0) + (S.salt ? 5 : 0) - (S.tare ? (S.tare === "empty" ? 0 : .4) : 0);
+        g += `<rect x="100" y="170" width="160" height="50" rx="6" fill="#dee2e6" stroke="#868e96"/><rect x="130" y="180" width="80" height="22" rx="3" fill="#1b2a1b"/><text x="204" y="196" text-anchor="end" font-size="14" fill="#69db7c" font-family="monospace">${rd.toFixed(1)} g</text>
+          <ellipse cx="180" cy="166" rx="56" ry="7" fill="#ced4da" stroke="#868e96"/><circle cx="240" cy="200" r="9" fill="#fff" stroke="#868e96"/><circle cx="${240 + S.level * 3}" cy="200" r="3" fill="#74c0fc"/><text x="240" y="232" font-size="9" text-anchor="middle" fill="var(--sub)">水平儀</text>`;
+        if(S.paper) g += `<path d="M150 160 h60 l-6 5 h-48z" fill="#fff" stroke="#adb5bd"/>`;
+        if(S.salt) g += `<ellipse cx="180" cy="158" rx="16" ry="5" fill="#f8f9fa" stroke="#ced4da"/>`;
+        g += [S.paper ? null : "paper", S.salt ? null : "salt"].filter(Boolean).map((k, i) => tile(k, 40 + i * 64, 10, k === "paper" ? "秤量紙" : "食鹽（藥品）", k === "paper" ? `<rect x="-14" y="14" width="28" height="20" fill="#fff" stroke="#adb5bd"/>` : `<ellipse cx="0" cy="26" rx="13" ry="6" fill="#f8f9fa" stroke="#ced4da"/>`)).join("");
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.part === "up" ? "上皿天平：① 轉<b>校準螺絲</b>讓指針指在正中央（歸零）→ ② <b>待測物放左盤</b> → ③ 拿起<b>砝碼夾</b>，砝碼<b>由大到小</b>放右盤（太重就點右盤的砝碼拿回來），直到指針回到正中央。"
+        : "電子天平：① 調整腳座讓<b>水平儀的氣泡在中心</b> → ② 秤藥品要先放<b>秤量紙</b>再按<b>歸零</b> → ③ 倒入藥品讀數。";
+      const B = S.part === "up" ? `<button class="btn ghost" data-b="l">↺ 校準螺絲往左</button><button class="btn ghost" data-b="r">↻ 校準螺絲往右</button><button class="btn${S.tw ? " gold" : ""}" data-b="tw">${S.tw ? "🥢 放下砝碼夾" : "🥢 拿起砝碼夾"}</button>` + (S.obj && sum() === M ? `<button class="btn gold" data-b="ok">📝 讀出質量</button>` : "")
+        : `<button class="btn ghost" data-b="foot">🦶 調整腳座</button><button class="btn" data-b="tare">⓪ 歸零</button>` + (S.salt ? `<button class="btn gold" data-b="eok">📝 讀出藥品質量</button>` : "");
+      handBtns(box.querySelector("[data-btn]"), B, act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(b === "l" || b === "r"){ if(S.obj || S.pan.length) return draw(say("歸零要在<b>秤盤上沒有東西</b>時做。先按「↩ 上一步」把東西拿下來。")); S.off += b === "l" ? -1 : 1; return draw(S.off === 0 ? say("✅ 指針指在正中央，歸零完成。", true) : ""); }
+      if(b === "tw"){ S.tw = !S.tw; return draw(""); }
+      if(b === "ok") return handMC(box.querySelector("[data-q]"), "指針停在正中央。待測物的質量是多少？", [[`${M} 公克（右盤砝碼的總質量）`, 1], ["要再加上左盤的盤子質量", 0, "兩個秤盤一樣重，歸零時已經抵消了。"], ["看指針偏多少再估", 0, "指針在正中央＝平衡，質量就等於砝碼總和。"]],
+        K.track(() => { S.part = "el"; box.querySelector("[data-q]").innerHTML = ""; draw(say(`✅ 待測物＝砝碼總質量＝${M} g（20 g＋2 g＋1 g＋500 mg＋200 mg）。接下來換電子天平。`, true)); }));
+      if(b === "foot"){ S.level = S.level > 0 ? S.level - 1 : 2; return draw(S.level === 0 ? say("✅ 氣泡在中心，天平放水平了。", true) : ""); }
+      if(b === "tare"){
+        if(S.level) return draw(say("天平還沒放水平（氣泡不在中心），先調整腳座。"));
+        if(S.salt && !S.tare) return draw(say("😕 藥品已經倒上去才歸零，螢幕會變成 0.0——藥品的質量就被扣掉了！要<b>先放秤量紙再歸零</b>，再倒藥品。按「↩ 上一步」回去。"));
+        S.tare = S.paper ? "paper" : "empty"; return draw(S.paper ? say("✅ 放著秤量紙按歸零，螢幕回到 0.0，扣掉了秤量紙的質量。", true) : say("還沒放秤量紙就歸零……等一下放上秤量紙，數字就會多出秤量紙的質量。"));
+      }
+      if(b === "eok"){
+        if(S.tare !== "paper") return draw(say(`😕 螢幕顯示的 ${((S.paper ? .4 : 0) + 5).toFixed(1)} g 包含了<b>秤量紙</b>的質量（課本：秤藥品先放秤量紙於秤盤中心，再按歸零鈕扣除其質量）。按「↩ 上一步」照順序重來。`));
+        return handMC(box.querySelector("[data-q]"), "電子天平秤藥品，正確順序是？", [["放水平 → 放秤量紙 → 歸零 → 倒藥品讀數", 1], ["倒藥品 → 歸零 → 讀數", 0, "藥品倒上去才歸零，就把藥品的質量扣掉了。"], ["放秤量紙 → 倒藥品 → 讀數（不用歸零）", 0, "這樣讀到的是藥品＋秤量紙。"]],
+          () => { draw(say("✅ 食鹽 5.0 g。上皿天平和電子天平都會操作了！", true)); done(); });
+      }
+    });
+    svg.addEventListener("click", K.track(e => {                                  // 點右盤的砝碼＝用砝碼夾拿回來
+      const g = e.target.closest("[data-pw]"), S = K.S; if(!g || S.part !== "up") return;
+      if(!S.tw) return draw(say("要用<b>砝碼夾</b>夾砝碼。"));
+      S.pan.splice(+g.dataset.pw, 1); draw("");
+    }));
+    handDnd(svg, {name: k => k === "obj" ? "待測物" : k === "paper" ? "秤量紙" : k === "salt" ? "食鹽" : lab(+k.slice(1)), drop: K.track((k, x, y) => {
+      const S = K.S, left = inR(x, y, [50, 100, 150, 190]), right = inR(x, y, [210, 100, 310, 200]);
+      if(S.part === "el"){
+        if(!inR(x, y, [100, 130, 260, 220])){ toast("放到秤盤中心"); return draw(); }
+        if(k === "paper"){ S.paper = true; return draw(""); }
+        if(k === "salt"){ if(!S.paper) return draw(say("😕 藥品直接倒在秤盤上，會弄髒、腐蝕秤盤，也拿不下來。課本：秤藥品要<b>先放秤量紙</b>。")); S.salt = true; return draw(""); }
+        return draw();
+      }
+      if(k === "obj"){
+        if(S.off) return draw(say("還沒歸零！課本的第 1 步是<b>歸零</b>：先轉校準螺絲讓指針指在正中央。"));
+        if(right) return draw(say("待測物要放<b>左盤</b>，砝碼放右盤（左物右碼）。"));
+        if(!left){ toast("放到左盤"); return draw(); }
+        S.obj = true; return draw("");
+      }
+      const w = +k.slice(1);
+      if(!S.obj){ toast("先把待測物放上左盤"); return draw(); }
+      if(!S.tw) return draw(say("😕 不可以用手直接拿砝碼！課本圖 1-5：用<b>砝碼夾</b>夾砝碼。（手上的汗和油會讓砝碼生鏽、質量改變——一般常識）"));
+      if(left) return draw(say("砝碼要放<b>右盤</b>。"));
+      if(!right){ toast("放到右盤"); return draw(); }
+      const big = W.find(v => v > w && !S.pan.includes(v) && sum() + v <= M + 1e-9 && !S.tried?.includes(v));
+      if(big) return draw(say(`砝碼要<b>由大到小</b>試：${lab(big)} 還沒試過，先放大的。`));
+      S.pan.push(w); S.pan.sort((a, b) => b - a);
+      const s = sum();
+      if(s > M + 1e-9){ S.tried = (S.tried || []).concat([w]); return draw(say(`指針偏向左邊——右盤太重了（${s} g）。點右盤上剛放的砝碼把它拿回來，換小一點的。`)); }
+      draw(s === M ? say("✅ 指針回到正中央了！", true) : "");
+    })});
+    K.draw = draw; draw("");
+  }
+}});
+
+/* ═════ 第 2 章 活動站：物質的世界（正式實驗以外的課本活動） ═════
+   ① 注射筒壓縮（p.35 圖 2-3：紅墨水 15 mL 推不動、空氣 15 mL 壓到 10 mL）② 濾紙色層分析（p.42 探索活動、圖 2-11）
+   ③ 飽和與濃度（p.45 食鹽 25 ℃ 36 g／100 ℃ 約 39 g；p.46 例題 2-4 配 20% 糖水）
+   ④ 二氧化碳的製備與檢驗（p.53 圖 2-26、2-27：大理岩＋稀鹽酸、排水集氣、線香熄滅、石灰水變混濁）⑤ 自製簡易濾水器（p.57 探索活動） */
+LABS.push({id: "st-ch2", ch: "ch2", icon: "🧪", title: "第 2 章 活動站：物質的世界", page: "p.35–57",
+  desc: "壓注射筒、濾紙色層分析、加鹽到飽和、配糖水、製造二氧化碳、做濾水器。", run(pane, L){
+  const tile = (k, x, y, n, ic) => `<g data-it="${k}" transform="translate(${x} ${y})"><rect x="-28" y="-4" width="56" height="66" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="56" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${n}</text></g>`;
+
+  handStation(pane, L, [
+    {key: "syringe", title: "注射筒壓縮", page: "p.35", run: actSyringe},
+    {key: "chroma", title: "濾紙色層分析", page: "p.42", run: actChroma},
+    {key: "sat", title: "飽和與濃度", page: "p.45–46", run: actSat},
+    {key: "co2", title: "二氧化碳的製備與檢驗", page: "p.53", run: actCO2},
+    {key: "filter", title: "自製簡易濾水器", page: "p.57", run: actFilter}]);
+  /* ① 注射筒：手指按住出口再推活塞；沒按住，紅墨水會噴出來 */
+  function actSyringe(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 230"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({cover: {ink: false, air: false}, vol: {ink: 15, air: 15}, spill: false, pushed: {}}));
+    const svg = box.querySelector("svg");
+    function syr(k, y){
+      const S = K.S, v = S.vol[k], len = v * 9, col = k === "ink" ? "#e03131" : "#e7f5ff";
+      let g = `<text x="20" y="${y - 22}" font-size="12" fill="var(--ink)" font-weight="700">${k === "ink" ? "A 紅墨水" : "B 空氣"}</text>
+        <rect x="70" y="${y - 14}" width="150" height="28" rx="4" fill="#fff" stroke="#868e96"/><rect x="${220 - len}" y="${y - 12}" width="${len}" height="24" fill="${col}" opacity=".85"/>
+        <rect x="${220 - len - 8}" y="${y - 14}" width="8" height="28" fill="#495057"/><rect x="${220 - len - 70}" y="${y - 3}" width="62" height="6" fill="#495057"/><rect x="${220 - len - 78}" y="${y - 12}" width="8" height="24" fill="#495057"/>
+        <path d="M220 ${y - 4} h18 v8 h-18z" fill="#868e96"/><text x="150" y="${y + 30}" font-size="10" text-anchor="middle" fill="var(--sub)">${v} mL</text>`;
+      if(S.cover[k]) g += `<text x="234" y="${y + 8}" font-size="22">👆</text>`;
+      if(k === "ink" && S.spill) g += `<g fill="#e03131">${[0, 1, 2, 3, 4].map(i => `<circle cx="${250 + i * 18}" cy="${y - 6 + (i % 2) * 10}" r="${3 + i % 3}"/>`).join("")}</g>`;
+      g += `<rect x="64" y="${y - 30}" width="200" height="60" fill="transparent" data-zone="${k}"/>`;
+      return g;
+    }
+    function draw(msg){
+      const S = K.S;
+      svg.innerHTML = syr("ink", 100) + syr("air", 180) + (S.cover.ink && S.cover.air ? "" : tile("finger", 320, 10, "手指", `<text x="0" y="36" font-size="26" text-anchor="middle">👆</text>`));
+      box.querySelector(".htask").innerHTML = "圖 2-3：把<b>手指</b>拖到注射筒的出口按住，再推活塞。A 裝 15 mL 紅墨水、B 裝 15 mL 空氣，兩支都試。";
+      handBtns(box.querySelector("[data-btn]"), `<button class="btn" data-b="ink">推 A 的活塞</button><button class="btn" data-b="air">推 B 的活塞</button>`, act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(!S.cover[b]){
+        if(b === "ink"){ S.spill = true; S.vol.ink = 9; return draw(say("😕 出口沒按住，紅墨水從出口<b>噴出來</b>灑了一桌！這樣看不出液體能不能被壓縮。按「↩ 上一步」，先用手指按住出口。")); }
+        S.vol.air = 3; return draw(say("出口沒按住，空氣直接從出口跑掉了，這樣看不出能不能壓縮。按「↩ 上一步」，先按住出口。"));
+      }
+      S.pushed[b] = 1;
+      if(b === "ink") draw(say("用力推……活塞<b>推不動</b>，紅墨水還是 15 mL。"));
+      else { S.vol.air = 10; draw(say("活塞推進去了！空氣從 15 mL 被壓到 10 mL。放手後活塞又被推回來一些。", true)); }
+      if(S.pushed.ink && S.pushed.air) handMC(box.querySelector("[data-q]"), "從兩支注射筒可以知道什麼？", [["液體不容易被壓縮，氣體可以被壓縮", 1], ["液體和氣體都可以被壓縮", 0, "A 的活塞推不動。"], ["液體可以被壓縮，氣體不行", 0, "反過來了：B 的空氣從 15 mL 變 10 mL。"]],
+        () => { draw(say("✅ 氣體具有可壓縮性，液體則不易被壓縮（p.35）。", true)); done(); });
+    });
+    handDnd(svg, {name: () => "手指", drop: K.track((k, x, y) => {
+      const S = K.S, z = inR(x, y, [64, 70, 300, 130]) ? "ink" : inR(x, y, [64, 150, 300, 210]) ? "air" : null;
+      if(!z){ toast("拖到注射筒出口"); return draw(); }
+      if(S.cover[z]){ toast("已經按住了"); return draw(); }
+      S.cover[z] = true; draw("");
+    })});
+    K.draw = draw; draw("");
+  }
+
+  /* ② 濾紙色層分析：畫線 → 剪開 → 往背面摺 90 度 → 摺端放進約 0.5 cm 高的水；線畫太低會泡進水裡 */
+  function actChroma(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({line: null, cut: false, fold: false, dip: false, t: 0}));
+    const svg = box.querySelector("svg");
+    const tk = setInterval(() => { if(!K.alive()) return clearInterval(tk); if(K.ctl.paused || !K.S.dip || K.S.t >= 1) return; K.S.t = Math.min(1, K.S.t + .02); if(!K.dragging) draw(); if(K.S.t >= 1) quiz(); }, 100);
+    function draw(msg){
+      const S = K.S; let g = `<text x="180" y="94" text-anchor="middle" font-size="10" fill="var(--sub)">圓形濾紙</text>`;
+      const cy = 160;
+      g += `<circle cx="180" cy="${cy}" r="58" fill="#fff" stroke="#adb5bd"/>`;
+      if(S.cut) g += `<path d="M160 ${cy + 20} v38 M200 ${cy + 20} v38" stroke="#555" stroke-dasharray="3 2"/>`;
+      if(S.fold) g += `<rect x="160" y="${cy + 20}" width="40" height="38" fill="#f1f3f5" stroke="#adb5bd"/><text x="180" y="${cy + 44}" font-size="9" text-anchor="middle" fill="var(--sub)">摺下去</text>`;
+      if(S.line !== null){
+        const ly = cy + S.line;
+        if(S.dip && S.line > 40){ g += `<rect x="150" y="${ly - 4}" width="60" height="8" fill="#8d6e63" opacity="${1 - S.t}"/>`; }
+        else if(S.dip){ const h = S.t * 70; [["#fab005", 1], ["#e64980", .7], ["#1c7ed6", .45]].forEach(([c, f], i) => { g += `<path d="M162 ${ly - h * f} q18 -6 36 0" stroke="${c}" stroke-width="5" fill="none" opacity=".85"/>`; }); g += `<path d="M162 ${ly} q18 -6 36 0" stroke="#8d6e63" stroke-width="2" fill="none" opacity="${1 - S.t * .8}"/>`; }
+        else g += `<path d="M162 ${ly} q18 -6 36 0" stroke="#8d6e63" stroke-width="4" fill="none"/>`;
+      }
+      if(S.dip) g += `<rect x="120" y="${cy + 46}" width="120" height="22" rx="4" fill="#a5d8ff" opacity="${S.line > 40 ? .55 + .3 * (1 - S.t) : .45}"/><text x="250" y="${cy + 62}" font-size="9" fill="var(--sub)">水約 0.5 cm 高</text>`;
+      g += `<rect x="110" y="96" width="140" height="130" fill="transparent"/>`;
+      const T = [S.line === null ? ["pen", "棕色水性筆", `<rect x="-4" y="4" width="8" height="34" rx="2" fill="#8d6e63"/>`] : null, S.line !== null && !S.cut ? ["sc", "剪刀", `<text x="0" y="34" font-size="24" text-anchor="middle">✂️</text>`] : null, S.fold && !S.dip ? ["dish", "放進培養皿", `<ellipse cx="0" cy="30" rx="20" ry="7" fill="#a5d8ff" stroke="#74c0fc"/>`] : null].filter(Boolean);
+      g += T.map((t, i) => tile(t[0], 40 + i * 64, 10, t[1], t[2])).join("");
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = "探索活動：❶ 用<b>棕色水性筆</b>在濾紙下緣畫一條弧線，再從弧線兩端下方剪開 → ❷ 剪開的部分往背面摺 90 度 → ❸ 培養皿加約 0.5 公分高的水，摺端浸入水中觀察。";
+      handBtns(box.querySelector("[data-btn]"), S.cut && !S.fold ? `<button class="btn" data-b="fold">↩ 剪開的部分往背面摺 90 度</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      K.ctl.upd();
+    }
+    const act = K.track(b => { if(b === "fold"){ K.S.fold = true; draw(""); } });
+    let asked = false;
+    function quiz(){
+      const S = K.S;
+      if(S.line > 40) return draw(say("😕 線畫得<b>太低</b>，泡到水裡了——顏料直接溶進水中，濾紙上什麼也分不出來。（p.61 也提醒：標色的位置不可沒入水面）按「↩ 上一步」重畫高一點。"));
+      if(asked) return; asked = true;
+      draw(say("水沿著濾紙往上爬，棕色線被拉開成好幾種顏色！", true));
+      handMC(box.querySelector("[data-q]"), "棕色水性筆的顏料，是純物質還是混合物？", [["混合物：由好幾種不同的色素混合而成", 1], ["純物質：只有棕色一種色素", 0, "看濾紙：棕色被分成了好幾種顏色。"], ["色素是水變出來的", 0, "水只是把顏料帶著往上走。"]],
+        () => { draw(say("✅ 圖 2-11：棕色水性筆的顏料含有不同色素。濾紙色層分析可以把混合物裡的成分分開。", true)); done(); });
+    }
+    handDnd(svg, {name: k => ({pen: "棕色水性筆", sc: "剪刀", dish: "培養皿"})[k], drop: K.track((k, x, y) => {
+      const S = K.S, on = inR(x, y, [110, 96, 250, 226]);
+      if(!on){ toast("拖到濾紙上"); return draw(); }
+      if(k === "pen"){ S.line = Math.max(10, Math.min(50, Math.round(y - 160))); return draw(S.line > 40 ? "" : say("畫好一條弧線。")); }
+      if(k === "sc"){ S.cut = true; return draw(""); }
+      if(k === "dish"){ S.dip = true; S.t = 0; asked = false; return draw(""); }
+      draw();
+    })});
+    K.draw = draw; draw("");
+  }
+
+  /* ③ 飽和：25 ℃ 100 g 水最多溶 36 g 食鹽（一匙 6 g）；加熱到 100 ℃ 約可溶 39 g。濃度：配 20% 糖水（例題 2-4） */
+  function actSat(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 230"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({part: "salt", salt: 0, stirred: true, hot: false, satQ: false, sugar: 0, water: 0}));
+    const svg = box.querySelector("svg");
+    const cap = () => K.S.hot ? 39 : 36, dis = () => Math.min(K.S.salt, cap());
+    function draw(msg){
+      const S = K.S; let g = "";
+      if(S.part === "salt"){
+        const left = S.salt - dis();
+        g += `<rect x="130" y="110" width="100" height="100" fill="${S.hot ? "#ffe3e3" : "#e7f5ff"}" opacity=".7" stroke="#5c7cfa" stroke-width="2"/><text x="180" y="226" text-anchor="middle" font-size="10" fill="var(--sub)">100 g 水（${S.hot ? "100" : "25"} ℃）</text>`;
+        if(left > 0) g += `<path d="M135 208 q45 -${4 + left} 90 0z" fill="#f8f9fa" stroke="#adb5bd"/>`;
+        if(!S.stirred) g += `<path d="M150 205 q30 -8 60 0z" fill="#f8f9fa" stroke="#adb5bd"/>`;
+        g += `<rect x="250" y="120" width="96" height="44" rx="6" fill="var(--card)" stroke="var(--line)"/><text x="298" y="138" text-anchor="middle" font-size="11" fill="var(--ink)">已加入 ${S.salt} g</text><text x="298" y="156" text-anchor="middle" font-size="11" fill="var(--ink)">溶解 ${S.stirred ? dis() : dis() - 6 < 0 ? 0 : dis() - 6} g</text>`;
+        g += `<rect x="120" y="90" width="120" height="125" fill="transparent"/>` + tile("salt", 40, 10, "食鹽一匙（6 g）", `<path d="M-14 30 q14 -14 28 0z" fill="#f8f9fa" stroke="#adb5bd"/><rect x="10" y="22" width="16" height="4" fill="#868e96"/>`);
+      } else {
+        const tot = S.sugar + S.water, c = tot ? S.sugar / tot * 100 : 0;
+        g += `<rect x="100" y="170" width="160" height="40" rx="6" fill="#dee2e6" stroke="#868e96"/><rect x="130" y="178" width="100" height="22" rx="3" fill="#1b2a1b"/><text x="222" y="194" text-anchor="end" font-size="14" fill="#69db7c" font-family="monospace">${tot.toFixed(0)} g</text>
+          <rect x="150" y="110" width="60" height="56" fill="#e7f5ff" opacity=".6" stroke="#5c7cfa" stroke-width="2"/>${S.water ? `<rect x="151" y="${166 - Math.min(54, S.water * .5)}" width="58" height="${Math.min(54, S.water * .5)}" fill="#ffe8a3" opacity=".8"/>` : ""}
+          <rect x="262" y="100" width="92" height="64" rx="6" fill="var(--card)" stroke="var(--line)"/><text x="308" y="118" text-anchor="middle" font-size="10">糖（溶質）${S.sugar} g</text><text x="308" y="134" text-anchor="middle" font-size="10">水（溶劑）${S.water} g</text><text x="308" y="154" text-anchor="middle" font-size="12" font-weight="700" fill="${Math.abs(c - 20) < .01 ? "#2f9e44" : "var(--ink)"}">濃度 ${c.toFixed(1)}%</text>
+          <rect x="140" y="90" width="80" height="90" fill="transparent"/>` + tile("sugar", 40, 10, "糖 20 g", `<rect x="-12" y="14" width="24" height="18" fill="#fff" stroke="#adb5bd"/>`) + tile("water", 104, 10, "水 +20 g", `<rect x="-10" y="6" width="20" height="32" rx="4" fill="#d0ebff" stroke="#4dabf7"/>`);
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.part === "salt" ? "飽和：把<b>食鹽</b>一匙一匙加進 25 ℃、100 g 的水裡，每加一匙就<b>攪拌</b>，直到再也溶不下。" : "濃度（例題 2-4）：用<b>糖 20 g</b> 和<b>水</b>配出重量百分率濃度 <b>20%</b> 的糖水。濃度＝溶質質量 ÷（溶質＋溶劑質量）× 100%。";
+      handBtns(box.querySelector("[data-btn]"), S.part === "salt" ? (S.stirred ? "" : `<button class="btn gold" data-b="stir">🥄 攪拌</button>`) + (S.satQ && !S.hot ? `<button class="btn" data-b="heat">🔥 加熱到 100 ℃</button>` : "")
+        : `<button class="btn ghost" data-b="less">倒掉 20 g 水</button>` + (S.sugar && S.water ? `<button class="btn gold" data-b="ok">✅ 配好了</button>` : ""), act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(b === "stir"){
+        S.stirred = true;
+        if(S.salt > cap() && !S.satQ){ S.satQ = true; draw(say(`攪了又攪，杯底還是剩 ${S.salt - cap()} g 食鹽溶不掉。`));
+          return handMC(box.querySelector("[data-q]"), "杯底有食鹽怎麼攪都溶不掉，這杯食鹽水是？", [["飽和溶液：在這個溫度下已經不能再溶解食鹽", 1], ["未飽和溶液，再多攪一下就會溶", 0, "已經攪很久了，杯底的鹽還在。"], ["純物質", 0, "食鹽水是食鹽和水的混合物。"]],
+            () => draw(say("✅ 25 ℃ 時，100 g 水最多溶解約 36 g 食鹽（p.45）。試試把它加熱到 100 ℃。", true))); }
+        return draw(S.salt <= cap() ? say(`溶解了！目前溶了 ${S.salt} g。`, true) : "");
+      }
+      if(b === "heat"){ S.hot = true; draw(say(`加熱到 100 ℃，杯底的鹽又溶掉一些，剩 ${Math.max(0, S.salt - 39)} g。`));
+        return handMC(box.querySelector("[data-q]"), "加熱後杯底的鹽變少了，代表什麼？", [["溫度升高，100 g 水可以溶解的食鹽變多了（100 ℃ 約 39 g）", 1], ["加熱讓食鹽消失了", 0, "食鹽是溶進水裡，不是消失。"], ["加熱讓水變多了", 0, "加熱只會讓水蒸發變少。"]],
+          K.track(() => { S.part = "sugar"; box.querySelector("[data-q]").innerHTML = ""; draw(say("✅ 知識快遞：100 ℃ 時，100 g 水約可溶解 39 g 食鹽。接下來配糖水。", true)); })); }
+      if(b === "less"){ S.water = Math.max(0, S.water - 20); return draw(""); }
+      if(b === "ok"){
+        const c = S.sugar / (S.sugar + S.water) * 100;
+        if(Math.abs(c - 20) > .01) return draw(say(`現在是 ${c.toFixed(1)}%。${S.water === 100 ? "20 g 糖加 100 g 水，溶液是 120 g，20 ÷ 120 ≈ 16.7%——<b>分母是整杯溶液</b>，不是只有水。" : "調整水的量，讓糖占整杯糖水的 20%。"}`));
+        return handMC(box.querySelector("[data-q]"), "例題 2-4：甲用 100 g 水＋20 g 糖、乙用 80 g 水＋20 g 糖，誰配出 20% 糖水？", [["乙：20 ÷（20＋80）× 100%＝20%", 1], ["甲：糖 20 g 除以水 100 g 就是 20%", 0, "分母要用溶液質量（糖＋水），甲是 20 ÷ 120。"], ["兩個都是 20%", 0, "溶液質量不一樣，濃度就不一樣。"]],
+          () => { draw(say("✅ 重量百分率濃度的分母是<b>溶液</b>（溶質＋溶劑）的質量。", true)); done(); });
+      }
+    });
+    handDnd(svg, {name: k => ({salt: "食鹽一匙", sugar: "糖 20 g", water: "水 20 g"})[k], drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(!inR(x, y, [110, 80, 250, 220])){ toast("倒進燒杯"); return draw(); }
+      if(k === "salt"){ if(!S.stirred) return draw(say("上一匙還沒攪拌，先攪一攪，看它溶不溶得掉。")); if(S.satQ) return draw(say("已經飽和了，再加也溶不掉。")); S.salt += 6; S.stirred = false; return draw(""); }
+      if(k === "sugar"){ if(S.sugar){ toast("糖已經放了 20 g"); return draw(); } S.sugar = 20; return draw(""); }
+      if(k === "water"){ S.water += 20; return draw(""); }
+      draw();
+    })});
+    K.draw = draw; draw("");
+  }
+
+  /* ④ 二氧化碳：大理岩＋水 → 稀鹽酸由薊頭漏斗加入 → 排水集氣 → 線香熄滅、石灰水變混濁
+     稀鹽酸直接打開瓶塞倒 → 濺到手（急救照課本 p.8 第 7 條） */
+  function actCO2(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 250"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({rock: false, water: false, acid: false, gas: 0, out: false, stick: null, lime: 0}));
+    const svg = box.querySelector("svg"); let accN = 0;
+    const tk = setInterval(() => { if(!K.alive()) return clearInterval(tk); if(K.ctl.paused || !K.S.acid || K.S.gas >= 1 || K.S.out) return; K.S.gas = Math.min(1, K.S.gas + .02); if(!K.dragging) draw(K.S.gas >= 1 ? say("集氣瓶裡的水都被排出來了，裝滿二氧化碳。", true) : undefined); }, 100);
+    function draw(msg){
+      const S = K.S; let g = "";
+      if(!S.out){
+        g += `<path d="M60 230 V160 Q60 140 80 140 H120 Q140 140 140 160 V230 Z" fill="#fff" stroke="#5c7cfa" stroke-width="2"/>`;
+        if(S.water) g += `<path d="M61 229 V190 H139 V229 Z" fill="#a5d8ff" opacity=".7"/>`;
+        if(S.rock) g += `<g fill="#ced4da" stroke="#868e96">${[0, 1, 2, 3].map(i => `<rect x="${70 + i * 15}" y="${214 - (i % 2) * 6}" width="12" height="10" rx="2"/>`).join("")}</g>`;
+        if(S.acid && S.gas < 1) for(let i = 0; i < 6; i++) g += `<circle cx="${72 + Math.random() * 56}" cy="${196 + Math.random() * 28}" r="2.5" fill="#fff" stroke="#74c0fc"/>`;
+        g += `<path d="M90 140 V70 M84 70 h12 l-6 -18 z" stroke="#868e96" stroke-width="3" fill="#e9ecef"/><text x="70" y="44" font-size="9" fill="var(--sub)">薊頭漏斗</text>
+          <path d="M115 140 V110 H240 V200" stroke="#868e96" stroke-width="3" fill="none"/>
+          <rect x="200" y="190" width="140" height="48" fill="#a5d8ff" opacity=".6" stroke="#74c0fc"/><rect x="220" y="${120}" width="44" height="100" fill="#fff" opacity=".7" stroke="#5c7cfa" stroke-width="2"/>
+          <rect x="221" y="${121 + 98 * S.gas}" width="42" height="${98 * (1 - S.gas)}" fill="#a5d8ff" opacity=".8"/><text x="290" y="140" font-size="9" fill="var(--sub)">集氣瓶</text>
+          <rect x="40" y="50" width="120" height="190" fill="transparent"/>`;
+        const T = [!S.rock ? ["rock", "大理岩", `<rect x="-12" y="16" width="24" height="16" rx="3" fill="#ced4da" stroke="#868e96"/>`] : null, !S.water ? ["water", "水", `<rect x="-10" y="6" width="20" height="32" rx="4" fill="#d0ebff" stroke="#4dabf7"/>`] : null,
+          S.rock && S.water && !S.acid ? ["acid", "稀鹽酸", `<rect x="-10" y="6" width="20" height="32" rx="3" fill="#fff9db" stroke="#f08c00"/><text x="0" y="28" font-size="8" text-anchor="middle">HCl</text>`] : null].filter(Boolean);
+        g += T.map((t, i) => tile(t[0], 200 + i * 64, 10, t[1], t[2])).join("");
+      } else {
+        const lc = S.lime === 2 ? "#e9ecef" : "#f1f3f5";
+        g += `<rect x="60" y="100" width="70" height="120" rx="6" fill="#fff" stroke="#5c7cfa" stroke-width="2"/><text x="95" y="236" text-anchor="middle" font-size="10" fill="var(--sub)">二氧化碳瓶</text>`;
+        if(S.lime) g += `<rect x="61" y="190" width="68" height="29" fill="${lc}" stroke="none"/>${S.lime === 2 ? `<g fill="#fff">${[0, 1, 2, 3, 4, 5].map(i => `<circle cx="${70 + i * 10}" cy="${200 + (i % 2) * 8}" r="3"/>`).join("")}</g>` : ""}`;
+        if(S.stick) g += `<line x1="95" y1="70" x2="95" y2="150" stroke="#a0522d" stroke-width="3"/>${S.stick === "lit" ? flameP(95, 152, 14, 4, "#ff6a1f", "#ffd23f") : `<circle cx="95" cy="152" r="2" fill="#555"/>`}`;
+        g += `<rect x="40" y="60" width="110" height="170" fill="transparent"/>`;
+        const T = [!S.stick ? ["stick", "點燃的線香", `<line x1="0" y1="8" x2="0" y2="40" stroke="#a0522d" stroke-width="3"/>${flameP(0, 8, 10, 3, "#ff6a1f", "#ffd23f")}`] : null, S.stick && !S.lime ? ["lime", "澄清石灰水", `<rect x="-10" y="6" width="20" height="32" rx="3" fill="#f8f9fa" stroke="#adb5bd"/>`] : null].filter(Boolean);
+        g += T.map((t, i) => tile(t[0], 220 + i * 64, 10, t[1], t[2])).join("");
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = !S.out ? "圖 2-26：錐形瓶裝<b>大理岩＋水</b>，<b>稀鹽酸由薊頭漏斗加入</b>，用排水集氣法收集二氧化碳。" : "檢驗：把<b>點燃的線香</b>放進瓶裡（圖 2-27），再倒入<b>澄清石灰水</b>搖一搖。";
+      handBtns(box.querySelector("[data-btn]"), !S.out && S.gas >= 1 ? `<button class="btn gold" data-b="take">在水中蓋上玻璃片，取出集氣瓶</button>` : S.lime === 1 ? `<button class="btn gold" data-b="shake">🔄 搖一搖</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(b === "take"){ S.out = true; return draw(""); }
+      if(b === "shake"){ S.lime = 2; draw(say("澄清石灰水變<b>混濁</b>了，出現白色沉澱。", true));
+        return handMC(box.querySelector("[data-q]"), "要檢驗一瓶氣體是不是二氧化碳，課本用的是哪一個方法？", [["倒入澄清石灰水，看會不會變混濁（產生白色沉澱）", 1], ["放入線香，看會不會燒得更旺", 0, "燒得更旺是氧氣（實驗 2-3）。二氧化碳會讓線香熄滅。"], ["湊近聞聞看", 0, "實驗室的氣體不可以直接湊近聞。"]],
+          () => { draw(say("✅ 石灰水與二氧化碳反應會產生白色沉澱物，可用來檢驗二氧化碳；線香在二氧化碳中會熄滅（p.53）。", true)); done(); }); }
+    });
+    handDnd(svg, {name: k => ({rock: "大理岩", water: "水", acid: "稀鹽酸", stick: "點燃的線香", lime: "澄清石灰水"})[k], drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(k === "acid"){
+        if(inR(x, y, [70, 40, 110, 80])){ S.acid = true; return draw(say("稀鹽酸從薊頭漏斗流進瓶裡，大理岩冒出大量氣泡！氣體經導管進入集氣瓶，把水排出來。", true)); }
+        if(inR(x, y, [50, 80, 150, 240])){
+          accN++; draw("");
+          return handAccident(box.querySelector(".hand"), {pic: `<svg viewBox="0 0 240 110"><rect x="0" y="92" width="240" height="18" rx="4" fill="#6b4a2f"/><text x="120" y="80" font-size="56" text-anchor="middle">✋</text><g fill="#fab005">${[0, 1, 2, 3, 4].map(i => `<circle cx="${92 + i * 14}" cy="${30 + (i % 2) * 10}" r="4"/>`).join("")}</g></svg>`,
+            title: "💥 稀鹽酸濺到手上！", cause: "打開瓶塞直接把稀鹽酸往瓶口倒，瓶裡劇烈冒泡，酸液濺到手上，皮膚刺痛。", ...{q: "酸液濺到皮膚了！第一步要怎麼做？", opts: [
+              {t: "盡快用大量清水沖洗，並報告老師、就醫", ok: true, why: "課本 p.8 第 7 條：身體或眼睛不小心沾到藥品，應盡快使用大量清水沖洗並立即就醫。"},
+              {t: "用衛生紙擦乾就好", why: "擦不乾淨，酸會繼續傷害皮膚。"}, {t: "先把實驗做完", why: "拖越久傷害越大。"}, {t: "塗藥膏蓋住", why: "酸被悶在皮膚上。"}]},
+            lesson: "稀鹽酸要<b>從薊頭漏斗加入</b>，瓶子保持塞緊（課本圖 2-26）。直接開瓶倒會濺出、氣體也會跑掉。（濺出情節是一般安全常識，課本沒有寫）"},
+            () => draw(say("回到出事前。稀鹽酸要從薊頭漏斗加。")));
+        }
+        toast("加到錐形瓶裡"); return draw();
+      }
+      if(!S.out){
+        if(!inR(x, y, [40, 50, 160, 240])){ toast("放進錐形瓶"); return draw(); }
+        if(k === "rock"){ S.rock = true; return draw(""); }
+        if(k === "water"){ S.water = true; return draw(""); }
+        return draw();
+      }
+      if(!inR(x, y, [40, 60, 150, 230])){ toast("放進二氧化碳瓶"); return draw(); }
+      if(k === "stick"){ S.stick = "lit"; draw(""); K.ctl.wait(1200, () => { S.stick = "out"; draw(say("線香一放進去就<b>熄滅</b>了！二氧化碳不能幫助燃燒。", true)); }); return; }
+      if(k === "lime"){ S.lime = 1; return draw(say("倒入澄清石灰水。")); }
+      draw();
+    })});
+    K.draw = draw; draw("");
+  }
+
+  /* ⑤ 自製濾水器：吸管底部塞棉花 → 規畫濾材順序（每層約 1.5～2 公分）→ 倒入汙水 → 比較、提出 2.0 版假設 */
+  function actFilter(box, done){
+    const MAT = {cotton: ["棉花", "#fff"], stone: ["麥飯石", "#868e96"], sand: ["海灘砂", "#e9c46a"], carbon: ["活性碳", "#343a40"]};
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 250"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({stack: [], poured: false, runs: []}));
+    const svg = box.querySelector("svg");
+    /* 濾出水的混濁度（示意，一般常識）：底層沒棉花→砂漏出；有活性碳去色；粗的在上、細的在下比較不會塞住 */
+    function result(st){
+      if(st[0] !== "cotton") return {clear: 10, msg: "底部沒有先塞棉花，砂子和碳粒跟著水一起漏出來，濾出的水更髒了！"};
+      const top = st[st.length - 1], hasC = st.includes("carbon"), hasS = st.includes("sand");
+      let clear = 40 + (hasS ? 25 : 0) + (hasC ? 20 : 0), slow = top === "sand";
+      return {clear: Math.min(90, clear), slow, msg: (slow ? "最上層是細細的海灘砂，泥巴很快把表面塞住，水流得很慢。" : "水順順地流下來。") + (hasC ? "" : "濾出的水還有一點顏色和味道。")};
+    }
+    function draw(msg){
+      const S = K.S; let g = `<rect x="150" y="50" width="40" height="170" fill="#fff" opacity=".6" stroke="#5c7cfa" stroke-width="2"/><text x="170" y="44" text-anchor="middle" font-size="9" fill="var(--sub)">吸管（倒過來）</text>`;
+      S.stack.forEach((m, i) => { const y = 200 - i * 30; g += `<rect x="151" y="${y - 28}" width="38" height="28" fill="${MAT[m][1]}" stroke="#adb5bd"/><text x="200" y="${y - 10}" font-size="9" fill="var(--ink)">${MAT[m][0]}</text>`; });
+      g += `<rect x="140" y="222" width="60" height="26" fill="#e7f5ff" opacity=".6" stroke="#74c0fc"/>`;
+      if(S.poured){ const r = result(S.stack); g += `<rect x="141" y="234" width="58" height="13" fill="#8d6e63" opacity="${(100 - r.clear) / 100}"/><text x="210" y="244" font-size="9" fill="var(--ink)">清澈度 ${r.clear}</text>`; }
+      g += `<rect x="130" y="40" width="80" height="185" fill="transparent"/>`;
+      g += Object.keys(MAT).filter(k => !S.stack.includes(k) && !S.poured).map((k, i) => tile(k, 34 + i * 62, 10, MAT[k][0], `<rect x="-14" y="12" width="28" height="22" rx="3" fill="${MAT[k][1]}" stroke="#adb5bd"/>`)).join("");
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = "探索活動：❶ 離吸管底部約 2 公分處塞入<b>棉花</b> → ❷ 規畫濾材的放置順序，依序堆疊（每層約 1.5～2 公分）→ ❸ 倒入汙水，用燒杯收集過濾後的水。";
+      handBtns(box.querySelector("[data-btn]"), !S.poured && S.stack.length >= 2 ? `<button class="btn gold" data-b="pour">💧 倒入汙水</button>` : S.poured ? `<button class="btn ghost" data-b="redo">倒掉、拆開重做一支</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(b === "pour"){ S.poured = true; const r = result(S.stack); S.runs.push(S.stack.join("→")); draw(say(r.msg + "（濾材效果是示意，課本請你自己蒐集資料、動手比較）", r.clear >= 60 && !r.slow));
+        if(S.stack[0] === "cotton") quiz(); return; }
+      if(b === "redo"){ S.stack = []; S.poured = false; box.querySelector("[data-q]").innerHTML = ""; return draw(""); }
+    });
+    let step = 0;
+    function quiz(){
+      const q = box.querySelector("[data-q]");
+      if(step === 0) handMC(q, "課本要你提出「簡易濾水器 2.0 版」的假設並設計實驗驗證。想知道「濾材順序」會不會影響過濾效果，要怎麼設計？", [["只改變濾材順序，濾材種類、每層厚度、倒入的汙水量都保持相同", 1], ["順序、厚度、汙水量一起改，比較快", 0, "同時改好幾個條件，就不知道是哪一個造成差別（控制變因，p.9）。"], ["只做一支就好，不用比較", 0, "要有比較，才知道改變的條件有沒有影響。"]],
+        () => { step = 1; quiz(); });
+      else handMC(q, "自製濾水器濾出來的水，可以直接喝嗎？", [["不可以：只濾掉看得到的雜質，水裡可能還有看不見的細菌或溶解的物質", 1], ["可以：看起來清澈就是乾淨的水", 0, "清澈不等於乾淨，細菌和溶解在水中的物質看不到。"], ["可以，只要多濾幾次", 0, "簡易濾材濾不掉看不見的細菌和溶解的物質。"]],
+        () => { draw(say("✅ 課本對話框：比較圖 2-32 生命吸管的構造，自製濾水器濾出的水<b>不能直接喝</b>。（理由是一般常識）", true)); done(); });
+    }
+    handDnd(svg, {name: k => MAT[k][0], drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(!inR(x, y, [120, 30, 220, 230])){ toast("放進吸管"); return draw(); }
+      S.stack.push(k); draw(S.stack.length === 1 && k !== "cotton" ? say("最下面沒有先塞棉花……倒水時會怎樣呢？") : "");
+    })});
+    K.draw = draw; draw("");
+  }
+}});
+
+/* ═════ 第 3 章 活動站：波動與聲音（課本沒有正式實驗；取課本探索活動與圖示操作） ═════
+   ① 彈簧橫波與縱波（p.70–71 探索活動、圖 3-2～3-4）② 波的各部位與波速（p.72–74、圖 3-5、例題 3-1）
+   ③ 聲音的產生與傳播（p.75–77 探索活動、圖 3-8～3-12）④ 聲納測海深（p.80、圖 3-19）⑤ 音調與響度（p.83–85） */
+LABS.push({id: "st-ch3", ch: "ch34", icon: "🎵", title: "第 3 章 活動站：波動與聲音", page: "p.70–85",
+  desc: "抖彈簧、量波長、敲音叉、抽真空、聲納測海深、撥直尺改音調。", run(pane, L){
+  handStation(pane, L, [
+    {key: "slinky", title: "彈簧橫波與縱波", page: "p.70–71", run: actSlinky},
+    {key: "parts", title: "波的各部位與波速", page: "p.72–74", run: actParts},
+    {key: "fork", title: "聲音的產生與傳播", page: "p.75–77", run: actFork},
+    {key: "sonar", title: "聲納測海深", page: "p.80", run: actSonar},
+    {key: "pitch", title: "音調與響度", page: "p.83–85", run: actPitch}]);
+
+  /* ① 彈簧：手上下抖＝橫波、前後推拉＝縱波；緞帶（紅點）只在原地振動 */
+  function actSlinky(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 200"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({mode: null, t: 0, watched: {}, ans: {}}));
+    const svg = box.querySelector("svg"), N = 26;
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); if(K.ctl.paused || !K.S.mode) return; K.S.t += .1; if(K.S.t > 2.5) K.S.watched[K.S.mode] = 1; draw(); }, 100);
+    function draw(msg){
+      const S = K.S; let g = `<text x="10" y="20" font-size="12" fill="var(--sub)">✋ 手</text><line x1="20" y1="100" x2="350" y2="100" stroke="var(--line)" stroke-dasharray="4 4"/>`;
+      for(let i = 0; i < N; i++){
+        const x0 = 24 + i * 12.6, ph = S.t * 6 - i * .5, on = S.mode && i <= S.t * 12;
+        const dx = S.mode === "long" && on ? 6 * Math.sin(ph) : 0, dy = S.mode === "trans" && on ? 30 * Math.sin(ph) : 0;
+        g += `<ellipse cx="${x0 + dx}" cy="${100 + dy}" rx="3" ry="20" fill="none" stroke="${i === 13 ? "#e03131" : "#868e96"}" stroke-width="${i === 13 ? 3 : 1.6}"/>`;
+        if(i === 13) g += `<path d="M${x0 + dx} ${76 + dy} v-12" stroke="#e03131" stroke-width="3"/><text x="${x0 + dx}" y="${58 + dy}" text-anchor="middle" font-size="10" fill="#e03131">緞帶</text>`;
+      }
+      if(S.mode) g += `<path d="M150 185 H230" stroke="var(--ink)" marker-end="url(#ar)"/><text x="190" y="180" text-anchor="middle" font-size="10" fill="var(--sub)">波前進方向</text><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="var(--ink)"/></marker></defs>`;
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = "探索活動：手握彈簧一端，<b>上下抖動</b>或<b>前後推拉</b>，盯著中間的紅色緞帶。兩種都要試，再回答問題。";
+      handBtns(box.querySelector("[data-btn]"), `<button class="btn${S.mode === "trans" ? " gold" : ""}" data-b="trans">↕ 手上下抖動</button><button class="btn${S.mode === "long" ? " gold" : ""}" data-b="long">↔ 手前後推拉</button><button class="btn ghost" data-b="stop">✋ 停</button>`, act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => { if(b === "stop"){ K.S.mode = null; K.S.t = 0; } else if(K.S.mode !== b){ K.S.mode = b; K.S.t = 0; } draw(""); });
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), m = S.mode && S.watched[S.mode] && !S.ans[S.mode] ? S.mode : null;
+      if(shown === (m || "")) return; shown = m || "";
+      if(!m){ q.innerHTML = ""; return; }
+      handMC(q, m === "trans" ? "手<b>上下</b>抖動時，緞帶怎麼動？這是哪一種波？" : "手<b>前後</b>推拉時，緞帶怎麼動？這是哪一種波？",
+        m === "trans" ? [["緞帶在原地上下振動，和波前進方向垂直：橫波", 1], ["緞帶跟著波一起往右跑：橫波", 0, "盯著紅色緞帶：它有沒有離開原來的位置往右跑？"], ["緞帶在原地前後振動：縱波", 0, "緞帶是上下動，不是前後動。"]]
+          : [["緞帶在原地前後振動，和波前進方向平行：縱波", 1], ["緞帶跟著疏密一起往右跑：縱波", 0, "緞帶只在原地附近來回，沒有跟著波跑。"], ["緞帶上下振動：橫波", 0, "緞帶是前後（左右）動，不是上下動。"]],
+        K.track(() => { S.ans[m] = 1; shown = null; const all = S.ans.trans && S.ans.long;
+          draw(say(all ? "✅ 兩種都對！<b>波在傳播時，介質只在原處振動，並沒有隨著波前進</b>（p.70）。上下抖＝橫波（垂直），前後推拉＝縱波（平行），縱波會出現疏密相間。" : "✅ 答對了！再試另一種抖法。", true));
+          if(all) done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ② 繩波：點出波峰、波谷；讀方格算波長；改頻率看波長變短、波速不變（例題 3-1） */
+  function actParts(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 200"></svg></div>
+      <div class="row" style="margin-top:6px;align-items:center;gap:10px"><label>頻率 <b data-fv></b> 次／秒 <input type="range" min="1" max="4" step="1" data-f></label><label>振幅 <input type="range" min="15" max="45" step="5" data-a></label></div>
+      <div data-q></div><div data-fb></div>`, () => ({f: 2, a: 30, step: 0, t: 0}));
+    const svg = box.querySelector("svg"), V = 120;            // 波速 120 cm/秒（1 格＝10 cm）
+    const lam = () => V / K.S.f, X0 = 20, PX = 2.6;          // 1 cm＝2.6 px → 畫面寬約 120 cm
+    const y = (x, t) => 100 - K.S.a * Math.sin(2 * Math.PI * (x / lam() - K.S.f * t));
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); if(K.ctl.paused || K.S.step < 2) return; K.S.t += .05; draw(); }, 50);
+    function draw(msg){
+      const S = K.S; let g = "";
+      for(let c = 0; c <= 120; c += 10) g += `<line x1="${X0 + c * PX}" x2="${X0 + c * PX}" y1="40" y2="160" stroke="var(--line)"/><text x="${X0 + c * PX}" y="176" font-size="9" text-anchor="middle" fill="var(--sub)">${c}</text>`;
+      g += `<text x="340" y="190" font-size="9" text-anchor="end" fill="var(--sub)">（cm）</text><line x1="${X0}" x2="${X0 + 120 * PX}" y1="100" y2="100" stroke="var(--sub)" stroke-dasharray="4 3"/><text x="${X0 + 2}" y="96" font-size="9" fill="var(--sub)">原靜止位置</text>`;
+      let d = ""; for(let c = 0; c <= 120; c += 1) d += (c ? "L" : "M") + (X0 + c * PX).toFixed(1) + " " + y(c, S.t).toFixed(1);
+      g += `<path d="${d}" fill="none" stroke="#1c7ed6" stroke-width="3"/><rect x="0" y="30" width="360" height="140" fill="transparent" data-hit/>`;
+      (S.marks || []).forEach(([cx, cy, ok]) => { g += `<circle cx="${cx}" cy="${cy}" r="6" fill="none" stroke="${ok ? "#2f9e44" : "#e03131"}" stroke-width="2.5"/>`; });
+      svg.innerHTML = g;
+      box.querySelector("[data-fv]").textContent = S.f;
+      box.querySelector("[data-f]").value = S.f; box.querySelector("[data-a]").value = S.a;
+      box.querySelector("[data-f]").disabled = S.step < 3; box.querySelector("[data-a]").disabled = S.step < 2;
+      box.querySelector(".htask").innerHTML = ["① 在繩波上<b>點出一個波峰</b>（偏離原靜止位置最高的點）。", "② 再<b>點出一個波谷</b>。", "③ 波動起來了！看方格：相鄰兩個波峰相距幾公分？（這就是<b>波長</b>）", "④ 把頻率改成 <b>4 次／秒</b>，再看看波長和波速。", "🎉 完成！"][Math.min(S.step, 4)];
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    svg.addEventListener("pointerdown", K.track(e => {
+      const S = K.S; if(S.step > 1) return;
+      const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse());
+      const c = (q.x - X0) / PX, yy = y(c, S.t), want = S.step === 0 ? 100 - S.a : 100 + S.a, ok = Math.abs(yy - want) < 4 && Math.abs(q.y - yy) < 18;
+      S.marks = (S.marks || []).concat([[q.x, yy, ok]]);
+      if(!ok) return draw(say(S.step === 0 ? "這裡不是最高點。波峰是偏離原靜止位置<b>最高</b>的點。" : "這裡不是最低點。波谷是偏離原靜止位置<b>最低</b>的點。"));
+      S.step++; S.marks = [[q.x, yy, true]];
+      draw(say(S.step === 1 ? "✅ 波峰！波峰到原靜止位置的高度就是<b>振幅</b>。" : "✅ 波谷！現在讓繩子動起來。", true));
+    }));
+    box.querySelector("[data-f]").oninput = K.track(e => { K.S.f = +e.target.value; draw(""); });
+    box.querySelector("[data-a]").oninput = K.track(e => { K.S.a = +e.target.value; draw(""); });
+    let shown = -1;
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.step === 2 ? 2 : S.step === 3 && S.f === 4 ? 3 : -1;
+      if(shown === k) return; shown = k;
+      if(k < 0){ q.innerHTML = ""; return; }
+      if(k === 2) handMC(q, "頻率 2 次／秒時，相鄰兩波峰相距（波長）是多少？波速＝頻率 × 波長 是多少？", [["波長 60 cm，波速 120 cm／秒", 1], ["波長 30 cm，波速 60 cm／秒", 0, "數方格：從一個波峰到下一個波峰，要跨過 6 格（每格 10 cm）。"], ["波長 60 cm，波速 30 cm／秒", 0, "波速＝頻率 × 波長＝2 × 60。"]],
+        K.track(() => { S.step = 3; shown = null; draw(say("✅ v＝f × λ＝2 × 60＝120 cm／秒。改變振幅，波長會變嗎？試試看振幅滑桿，再把頻率改成 4。", true)); }));
+      else handMC(q, "頻率變成 4 次／秒以後，波長和波速怎麼變？", [["波長變成一半（30 cm），波速不變（120 cm／秒）", 1], ["波長不變，波速變成 2 倍", 0, "數方格：兩個波峰之間只剩 3 格。"], ["波長和波速都變一半", 0, "v＝4 × 30＝120，和剛才一樣。"]],
+        K.track(() => { S.step = 4; shown = null; draw(say("✅ 同一條繩子（同一種介質），波速不變；頻率變大，波長就變短（例題 3-1）。振幅只改變起伏高低，不改變波長。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ③ 音叉：用小槌敲 → 插進水槽濺水花 → 手握住聲音停；抽氣鐘罩：抽走空氣，鈴聲變小 */
+  function actFork(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 230"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({part: "fork", ring: 0, inWater: false, held: false, q1: false, air: 100, bell: false, q2: false}));
+    const svg = box.querySelector("svg");
+    const TRAY = {mallet: [40, "橡膠小槌"], hammer: [100, "鐵鎚"]};
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); if(K.ctl.paused) return;
+      const S = K.S;
+      if(S.part === "fork" && S.ring > 0 && !S.held){ S.ring = Math.max(0, S.ring - .006); if(Math.random() < .08) handTone(440, 140, .05 * S.ring); if(!K.dragging) draw(); }
+      if(S.part === "jar" && S.bell){ if(Math.random() < .25) handTone(1200, 90, .06 * S.air / 100); draw(); } }, 100);
+    function draw(msg){
+      const S = K.S, w = S.ring > 0 && !S.held ? Math.sin(Date.now() / 30) * 3 * S.ring : 0; let g = "";
+      if(S.part === "fork"){
+        g += `<rect x="200" y="160" width="130" height="50" rx="4" fill="#d0ebff" opacity=".6" stroke="#74c0fc" stroke-width="2"/><text x="265" y="225" text-anchor="middle" font-size="11" fill="var(--sub)">水槽</text>`;
+        const fx = S.inWater ? 265 : 120, fy = S.inWater ? 120 : 90, inv = S.inWater ? 180 : 0;
+        g += `<g data-it="fork" transform="translate(${fx} ${fy}) rotate(${inv})"><path d="M${-10 - w} -50 V10 Q0 24 ${10 + w} 10 V-50" fill="none" stroke="#868e96" stroke-width="6"/><rect x="-3" y="18" width="6" height="40" fill="#868e96"/><rect x="-26" y="-60" width="52" height="125" fill="transparent"/></g>`;
+        if(S.inWater && S.ring > .05 && !S.held) for(let i = 0; i < 6; i++) g += `<circle cx="${250 + Math.random() * 30}" cy="${150 - Math.random() * 30 * S.ring}" r="${2 + Math.random() * 2}" fill="#4dabf7"/>`;
+        if(S.held) g += `<text x="${fx + 14}" y="${fy}" font-size="26">✊</text>`;
+        if(S.ring > .05 && !S.held && !S.inWater) g += `<text x="160" y="60" font-size="16" fill="#1c7ed6">♪ 嗡～</text>`;
+        g += Object.keys(TRAY).map(k => { const [x, n] = TRAY[k]; return `<g data-it="${k}" transform="translate(${x} 160)"><rect x="-28" y="-4" width="56" height="62" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${k === "mallet" ? `<rect x="-3" y="18" width="6" height="26" fill="#a0522d"/><ellipse cx="0" cy="14" rx="12" ry="9" fill="#e8590c"/>` : `<rect x="-3" y="18" width="6" height="26" fill="#a0522d"/><rect x="-14" y="6" width="28" height="12" fill="#555"/>`}<text x="0" y="54" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${n}</text></g>`; }).join("");
+      } else {
+        const n = Math.round(S.air / 4);
+        g += `<path d="M110 200 V90 Q110 30 180 30 Q250 30 250 90 V200 Z" fill="#e7f5ff" opacity=".5" stroke="#74c0fc" stroke-width="2"/><rect x="90" y="200" width="180" height="10" fill="#868e96"/>
+          <path d="M270 205 H320 V150" stroke="#555" stroke-width="5" fill="none"/><rect x="300" y="120" width="44" height="30" rx="4" fill="#495057"/><text x="322" y="139" text-anchor="middle" font-size="10" fill="#fff">抽氣機</text>`;
+        let s = 7; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+        for(let i = 0; i < n; i++) g += `<circle cx="${120 + rnd() * 120}" cy="${45 + rnd() * 150}" r="2" fill="#adb5bd"/>`;
+        const sw = S.bell ? Math.sin(Date.now() / 40) * 8 : 0;
+        g += `<line x1="180" y1="40" x2="180" y2="80" stroke="#555" stroke-width="2"/><path d="M160 110 Q160 80 180 80 Q200 80 200 110 Z" fill="#fab005" transform="rotate(${sw} 180 80)"/>`;
+        if(S.bell) g += `<text x="${40}" y="${70}" font-size="${10 + 12 * S.air / 100}" fill="#e8590c" opacity="${.15 + .85 * S.air / 100}">🔔 叮叮叮</text>`;
+        g += `<text x="20" y="220" font-size="12" fill="var(--ink)">罩內空氣：${S.air}%</text>`;
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.part === "fork" ? "探索活動：拿<b>小槌</b>敲音叉（拖到音叉上），聽聽看；再把音叉<b>拖進水槽</b>，看水面；最後用手握住音叉。" : "波以耳的真空實驗：鐘罩裡的鈴鐺一直在響。用<b>抽氣機</b>把空氣抽走，聽聽鈴聲怎麼變。";
+      const B = S.part === "fork" ? (S.ring > .05 && !S.held ? `<button class="btn" data-b="hold">✊ 用手握住音叉</button>` : "") + (S.held ? `<button class="btn ghost" data-b="release">放開手</button>` : "")
+        : (S.bell ? "" : `<button class="btn" data-b="bell">🔔 讓鈴鐺響</button>`) + `<button class="btn" data-b="pump">⬇ 抽氣</button><button class="btn ghost" data-b="vent">⬆ 放空氣進去</button>`;
+      handBtns(box.querySelector("[data-btn]"), B, act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(b === "hold"){ S.held = true; return draw(say(S.inWater ? "手一握住，音叉停止振動——水花沒了，聲音也停了。" : "手一握住，音叉停止振動，聲音也停了。", true)); }
+      if(b === "release"){ S.held = false; S.ring = 0; return draw(""); }
+      if(b === "bell"){ S.bell = true; return draw(""); }
+      if(b === "pump"){ S.air = Math.max(0, S.air - 20); return draw(S.air === 0 ? say("鈴鐺還在擺動，卻幾乎<b>聽不到</b>聲音了！") : ""); }
+      if(b === "vent"){ S.air = Math.min(100, S.air + 20); return draw(""); }
+    });
+    handDnd(svg, {name: k => k === "fork" ? "音叉" : TRAY[k][1], drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(S.part !== "fork") return draw();
+      const onFork = inR(x, y, S.inWater ? [235, 60, 295, 175] : [90, 30, 150, 160]);
+      if(k === "hammer" && onFork) return draw(say("😬 鐵鎚敲音叉會把音叉敲壞、變形，發出的聲音也不純。音叉要用<b>小槌</b>敲。"));
+      if(k === "mallet"){ if(!onFork){ toast("拖到音叉上敲"); return draw(); } S.ring = 1; S.held = false; return draw(say("噹！音叉發出「嗡～」的聲音。仔細看，音叉的兩支叉在快速振動。")); }
+      if(k === "fork"){
+        const inW = inR(x, y, [195, 120, 335, 215]);
+        if(inW === S.inWater) return draw();
+        S.inWater = inW;
+        return draw(inW ? (S.ring > .05 && !S.held ? say("水面濺起水花！振動的音叉讓水也跟著振動。", true) : say("音叉沒有在振動，水面很平靜。先敲一下再放進來。")) : "");
+      }
+      draw();
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]");
+      const k = S.part === "fork" && !S.q1 && S.held && S.inWater ? "q1" : S.part === "jar" && !S.q2 && S.air === 0 && S.bell ? "q2" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "q1") handMC(q, "從音叉的實驗可以知道，聲音是怎麼產生的？", [["物體振動產生聲音；振動停止，聲音也停止", 1], ["音叉碰到水才會發出聲音", 0, "還沒放進水裡，敲一下就聽得到了。"], ["要用力握住才會有聲音", 0, "握住以後聲音反而停了。"]],
+        K.track(() => { S.q1 = true; S.part = "jar"; shown = null; draw(say("✅ <b>聲音是由物體振動所產生的</b>（p.76）。接下來：聲音要怎麼傳到耳朵？", true)); }));
+      else handMC(q, "鈴鐺還在擺動，抽成真空後卻聽不到聲音，代表什麼？", [["聲音的傳播需要介質，真空中無法傳播", 1], ["鈴鐺壞掉了，不會振動", 0, "鈴鐺明明還在擺動。"], ["空氣越少，聲音傳得越快", 0, "空氣越少，聽到的聲音越小，最後聽不到。"]],
+        K.track(() => { S.q2 = true; shown = null; draw(say("✅ 聲波要靠介質傳播：空氣、水、固體都可以（耳朵貼桌子也聽得到敲擊聲，圖 3-13），<b>真空不行</b>。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ④ 聲納：發射超聲波 → 碰海底反射 → 回到船上，碼錶計時；深度＝½ × 聲速 × 時間（海水聲速取 1500 m/s） */
+  function actSonar(box, done){
+    const DEP = [1200, 2250, 900, 3000, 1650];
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 230"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({round: 0, ok: 0, t: 0, run: false, back: null, ans: false}));
+    const svg = box.querySelector("svg");
+    const depth = () => DEP[K.S.round % DEP.length], T = () => 2 * depth() / 1500;
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); if(K.ctl.paused || !K.S.run) return;
+      K.S.t = Math.min(T(), K.S.t + T() / 40);           // 動畫約 4 秒跑完一趟
+      if(K.S.t >= T()){ K.S.run = false; K.S.back = +T().toFixed(1); beep(true); }
+      draw(); }, 100);
+    function draw(msg){
+      const S = K.S, sy = 210 - depth() / 3000 * 150, frac = S.t / T(), py = frac <= .5 ? 60 + (sy - 60) * frac * 2 : sy - (sy - 60) * (frac - .5) * 2;
+      let g = `<rect x="0" y="60" width="360" height="170" fill="#1c7ed6" opacity=".18"/><path d="M0 ${sy} Q90 ${sy - 12} 180 ${sy} T360 ${sy} V230 H0Z" fill="#a0785a"/><text x="10" y="${sy + 16}" font-size="10" fill="#fff">海底</text>
+        <path d="M150 60 L210 60 L200 44 L160 44 Z" fill="#495057"/><rect x="172" y="30" width="16" height="14" fill="#868e96"/><text x="230" y="52" font-size="11" fill="var(--ink)">船上聲納</text>`;
+      if(S.run || S.back) g += `<path d="M150 ${py} q30 ${frac <= .5 ? 10 : -10} 60 0" fill="none" stroke="${frac <= .5 ? "#fab005" : "#e8590c"}" stroke-width="3"/>`;
+      g += `<rect x="10" y="8" width="130" height="28" rx="6" fill="var(--card)" stroke="var(--line)"/><text x="75" y="27" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">⏱ ${S.back !== null ? S.back.toFixed(1) : S.t.toFixed(1)} 秒</text>`;
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = `第 ${S.round + 1} 次測量（答對 ${S.ok}／3）：按「發射」送出超聲波，碼錶記下<b>從發出到收到回聲</b>的時間，再算海底深度。海水中聲速約 <b>1500 公尺／秒</b>。`;
+      handBtns(box.querySelector("[data-btn]"), S.run || S.back !== null ? "" : `<button class="btn gold" data-b="go">📡 發射超聲波</button>`, act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => { if(b === "go"){ K.S.run = true; K.S.t = 0; K.S.back = null; draw(""); } });
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.back !== null ? "r" + S.round : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      const d = depth(), t = S.back;
+      handMC(q, `往返時間 ${t.toFixed(1)} 秒，海底深度是多少公尺？`, [[`${d} 公尺`, 1], [`${d * 2} 公尺`, 0, `${t.toFixed(1)} 秒是<b>來回</b>的時間！聲波走了「下去＋上來」兩趟，深度只是一半：½ × 1500 × ${t.toFixed(1)}。`], [`${Math.round(d / 2)} 公尺`, 0, "多除了一次 2。深度＝½ × 聲速 × 往返時間。"], [`${Math.round(1500 / t)} 公尺`, 0, "距離＝速率 × 時間，不是速率 ÷ 時間。"]],
+        K.track(() => { S.ok++; S.round++; S.back = null; S.t = 0; shown = null;
+          if(S.ok >= 3){ draw(say("✅ 三次都算對！<b>海底深度＝½ × 聲速 × 時間</b>（p.80）。聲納用的就是人耳聽不到的超聲波。", true)); return done(); }
+          draw(say(`✅ ½ × 1500 × ${t.toFixed(1)}＝${d} 公尺。換一個海域再測一次。`, true)); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ⑤ 直尺伸出桌緣：伸出越短，振動頻率越高、音調越高；用力撥只改變振幅（響度）；吉他弦、瓶子再確認 */
+  function actPitch(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 170"></svg></div>
+      <div class="row" style="margin-top:6px;align-items:center;gap:10px"><label>直尺伸出 <b data-lv></b> cm <input type="range" min="6" max="24" step="2" data-l></label></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({len: 20, hard: false, tried: {}, amp: 0, step: 0}));
+    const svg = box.querySelector("svg"), freq = l => Math.round(12000 / (l * l) * 4);   // 伸出越短、頻率越高（與長度平方成反比）
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); if(K.ctl.paused || K.S.amp <= 0) return; K.S.amp = Math.max(0, K.S.amp - .04); draw(); }, 60);
+    function draw(msg){
+      const S = K.S, L2 = S.len * 9, a = S.amp * (S.hard ? 28 : 12) * Math.sin(Date.now() / (2000 / freq(S.len)));
+      let g = `<rect x="20" y="80" width="140" height="70" fill="#c8a67a"/><text x="90" y="120" text-anchor="middle" font-size="11" fill="#5c3d1e">桌子</text><text x="60" y="72" font-size="18">✋</text>
+        <path d="M40 78 L160 78 Q${160 + L2 / 2} ${78 + a / 2} ${160 + L2} ${78 + a}" stroke="#f08c00" stroke-width="6" fill="none"/>`;
+      g += `<text x="200" y="30" font-size="12" fill="var(--ink)">頻率約 ${freq(S.len)} 次／秒</text>`;
+      svg.innerHTML = g;
+      box.querySelector("[data-lv]").textContent = S.len; box.querySelector("[data-l]").value = S.len;
+      box.querySelector(".htask").innerHTML = "自然暖身操：一手把直尺<b>緊壓在桌緣</b>，另一手撥動伸出去的那一端。改變伸出的長度，撥撥看；也試試「用力撥」。至少試 3 種長度。";
+      handBtns(box.querySelector("[data-btn]"), `<button class="btn gold" data-b="pluck">👆 輕輕撥</button><button class="btn" data-b="hard">💪 用力撥</button>`, act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => { const S = K.S; S.hard = b === "hard"; S.amp = 1; S.tried[S.len] = 1; if(S.hard) S.triedHard = 1;
+      handTone(freq(S.len), 600, S.hard ? .16 : .05); draw(""); });
+    box.querySelector("[data-l]").oninput = K.track(e => { K.S.len = +e.target.value; K.S.amp = 0; draw(""); });
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]");
+      const k = S.step === 0 && Object.keys(S.tried).length >= 3 ? "a" : S.step === 1 && S.triedHard ? "b" : S.step === 2 ? "c" : S.step === 3 ? "d" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      const nx = (m) => K.track(() => { S.step++; shown = null; draw(say(m, true)); if(S.step === 4) done(); });
+      if(k === "a") handMC(q, "直尺伸出桌緣越<b>短</b>，撥出來的聲音怎樣？", [["振動越快（頻率越高），音調越高", 1], ["振動越慢，音調越低", 0, "再聽一次短的和長的：哪個比較尖？"], ["音調一樣，只是比較大聲", 0, "伸出長度改變的是高低，不是大小聲。"]], nx("✅ <b>音調的高低主要與發聲體的振動頻率有關</b>，頻率越高、音調越高（p.83）。"));
+      if(k === "b") handMC(q, "同樣長度，「用力撥」和「輕輕撥」差在哪裡？", [["用力撥振幅比較大，聲音比較響（響度大），音調不變", 1], ["用力撥頻率變高，音調變高", 0, "長度沒變，頻率就沒變；變的是擺動的幅度。"], ["兩個完全一樣", 0, "仔細看直尺擺動的幅度、聽聲音大小。"]], nx("✅ 響度和<b>振幅</b>有關：振幅越大，響度越大（p.85）。"));
+      if(k === "c") handMC(q, "吉他弦（圖 3-24）：怎樣調，撥出的音調會變高？", [["弦調緊、換細的弦、按住讓弦變短", 1], ["弦調鬆、換粗的弦", 0, "鬆、粗、長的弦振動比較慢，音調低。"], ["用力撥", 0, "用力撥改變的是響度。"]], nx("✅ 弦越緊、越細、越短，振動頻率越高，音調越高。"));
+      if(k === "d") handMC(q, "幾個一樣的玻璃瓶裝不同高度的水，<b>對著瓶口吹</b>，哪一瓶音調最高？", [["水最多的那瓶：瓶內空氣柱最短，振動頻率最高", 1], ["水最少的那瓶", 0, "對著瓶口吹時，振動的是瓶內的空氣柱：空氣柱越長，音調越低。"], ["每瓶都一樣", 0, "排笛也是一樣的道理：管越短，音調越高（圖 3-25）。"]], nx("✅ 吹瓶口時振動的是<b>空氣柱</b>：空氣柱越短、頻率越高、音調越高（排笛同理，圖 3-25）。"));
+    }
+    K.draw = draw; draw("");
+  }
+}});
+
+/* ═════ 第 4 章 活動站：光（正式實驗 4-3、4-5 以外的課本示範實驗、探索活動與圖示操作） ═════
+   ① 針孔成像（p.95–97 示範實驗、圖 4-5～4-7、例題 4-1）② 反射定律＋平面鏡成像（p.99–101、圖 4-10、4-14、4-15）
+   ③ 折射與視深（p.106–108、圖 4-28～4-30 碗底硬幣）④ 配眼鏡（p.120、圖 4-43、4-44）⑤ 三原色光（p.122、圖 4-46、4-48）
+   出錯：蠟燭貼著紙盒（紙盒燒起來）、雷射筆照同學眼睛——兩者是一般安全常識，課本沒有寫 */
+LABS.push({id: "st-ch4", ch: "ch34", icon: "💡", title: "第 4 章 活動站：光", page: "p.95–122",
+  desc: "做針孔成像、雷射筆照鏡子、碗底硬幣加水、幫眼睛配眼鏡、紅綠藍光混色。", run(pane, L){
+
+  /* 共用：上排器材格 */
+  const tray = (k, x, n, ic, y) => `<g data-it="${k}" transform="translate(${x} ${y || 8})"><rect x="-28" y="-4" width="56" height="64" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="54" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${n}</text></g>`;
+  const candle = (x, by, lit, s) => { s = s || 1; return `<rect x="${x - 6 * s}" y="${by - 40 * s}" width="${12 * s}" height="${40 * s}" fill="#e03131"/><line x1="${x}" y1="${by - 40 * s}" x2="${x}" y2="${by - 45 * s}" stroke="#333"/>` + (lit ? flameP(x, by - 44 * s, 18 * s, 6 * s, "#ff922b", "#ffe066") : ""); };
+
+  /* ① 針孔成像：蠟燭放到盒子前、點燃 → 紙屏上看到倒立的像；改變距離看像的大小；針孔變大像變亮但模糊 */
+  function actPinhole(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 230"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({cx: null, lit: false, big: false, seen: {}, step: 0}));
+    const svg = box.querySelector("svg"), PIN = 200, SCR = 300;   // 針孔 x、紙屏 x
+    function draw(msg){
+      const S = K.S; let g = `<rect x="0" y="200" width="360" height="30" fill="#c8a67a" opacity=".5"/>`;
+      // 針孔成像盒（外盒有針孔、內盒紙屏）
+      g += `<rect x="${PIN}" y="110" width="${SCR - PIN + 20}" height="80" fill="#c0703a" opacity=".85"/><rect x="${SCR}" y="114" width="6" height="72" fill="#fff8e1"/>
+        <circle cx="${PIN}" cy="150" r="${S.big ? 6 : 1.8}" fill="#111"/><text x="${PIN - 2}" y="104" font-size="10" text-anchor="end" fill="var(--sub)">${S.big ? "大孔" : "針孔"}</text><text x="${SCR + 3}" y="104" font-size="10" text-anchor="middle" fill="var(--sub)">紙屏</text>`;
+      if(S.cx !== null){
+        g += `<g data-it="candle">${candle(S.cx, 200, S.lit)}<rect x="${S.cx - 16}" y="140" width="32" height="64" fill="transparent"/></g>`;
+        if(S.lit){
+          const d = PIN - S.cx, k = (SCR - PIN) / d, fy = 150 - (200 - 150) * 0, top = 200 - 62, bot = 200; // 燭焰約在 y=138～156
+          const y1 = 150 + (150 - 138) * k, y2 = 150 + (150 - 200) * k;   // 倒立：上變下
+          g += `<line x1="${S.cx}" y1="140" x2="${SCR}" y2="${y1}" stroke="#ffd43b" stroke-width="1" opacity=".7"/><line x1="${S.cx}" y1="198" x2="${SCR}" y2="${y2}" stroke="#ffd43b" stroke-width="1" opacity=".7"/>`;
+          if(S.big) g += `<ellipse cx="${SCR + 3}" cy="150" rx="5" ry="${Math.min(34, 10 + 16 * k)}" fill="#ffe066" opacity=".75"/>`;
+          else g += `<g transform="translate(${SCR + 3} 150) scale(1 ${-k}) translate(0 -150)" opacity=".85"><rect x="-1.6" y="160" width="3.2" height="40" fill="#e03131"/><path d="M0 156 q-3 -8 0 -16 q3 8 0 16z" fill="#ffd43b"/></g>`;
+          g += `<text x="${SCR - 70}" y="225" font-size="11" fill="var(--ink)">燭焰到針孔 ${Math.round(d / 10)} 格</text>`;
+        }
+      }
+      g += tray("candle0", 40, "蠟燭", `<rect x="-5" y="10" width="10" height="28" fill="#e03131"/>`);
+      if(S.cx !== null) g = g.replace(/<g data-it="candle0"[\s\S]*?<\/g>/, "");
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = ["示範實驗：把<b>蠟燭</b>拖到針孔成像盒前面（針孔對準蠟燭），再點燃。", "觀察紙屏上的像，再把蠟燭<b>拖近、拖遠</b>針孔各試一次。", "把針孔換成<b>大孔</b>看看（例題 4-1）。", "回答問題。"][Math.min(S.step, 3)];
+      const B = [];
+      if(S.cx !== null && !S.lit) B.push(`<button class="btn gold" data-b="light">🔥 點燃蠟燭</button>`);
+      if(S.step >= 2) B.push(`<button class="btn" data-b="hole">${S.big ? "換回針孔" : "換成大孔"}</button>`);
+      handBtns(box.querySelector("[data-btn]"), B.join(""), act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(b === "light"){
+        if(PIN - S.cx < 25){
+          draw("");
+          return handAccident(K.card, {title: "🔥 紙盒燒起來了！", cause: "蠟燭貼著紙做的成像盒點火，火焰燒到紙盒，冒出火來。", ...FIRE_Q,
+            lesson: "蠟燭要和紙盒保持距離再點燃。（一般安全常識，課本沒有寫）"}, () => { S.cx = 100; draw(say("回到出事前。蠟燭離盒子遠一點再點。")); });
+        }
+        S.lit = true; S.step = Math.max(S.step, 1); return draw(say("紙屏上出現燭焰的像——看清楚它是正的還是倒的？"));
+      }
+      if(b === "hole"){ S.big = !S.big; if(S.big) S.seen.big = 1; return draw(S.big ? say("孔變大，紙屏上變<b>亮</b>了，但燭焰的形狀<b>糊成一團</b>、看不清楚。") : ""); }
+    });
+    handDnd(svg, {name: () => "蠟燭", drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(x > PIN - 8 || y < 90){ toast("放在針孔成像盒的前面（左邊桌上）"); return draw(); }
+      S.cx = Math.max(30, Math.min(PIN - 15, x));
+      if(S.lit){ const d = PIN - S.cx; S.seen[d < 70 ? "near" : d > 110 ? "far" : "mid"] = 1; if(S.seen.near && S.seen.far) S.step = Math.max(S.step, 2); }
+      draw(S.lit && S.step === 2 && !S.seen.big ? say("近的時候像比較大，遠的時候像比較小。", true) : "");
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.step === 2 && S.seen.big && !S.big ? "a" : S.step === 3 ? "b" : S.step === 4 ? "c" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      const nx = m => K.track(() => { S.step++; shown = null; draw(say(m, true)); if(S.step === 5) done(); });
+      if(k === "a") handMC(q, "透過針孔看到的像，和原來的燭焰有什麼不同？", [["上下顛倒、左右相反，亮度比較暗", 1], ["和燭焰一樣是正立的", 0, "看紙屏：火焰在上面還是下面？"], ["比燭焰更亮", 0, "燭焰發出的光只有少部分能穿過針孔，所以比較暗。"]], nx("✅ 像<b>上下顛倒且左右相反</b>，這是光沿直線前進造成的（p.96）。"));
+      if(k === "b") handMC(q, "燭焰離針孔<b>越近</b>，紙屏上的像怎樣？", [["越大", 1], ["越小", 0, "再把蠟燭拖近一點看看。"], ["大小不變", 0, "燭焰到針孔的距離會影響像的大小（圖 4-7）。"]], nx("✅ 距離較近時成像較大，距離較遠時成像較小（圖 4-7）。"));
+      if(k === "c") handMC(q, "例題 4-1：針孔越大，紙屏上的成像怎樣？", [["變亮，但變模糊", 1], ["越大越清楚", 0, "孔一大，燭焰各點的光在紙屏上互相重疊，就糊掉了。"], ["完全沒有變化", 0, "剛才換成大孔，紙屏上的樣子變了。"]], nx("✅ 孔越大，進來的光越多所以較亮，但不同點的光重疊，像就模糊——「針孔越大越清楚」是錯的。"));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ② 反射定律：拖雷射筆繞量角盤 → 入射角＝反射角；平面鏡成像：把另一隻公仔放到鏡後，和鏡中像接成完整物體 */
+  function actMirror(box, done){
+    const DOG = [[3, 2], [5, 1], [2, 3]];
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({part: "laser", ang: null, tried: {}, q1: false, dog: 0, put: null, ok: 0}));
+    const svg = box.querySelector("svg"), P = [180, 190], R = 120;
+    function draw(msg){
+      const S = K.S; let g = "";
+      if(S.part === "laser"){
+        g += `<path d="M${P[0] - R} ${P[1]} A${R} ${R} 0 0 1 ${P[0] + R} ${P[1]}" fill="#f8f9fa" stroke="#adb5bd"/><rect x="40" y="${P[1]}" width="280" height="8" fill="#a5d8ff" stroke="#4dabf7"/><text x="300" y="${P[1] + 22}" font-size="10" fill="var(--sub)">平面鏡</text>
+          <line x1="${P[0]}" y1="${P[1]}" x2="${P[0]}" y2="${P[1] - R - 6}" stroke="#868e96" stroke-dasharray="4 3"/><text x="${P[0] + 4}" y="${P[1] - R - 8}" font-size="10" fill="var(--sub)">法線</text>`;
+        for(let a = -80; a <= 80; a += 10){ const r = a * Math.PI / 180; g += `<line x1="${P[0] + R * Math.sin(r)}" y1="${P[1] - R * Math.cos(r)}" x2="${P[0] + (R - 6) * Math.sin(r)}" y2="${P[1] - (R - 6) * Math.cos(r)}" stroke="#adb5bd"/>`; }
+        g += `<text x="330" y="30" font-size="22">🧑</text><text x="322" y="48" font-size="9" fill="var(--sub)">同學</text>`;
+        if(S.ang !== null){
+          const r = S.ang * Math.PI / 180, lx = P[0] - (R + 10) * Math.sin(r), ly = P[1] - (R + 10) * Math.cos(r), rx = P[0] + R * Math.sin(r), ry = P[1] - R * Math.cos(r);
+          g += `<line x1="${lx}" y1="${ly}" x2="${P[0]}" y2="${P[1]}" stroke="#e03131" stroke-width="2.5"/><line x1="${P[0]}" y1="${P[1]}" x2="${rx}" y2="${ry}" stroke="#e03131" stroke-width="2.5" stroke-dasharray="${S.ang === 0 ? "5 4" : "0"}"/>
+            <g data-it="laser" transform="translate(${lx} ${ly}) rotate(${-S.ang + 180})"><rect x="-5" y="-26" width="10" height="26" rx="3" fill="#343a40"/><rect x="-16" y="-34" width="32" height="40" fill="transparent"/></g>
+            <text x="20" y="40" font-size="13" fill="var(--ink)">入射角 ${Math.abs(S.ang)}°　反射角 ${Math.abs(S.ang)}°</text>`;
+        } else g += tray("laser", 40, "雷射筆", `<rect x="-4" y="6" width="8" height="30" rx="3" fill="#343a40"/>`);
+      } else {
+        const C = 24, X0 = 30, MY = 120;   // 方格每格 24 px；鏡子在 y=120（俯視）
+        for(let i = 0; i <= 12; i++) g += `<line x1="${X0 + i * C}" x2="${X0 + i * C}" y1="24" y2="216" stroke="var(--line)"/>`;
+        for(let j = 0; j <= 8; j++) g += `<line x1="${X0}" x2="${X0 + 12 * C}" y1="${24 + j * C}" y2="${24 + j * C}" stroke="var(--line)"/>`;
+        g += `<rect x="${X0}" y="${MY - 3}" width="${12 * C}" height="6" fill="#74c0fc"/><text x="${X0 + 12 * C}" y="${MY - 6}" font-size="10" text-anchor="end" fill="var(--sub)">鏡子（俯視）</text>`;
+        const [dx, dy] = DOG[S.dog % DOG.length], ox = X0 + dx * C + C / 2, oy = MY + dy * C;
+        g += `<text x="${ox}" y="${oy + 6}" font-size="20" text-anchor="middle">🐶</text><text x="${ox}" y="${oy + 18}" font-size="8" text-anchor="middle" fill="var(--sub)">鏡前</text>`;
+        g += `<text x="${ox}" y="${MY - dy * C + 6}" font-size="20" text-anchor="middle" opacity=".35">🐶</text>`;
+        if(S.put) g += `<text x="${S.put[0]}" y="${S.put[1] + 6}" font-size="20" text-anchor="middle">🐶</text>`;
+        else g += tray("dog2", 330, "另一隻", `<text x="0" y="34" font-size="22" text-anchor="middle">🐶</text>`, 150);
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.part === "laser" ? "把<b>雷射筆</b>拖到量角盤邊緣的不同位置，讓雷射光射向鏡面 P 點。試 3 個不同角度，其中一個要沿著法線（0°）。"
+        : `探索活動（第 ${S.ok + 1}/2 次）：淡淡的是鏡中的像。把<b>另一隻相同的公仔</b>放到鏡子後面，讓它和鏡中影像接成完整的物體。`;
+      handBtns(box.querySelector("[data-btn]"), "", () => {});
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    handDnd(svg, {name: k => k === "dog2" ? "公仔" : "雷射筆", drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(k === "laser"){
+        if(x > 300 && y < 60){
+          draw("");
+          return handAccident(K.card, {pic: `<svg viewBox="0 0 240 110"><rect x="0" y="92" width="240" height="18" rx="4" fill="#6b4a2f"/><line x1="20" y1="80" x2="150" y2="40" stroke="#e03131" stroke-width="4"/><text x="170" y="60" font-size="44">😵</text></svg>`,
+            title: "😵 雷射光射進同學眼睛！", cause: "把雷射筆對著同學，雷射光直接射進眼睛，同學眼前一片亮點、看不清楚。",
+            q: "雷射光射到眼睛了，要怎麼做？", opts: [
+              {t: "立刻關掉雷射筆、讓同學閉眼轉開，報告老師，必要時就醫檢查", ok: true, why: "雷射光會傷害視網膜，要立刻停止照射，並由醫師檢查。"},
+              {t: "叫同學用力揉眼睛", why: "揉眼睛不能修復視網膜的傷害，還可能讓眼睛受傷。"},
+              {t: "沒關係，等一下就好", why: "視網膜受傷可能不會馬上痛，要讓醫師檢查。"},
+              {t: "再照一次看看是不是真的", why: "絕對不能再照。"}],
+            lesson: "雷射筆絕對不可以對著人的眼睛照。（一般安全常識，課本沒有寫）"}, () => draw(say("回到出事前。雷射筆只能對著鏡子。")));
+        }
+        const dx = x - P[0], dy = P[1] - y;
+        if(dy < 10 || Math.hypot(dx, dy) < 60){ toast("拖到量角盤的半圓邊緣上"); return draw(); }
+        let a = Math.round(Math.atan2(-dx, dy) * 180 / Math.PI / 10) * 10; a = Math.max(-70, Math.min(70, a));
+        S.ang = a; S.tried[Math.abs(a)] = 1;
+        return draw(a === 0 ? say("光沿著法線射向鏡面，反射光<b>沿原路返回</b>（動腦時間）。", true) : "");
+      }
+      if(k === "dog2"){
+        const C = 24, X0 = 30, MY = 120, [ddx, ddy] = DOG[S.dog % DOG.length], tx = X0 + ddx * C + C / 2, ty = MY - ddy * C;
+        if(y > MY){ toast("放在鏡子後面（鏡子上方）"); return draw(); }
+        S.put = [x, y];
+        if(Math.hypot(x - tx, y - ty) > 14){ return draw(say(`😕 從鏡前看過去，鏡後的公仔和鏡中影像<b>沒有接成完整的物體</b>，位置歪掉了。數數看：鏡前公仔離鏡子 ${ddy} 格。`)); }
+        S.put = [tx, ty]; S.ok++;
+        if(S.ok < 2){ S.dog++; S.put = null; return draw(say("✅ 接成完整的物體了！換一個位置再試一次。", true)); }
+        return draw(say("✅ 又對了！移開鏡子看看：兩隻公仔到鏡子的距離……", true));
+      }
+      draw();
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.part === "laser" && Object.keys(S.tried).length >= 3 && S.tried[0] ? "a" : S.part === "dog" && S.ok >= 2 && !S.fin ? "b" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "a") handMC(q, "從量角盤上看，入射角和反射角有什麼關係？", [["入射角等於反射角，入射光、反射光在法線兩側", 1], ["反射角永遠比入射角大", 0, "看量角盤上的讀數：兩個角一樣嗎？"], ["反射光和入射光在法線同一側", 0, "看紅線：反射光跑到法線的另一邊。"]],
+        K.track(() => { S.part = "dog"; shown = null; draw(say("✅ 光的反射定律：入射角＝反射角；入射線、反射線分別在法線兩側，且三者在同一平面（p.99）。", true)); }));
+      else handMC(q, "移開鏡子後，兩隻公仔和鏡子的距離有什麼關係？", [["一樣遠：物距＝像距，像和物體對稱於鏡面", 1], ["鏡後的比較遠", 0, "數方格：兩隻離鏡子都是幾格？"], ["鏡後的比較近", 0, "數方格：兩隻離鏡子都是幾格？"]],
+        K.track(() => { S.fin = 1; shown = null; draw(say("✅ 平面鏡的像和物體形狀、大小相同，位置對稱於鏡面：<b>物距＝像距</b>（圖 4-15）。另一隻能接成完整物體，表示像和物體一樣大。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ③ 碗底硬幣：先移動眼睛到「剛好看不到硬幣」，眼睛不動、慢慢加水 → 又看得到硬幣（光從水進入空氣折射，視深比實深淺） */
+  function actCoin(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({ey: 40, lock: false, water: 0, step: 0}));
+    const svg = box.querySelector("svg"), RIM = [130, 140], BOT = 210, COIN = [205, 206], EX = 40;
+    // 視線能不能看到硬幣：沒水時直線；有水時硬幣看起來在「視深」處（實深 ÷ 1.33）
+    const visible = (ey, w) => {
+      const sy = BOT - w, appY = w > 0 ? sy + (COIN[1] - sy) / 1.33 : COIN[1];    // 看起來的硬幣深度
+      const t = (RIM[0] - EX) / (COIN[0] + 9 - EX), yAtRim = ey + (appY - ey) * t; // 從眼睛看向硬幣右緣，經過碗口時的高度
+      return yAtRim <= RIM[1] ? (yAtRim < RIM[1] - 6 ? "all" : "edge") : "none";
+    };
+    function draw(msg){
+      const S = K.S, v = visible(S.ey, S.water);
+      let g = `<path d="M${RIM[0]} ${RIM[1]} Q140 ${BOT + 6} 210 ${BOT + 6} Q280 ${BOT + 6} 290 ${RIM[1]}" fill="#f3d9c4" stroke="#a9746e" stroke-width="3"/>`;
+      if(S.water) g += `<path d="M${RIM[0] + 6} ${BOT - S.water} H${290 - 6} L280 ${BOT} H140 Z" fill="#a5d8ff" opacity=".7"/>`;
+      g += `<ellipse cx="${COIN[0]}" cy="${COIN[1]}" rx="9" ry="3" fill="#fab005" stroke="#e67700"/>`;
+      g += `<g data-it="eye"><text x="${EX}" y="${S.ey + 8}" font-size="22" text-anchor="middle">👁</text><rect x="${EX - 18}" y="${S.ey - 16}" width="36" height="32" fill="transparent"/></g>`;
+      const sy = BOT - S.water, appY = S.water > 0 ? sy + (COIN[1] - sy) / 1.33 : COIN[1];
+      if(v !== "none"){
+        if(S.water){ const t = (sy - S.ey) / (appY - S.ey), sx = EX + (COIN[0] - EX) * t; g += `<line x1="${EX + 10}" y1="${S.ey}" x2="${sx}" y2="${sy}" stroke="#fab005" stroke-width="1.5"/><line x1="${sx}" y1="${sy}" x2="${COIN[0]}" y2="${COIN[1]}" stroke="#fab005" stroke-width="1.5"/><line x1="${sx}" y1="${sy}" x2="${COIN[0]}" y2="${appY}" stroke="#fab005" stroke-dasharray="3 3"/><ellipse cx="${COIN[0]}" cy="${appY}" rx="9" ry="3" fill="#fab005" opacity=".4"/>`; }
+        else g += `<line x1="${EX + 10}" y1="${S.ey}" x2="${COIN[0]}" y2="${COIN[1]}" stroke="#fab005" stroke-width="1.5"/>`;
+      } else g += `<line x1="${EX + 10}" y1="${S.ey}" x2="${RIM[0]}" y2="${RIM[1]}" stroke="#adb5bd" stroke-dasharray="4 3"/>`;
+      g += `<text x="250" y="40" font-size="13" font-weight="700" fill="var(--ink)">${v === "all" ? "👀 看得到整個硬幣" : v === "edge" ? "👀 只看到硬幣邊緣" : "🙈 看不到硬幣"}</text>`;
+      if(S.lock && S.step < 2) g += tray("kettle", 320, "水壺", `<path d="M-12 14 h22 v24 h-22 z M10 18 l10 -6" fill="#74c0fc" stroke="#1c7ed6"/>`, 70);
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.step === 0 ? "動腦時間：把<b>眼睛</b>上下拖動，找到<b>剛好只看到硬幣邊緣</b>的位置，再按「固定目光」。" : S.step === 1 ? "碗和目光都不動，把<b>水壺</b>拖到碗上，慢慢加水。" : "回答問題。";
+      handBtns(box.querySelector("[data-btn]"), S.step === 0 ? `<button class="btn gold" data-b="lock">📌 固定目光</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S;
+      if(b === "lock"){
+        const v = visible(S.ey, 0);
+        if(v === "all") return draw(say("現在還看得到整個硬幣，這樣比不出加水前後的差別。把眼睛再往<b>下</b>移，移到剛好只看到硬幣邊緣。"));
+        if(v === "none" && visible(S.ey - 8, 0) === "none") return draw(say("太低了，完全看不到，連邊緣也看不到。往上移一點，到「剛好只看到邊緣」。"));
+        S.lock = true; S.step = 1; return draw(say("📌 目光固定了。接下來眼睛不能動。", true));
+      }
+    });
+    handDnd(svg, {name: k => k === "eye" ? "眼睛" : "水壺", drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(k === "eye"){
+        if(S.lock) return draw(say("😕 課本說<b>碗和目光都不能移動</b>，移動了就比不出加水前後的差別。（要重新找位置可以按「↩ 上一步」）"));
+        S.ey = Math.max(30, Math.min(150, y)); return draw("");
+      }
+      if(k === "kettle"){
+        if(!inR(x, y, [120, 80, 300, 220])){ toast("拖到碗上倒水"); return draw(); }
+        S.water = Math.min(60, S.water + 20);
+        const v = visible(S.ey, S.water);
+        if(v !== "none" && S.step === 1){ S.step = 2; return draw(say("😮 眼睛沒動，加了水以後竟然<b>又看得到硬幣</b>了！看虛線：硬幣看起來變淺了。")); }
+        return draw(say("加了一些水……再加。"));
+      }
+      draw();
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.step === 2 ? "a" : S.step === 3 ? "b" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "a") handMC(q, "為什麼加水後又看得到硬幣？", [["硬幣的光從水進入空氣時發生折射，硬幣看起來比實際淺（視深＜實深）", 1], ["水把硬幣浮起來了", 0, "硬幣一直沉在碗底，沒有移動。"], ["水會發光，把硬幣照亮", 0, "水不會發光；是光線的路徑改變了。"]],
+        K.track(() => { S.step = 3; shown = null; draw(say("✅ 光在水與空氣的交界處折射，眼睛感覺光從延長線的交點發出，所以看到的位置比較淺——這個深度叫<b>視深</b>（圖 4-29）。", true)); }));
+      else handMC(q, "光由<b>水進入空氣</b>時，折射線怎麼偏？", [["偏離法線，折射角大於入射角", 1], ["偏向法線，折射角小於入射角", 0, "那是光由空氣進入水中（圖 4-28 Ⓐ）。"], ["不會偏折", 0, "只有垂直入射時方向才不變（圖 4-28 Ⓒ）。"]],
+        K.track(() => { S.step = 4; shown = null; draw(say("✅ 光由水進入空氣：偏離法線、折射角＞入射角；光由空氣進入水：偏向法線、折射角＜入射角（圖 4-28）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ④ 配眼鏡：近視（遠物成像在視網膜前）配凹透鏡；遠視（近物成像在視網膜後）配凸透鏡 */
+  function actGlasses(box, done){
+    const PAT = {myo: ["近視的小南", "看遠處的黑板", "front", "concave"], hyp: ["遠視的阿伯", "看近處的報紙", "back", "convex"]};
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 220"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({who: "myo", lens: null, fixed: {}, ask: null}));
+    const svg = box.querySelector("svg");
+    function draw(msg){
+      const S = K.S, p = PAT[S.who], EYE = [250, 110], RET = 296;
+      // 焦點位置：沒戴眼鏡時在視網膜前（近視）或後（遠視）；凹透鏡往後移、凸透鏡往前移
+      let fx = p[2] === "front" ? 272 : 322;
+      if(S.lens === "concave") fx += 24; if(S.lens === "convex") fx -= 26;
+      const sharp = Math.abs(fx - RET) < 4;
+      let g = `<circle cx="${EYE[0] + 20}" cy="${EYE[1]}" r="46" fill="#fff4e6" stroke="#e8590c" stroke-width="2"/><ellipse cx="${EYE[0] - 18}" cy="${EYE[1]}" rx="7" ry="22" fill="#a5d8ff" stroke="#4dabf7"/><path d="M${RET} ${EYE[1] - 40} Q${RET + 22} ${EYE[1]} ${RET} ${EYE[1] + 40}" fill="none" stroke="#c92a2a" stroke-width="3"/><text x="${RET + 6}" y="${EYE[1] + 60}" font-size="10" fill="#c92a2a">視網膜</text>`;
+      const lensX = 190;
+      [-20, 20].forEach(o => {
+        const yIn = EYE[1] + o, src = p[2] === "front" ? [20, yIn] : [70, EYE[1]];
+        let y1 = p[2] === "front" ? yIn : EYE[1] + o * .4;
+        if(S.lens) g += `<line x1="${src[0]}" y1="${src[1]}" x2="${lensX}" y2="${y1}" stroke="#2f9e44" stroke-width="1.6"/>`;
+        const y2 = S.lens === "concave" ? y1 + o * .25 : S.lens === "convex" ? y1 - o * .15 : y1;
+        g += S.lens ? `<line x1="${lensX}" y1="${y1}" x2="${EYE[0] - 18}" y2="${y2}" stroke="#2f9e44" stroke-width="1.6"/>` : `<line x1="${src[0]}" y1="${src[1]}" x2="${EYE[0] - 18}" y2="${y1}" stroke="#2f9e44" stroke-width="1.6"/>`;
+        g += `<line x1="${EYE[0] - 18}" y1="${S.lens ? y2 : y1}" x2="${fx}" y2="${EYE[1]}" stroke="#2f9e44" stroke-width="1.6"/>`;
+        if(fx < RET) g += `<line x1="${fx}" y1="${EYE[1]}" x2="${RET}" y2="${EYE[1] - (S.lens ? y2 : y1 - EYE[1]) * 0 + (EYE[1] - (S.lens ? y2 : y1)) * (RET - fx) / (fx - EYE[0] + 18)}" stroke="#2f9e44" stroke-width="1" stroke-dasharray="3 3"/>`;
+      });
+      g += `<circle cx="${fx}" cy="${EYE[1]}" r="3" fill="#2f9e44"/>`;
+      if(S.lens) g += S.lens === "concave" ? `<path d="M${lensX - 7} 60 Q${lensX} 110 ${lensX - 7} 160 H${lensX + 7} Q${lensX} 110 ${lensX + 7} 60 Z" fill="#d0ebff" stroke="#1c7ed6"/>` : S.lens === "convex" ? `<path d="M${lensX} 60 Q${lensX - 12} 110 ${lensX} 160 Q${lensX + 12} 110 ${lensX} 60 Z" fill="#d0ebff" stroke="#1c7ed6"/>` : `<rect x="${lensX - 3}" y="60" width="6" height="100" fill="#e9ecef" stroke="#adb5bd"/>`;
+      else g += `<rect x="${lensX - 26}" y="50" width="52" height="120" rx="8" fill="none" stroke="var(--line)" stroke-dasharray="5 4"/><text x="${lensX}" y="182" font-size="10" text-anchor="middle" fill="var(--sub)">放眼鏡片</text>`;
+      g += `<text x="10" y="200" font-size="12" fill="var(--ink)">${p[0]}${p[1]}：${sharp ? "😊 清楚了！" : "😣 模糊"}</text>`;
+      g += tray("concave", 40, "凹透鏡", `<path d="M-6 6 Q0 22 -6 38 H6 Q0 22 6 6 Z" fill="#d0ebff" stroke="#1c7ed6"/>`) + tray("convex", 100, "凸透鏡", `<path d="M0 6 Q-10 22 0 38 Q10 22 0 6 Z" fill="#d0ebff" stroke="#1c7ed6"/>`) + tray("flat", 160, "平面玻璃", `<rect x="-3" y="6" width="6" height="32" fill="#e9ecef" stroke="#adb5bd"/>`);
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = `${p[0]}${p[1]}看不清楚：綠線交會的點（成像）落在視網膜<b>${p[2] === "front" ? "前方" : "後方"}</b>。把一片鏡片拖到眼睛前面，讓成像剛好落在視網膜上。`;
+      handBtns(box.querySelector("[data-btn]"), "", () => {});
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    handDnd(svg, {name: k => ({concave: "凹透鏡", convex: "凸透鏡", flat: "平面玻璃"})[k], drop: K.track((k, x, y) => {
+      const S = K.S, p = PAT[S.who];
+      if(!inR(x, y, [140, 40, 240, 190])){ toast("拖到眼睛前面的虛線框"); return draw(); }
+      S.lens = k === "flat" ? "flat" : k;
+      if(k === "flat") return draw(say("平面玻璃不會改變光線方向，成像還是在原來的地方，一樣模糊。"));
+      if(k !== p[3]) return draw(say(`😵 更模糊了！成像離視網膜<b>更遠</b>，${p[0]}覺得頭暈。${k === "convex" ? "凸透鏡讓光提早會聚，成像更往前跑。" : "凹透鏡讓光發散，成像更往後跑。"}`));
+      S.ask = S.who; return draw(say("😊 成像剛好落在視網膜上，看清楚了！", true));
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.ask && !S.fixed[S.ask] ? S.ask : S.fixed.myo && S.fixed.hyp && !S.fixed.old ? "old" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "myo") handMC(q, "近視為什麼要配<b>凹透鏡</b>？", [["凹透鏡讓光線進入眼睛前先發散，遠處物體的像才會往後落在視網膜上", 1], ["凹透鏡讓光線先會聚", 0, "會聚的是凸透鏡。"], ["凹透鏡會讓東西看起來比較大", 0, "近視眼鏡看起來會讓眼睛變小（自然暖身操）。"]],
+        K.track(() => { S.fixed.myo = 1; S.who = "hyp"; S.lens = null; S.ask = null; shown = null; draw(say("✅ 近視：遠物的像落在視網膜前方 → 配適當焦距的<b>凹透鏡</b>（圖 4-43）。換下一位。", true)); }));
+      if(k === "hyp") handMC(q, "遠視為什麼要配<b>凸透鏡</b>？", [["凸透鏡讓光線進入眼睛前先會聚，近處物體的像才會往前落在視網膜上", 1], ["凸透鏡讓光線先發散", 0, "發散的是凹透鏡。"], ["遠視眼睛太長", 0, "遠視是水晶體到視網膜的距離過短，或水晶體焦距過長。"]],
+        K.track(() => { S.fixed.hyp = 1; S.ask = null; shown = null; draw(say("✅ 遠視：近物的像落在視網膜後方 → 配適當焦距的<b>凸透鏡</b>（圖 4-44）。", true)); }));
+      if(k === "old") handMC(q, "年長的人看近物不清楚的「老花眼」，要配哪一種鏡片？", [["凸透鏡", 1], ["凹透鏡", 0, "老花眼是水晶體調節機能衰退，看近物時像落在後方，和遠視一樣要讓光先會聚。"], ["平面玻璃", 0, "平面玻璃不會改變光線方向。"]],
+        K.track(() => { S.fixed.old = 1; shown = null; draw(say("✅ 老花眼是水晶體調節機能衰退，可配戴適當焦距的<b>凸透鏡</b>來矯正（p.120）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ⑤ 三原色光：拖紅、綠、藍聚光燈照白紙，三光重疊處是白色；白光穿過藍色壓克力板變藍光 */
+  function actRGB(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240" style="background:#111;border-radius:10px"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({part: "mix", pos: {}, q1: false, plate: false}));
+    const svg = box.querySelector("svg"), COL = {r: ["紅光", "#ff0000"], g: ["綠光", "#00ff00"], b: ["藍光", "#0000ff"]};
+    function draw(msg){
+      const S = K.S; let g = "";
+      if(S.part === "mix"){
+        g += `<rect x="60" y="80" width="240" height="150" rx="6" fill="#222"/><text x="180" y="226" font-size="10" text-anchor="middle" fill="#888">白紙（暗室）</text><g style="mix-blend-mode:screen;isolation:isolate">`;
+        Object.entries(S.pos).forEach(([k, [x, y]]) => { g += `<circle cx="${x}" cy="${y}" r="48" fill="${COL[k][1]}" style="mix-blend-mode:screen"/>`; });
+        g += `</g>`;
+        Object.entries(S.pos).forEach(([k, [x, y]]) => { g += `<g data-it="${k}"><circle cx="${x}" cy="${y}" r="48" fill="transparent"/><text x="${x}" y="${y - 30}" font-size="10" text-anchor="middle" fill="#fff">${COL[k][0]}</text></g>`; });
+        Object.keys(COL).forEach((k, i) => { if(!S.pos[k]) g += `<g data-it="${k}" transform="translate(${50 + i * 60} 8)"><rect x="-26" y="-4" width="52" height="60" rx="9" fill="#333" stroke="#555"/><circle cx="0" cy="22" r="13" fill="${COL[k][1]}"/><text x="0" y="50" font-size="10" text-anchor="middle" fill="#fff">${COL[k][0]}燈</text></g>`; });
+      } else {
+        g += `<path d="M120 40 L160 30 L170 50 L130 60Z" fill="#666"/><path d="M150 50 L210 50 L210 210 L150 210Z" fill="${S.plate ? "none" : "#fff"}" opacity=".25"/>`;
+        if(S.plate) g += `<path d="M150 50 L210 50 L210 130 L150 130Z" fill="#fff" opacity=".25"/><rect x="130" y="128" width="100" height="10" fill="#1c3fd6" opacity=".85"/><path d="M150 138 L210 138 L210 210 L150 210Z" fill="#4d6bff" opacity=".45"/>`;
+        g += `<rect x="80" y="210" width="200" height="12" fill="#444"/><ellipse cx="180" cy="214" rx="34" ry="5" fill="${S.plate ? "#4d6bff" : "#fff"}" opacity=".85"/><text x="250" y="40" font-size="11" fill="#ccc">檯燈（白光）</text>`;
+        if(!S.plate) g += `<g data-it="plate" transform="translate(300 100)"><rect x="-30" y="-6" width="60" height="56" rx="9" fill="#333" stroke="#555"/><rect x="-22" y="12" width="44" height="10" fill="#1c3fd6"/><text x="0" y="44" font-size="9" text-anchor="middle" fill="#fff">藍色壓克力板</text></g>`;
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.part === "mix" ? "把<b>紅、綠、藍</b>三盞燈拖到白紙上，讓三個光圈重疊。三盞燈的亮度相同。" : "檯燈的白光照在桌上。把<b>藍色壓克力板</b>拖到光的路徑中間（圖 4-48）。";
+      handBtns(box.querySelector("[data-btn]"), "", () => {});
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const overlap3 = () => { const P = Object.values(K.S.pos); if(P.length < 3) return false; return P.every(a => P.every(b => Math.hypot(a[0] - b[0], a[1] - b[1]) < 70)); };
+    handDnd(svg, {name: k => k === "plate" ? "藍色壓克力板" : COL[k][0] + "燈", drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(k === "plate"){ if(!inR(x, y, [120, 60, 240, 200])){ toast("放到檯燈和桌面中間的光路上"); return draw(); } S.plate = true; return draw(say("白光穿過藍色壓克力板以後，桌上的光變成<b>藍色</b>了。")); }
+      if(!inR(x, y, [60, 80, 300, 230])){ toast("拖到白紙上"); return draw(); }
+      S.pos[k] = [Math.max(108, Math.min(252, x)), Math.max(110, Math.min(200, y))];
+      const n = Object.keys(S.pos).length;
+      return draw(overlap3() ? say("三個光圈重疊的地方變成<b>白色</b>！", true) : n >= 2 ? say("兩種色光重疊的地方出現了別的顏色（對照圖 4-46）。把第三盞也疊上去。") : "");
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.part === "mix" && overlap3() ? "a" : S.part === "plate" && S.plate && !S.fin ? "b" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "a") handMC(q, "相同亮度的紅、綠、藍光同時照在白紙上，三光重疊處是什麼顏色？", [["白色——紅、綠、藍稱為三原色光", 1], ["黑色", 0, "光越疊越亮，看看中間。"], ["紫色", 0, "看中間三個光圈都重疊的地方。"]],
+        K.track(() => { S.part = "plate"; shown = null; draw(say("✅ 紅、綠、藍稱為<b>三原色光</b>；電腦螢幕的白色畫面，放大看就是紅綠藍小光格（圖 4-47）。", true)); }));
+      else handMC(q, "為什麼白光穿過藍色壓克力板會變成藍光？", [["藍色壓克力板讓藍光通過，吸收其他大部分色光", 1], ["壓克力板把白光染成藍色", 0, "壓克力板不會「加上」顏色，只會讓某些色光通過。"], ["藍色壓克力板會發出藍光", 0, "拿掉檯燈，壓克力板自己不會發光。"]],
+        K.track(() => { S.fin = 1; shown = null; draw(say("✅ 透明有色物體只讓和自己顏色相近的色光穿透，其餘色光被吸收（p.122）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+  /* 關卡函式和共用小工具都宣告完才開站（const 在宣告前不能用） */
+  handStation(pane, L, [
+    {key: "pinhole", title: "針孔成像", page: "p.95–97", run: actPinhole},
+    {key: "mirror", title: "反射定律與平面鏡成像", page: "p.99–101", run: actMirror},
+    {key: "coin", title: "折射與視深：碗底硬幣", page: "p.106–108", run: actCoin},
+    {key: "glasses", title: "幫眼睛配眼鏡", page: "p.120", run: actGlasses},
+    {key: "rgb", title: "三原色光與色光穿透", page: "p.122", run: actRGB}]);
+}});
+
+/* ═════ 第 5 章 活動站：溫度與熱（正式實驗 5-1、5-2 以外的課本圖示操作與探索活動） ═════
+   ① 氣球熱脹冷縮（p.146、圖 5-13）② 冰加熱曲線（p.148、圖 5-16）③ 硫酸銅加熱與加水（p.151、圖 5-22）
+   ④ 傳導與對流（p.152–154、圖 5-23、探索活動圖 5-26／5-27）⑤ 輻射與保溫瓶（p.156–157、圖 5-31、5-34）
+   出錯：徒手從熱水拿燒杯、試管直接用手拿著加熱（燙傷）、用橡皮塞塞緊錐形瓶加熱（爆裂）、燒杯不墊陶瓷纖維網直接加熱（破裂）
+   ——燙傷與塞緊加熱是一般安全常識，課本沒有寫；陶瓷纖維網見緒論 */
+LABS.push({id: "st-ch5", ch: "ch5", icon: "🔥", title: "第 5 章 活動站：溫度與熱", page: "p.146–157",
+  desc: "氣球放冰水熱水、加熱冰塊畫曲線、硫酸銅變色、奶油與胡椒粒看傳導對流、黑布白布晒太陽。", run(pane, L){
+
+  const tray = (k, x, n, ic, y) => `<g data-it="${k}" transform="translate(${x} ${y || 8})"><rect x="-28" y="-4" width="56" height="64" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${ic}<text x="0" y="54" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${n}</text></g>`;
+  const lamp = (x, by, on) => `<ellipse cx="${x}" cy="${by - 8}" rx="17" ry="8" fill="#cfe8ff" stroke="#888"/><rect x="${x - 4}" y="${by - 30}" width="8" height="16" fill="#eee" stroke="#888"/>` + (on ? flameP(x, by - 30, 32, 9, "#4dabf7", "#ffd43b") : "");
+  const burnAcc = (K, cause, lesson, back) => handAccident(K.card, {pic: BURN_SVG, title: "😣 好燙！手被燙紅了", cause,
+    q: "手被燙到了，第一步要怎麼做？", opts: [
+      {t: "立刻用流動的冷水沖燙到的地方，並報告老師", ok: true, why: "「沖」是第一步：沖冷水能帶走熱量、減輕傷害（沖、脫、泡、蓋、送）。"},
+      {t: "塗牙膏或醬油", why: "牙膏、醬油不能降溫，還可能讓傷口感染。"},
+      {t: "把水泡戳破", why: "水泡能保護傷口，戳破容易感染。"},
+      {t: "忍一下，繼續做", why: "燙傷要先處理，越早降溫越好。"}],
+    lesson}, back);
+
+  /* ① 燒杯口套氣球，拖進冰水或熱水；熱水裡的燒杯要用燒杯夾拿出來 */
+  function actBalloon(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({ball: false, loc: "table", v: 0, seen: {}, step: 0}));
+    const svg = box.querySelector("svg"), POS = {table: [70, 225], ice: [180, 225], hot: [290, 225]};
+    const target = () => K.S.loc === "ice" ? -1 : K.S.loc === "hot" ? 1 : 0;
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); if(K.ctl.paused) return;
+      const S = K.S, d = target() - S.v; if(Math.abs(d) < .01) return; S.v += d * .15;
+      if(Math.abs(target() - S.v) < .08 && S.loc !== "table") S.seen[S.loc] = 1;
+      if(!K.dragging) draw(); }, 80);
+    function draw(msg){
+      const S = K.S; let g = `<rect x="0" y="225" width="360" height="15" fill="#c8a67a" opacity=".5"/>`;
+      g += `<rect x="140" y="160" width="80" height="65" fill="#d0ebff" opacity=".6" stroke="#74c0fc" stroke-width="2"/><rect x="146" y="168" width="12" height="12" fill="#fff" stroke="#a5d8ff"/><rect x="196" y="174" width="12" height="12" fill="#fff" stroke="#a5d8ff"/><text x="180" y="155" text-anchor="middle" font-size="11" fill="var(--sub)">冰水</text>
+        <rect x="250" y="160" width="80" height="65" fill="#ffc9c9" opacity=".6" stroke="#ff8787" stroke-width="2"/><text x="290" y="155" text-anchor="middle" font-size="11" fill="var(--sub)">熱水</text><path d="M275 150 q4 -8 0 -16 M300 150 q4 -8 0 -16" stroke="#ff8787" fill="none"/>`;
+      const [bx, by] = POS[S.loc], r = 14 + 10 * S.v;
+      let bk = `<rect x="${bx - 20}" y="${by - 52}" width="40" height="52" fill="#e7f5ff" opacity=".7" stroke="#5c7cfa" stroke-width="2"/>`;
+      if(S.ball) bk += S.v < -.3 ? `<path d="M${bx - 14} ${by - 52} Q${bx} ${by - 40 + 12 * S.v} ${bx + 14} ${by - 52}" fill="#e64980" stroke="#c2255c"/>` : `<ellipse cx="${bx}" cy="${by - 52 - Math.max(4, r * .8)}" rx="${Math.max(10, r)}" ry="${Math.max(5, r * .9)}" fill="#e64980" opacity=".9"/>`;
+      g += `<g data-it="beaker">${bk}<rect x="${bx - 28}" y="${by - 90}" width="56" height="92" fill="transparent"/></g>`;
+      if(!S.ball) g += tray("balloon", 40, "氣球", `<ellipse cx="0" cy="20" rx="10" ry="13" fill="#e64980"/>`);
+      if(S.loc === "hot") g += tray("tongs", 320, "燒杯夾", `<path d="M-10 8 L0 40 L10 8" fill="none" stroke="#555" stroke-width="3"/>`);
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.ball ? "把套著氣球的燒杯拖進<b>冰水</b>或<b>熱水</b>，看氣球怎麼變。兩種都要試。（熱水裡的燒杯很燙）" : "圖 5-13：先把<b>氣球</b>套在燒杯口。";
+      handBtns(box.querySelector("[data-btn]"), "", () => {});
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    handDnd(svg, {name: k => ({balloon: "氣球", beaker: "燒杯", tongs: "燒杯夾"})[k], drop: K.track((k, x, y) => {
+      const S = K.S, [bx, by] = POS[S.loc];
+      if(k === "balloon"){ if(!inR(x, y, [bx - 40, by - 100, bx + 40, by + 5])){ toast("套在燒杯口"); return draw(); } S.ball = true; return draw(""); }
+      if(k === "tongs"){
+        if(!inR(x, y, [bx - 40, by - 100, bx + 40, by + 5])){ toast("用燒杯夾夾住熱水裡的燒杯"); return draw(); }
+        S.loc = "table"; return draw(say("✅ 用燒杯夾把燒杯拿出熱水。", true));
+      }
+      if(k === "beaker"){
+        if(!S.ball){ toast("先套氣球"); return draw(); }
+        const to = inR(x, y, [130, 120, 230, 240]) ? "ice" : inR(x, y, [240, 120, 340, 240]) ? "hot" : inR(x, y, [10, 120, 125, 240]) ? "table" : null;
+        if(!to || to === S.loc) return draw();
+        if(S.loc === "hot"){ draw(""); return burnAcc(K, "燒杯泡在熱水裡變得很燙，直接用手抓出來，手被燙傷了。", "熱水裡的容器要用<b>燒杯夾</b>或隔熱手套拿。（一般安全常識，課本沒有寫）", () => draw(say("回到出事前。用燒杯夾拿。"))); }
+        S.loc = to; return draw("");
+      }
+      draw();
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.step === 0 && S.seen.ice && S.seen.hot ? "a" : S.step === 1 ? "b" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "a") handMC(q, "燒杯裡的空氣放進熱水，氣球鼓起來；放進冰水，氣球凹下去。這代表什麼？", [["空氣受熱體積膨脹、遇冷體積收縮", 1], ["熱水把水蒸氣灌進氣球", 0, "燒杯口被氣球套住，熱水進不去；變的是裡面空氣的體積。"], ["冰水把氣球吸進去", 0, "是燒杯裡的空氣遇冷收縮，氣球才凹下去。"]],
+        K.track(() => { S.step = 1; shown = null; draw(say("✅ 大部分物質受熱膨脹、冷卻收縮；<b>體積隨溫度改變的情形，以氣體最明顯，液體次之，固體最不明顯</b>（p.146）。", true)); }));
+      else handMC(q, "自然暖身操：果醬罐的金屬蓋子轉不開，泡一下熱水就轉開了，為什麼？", [["金屬瓶蓋受熱膨脹得比玻璃罐口大，縫隙變大", 1], ["熱水把果醬融化了", 0, "只泡到蓋子，裡面的果醬沒有變化。"], ["蓋子受熱變軟", 0, "金屬不會因為熱水就變軟；是體積變大了。"]],
+        K.track(() => { S.step = 2; shown = null; draw(say("✅ 不同物質脹縮程度不同：金屬瓶蓋膨脹得比玻璃罐口大，縫隙變大就好轉開（p.146、p.151 解答）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ② −20 ℃ 的冰在錐形瓶裡加熱（瓶口套氣球）：A 冰升溫 → B 冰水共存 0 ℃ → C 水升溫 → D 水與水蒸氣共存 100 ℃ → E 水蒸氣 */
+  function actIce(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 250"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({cap: null, heat: false, q: 0, pts: [[0, -20]], ask: null, asked: {}}));
+    const svg = box.querySelector("svg");
+    // 熱量 E（每 0.1 秒 +1）→ 溫度：A −20→0 用 10、B 熔化 40、C 0→100 用 50、D 汽化 60、E 之後
+    const stage = E => E < 10 ? ["A", -20 + E * 2] : E < 50 ? ["B", 0] : E < 100 ? ["C", (E - 50) * 2] : E < 160 ? ["D", 100] : ["E", Math.min(130, 100 + (E - 160) * 2)];
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); const S = K.S; if(K.ctl.paused || !S.heat || S.ask) return;
+      S.q += 1; const [st, T] = stage(S.q); S.pts.push([S.q, T]);
+      if(S.cap === "stopper" && S.q > 120){ S.heat = false; draw(""); return handAccident(K.card, {pic: BREAK_SVG, title: "💥 錐形瓶爆開了！", cause: "瓶口用橡皮塞塞緊，水沸騰變成水蒸氣，瓶內氣體越來越多卻跑不出去，橡皮塞彈飛、錐形瓶破裂，熱水和碎玻璃噴出來。",
+        q: "熱水和碎玻璃噴到桌上，要怎麼做？", opts: [
+          {t: "先熄滅酒精燈、遠離桌面，報告老師；被燙到就沖冷水", ok: true, why: "先移除熱源、離開危險區；燙傷先沖冷水，碎玻璃由老師用工具清理。"},
+          {t: "馬上用手把碎玻璃撿起來", why: "碎玻璃又燙又利，會割傷、燙傷。"},
+          {t: "繼續加熱看會怎樣", why: "要立刻熄火。"},
+          {t: "用嘴吹熄酒精燈", why: "酒精燈要用燈罩蓋熄。"}],
+        lesson: "加熱時容器不可以完全密閉：課本用<b>氣球</b>套在瓶口，水蒸氣產生時氣球會鼓起來。（密閉加熱會爆裂是一般安全常識，課本沒有寫）"}, () => { K.S.cap = null; K.S.q = 0; K.S.pts = [[0, -20]]; draw(say("回到出事前。瓶口改套氣球。")); }); }
+      if(st === "B" && !S.asked.B && S.q > 30){ S.ask = "B"; }
+      if(st === "D" && !S.asked.D && S.q > 130){ S.ask = "D"; }
+      if(st === "E" && S.q > 175 && !S.asked.E){ S.heat = false; S.ask = "E"; }
+      if(!K.dragging) draw(); }, 100);
+    function draw(msg){
+      const S = K.S, [st, T] = stage(S.q);
+      let g = `<rect x="0" y="235" width="360" height="15" fill="#c8a67a" opacity=".5"/>`;
+      // 錐形瓶＋三腳架＋酒精燈
+      const fill = st === "A" ? "#e7f5ff" : st === "B" ? "#d0ebff" : "#a5d8ff";
+      g += `<path d="M30 172 L34 235 M110 172 L106 235" stroke="#666" stroke-width="3"/><rect x="26" y="168" width="88" height="5" fill="#ddd" stroke="#999"/>
+        <path d="M48 168 L92 168 L78 120 L78 100 L62 100 L62 120 Z" fill="${st === "E" ? "#f1f3f5" : fill}" stroke="#5c7cfa" stroke-width="2"/>`;
+      if(st === "A" || st === "B") g += `<rect x="54" y="148" width="14" height="14" fill="#fff" stroke="#a5d8ff"/><rect x="72" y="150" width="12" height="12" fill="#fff" stroke="#a5d8ff"/>` + (st === "B" ? "" : `<rect x="62" y="134" width="12" height="12" fill="#fff" stroke="#a5d8ff"/>`);
+      if(st === "D") g += `<circle cx="66" cy="160" r="3" fill="#fff"/><circle cx="76" cy="150" r="2.5" fill="#fff"/><circle cx="60" cy="145" r="2" fill="#fff"/>`;
+      if(S.cap === "balloon"){ const r = st === "D" ? 10 + (S.q - 100) / 6 : st === "E" ? 22 : 6; g += `<ellipse cx="70" cy="${100 - r}" rx="${Math.max(8, r)}" ry="${r}" fill="#40c057" opacity=".85"/>`; }
+      if(S.cap === "stopper") g += `<rect x="61" y="92" width="18" height="10" rx="2" fill="#e8913a"/>`;
+      g += lamp(70, 235, S.heat);
+      g += `<text x="70" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${T.toFixed(0)} ℃</text>`;
+      // 溫度—時間圖
+      const X = q => 150 + q / 200 * 195, Y = T2 => 215 - (T2 + 20) / 150 * 190;
+      g += `<path d="M150 20 V215 H350" stroke="var(--ink)" fill="none"/><text x="152" y="16" font-size="9" fill="var(--sub)">溫度（℃）</text><text x="350" y="230" font-size="9" text-anchor="end" fill="var(--sub)">加熱時間</text>`;
+      [0, 100].forEach(v => { g += `<line x1="150" x2="350" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-dasharray="3 3"/><text x="146" y="${Y(v) + 4}" font-size="9" text-anchor="end" fill="var(--sub)">${v}</text>`; });
+      g += `<polyline points="${S.pts.map(([q, t]) => X(q).toFixed(1) + "," + Y(t).toFixed(1)).join(" ")}" fill="none" stroke="#e03131" stroke-width="2.5"/>`;
+      const lab = {A: "A 固態冰", B: "B 冰、水共存", C: "C 液態水", D: "D 水、水蒸氣共存", E: "E 水蒸氣"};
+      g += `<text x="250" y="${st === "E" ? 40 : 235}" font-size="11" fill="#e03131" font-weight="700" text-anchor="middle">${S.q ? lab[st] : ""}</text>`;
+      if(!S.cap) g += tray("balloon", 200, "氣球", `<ellipse cx="0" cy="20" rx="10" ry="13" fill="#40c057"/>`, 30) + tray("stopper", 270, "橡皮塞", `<path d="M-10 16 h20 l-3 14 h-14 z" fill="#e8913a"/>`, 30);
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.cap ? "按「加熱」用酒精燈持續加熱 −20 ℃ 的冰（冰鹽浴做的），看溫度計和右邊的曲線。" : "圖 5-16：錐形瓶裡是 −20 ℃ 的冰。加熱前，瓶口要放什麼？（拖到瓶口）";
+      handBtns(box.querySelector("[data-btn]"), S.cap && !S.ask && S.q < 176 ? `<button class="btn ${S.heat ? "" : "gold"}" data-b="heat">${S.heat ? "⏸ 停止加熱" : "🔥 加熱"}</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => { if(b === "heat"){ K.S.heat = !K.S.heat; draw(""); } });
+    handDnd(svg, {name: k => k === "balloon" ? "氣球" : "橡皮塞", drop: K.track((k, x, y) => {
+      if(!inR(x, y, [20, 60, 120, 180])){ toast("放到錐形瓶口"); return draw(); }
+      K.S.cap = k; return draw(k === "stopper" ? say("瓶口用橡皮塞塞緊了……") : say("瓶口套上氣球。", true));
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.ask || "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      const ok = (m, fin) => K.track(() => { S.asked[k] = 1; S.ask = null; shown = null; draw(say(m, true)); if(fin) done(); });
+      if(k === "B") handMC(q, "⏸ 一直在加熱，溫度計卻停在 0 ℃ 不動，為什麼？", [["冰和水共存，吸收的熱都用來把冰熔化，溫度保持不變", 1], ["酒精燈熄掉了", 0, "火還在燒。"], ["溫度計壞了", 0, "等冰全部熔化，溫度就會繼續上升。"]],
+        ok("✅ 純物質熔化時，固體與液體同時存在，溫度不變，這個溫度叫<b>熔點</b>；冰的熔點＝水的凝固點＝0 ℃（p.149）。繼續加熱。"));
+      if(k === "D") handMC(q, "⏸ 到了 100 ℃ 又停住，瓶裡水一直冒泡，氣球慢慢鼓起來。這段在發生什麼？", [["水和水蒸氣共存，熱用來使水汽化（沸騰），溫度保持在沸點", 1], ["水在凝固", 0, "凝固是液體變固體，要放熱。"], ["水蒸氣在凝結", 0, "凝結是氣體變液體；這裡是液體變氣體。"]],
+        ok("✅ 汽化過程中液體和氣體共存，溫度不變，叫<b>沸點</b>；常壓下水的沸點 100 ℃（p.149）。繼續加熱。"));
+      if(k === "E") handMC(q, "自我評量：「將冰塊加熱成溫水的過程中，溫度會不斷上升。」對嗎？", [["不對，冰水共存那段溫度停在 0 ℃", 1], ["對，加熱溫度就一定上升", 0, "看曲線的 B 段：是水平的。"]],
+        ok("✅ 圖 5-16 的兩段水平線就是「兩種狀態共存，溫度不變」。熔化、汽化要<b>吸熱</b>，凝固、凝結要<b>放熱</b>（圖 5-21）。", true));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ③ 藍色硫酸銅放試管加熱變白（吸熱）；白色硫酸銅插溫度計 25 ℃，滴水變藍、升到 64 ℃（放熱） */
+  function actCuSO4(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({held: null, white: 0, heat: false, phase: "heat", T: 25, drops: 0, step: 0}));
+    const svg = box.querySelector("svg");
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); const S = K.S; if(K.ctl.paused) return;
+      let ch = false;
+      if(S.phase === "heat" && S.heat && S.held === "clamp" && S.white < 1){ S.white = Math.min(1, S.white + .02); ch = true; if(S.white >= 1){ S.heat = false; } }
+      if(S.phase === "water" && S.drops > 0){ const tgt = 25 + 39 * Math.min(1, S.drops / 3); if(S.T < tgt - .1){ S.T += (tgt - S.T) * .1; ch = true; } }
+      if(ch && !K.dragging) draw(); }, 100);
+    const col = w => { const a = [70, 130, 230], b = [245, 245, 240]; return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * w)).join(",")})`; };
+    function draw(msg){
+      const S = K.S; let g = `<rect x="0" y="225" width="360" height="15" fill="#c8a67a" opacity=".5"/>`;
+      if(S.phase === "heat"){
+        g += lamp(180, 225, S.heat);
+        if(S.held){
+          g += `<g transform="rotate(-25 180 140)"><rect x="172" y="100" width="16" height="70" rx="8" fill="#f8f9fa" opacity=".8" stroke="#868e96"/><rect x="173" y="146" width="14" height="22" rx="7" fill="${col(S.white)}"/></g>`;
+          g += S.held === "clamp" ? `<path d="M200 120 L260 90" stroke="#a0522d" stroke-width="6"/><rect x="186" y="114" width="20" height="10" fill="#555"/>` : `<text x="196" y="130" font-size="26">✋</text>`;
+        }
+        if(!S.held) g += tray("tube", 40, "硫酸銅試管", `<rect x="-6" y="4" width="12" height="36" rx="6" fill="#f8f9fa" stroke="#868e96"/><rect x="-5" y="26" width="10" height="12" rx="5" fill="rgb(70,130,230)"/>`) ;
+        if(!S.held) g += `<text x="40" y="100" font-size="10" text-anchor="middle" fill="var(--sub)">拿法：</text>`;
+      } else {
+        g += `<rect x="150" y="150" width="60" height="75" fill="#f1f3f5" opacity=".6" stroke="#868e96"/><path d="M152 ${225 - 30} H208 V223 H152Z" fill="${S.drops ? col(1 - Math.min(1, S.drops / 3)) : col(1)}"/>
+          <rect x="196" y="70" width="5" height="150" fill="#f8f9fa" stroke="#999"/><circle cx="198.5" cy="214" r="4" fill="#e03131"/><text x="230" y="110" font-size="16" font-weight="700" fill="var(--ink)">${S.T.toFixed(0)} ℃</text>`;
+        if(S.drops < 3) g += tray("dropper", 40, "滴管（水）", `<rect x="-3" y="2" width="6" height="30" fill="#f8f9fa" stroke="#999"/><rect x="-3" y="22" width="6" height="10" fill="#a5d8ff"/><ellipse cx="0" cy="2" rx="5" ry="4" fill="#495057"/>`);
+      }
+      if(S.phase === "heat" && !S.held) g += tray("clamp", 100, "試管夾", `<path d="M-14 30 L14 16" stroke="#a0522d" stroke-width="5"/><rect x="-18" y="26" width="10" height="8" fill="#555"/>`) + tray("hand", 160, "直接用手", `<text x="0" y="34" font-size="24" text-anchor="middle">✋</text>`);
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.phase === "heat" ? (S.held ? "用酒精燈加熱藍色的硫酸銅，看顏色怎麼變。" : "圖 5-22：要怎麼拿試管加熱？把<b>試管夾</b>或<b>手</b>拖到試管上。") : "白色的硫酸銅粉末插著溫度計（25 ℃）。用<b>滴管</b>滴幾滴水進去（拖到燒杯上，滴 3 次）。";
+      const B = [];
+      if(S.phase === "heat" && S.held === "clamp" && S.white < 1) B.push(`<button class="btn ${S.heat ? "" : "gold"}" data-b="heat">${S.heat ? "⏸ 停止加熱" : "🔥 加熱"}</button>`);
+      handBtns(box.querySelector("[data-btn]"), B.join(""), act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => { if(b === "heat") { K.S.heat = !K.S.heat; draw(""); } });
+    handDnd(svg, {name: k => ({tube: "試管", clamp: "試管夾", hand: "手", dropper: "滴管"})[k], drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(k === "clamp" || k === "hand"){
+        if(!inR(x, y, [10, 0, 75, 75])){ toast("拖到硫酸銅試管上"); return draw(); }
+        if(k === "hand"){ S.held = "hand"; S.heat = true; draw(""); return burnAcc(K, "直接用手拿著試管放到火焰上，試管很快就燙到拿不住，手被燙傷了。", "加熱試管要用<b>試管夾</b>夾住（緒論 p.7）。", () => { K.S.held = null; K.S.heat = false; draw(say("回到出事前。用試管夾。")); }); }
+        S.held = "clamp"; return draw(say("✅ 試管夾夾住試管口附近，斜放在火焰上。", true));
+      }
+      if(k === "dropper"){
+        if(!inR(x, y, [140, 60, 220, 230])){ toast("滴進燒杯裡"); return draw(); }
+        S.drops++; return draw(S.drops >= 3 ? say("白色粉末<b>變回藍色</b>，溫度計升到 64 ℃！") : say("滴入幾滴水……"));
+      }
+      draw();
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), k = S.step === 0 && S.white >= 1 ? "a" : S.step === 1 && S.drops >= 3 && S.T > 60 ? "b" : S.step === 2 ? "c" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "a") handMC(q, "藍色硫酸銅加熱後變成白色，這是吸熱還是放熱？", [["吸熱：含水的藍色硫酸銅吸收熱量，變成白色無水硫酸銅和水", 1], ["放熱：加熱時硫酸銅放出熱量", 0, "要一直用火加熱才會變白，表示它需要吸收熱量。"], ["這只是物理變化，沒有熱的進出", 0, "顏色變了、產生新的物質，是化學變化，而且伴隨熱量變化。"]],
+        K.track(() => { S.step = 1; S.phase = "water"; shown = null; draw(say("✅ 吸熱反應：藍色硫酸銅（含水）＋熱 → 白色無水硫酸銅＋水（p.151）。", true)); }));
+      if(k === "b") handMC(q, "白色硫酸銅加水變回藍色，溫度從 25 ℃ 升到 64 ℃，代表什麼？", [["這是放熱反應", 1], ["這是吸熱反應", 0, "溫度上升，表示反應把熱量放出來。"], ["水本來就是熱的", 0, "滴的是一般的水，溫度升高是反應放出的熱。"]],
+        K.track(() => { S.step = 2; shown = null; draw(say("✅ 白色無水硫酸銅加水是<b>放熱反應</b>：化學變化的過程也會伴隨能量變化與熱轉移（p.151）。", true)); }));
+      if(k === "c") handMC(q, "氯化亞鈷試紙吸了空氣中的水氣變成粉紅色，使用前要怎麼處理？", [["先加熱烘乾，等它變回藍色再用", 1], ["泡水讓它變藍", 0, "遇水會變粉紅色，不是變藍。"], ["粉紅色的也可以直接用", 0, "已經變粉紅，就看不出待測物有沒有水了。"]],
+        K.track(() => { S.step = 3; shown = null; draw(say("✅ 粉紅色氯化亞鈷試紙 ⇌ 藍色氯化亞鈷試紙＋水：向右要吸收熱量（p.151）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ④ 傳導：酒精燈放在金屬棒左端，熱沿著棒子傳到右端，奶油熔化（木棒不會）；對流：燒杯加胡椒粒，火焰偏左加熱 */
+  function actConv(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({part: "rod", rod: "metal", lampOn: false, heat: 0, tried: {}, net: false, lx: null, t: 0, q1: false, watched: 0, step: 0}));
+    const svg = box.querySelector("svg");
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); const S = K.S; if(K.ctl.paused) return;
+      if(S.part === "rod" && S.lampOn){ S.heat = Math.min(1, S.heat + (S.rod === "metal" ? .02 : .012)); if(S.rod === "metal" && S.heat >= 1) S.tried.metal = 1; if(S.rod === "wood" && S.heat > .6) S.tried.wood = 1; if(!K.dragging) draw(); }
+      if(S.part === "conv" && S.lx !== null && S.net){ S.t += .1; S.watched += .1; if(!K.dragging) draw(); } }, 100);
+    function draw(msg){
+      const S = K.S; let g = `<rect x="0" y="225" width="360" height="15" fill="#c8a67a" opacity=".5"/>`;
+      if(S.part === "rod"){
+        const reach = S.heat * (S.rod === "metal" ? 1 : .25);
+        g += `<rect x="20" y="96" width="50" height="14" rx="4" fill="#a0522d"/><defs><linearGradient id="rg5"><stop offset="0" stop-color="#ff6b6b"/><stop offset="${reach}" stop-color="${S.rod === "metal" ? "#ffa8a8" : "#c08a52"}"/><stop offset="${Math.min(1, reach + .05)}" stop-color="${S.rod === "metal" ? "#adb5bd" : "#c08a52"}"/></linearGradient></defs>
+          <rect x="70" y="98" width="230" height="10" fill="${S.heat ? "url(#rg5)" : S.rod === "metal" ? "#adb5bd" : "#c08a52"}"/><circle cx="300" cy="103" r="9" fill="${S.rod === "metal" ? "#adb5bd" : "#c08a52"}"/>`;
+        const melt = S.rod === "metal" && S.heat > .85;
+        g += melt ? `<path d="M290 94 q10 -6 20 0 v4 h-20z" fill="#ffe066"/><path d="M296 112 q2 10 0 16" stroke="#ffe066" stroke-width="3"/>` : `<rect x="292" y="80" width="16" height="13" rx="2" fill="#ffe066" stroke="#e8b600"/>`;
+        g += `<text x="300" y="72" font-size="10" text-anchor="middle" fill="var(--sub)">奶油</text><text x="180" y="88" font-size="11" text-anchor="middle" fill="var(--ink)">${S.rod === "metal" ? "金屬棒" : "木棒"}</text>` + lamp(100, 160, S.lampOn);
+        g += tray("metal", 240, "金屬棒", `<rect x="-20" y="18" width="40" height="7" fill="#adb5bd"/>`, 150) + tray("wood", 310, "木棒", `<rect x="-20" y="18" width="40" height="7" fill="#c08a52"/>`, 150);
+      } else {
+        g += `<path d="M120 190 L114 225 M240 190 L246 225" stroke="#666" stroke-width="3"/>`;
+        if(S.net) g += `<rect x="112" y="186" width="136" height="5" fill="#e9ecef" stroke="#adb5bd"/>`;
+        g += `<rect x="140" y="100" width="80" height="86" fill="#d0ebff" opacity=".6" stroke="#5c7cfa" stroke-width="2"/>`;
+        // 胡椒粒：在火焰正上方上升、對側下沉（循環）
+        if(S.lx !== null && S.net){
+          const side = S.lx < 165 ? -1 : S.lx > 195 ? 1 : 0;
+          for(let i = 0; i < 14; i++){
+            const ph = (S.t * .35 + i / 14) % 1, cx = 180, w = 28;
+            let x, y;
+            if(side === 0){ const a = ph * 2 * Math.PI, s = i % 2 ? 1 : -1; x = cx + s * w * Math.abs(Math.sin(a)); y = 143 - 36 * Math.cos(a); }
+            else { const a = ph * 2 * Math.PI; x = cx + side * w * Math.cos(a); y = 143 - 36 * Math.sin(a); }
+            g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="#343a40"/>`;
+          }
+          if(side) g += `<path d="M${180 + side * 34} 170 V116" stroke="#e03131" stroke-width="2" marker-end="url(#a5u)"/><path d="M${180 - side * 34} 116 V170" stroke="#1c7ed6" stroke-width="2" marker-end="url(#a5u)"/><defs><marker id="a5u" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#495057"/></marker></defs>`;
+        } else for(let i = 0; i < 14; i++) g += `<circle cx="${148 + (i * 37) % 64}" cy="${180 - (i % 3) * 3}" r="2.2" fill="#343a40"/>`;
+        if(S.lx !== null) g += `<g data-it="lamp2">${lamp(S.lx, 225, true)}<rect x="${S.lx - 20}" y="185" width="40" height="40" fill="transparent"/></g>`;
+        else g += tray("lamp2", 40, "酒精燈", `<ellipse cx="0" cy="34" rx="13" ry="6" fill="#cfe8ff" stroke="#888"/><rect x="-3" y="18" width="6" height="12" fill="#eee" stroke="#888"/>`, 150);
+        if(!S.net) g += tray("net", 320, "陶瓷纖維網", `<rect x="-18" y="20" width="36" height="6" fill="#e9ecef" stroke="#adb5bd"/>`, 150);
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.part === "rod" ? "圖 5-23：點燃酒精燈加熱棒子左段，看右端的奶油。金屬棒和木棒都試試看（換棒子：拖到桌上）。" : "探索活動：燒杯裝水和少許胡椒粒。墊好陶瓷纖維網，把酒精燈放到燒杯<b>偏左</b>的下方，看胡椒粒怎麼流動；也可以拖到中間、右邊比較。";
+      handBtns(box.querySelector("[data-btn]"), S.part === "rod" ? `<button class="btn ${S.lampOn ? "" : "gold"}" data-b="lamp">${S.lampOn ? "🧢 蓋熄酒精燈" : "🔥 點燃酒精燈"}</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => { if(b === "lamp"){ K.S.lampOn = !K.S.lampOn; draw(""); } });
+    handDnd(svg, {name: k => ({metal: "金屬棒", wood: "木棒", lamp2: "酒精燈", net: "陶瓷纖維網"})[k], drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(k === "metal" || k === "wood"){ if(!inR(x, y, [10, 60, 330, 140])){ toast("拖到原來棒子的位置換上"); return draw(); } if(S.rod !== k){ S.rod = k; S.heat = 0; } return draw(k === "wood" ? say("換成木棒。") : say("換成金屬棒。")); }
+      if(k === "net"){ if(!inR(x, y, [100, 150, 260, 205])){ toast("放在三腳架上"); return draw(); } S.net = true; return draw(""); }
+      if(k === "lamp2"){
+        if(!inR(x, y, [100, 150, 260, 240])){ toast("放到三腳架下方"); return draw(); }
+        if(!S.net){ draw(""); return handAccident(K.card, {pic: BREAK_SVG, title: "💥 燒杯破了！", cause: "燒杯底下沒有墊陶瓷纖維網，火焰直接燒在玻璃上，局部過熱，燒杯裂開，水流了出來。",
+          q: "燒杯破了、熱水流出來，第一步要怎麼做？", opts: [
+            {t: "先熄滅酒精燈、往後退，報告老師", ok: true, why: "先移除熱源、避免燙傷，碎玻璃由老師用工具清理。"},
+            {t: "用手把破燒杯拿起來", why: "玻璃又燙又利，會割傷、燙傷。"},
+            {t: "用嘴吹熄酒精燈", why: "酒精燈要用燈罩蓋熄。"},
+            {t: "趕快再拿一個燒杯接著加熱", why: "要先處理現場。"}],
+          lesson: "燒杯加熱時要<b>墊陶瓷纖維網</b>，讓受熱均勻（緒論 p.7）。"}, () => draw(say("回到出事前。先墊陶瓷纖維網。"))); }
+        S.lx = Math.max(150, Math.min(210, x)); S.t = 0;
+        return draw(S.lx < 165 ? say("火焰偏左……看胡椒粒！") : "");
+      }
+      draw();
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]");
+      const k = S.part === "rod" && S.tried.metal && S.tried.wood ? "a" : S.part === "conv" && S.lx !== null && S.lx < 165 && S.watched > 4 && !S.q1 ? "b" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "a") handMC(q, "金屬棒加熱後右端的奶油熔化了，木棒卻沒有，為什麼？", [["金屬是熱的良導體，熱透過棒子直接接觸傳過去（傳導）；木頭是不良導體", 1], ["熱從火焰往上飄到奶油", 0, "奶油在棒子右端，離火焰很遠；熱是沿著棒子傳過去的。"], ["木棒比較短", 0, "兩根一樣長，差在材質。"]],
+        K.track(() => { S.part = "conv"; S.lampOn = false; shown = null; draw(say("✅ 熱透過物質間直接接觸傳播叫<b>傳導</b>；金屬是熱的良導體，木頭、塑膠、保麗龍是不良導體——所以鍋子用金屬、握把用塑膠（圖 5-24）。", true)); }));
+      else handMC(q, "火焰偏左加熱時，胡椒粒在左邊往上、右邊往下循環，為什麼？", [["底部的水受熱膨脹、密度變小而上升，上方的冷水密度較大而下沉", 1], ["胡椒粒自己會游泳", 0, "胡椒粒是被水帶著走的。"], ["熱的水比較重，所以往下沉", 0, "受熱膨脹，密度變小，是往上升。"]],
+        K.track(() => { S.q1 = true; shown = null; draw(say("✅ 熱經由液體或氣體的流動而傳播叫<b>對流</b>，是流體傳熱的主要方式（圖 5-27）。電暖器放地上、冷氣裝高處也是利用對流（p.155）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ⑤ 輻射：溫度計包黑布、白布晒太陽（38 ℃ vs 32 ℃）；保溫瓶三個部位各擋哪一種熱傳播 */
+  function actRad(box, done){
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({part: "sun", cloth: {}, sun: false, t: 0, q1: false, lab: {}, bad: null}));
+    const svg = box.querySelector("svg"), START = 25, END = {black: 38, white: 32};
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); const S = K.S; if(K.ctl.paused || !S.sun || S.t >= 1) return; S.t = Math.min(1, S.t + .02); if(!K.dragging) draw(); }, 100);
+    const PART = {cap: ["塑膠瓶蓋", 180, 52], vac: ["真空夾層", 228, 150], mir: ["光滑鏡面", 202, 190]};
+    const ANS = {cap: "傳導、對流", vac: "傳導及對流", mir: "輻射"};
+    function draw(msg){
+      const S = K.S; let g = "";
+      if(S.part === "sun"){
+        g += `<circle cx="320" cy="34" r="20" fill="${S.sun ? "#ffd43b" : "#ced4da"}"/>${S.sun ? `<g stroke="#fab005" stroke-width="2">${[0, 1, 2].map(i => `<line x1="${290 - i * 6}" y1="${50 + i * 10}" x2="${200 - i * 40}" y2="${110 + i * 4}"/>`).join("")}</g>` : ""}<rect x="0" y="225" width="360" height="15" fill="#c8a67a" opacity=".5"/>`;
+        [["L", 120], ["R", 220]].forEach(([s, x]) => {
+          const c = S.cloth[s], T = c ? START + (END[c] - START) * S.t : START + 4 * S.t;
+          g += `<rect x="${x - 3}" y="110" width="6" height="110" fill="#f8f9fa" stroke="#999"/><circle cx="${x}" cy="214" r="6" fill="#e03131"/>`;
+          if(c) g += `<rect x="${x - 12}" y="190" width="24" height="34" rx="5" fill="${c === "black" ? "#212529" : "#fff"}" stroke="#868e96"/>`;
+          g += `<text x="${x}" y="100" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">${T.toFixed(0)} ℃</text>`;
+        });
+        { if(!Object.values(S.cloth).includes("black")) g += tray("black", 40, "黑布", `<rect x="-14" y="8" width="28" height="30" rx="4" fill="#212529"/>`); if(!Object.values(S.cloth).includes("white")) g += tray("white", 40, "白布", `<rect x="-14" y="8" width="28" height="30" rx="4" fill="#fff" stroke="#868e96"/>`, 80); }
+      } else {
+        g += `<rect x="150" y="70" width="100" height="160" rx="16" fill="#adb5bd"/><rect x="164" y="80" width="72" height="146" rx="12" fill="#f1f3f5"/><rect x="172" y="86" width="56" height="134" rx="10" fill="#e9ecef" stroke="#dee2e6" stroke-width="3"/><rect x="176" y="120" width="48" height="96" rx="8" fill="#ffc9c9" opacity=".6"/>
+          <rect x="166" y="42" width="68" height="30" rx="6" fill="#495057"/>`;
+        Object.entries(PART).forEach(([k, [n, x, y]]) => {
+          g += `<circle cx="${x}" cy="${y}" r="5" fill="#e8590c"/><line x1="${x}" y1="${y}" x2="${k === "mir" ? 100 : 290}" y2="${y}" stroke="#e8590c"/><text x="${k === "mir" ? 96 : 294}" y="${y + 4}" font-size="11" text-anchor="${k === "mir" ? "end" : "start"}" fill="var(--ink)" font-weight="700">${n}</text>`;
+          if(S.lab[k]) g += `<text x="${k === "mir" ? 96 : 294}" y="${y + 18}" font-size="10" text-anchor="${k === "mir" ? "end" : "start"}" fill="#2f9e44">✅ 擋${ANS[k]}</text>`;
+        });
+        [["c", "傳導、對流", 40], ["r", "輻射", 110]].forEach(([k, n, x]) => { g += `<g data-it="${k}" transform="translate(${x} 8)"><rect x="-32" y="-4" width="64" height="30" rx="8" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><text x="0" y="16" font-size="11" text-anchor="middle" fill="var(--ink)" font-weight="700">擋${n}</text></g>`; });
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.part === "sun" ? "圖 5-31：把<b>黑布</b>和<b>白布</b>分別包在兩支溫度計的液囊上，再讓太陽晒。" : "圖 5-34：保溫瓶的三個部位各擋哪一種熱的傳播？把上面的標籤拖到部位上（一個標籤可以用很多次）。";
+      handBtns(box.querySelector("[data-btn]"), S.part === "sun" && S.cloth.L && S.cloth.R && !S.sun ? `<button class="btn gold" data-b="sun">☀️ 晒太陽</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => { if(b === "sun"){ K.S.sun = true; K.S.t = 0; draw(""); } });
+    handDnd(svg, {name: k => ({black: "黑布", white: "白布", c: "擋傳導、對流", r: "擋輻射"})[k], drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(k === "black" || k === "white"){
+        const s = inR(x, y, [95, 90, 150, 235]) ? "L" : inR(x, y, [195, 90, 250, 235]) ? "R" : null;
+        if(!s){ toast("包在溫度計的液囊上"); return draw(); }
+        S.cloth[s] = k; S.sun = false; S.t = 0; return draw("");
+      }
+      const hit = Object.entries(PART).find(([pk, [, px, py]]) => Math.hypot(x - px, y - py) < 26 || inR(x, y, pk === "mir" ? [20, py - 14, 110, py + 14] : [285, py - 14, 360, py + 14]));
+      if(!hit){ toast("拖到保溫瓶的部位或它的名字上"); return draw(); }
+      const pk = hit[0], right = pk === "mir" ? k === "r" : k === "c";
+      if(!right) return draw(say(pk === "mir" ? "光滑鏡面像鏡子一樣，會把熱「反射」回去——它擋的是哪一種不需要介質的熱傳播？" : `${PART[pk][0]}：${pk === "vac" ? "真空沒有物質，熱就沒辦法靠物質接觸或流動來傳播。" : "塑膠是熱的不良導體，蓋住瓶口熱空氣也流不出去。"}`));
+      S.lab[pk] = 1; return draw(say(`✅ ${PART[pk][0]}：擋${ANS[pk]}。`, true));
+    })});
+    let shown = "";
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]");
+      const k = S.part === "sun" && S.t >= 1 && S.cloth.L && S.cloth.R && S.cloth.L !== S.cloth.R ? "a" : S.part === "flask" && Object.keys(S.lab).length === 3 && !S.q1 ? "b" : "";
+      if(shown === k) return; shown = k;
+      if(!k){ q.innerHTML = ""; return; }
+      if(k === "a") handMC(q, "晒了一段時間，包黑布的 38 ℃、包白布的 32 ℃，為什麼？", [["表面顏色較深的物體較容易吸收輻射熱", 1], ["黑布比較厚", 0, "兩塊布一樣，差在顏色。"], ["白布會把熱傳導走", 0, "差別在吸收太陽的輻射熱多寡。"]],
+        K.track(() => { S.part = "flask"; shown = null; draw(say("✅ <b>表面顏色較深的物體較容易吸收或放出輻射熱</b>：太陽能熱水器集熱板是深色、儲氣槽漆白色（圖 5-33）。太陽的熱是靠輻射傳到地球的，不需要介質。", true)); }));
+      else handMC(q, "保溫瓶為什麼能保溫？", [["同時阻斷傳導、對流和輻射三種熱的傳播", 1], ["保溫瓶會自己產生熱", 0, "保溫瓶不會發熱，只是讓熱不容易散失。"], ["只要有瓶蓋就夠了", 0, "真空夾層和鏡面也各有功用。"]],
+        K.track(() => { S.q1 = true; shown = null; draw(say("✅ 能阻斷或減少熱傳播，就能保溫（p.157）：真空夾層防傳導及對流、塑膠瓶蓋減少傳導並阻隔對流、光滑鏡面減少輻射散失。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+  /* 關卡函式和共用小工具都宣告完才開站（const 在宣告前不能用） */
+  handStation(pane, L, [
+    {key: "balloon", title: "氣球熱脹冷縮", page: "p.146", run: actBalloon},
+    {key: "ice", title: "冰加熱的溫度變化", page: "p.148–150", run: actIce},
+    {key: "cuso4", title: "硫酸銅加熱與加水", page: "p.151", run: actCuSO4},
+    {key: "conv", title: "傳導與對流", page: "p.152–154", run: actConv},
+    {key: "rad", title: "輻射與保溫瓶", page: "p.155–157", run: actRad}]);
+}});
+
+/* ═════ 第 6 章 活動站：探索物質組成（正式實驗 6-1 以外的課本動手活動） ═════
+   ① 鈉、鉀、鐵和水的反應（p.172–173 示範實驗、圖 6-11、知識快遞：礦物油保存）
+   ② 排週期表（p.174–176：依質量排出每隔 7 種重複、圖 6-12；第 1 族鹼金屬／第 2 族鹼土金屬／第 18 族鈍氣）
+   ③ 組原子（p.180–183：質子、中子、電子；質量數＝質子數＋中子數、原子序＝質子數；⁹₄Be、²³₁₁Na）
+   ④ 組分子寫化學式（p.185–188：圖 6-21、化學式書寫原則 1–4、表 6-2）
+   ⑤ 粒子圖分類（p.186 圖 6-22、例題 6-3） */
+LABS.push({id: "st-ch6", ch: "ch6", icon: "⚛️", title: "第 6 章 活動站：探索物質組成", page: "p.172–188",
+  desc: "鈉鉀丟進水裡、排週期表、組原子、組分子寫化學式、粒子圖分類。", run(pane, L){
+  handStation(pane, L, [
+    {key: "nak", title: "鈉、鉀、鐵和水的反應", page: "p.172–173", run: actNaK},
+    {key: "table", title: "排週期表", page: "p.174–176", run: actTable},
+    {key: "atom", title: "組原子", page: "p.180–183", run: actAtom},
+    {key: "mol", title: "組分子寫化學式", page: "p.185–188", run: actMol},
+    {key: "sort", title: "粒子圖分類", page: "p.186", run: actSort}]);
+  const card = (x, y, txt, sub, it, col) => `<g data-it="${it}" transform="translate(${x} ${y})"><rect x="-24" y="-20" width="48" height="40" rx="7" fill="${col || "var(--card)"}" stroke="var(--line)" stroke-width="2"/><text x="0" y="${sub ? 0 : 5}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">${txt}</text>${sub ? `<text x="0" y="14" text-anchor="middle" font-size="9" fill="var(--sub)">${sub}</text>` : ""}</g>`;
+
+  /* ① 示範實驗：鑷子取米粒大小 → 放進水裡立刻蓋玻璃片 → 加酚酞 → 分類；出錯：徒手拿鈉、湊近看 */
+  function actNaK(box, done){
+    const M = {na: ["鈉", "#ced4da"], k: ["鉀", "#dee2e6"], fe: ["鐵", "#868e96"]}, BX = {na: 80, k: 180, fe: 280};
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 240"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`,
+      () => ({how: false, cur: null, st: {}, q: 0}));
+    const svg = box.querySelector("svg");
+    const tick = setInterval(() => { if(!K.alive()) return clearInterval(tick); if(K.ctl.paused || K.dragging) return; if(Object.values(K.S.st).some(s => s.in && !s.ph && s.cov)) draw(); }, 150);
+    function draw(msg){
+      const S = K.S; let g = `<rect x="0" y="228" width="360" height="12" fill="#c8a67a" opacity=".5"/>`;
+      Object.keys(M).forEach(k => {
+        const x = BX[k], s = S.st[k] || {}, col = s.ph && k !== "fe" ? "#ff8fab" : "#d0ebff";
+        g += `<rect x="${x - 32}" y="150" width="64" height="78" fill="${col}" opacity=".55" stroke="#74c0fc" stroke-width="2"/>`;
+        if(s.in){
+          const t = Date.now() / 120, dx = k === "fe" ? 0 : Math.sin(t * (k === "k" ? 2 : 1)) * 18;
+          g += `<circle cx="${x + dx}" cy="${k === "fe" ? 222 : 158}" r="${k === "fe" ? 6 : 4}" fill="${M[k][1]}" stroke="#555"/>`;
+          if(k !== "fe" && !s.ph) for(let i = 0; i < 4; i++) g += `<circle cx="${x + dx + Math.random() * 14 - 7}" cy="${150 - Math.random() * 12}" r="2" fill="#fff" stroke="#adb5bd"/>`;
+          if(k === "k" && !s.ph) g += flameP(x + dx, 156, 16, 5, "#b197fc", "#e5dbff");
+          if(s.cov) g += `<rect x="${x - 36}" y="144" width="72" height="5" fill="#e7f5ff" stroke="#74c0fc"/>`;
+        }
+        g += `<text x="${x}" y="140" text-anchor="middle" font-size="12" fill="var(--sub)">${M[k][0]}的燒杯</text>`;
+      });
+      ["na", "k", "fe"].filter(k => !(S.st[k] || {}).in).forEach((k, i) => {
+        g += `<g data-it="${k}" transform="translate(${50 + i * 70} 40)"><rect x="-28" y="-26" width="56" height="62" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${k === "fe" ? `<rect x="-12" y="-8" width="24" height="16" fill="#868e96"/>` : `<rect x="-14" y="-16" width="28" height="30" rx="4" fill="#fff3bf" stroke="#e8b923"/><rect x="-6" y="-2" width="12" height="9" fill="${M[k][1]}" stroke="#555"/>`}<text x="0" y="30" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${k === "fe" ? "鐵片" : M[k][0] + "（泡在油裡）"}</text></g>`;
+      });
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = "示範實驗：把<b>鈉、鉀、鐵</b>分別拖進各自的燒杯（水約 100 mL），放進去後<b>立刻蓋上玻璃片</b>；反應結束後加 3 滴<b>酚酞</b>。⚠ 鈉、鉀與水反應激烈，不可太靠近觀察。";
+      const c = S.cur && S.st[S.cur], B = [];
+      if(c && !c.cov) B.push(`<button class="btn gold" data-b="cover">🪟 立刻蓋上玻璃片</button><button class="btn ghost" data-b="peek">👀 湊近一點看清楚</button>`);
+      if(c && c.cov && !c.ph) B.push(`<button class="btn" data-b="ph">💧 加 3 滴酚酞並攪拌</button>`);
+      handBtns(box.querySelector("[data-btn]"), B.join(""), act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S, k = S.cur, s = S.st[k];
+      if(b === "cover"){ s.cov = true; return draw(say(k === "fe" ? "蓋上玻璃片。鐵片沉在水底，<b>看不出有什麼反應</b>。" : k === "k" ? "蓋上玻璃片。鉀在水面上<b>更劇烈</b>地亂竄、冒出紫色火焰！" : "蓋上玻璃片。鈉在水面上<b>快速移動、冒氣泡</b>，越來越小。", true)); }
+      if(b === "peek"){
+        if(k === "fe"){ s.cov = true; return draw(say("鐵片沒什麼反應，湊近也看不出變化。（蓋上玻璃片了）")); }
+        draw("");
+        return handAccident(box.querySelector(".hand"), {pic: BREAK_SVG.replace(/#8ecdf0/, "#ffc9c9"), title: "💦 鹼液噴進眼睛了！", cause: `${M[k][0]}和水反應很激烈，沒蓋玻璃片又把臉湊過去，噴濺出來的鹼性液體濺進眼睛。`,
+          q: "眼睛被噴到，第一步要怎麼做？", opts: [
+            {t: "立刻用大量清水持續沖洗眼睛，並報告老師送醫", ok: true, why: "鹼性液體會傷害眼睛，要馬上用大量清水沖洗至少 15 分鐘，再由醫師檢查。"},
+            {t: "用手用力揉眼睛", why: "揉眼睛會讓化學物質擴散、傷得更深。"},
+            {t: "閉上眼睛等它自己好", why: "化學物質會繼續傷害眼睛，必須立刻沖洗。"},
+            {t: "滴眼藥水就好", why: "眼藥水量太少，沖不掉化學物質。"}],
+          lesson: "課本提醒：<b>鈉、鉀與水反應激烈，不可太靠近觀察</b>；放進去後要<b>立刻蓋上玻璃片</b>。"}, () => draw(say("回到出事前。先蓋上玻璃片，站遠一點觀察。")));
+      }
+      if(b === "ph"){
+        s.ph = true; S.cur = null;
+        const all = ["na", "k", "fe"].every(x => (S.st[x] || {}).ph);
+        return draw(say((k === "fe" ? "加了酚酞，溶液<b>沒有變色</b>。" : `加了酚酞，溶液<b>變成紅色</b>——${M[k][0]}和水反應後，水溶液呈<b>鹼性</b>。`) + (all ? "三杯都做完了。" : ""), true));
+      }
+    });
+    handDnd(svg, {name: k => M[k][0], drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(S.cur){ toast("先把手上這一杯做完"); return draw(); }
+      if(!inR(x, y, [BX[k] - 40, 120, BX[k] + 40, 235])){ toast(`放進「${M[k][0]}的燒杯」`); return draw(); }
+      if(k !== "fe" && !S.how){ S.pend = k; return draw(""); }
+      S.st[k] = {in: true}; S.cur = k; return draw("");
+    })});
+    let shown = null;
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]");
+      const all = ["na", "k", "fe"].every(x => (S.st[x] || {}).ph);
+      const key = S.pend ? "how" : all && S.q === 0 ? "cls" : all && S.q === 1 ? "oil" : "";
+      if(shown === key) return; shown = key;
+      if(!key){ q.innerHTML = ""; return; }
+      if(key === "how"){
+        q.innerHTML = `<div class="card" style="margin:10px 0;padding:12px"><b>要怎麼把${M[S.pend][0]}放進水裡？</b>${[["用乾燥的鑷子取出，在玻璃片上切下米粒大小的一小粒，再用鑷子夾進燒杯", "ok"], ["用手直接拿一塊丟進去", "hand"], ["整塊鈉都丟進去，反應比較明顯", "big"]].map(([t, v]) => `<button class="qo" data-v="${v}">${t}</button>`).join("")}</div>`;
+        q.querySelectorAll(".qo").forEach(b => b.onclick = K.track(() => {
+          const v = b.dataset.v, k = S.pend;
+          if(v === "big"){ b.classList.add("bad"); b.disabled = true; beep(false); box.querySelector("[data-fb]").innerHTML = say("💥 整塊放進去反應太劇烈，可能噴濺甚至起火！課本是切下<b>米粒大小</b>一小粒。"); return; }
+          S.pend = null; shown = null;
+          if(v === "hand"){
+            draw("");
+            return handAccident(box.querySelector(".hand"), {pic: BURN_SVG, title: "😣 手被灼傷了！", cause: `${M[k][0]}遇到手上的汗水就起反應，產生鹼性物質和熱，手指又痛又紅。`,
+              q: "手碰到鈉被灼傷，要怎麼做？", opts: [
+                {t: "先用鑷子把手上殘留的小顆粒夾掉，再用大量清水沖洗，並報告老師", ok: true, why: "先移除殘留物，再用大量清水把鹼性物質沖掉、降溫。"},
+                {t: "在衣服上擦一擦就好", why: "殘留物還在皮膚上，會繼續反應。"},
+                {t: "塗牙膏", why: "牙膏不能中和也不能降溫，還會讓傷口感染。"},
+                {t: "忍一下，繼續做實驗", why: "灼傷要立刻處理。"}],
+              lesson: "鈉、鉀容易和水（包括手上的汗水）反應，要用<b>乾燥的鑷子</b>夾取，絕對不可以用手拿。（一般安全常識，課本沒有寫）"}, () => draw(say("回到出事前。用乾燥的鑷子夾。")));
+          }
+          S.how = true; S.st[k] = {in: true}; S.cur = k; beep(true);
+          draw(say("✅ 用乾燥的鑷子夾米粒大小。鉀也照同樣方法。", true));
+        }));
+        return;
+      }
+      if(key === "cls") handMC(q, "根據實驗結果，你會把鈉、鉀、鐵分成幾類？", [["兩類：鈉、鉀一類（質地軟、和水反應劇烈、溶液變紅），鐵一類", 1], ["三類，每種都不一樣", 0, "鈉和鉀的反應很像，只是鉀更劇烈。"], ["一類，因為都是金屬", 0, "都是金屬沒錯，但和水的反應差很多。"]],
+        K.track(() => { S.q = 1; shown = null; draw(say("✅ 鈉、鉀性質相似，鐵不同（圖 6-11）。", true)); }));
+      if(key === "oil") handMC(q, "實驗室裡的鈉、鉀要怎麼保存？", [["泡在礦物油中，隔絕空氣和水", 1], ["泡在水裡", 0, "鈉、鉀遇水就劇烈反應！"], ["放在打開的盒子裡就好", 0, "鈉、鉀容易和空氣中的氧氣、水氣反應。"]],
+        K.track(() => { S.q = 2; shown = null; draw(say("✅ 鈉、鉀容易與氧氣及水反應，必須放在<b>礦物油</b>中保存（p.173）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ② 依質量把 Li～Cl 排進 Do～Si 七格兩列，看出每隔 7 種重複；再把元素歸到三族 */
+  function actTable(box, done){
+    const EL = [["Li", "鋰", 6.9], ["Be", "鈹", 9.0], ["B", "硼", 10.8], ["C", "碳", 12.0], ["N", "氮", 14.0], ["O", "氧", 16.0], ["F", "氟", 19.0],
+      ["Na", "鈉", 23.0], ["Mg", "鎂", 24.3], ["Al", "鋁", 27.0], ["Si", "矽", 28.1], ["P", "磷", 31.0], ["S", "硫", 32.1], ["Cl", "氯", 35.5]];
+    const GR = {Li: 1, Na: 1, K: 1, Be: 2, Mg: 2, Ca: 2, He: 18, Ne: 18, Ar: 18}, GN = {1: "第 1 族 鹼金屬", 2: "第 2 族 鹼土金屬", 18: "第 18 族 鈍氣"}, CN = {Li: "鋰", Na: "鈉", K: "鉀", Be: "鈹", Mg: "鎂", Ca: "鈣", He: "氦", Ne: "氖", Ar: "氬"};
+    const ORD = [3, 11, 0, 8, 13, 5, 1, 9, 6, 2, 12, 4, 10, 7];   // 托盤裡的打亂順序
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 300"></svg></div><div data-q></div><div data-fb></div>`,
+      () => ({n: 0, part: 1, grp: {}, q: 0}));
+    const svg = box.querySelector("svg");
+    function draw(msg){
+      const S = K.S; let g = "";
+      if(S.part === 1){
+        ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"].forEach((m, i) => { g += `<text x="${42 + i * 46}" y="16" text-anchor="middle" font-size="10" fill="var(--sub)">${m}</text>`; });
+        for(let i = 0; i < 14; i++){ const x = 42 + (i % 7) * 46, y = 42 + Math.floor(i / 7) * 48;
+          g += i < S.n ? card(x, y, EL[i][0], EL[i][1] + " " + EL[i][2], "p" + i, i % 7 === 0 ? "#fff3bf" : i % 7 === 6 ? "#e7f5ff" : "") : `<rect x="${x - 22}" y="${y - 20}" width="44" height="40" rx="7" fill="none" stroke="var(--line)" stroke-dasharray="4 3"/>`; }
+        ORD.filter(i => i >= S.n).forEach((i, j) => { g += card(32 + (j % 7) * 49, 170 + Math.floor(j / 7) * 52, EL[i][0], `${EL[i][1]} ${EL[i][2]}`, "e" + i); });
+        g += `<text x="10" y="290" font-size="10" fill="var(--sub)">卡片下方的數字＝原子量（質量）</text>`;
+      } else {
+        [1, 2, 18].forEach((n, i) => { const x = 62 + i * 118; g += `<rect x="${x - 54}" y="10" width="108" height="170" rx="10" fill="none" stroke="var(--line)" stroke-dasharray="5 4"/><text x="${x}" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${GN[n]}</text>`;
+          Object.keys(S.grp).filter(e => S.grp[e] === n).forEach((e, j) => { g += card(x, 58 + j * 44, e, CN[e], "g" + e); }); });
+        Object.keys(GR).filter(e => !S.grp[e]).forEach((e, j) => { g += card(32 + j * 37 + (j % 2) * 0, 220 + (j % 2) * 44, e, CN[e], e); });
+      }
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.part === 1 ? "像早期科學家一樣：把元素卡<b>依質量由小到大</b>排進格子（第一列排滿 7 格再排第二列）。拖曳或點一張卡再點格子。" : "現代週期表：把元素卡拖進正確的<b>族</b>。";
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    handDnd(svg, {name: k => k, drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(S.part === 1){
+        if(k[0] !== "e" || y > 150){ return draw(); }
+        const i = +k.slice(1);
+        if(i !== S.n){ return draw(say(`還有比 ${EL[i][1]}（${EL[i][2]}）更輕的元素沒排喔！找找看質量最小的那一張。`)); }
+        S.n++; return draw(S.n === 14 ? say("排好了！看看<b>上下對齊</b>的元素，有沒有發現什麼？", true) : "");
+      }
+      if(!GR[k]) return draw();
+      const n = x < 120 ? 1 : x < 240 ? 2 : 18;
+      if(y > 190) return draw();
+      if(GR[k] !== n){ return draw(say(`${CN[k]}不在這一族。提示：鹼金屬和水反應劇烈（鈉、鉀）；鹼土金屬多存在於地殼中（鎂、鈣）；鈍氣化學性質安定（氦、氖）。`)); }
+      S.grp[k] = n;
+      return draw(Object.keys(GR).every(e => S.grp[e]) ? say("✅ 三族都排好了。", true) : "");
+    })});
+    let shown = null;
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]");
+      const key = S.part === 1 && S.n === 14 ? "p" : S.part === 2 && Object.keys(GR).every(e => S.grp[e]) ? "g" : "";
+      if(shown === key) return; shown = key;
+      if(!key){ q.innerHTML = ""; return; }
+      if(key === "p") handMC(q, "鋰和鈉、氟和氯排在同一行。這代表？", [["依質量排列時，每隔 7 種元素就出現性質相似的元素，像音階一樣", 1], ["質量相同的元素排在一起", 0, "鋰 6.9、鈉 23.0，質量差很多。"], ["同一橫列的元素性質最像", 0, "性質相似的是上下對齊（同一行）的元素。"]],
+        K.track(() => { S.part = 2; shown = null; draw(say("✅ 元素的週期性（圖 6-12）。門得列夫在 1869 年發表主要依質量排列的週期表，還預測了四種未知元素。現代週期表改依<b>原子序</b>排列：橫列叫<b>週期</b>（7 個），縱行叫<b>族</b>（1～18 族），同族化學性質相似。", true)); }));
+      if(key === "g") handMC(q, "例題 6-1：下列哪一句正確？", [["鈉、鉀是同一族元素，都易與水反應，有相似的化學性質", 1], ["週期表中的橫列稱為「族」，縱行稱為「週期」", 0, "反了：橫列是週期，縱行是族。"], ["同週期的元素，化學性質相似", 0, "化學性質相似的是<b>同族</b>（同一縱行）。"]],
+        K.track(() => { S.q = 1; shown = null; draw(say("✅ 氦、氖化學性質安定，同屬第 18 族，又稱<b>鈍氣</b>；氦氣密度小可填充氣球，氖氣通電發紅光做霓虹燈（p.176）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ③ 依符號組原子：質子、中子放進原子核，電子放在外圍；再由模型讀出符號 */
+  function actAtom(box, done){
+    const T = [{s: "Be", n: "鈹", Z: 4, A: 9}, {s: "Na", n: "鈉", Z: 11, A: 23}];
+    const NAME = {1: "氫", 2: "氦", 3: "鋰", 4: "鈹", 5: "硼", 6: "碳", 7: "氮", 8: "氧", 9: "氟", 10: "氖", 11: "鈉", 12: "鎂"};
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 260"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`, () => ({r: 0, p: 0, n: 0, e: 0, ok: [], q: 0}));
+    const svg = box.querySelector("svg");
+    function draw(msg){
+      const S = K.S, t = T[Math.min(S.r, 1)]; let g = "";
+      g += `<circle cx="180" cy="140" r="88" fill="#e7f5ff" opacity=".6" stroke="#74c0fc" stroke-dasharray="5 4"/><circle cx="180" cy="140" r="30" fill="#fff3bf" stroke="#e8b923"/><text x="180" y="248" text-anchor="middle" font-size="10" fill="var(--sub)">外圍：電子　　中心：原子核</text>`;
+      const ty = []; for(let a = S.p, b = S.n; a || b;){ if(a){ ty.push(1); a--; } if(b){ ty.push(0); b--; } }   // 質子、中子交錯排
+      const pts = ty.map((isP, i) => { const a = i * 2.4, r = 5 + 3.2 * Math.sqrt(i); return [180 + r * Math.cos(a), 140 + r * Math.sin(a), isP]; });
+      pts.forEach(([x, y, isP]) => { g += `<circle cx="${x}" cy="${y}" r="5" fill="${isP ? "#e03131" : "#868e96"}" stroke="#fff"/>${isP ? `<text x="${x}" y="${y + 3}" font-size="7" text-anchor="middle" fill="#fff">+</text>` : ""}`; });
+      for(let i = 0; i < S.e; i++){ const a = i / Math.max(1, S.e) * 6.283; g += `<circle cx="${180 + 70 * Math.cos(a)}" cy="${140 + 70 * Math.sin(a)}" r="4" fill="#1c7ed6"/><text x="${180 + 70 * Math.cos(a)}" y="${143 + 70 * Math.sin(a)}" font-size="7" text-anchor="middle" fill="#fff">−</text>`; }
+      if(S.r < 2) g += [["p", "質子 +", "#e03131"], ["n", "中子", "#868e96"], ["e", "電子 −", "#1c7ed6"]].map(([k, nm, c], i) => `<g data-it="${k}" transform="translate(${36} ${40 + i * 70})"><rect x="-28" y="-24" width="56" height="56" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><circle cx="0" cy="-4" r="9" fill="${c}"/><text x="0" y="24" font-size="10" text-anchor="middle" fill="var(--ink)" font-weight="700">${nm}</text></g>`).join("");
+      g += `<text x="300" y="40" text-anchor="middle" font-size="12" fill="var(--ink)">質子 ${S.p}</text><text x="300" y="60" text-anchor="middle" font-size="12" fill="var(--ink)">中子 ${S.n}</text><text x="300" y="80" text-anchor="middle" font-size="12" fill="var(--ink)">電子 ${S.e}</text>`;
+      if(S.r < 2) g += `<text x="300" y="120" text-anchor="middle" font-size="11" fill="var(--sub)">目標</text><text x="300" y="150" text-anchor="middle" font-size="26" font-weight="700" fill="var(--ink)"><tspan font-size="13" dy="-12">${t.A}</tspan><tspan font-size="13" dx="-14" dy="26">${t.Z}</tspan><tspan dy="-14">${t.s}</tspan></text>`;
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.r < 2 ? `組出 <b>${t.n}原子</b>：左上角＝質量數（質子數＋中子數），左下角＝原子序（＝質子數）。把粒子拖到正確位置，組好按「檢查」。` : "最後一題。";
+      handBtns(box.querySelector("[data-btn]"), S.r < 2 ? `<button class="btn gold" data-b="chk">✅ 檢查</button><button class="btn ghost" data-b="mp">− 質子</button><button class="btn ghost" data-b="mn">− 中子</button><button class="btn ghost" data-b="me">− 電子</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S, t = T[S.r];
+      if(b === "mp" || b === "mn" || b === "me"){ const k = b[1]; S[k] = Math.max(0, S[k] - 1); return draw(""); }
+      if(b === "chk"){
+        if(S.p !== t.Z) return draw(say(S.p && NAME[S.p] ? `質子有 ${S.p} 個——這是<b>${NAME[S.p]}</b>，不是${t.n}！原子序（左下角 ${t.Z}）＝質子數，質子數決定是哪一種元素。` : `質子數要等於原子序（左下角的 ${t.Z}）。`));
+        if(S.p + S.n !== t.A) return draw(say(`質子＋中子＝${S.p + S.n}，但質量數（左上角）是 ${t.A}。中子應該有 ${t.A} − ${t.Z}＝? 個。`));
+        if(S.e !== S.p) return draw(say(`電子 ${S.e} 個、質子 ${S.p} 個。原子要保持<b>電中性</b>：質子數＝電子數。`));
+        S.r++; S.p = S.n = S.e = 0;
+        return draw(say(S.r === 1 ? `✅ ⁹₄Be：質子 4、中子 5、電子 4。換組鈉。` : `✅ ²³₁₁Na：質子 11、中子 12、電子 11（例題 6-2）。`, true));
+      }
+    });
+    handDnd(svg, {name: k => ({p: "質子", n: "中子", e: "電子"})[k], drop: K.track((k, x, y) => {
+      const S = K.S, d = Math.hypot(x - 180, y - 140);
+      if(d <= 36){ if(k === "e") return draw(say("電子不在原子核裡，它在原子核外圍運動。")); if(S.p + S.n >= 30){ toast("夠多了"); return draw(); } S[k]++; return draw(""); }
+      if(d <= 95){ if(k !== "e") return draw(say(`${k === "p" ? "質子" : "中子"}在<b>原子核</b>裡（中間黃色的圓）。`)); if(S.e >= 15){ toast("夠多了"); return draw(); } S.e++; return draw(""); }
+      draw();
+    })});
+    let shown = null;
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), key = S.r >= 2 && S.q === 0 ? "m" : "";
+      if(shown === key) return; shown = key;
+      if(!key){ q.innerHTML = ""; return; }
+      handMC(q, "為什麼質量數只算質子和中子，不算電子？", [["電子很輕；質子、中子的質量差不多，大約是電子的 1836 倍，原子的質量幾乎集中在原子核", 1], ["電子不帶電", 0, "電子帶負電；不帶電的是中子。"], ["電子在原子外面，不屬於原子", 0, "電子也是原子的一部分。"]],
+        K.track(() => { S.q = 1; shown = null; draw(say("✅ 原子的質量≒原子核的質量（圖 6-18）。發現順序：湯姆森發現電子 → 拉塞福發現原子核與質子 → 查兌克發現中子（p.180–181）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ④ 拖原子球組分子 → 選化學式；原則：右下角寫原子數、1 省略；含氧化合物氧寫後面 */
+  function actMol(box, done){
+    const G = [{n: "氫氣", c: {H: 2}, f: "H₂", bad: [["2H", "2H 是 2 個氫<b>原子</b>（分開的）；氫分子是 2 個氫原子連在一起，數字寫在<b>右下角</b>：H₂。"], ["H", "氫氣是由 2 個氫原子組成的分子，要標原子數。"]]},
+      {n: "水", c: {H: 2, O: 1}, f: "H₂O", bad: [["HO₂", "數字跟在誰的右下角，就是誰的個數：HO₂ 變成 1 個氫、2 個氧了。"], ["H₂O₁", "原子數目為 1 時可以省略不寫。"]]},
+      {n: "二氧化碳", c: {C: 1, O: 2}, f: "CO₂", bad: [["O₂C", "含有氧的化合物，一般將氧原子寫在後面（原則 4）。"], ["C₂O", "二氧化碳是 1 個碳、2 個氧。"]]},
+      {n: "臭氧", c: {O: 3}, f: "O₃", bad: [["3O", "3O 是 3 個分開的氧原子；臭氧是 3 個氧原子組成的一個分子：O₃。"], ["O₂", "O₂ 是氧氣，臭氧有 3 個氧原子。"]]}];
+    const AC = {H: ["#fff", "#adb5bd"], O: ["#e03131", "#c92a2a"], C: ["#343a40", "#000"]};
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 230"></svg></div>
+      <div class="row" data-btn style="margin-top:8px"></div><div data-q></div><div data-fb></div>`, () => ({g: 0, have: {}, built: false, q: 0}));
+    const svg = box.querySelector("svg");
+    function draw(msg){
+      const S = K.S, t = G[Math.min(S.g, G.length - 1)]; let g = `<rect x="110" y="60" width="200" height="140" rx="14" fill="#f8f9fa" stroke="var(--line)" stroke-dasharray="6 4"/><text x="210" y="216" text-anchor="middle" font-size="10" fill="var(--sub)">分子盤</text>`;
+      let i = 0; Object.entries(S.have).forEach(([a, n]) => { for(let j = 0; j < n; j++, i++) g += `<circle cx="${170 + i * 26}" cy="130" r="${a === "H" ? 11 : 15}" fill="${AC[a][0]}" stroke="${AC[a][1]}" stroke-width="2"/><text x="${170 + i * 26}" y="134" text-anchor="middle" font-size="10" fill="${a === "H" ? "#333" : "#fff"}">${a}</text>`; });
+      if(S.g < G.length) g += ["H", "O", "C"].map((a, k) => `<g data-it="${a}" transform="translate(40 ${40 + k * 62})"><rect x="-28" y="-24" width="56" height="56" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><circle cx="0" cy="-2" r="${a === "H" ? 10 : 14}" fill="${AC[a][0]}" stroke="${AC[a][1]}" stroke-width="2"/><text x="0" y="2" text-anchor="middle" font-size="10" fill="${a === "H" ? "#333" : "#fff"}">${a}</text><text x="0" y="26" font-size="9" text-anchor="middle" fill="var(--ink)" font-weight="700">${{H: "氫原子", O: "氧原子", C: "碳原子"}[a]}</text></g>`).join("");
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = S.g < G.length ? `第 ${S.g + 1}／${G.length} 個：用原子球組出一個<b>${t.n}分子</b>，組好按「組好了」。` : "最後一題：化學式書寫原則 3。";
+      handBtns(box.querySelector("[data-btn]"), S.g < G.length && !S.built ? `<button class="btn gold" data-b="ok">✅ 組好了</button><button class="btn ghost" data-b="clr">清空分子盤</button>` : "", act);
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    const act = K.track(b => {
+      const S = K.S, t = G[S.g];
+      if(b === "clr"){ S.have = {}; return draw(""); }
+      if(b === "ok"){
+        const want = t.c, ok = ["H", "O", "C"].every(a => (S.have[a] || 0) === (want[a] || 0));
+        if(!ok) return draw(say(`不對喔。一個${t.n}分子裡有：${Object.entries(want).map(([a, n]) => `${n} 個${{H: "氫", O: "氧", C: "碳"}[a]}原子`).join("、")}。（圖 6-21）`));
+        S.built = true; return draw("");
+      }
+    });
+    handDnd(svg, {name: k => k, drop: K.track((k, x, y) => {
+      const S = K.S;
+      if(S.built || !inR(x, y, [105, 55, 315, 205])) return draw();
+      if(Object.values(S.have).reduce((a, b) => a + b, 0) >= 5){ toast("分子盤滿了"); return draw(); }
+      S.have[k] = (S.have[k] || 0) + 1; return draw("");
+    })});
+    let shown = null;
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), key = S.built ? "f" + S.g : S.g >= G.length && S.q === 0 ? "nacl" : "";
+      if(shown === key) return; shown = key;
+      if(!key){ q.innerHTML = ""; return; }
+      if(key === "nacl") return handMC(q, "食鹽晶體由鈉與氯以 1：1 組成。化學式和中文名稱怎麼寫？", [["NaCl，讀作「氯化鈉」", 1], ["ClNa，讀作「鈉化氯」", 0, "金屬元素符號寫在前、非金屬在後（原則 3）。"], ["NaCl，讀作「鈉化氯」", 0, "中文名稱和元素符號的順序<b>相反</b>：NaCl → 氯化鈉。"]],
+        K.track(() => { S.q = 1; shown = null; draw(say("✅ 由金屬與非金屬組成的化合物，金屬符號在前；中文名稱順序相反（p.188）。另外：金屬由許多原子堆積而成，化學式只寫元素符號，例如鎂 Mg；鈍氣是單原子，氦 He。", true)); done(); }));
+      const t = G[S.g];
+      handMC(q, `${t.n}分子的化學式怎麼寫？`, [[t.f, 1], ...t.bad.map(([f, w]) => [f, 0, w])],
+        K.track(() => { S.g++; S.have = {}; S.built = false; shown = null; draw(say(`✅ ${t.n}：${t.f}。`, true)); }));
+    }
+    K.draw = draw; draw("");
+  }
+
+  /* ⑤ 圖 6-22：把粒子圖拖進混合物／元素／化合物 */
+  function actSort(box, done){
+    const P = [["mg", "鎂 Mg", "el"], ["ar", "氬 Ar", "el"], ["o2", "氧 O₂", "el"], ["o3", "臭氧 O₃", "el"], ["co", "一氧化碳 CO", "cp"], ["h2o", "水 H₂O", "cp"], ["air", "空氣", "mx"]];
+    const BIN = {mx: ["混合物", 60], el: ["元素", 180], cp: ["化合物", 300]};
+    const ball = (x, y, c, r) => `<circle cx="${x}" cy="${y}" r="${r || 5}" fill="${c}" stroke="#555" stroke-width=".6"/>`;
+    const pic = k => ({mg: [[-8, -6], [0, -6], [8, -6], [-8, 2], [0, 2], [8, 2]].map(([a, b]) => ball(a, b, "#9775fa")).join(""),
+      ar: ball(-10, -4, "#94d82d") + ball(8, -6, "#94d82d") + ball(0, 6, "#94d82d"),
+      o2: ball(-12, -2, "#e64980") + ball(-4, -2, "#e64980") + ball(6, 4, "#e64980") + ball(14, 4, "#e64980"),
+      o3: ball(-8, 0, "#e64980") + ball(0, -6, "#e64980") + ball(8, 0, "#e64980"),
+      co: ball(-10, -2, "#343a40") + ball(-2, -2, "#e64980") + ball(6, 5, "#343a40") + ball(14, 5, "#e64980"),
+      h2o: ball(-8, 0, "#e64980", 6) + ball(-15, 6, "#fff", 3.5) + ball(-1, 6, "#fff", 3.5) + ball(10, -4, "#e64980", 6) + ball(4, 2, "#fff", 3.5) + ball(17, 2, "#fff", 3.5),
+      air: ball(-12, -6, "#4c6ef5") + ball(-5, -6, "#4c6ef5") + ball(8, -6, "#e64980") + ball(15, -6, "#e64980") + ball(-6, 6, "#94d82d") + ball(6, 6, "#343a40") + ball(12, 6, "#e64980", 4)}[k]);
+    const K = handKit(box, `<div class="htask"></div><div class="simview"><svg viewBox="0 0 360 290"></svg></div><div data-q></div><div data-fb></div>`, () => ({in: {}, q: 0}));
+    const svg = box.querySelector("svg");
+    function draw(msg){
+      const S = K.S; let g = "";
+      Object.entries(BIN).forEach(([b, [n, x]]) => { g += `<rect x="${x - 56}" y="150" width="112" height="134" rx="10" fill="none" stroke="var(--line)" stroke-dasharray="5 4"/><text x="${x}" y="168" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${n}</text>`;
+        P.filter(p => S.in[p[0]] === b).forEach((p, j) => { g += `<g transform="translate(${x - 30 + (j % 2) * 60} ${192 + Math.floor(j / 2) * 34})">${pic(p[0])}</g><text x="${x - 30 + (j % 2) * 60}" y="${210 + Math.floor(j / 2) * 34}" text-anchor="middle" font-size="7" fill="var(--sub)">${p[1]}</text>`; }); });
+      P.filter(p => !S.in[p[0]]).forEach((p, j) => { const x = 30 + (j % 6) * 58, y = 36 + Math.floor(j / 6) * 64;
+        g += `<g data-it="${p[0]}" transform="translate(${x} ${y})"><rect x="-26" y="-24" width="52" height="56" rx="8" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>${pic(p[0])}<text x="0" y="26" text-anchor="middle" font-size="8" fill="var(--ink)">${p[1]}</text></g>`; });
+      svg.innerHTML = g;
+      box.querySelector(".htask").innerHTML = "看粒子圖：把每一種物質拖進<b>混合物、元素、化合物</b>（圖 6-22）。顏色不同代表不同種原子。";
+      if(msg !== undefined) box.querySelector("[data-fb]").innerHTML = msg;
+      quiz(); K.ctl.upd();
+    }
+    handDnd(svg, {name: k => P.find(p => p[0] === k)[1], drop: K.track((k, x, y) => {
+      const S = K.S; if(y < 145) return draw();
+      const b = x < 120 ? "mx" : x < 240 ? "el" : "cp", p = P.find(q => q[0] === k);
+      if(p[2] !== b){
+        const why = p[2] === "mx" ? "空氣裡有好幾種不同的粒子（氮氣、氧氣、氬氣、二氧化碳），是混合物。"
+          : p[2] === "el" ? `${p[1]}的粒子都只有<b>同一種原子</b>（顏色都一樣），是元素。${k === "o3" ? "臭氧雖然一個分子有 3 個原子，但都是氧原子。" : ""}`
+          : `${p[1]}的每個粒子都由<b>不同種類的原子以固定比例</b>結合而成，而且粒子都一樣——是化合物（純物質），不是混合物。`;
+        return draw(say(why));
+      }
+      S.in[k] = b; return draw(P.every(q => S.in[q[0]]) ? say("✅ 全部分好了！元素由同一種原子構成；化合物由不同種類的原子以固定比例結合而成（p.186）。", true) : "");
+    })});
+    let shown = null;
+    function quiz(){
+      const S = K.S, q = box.querySelector("[data-q]"), key = P.every(p => S.in[p[0]]) && !S.q ? "x" : "";
+      if(shown === key) return; shown = key;
+      if(!key){ q.innerHTML = ""; return; }
+      handMC(q, "例題 6-3：有固定沸點，而且隔絕空氣加熱會分解成兩種新物質的，可能是哪一類？", [["化合物", 1], ["元素", 0, "元素無法再用化學方法分解成更簡單的物質。"], ["混合物", 0, "混合物沒有固定的沸點。"]],
+        K.track(() => { S.q = 1; shown = null; draw(say("✅ 純物質（元素、化合物）都有固定沸點；只有化合物能再分解（例如水可以分解成氫和氧）。", true)); done(); }));
+    }
+    K.draw = draw; draw("");
+  }
+}});
+
 function home(){
   $("#backlab").hidden = true;
   $("#pnum").textContent = `完成 ${LABS.filter(l => DONE[l.id]).length} / ${LABS.length}`;

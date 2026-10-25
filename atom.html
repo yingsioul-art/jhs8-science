@@ -8,8 +8,12 @@
   第 6 章 探索物質組成 互動單元（2026-10-24）
   進度 key：jhs8-atom-v1
   總段數（作答題數）＝ 10（q0～q9）→ 首頁進度條用 data-total="10"
-  骨架照 solution.html：開始之前 → 案發 → 全國怎麼選 → 自己動手拆 → 才給名字 → 變化題 → 歷史 → 結案
-  官方數據只取自 111～115 年會考自然科官方試題分析（全體欄）
+  骨架照 solution.html：開始之前 → 案發 → 道耳頓原子說 → 自己動手拆 → 才給名字 → 質量數與原子序 → 物質分類 → 化學式 → 週期表 → 歷史 → 結案
+  官方數據只取自 112～115 年會考自然科官方試題分析（全體欄）
+  2026-10-25 改成照康軒第 6 章（課本 p.164–188）：原本的案發題是 111 年會考第 31 題（考離子），康軒八上沒有教離子，
+  改用依課本「原子不帶電、質子數＝電子數」自編的改寫題（q0，沒有官方數據）；114-17（離子）換成依例題 6-2 自編題（q4）；
+  113-04 有「莫耳」選項，換成依例題 6-1 自編題（q8）。同位素、陽離子、陰離子的段落全部拿掉；
+  補上道耳頓原子說四點、原子結構發現史、質量數與原子序、同素異形體、鈉鉀與水示範實驗與三族、化學式書寫原則。
 -->
 <style>
 :root{
@@ -225,7 +229,7 @@ details.pre .bd p:last-child{margin:0}
 .pempty{border:1px dashed var(--line);border-radius:7px}
 .pinfo{margin-top:14px}
 
-/* 113-04 重繪小表 */
+/* 週期表小表（舊題用，保留樣式） */
 .pt-mini{display:inline-grid;grid-template-columns:repeat(2,74px);gap:3px;margin:6px 0 12px}
 .pt-mini div{border:1.5px solid var(--ink);text-align:center;padding:4px 0;line-height:1.25;font-size:13px;background:#fff}
 .pt-mini b{font-size:17px;display:block}
@@ -254,10 +258,9 @@ details.pre .bd p:last-child{margin:0}
 <header>
   <div class="kicker">八年級上 · 第六章 探索物質組成</div>
   <h1>誰是最輕的那一個？</h1>
-  <p class="sub">一題只給你三個代號、一句「X 最輕」，就要你猜出誰是誰。<br>全國的考生四個選項幾乎平分——<strong>一半以上的人在猜</strong>。<br>可是那一句話，就已經刪掉了兩個選項。</p>
+  <p class="sub">一題只給你三個代號、一句「X 最輕」，就要你猜出誰是誰。<br>看起來像在猜謎，其實只要知道兩件事：<strong>誰最輕</strong>、<strong>原子為什麼不帶電</strong>。<br>那一句話，就已經刪掉了兩個選項。</p>
   <div class="meta">
-    <span class="tag">會考 111-31</span>
-    <span class="tag">通過率 44.8%</span>
+    <span class="tag">康軒 p.164–188</span>
     <span class="tag">10 題</span>
     <span class="tag">原子組裝台</span>
     <span class="tag">物質分類台</span>
@@ -279,11 +282,11 @@ details.pre .bd p:last-child{margin:0}
     <ol class="flow">
       <li>先看一題只給代號的怪題目</li>
       <li><strong>你先猜</strong>一個（猜錯沒關係）</li>
-      <li>看看全國的考生怎麼選</li>
+      <li>回到兩百年前：道耳頓怎麼想像原子</li>
       <li>自己用按鈕組原子：加一顆質子、中子、電子，看看各會改變什麼</li>
-      <li>這時候才給名字：原子序、質量數、離子</li>
-      <li>往上一層：原子怎麼組成元素、化合物、混合物，化學式裡的數字在數什麼</li>
-      <li>點一點週期表：為什麼同一直行的元素脾氣很像</li>
+      <li>這時候才給名字：原子序、質量數</li>
+      <li>往上一層：原子怎麼組成元素、化合物、混合物；同素異形體；化學式怎麼寫、裡面的數字在數什麼</li>
+      <li>鈉、鉀丟進水裡；點一點週期表：為什麼同一直行的元素脾氣很像</li>
       <li>最後：電子、原子核、中子是照什麼順序被找到的——剛好和這題有關</li>
     </ol>
   </div>
@@ -296,7 +299,7 @@ details.pre .bd p:last-child{margin:0}
 
   <div class="note">
     <p><b>三個提醒</b></p>
-    <p style="margin-top:10px">① 一開始那題全國只有 44.76% 的人答對，而且四個選項被選的比例差不多——很多人是用猜的。</p>
+    <p style="margin-top:10px">① 一開始那題是本站照康軒課本改寫的練習題，不是會考原題；後面標「會考」的才是原題。</p>
     <p style="margin-top:8px">② 這題<strong>完全不用計算</strong>，只要知道三種粒子「誰最輕」「誰帶正電、誰帶負電」。</p>
     <p style="margin-top:8px">③ 每一段要答完才解鎖下一段，不是要考你，是不想讓你跳過思考。進度會自己存著。</p>
   </div>
@@ -307,12 +310,12 @@ details.pre .bd p:last-child{margin:0}
   <div class="step">案發現場</div>
   <h2>三個代號，一句線索</h2>
 
-  <p class="lead">有一個很小很小的粒子，它<strong>帶著電</strong>。</p>
+  <p class="lead">有一個很小很小的粒子：一個<strong>原子</strong>。</p>
   <p>裡面有三種更小的東西：質子、中子、電子。但題目故意不告訴你誰是誰，只把它們叫做 <strong>X、Y、Z</strong>，再給你一句線索：</p>
 
   <div class="quote">
     <p style="font-size:19px"><strong>「X 粒子的質量最小。」</strong></p>
-    <p style="margin-top:10px">就這一句。這題<em>不用計算</em>，但它比算數學還難——全國有超過一半的人答錯。</p>
+    <p style="margin-top:10px">就這一句。這題<em>不用計算</em>，但很多人會卡住——因為三種粒子誰是誰，平常沒有分清楚。</p>
   </div>
 
   <p class="big">X 是哪一種？光靠這一句，你能刪掉幾個選項？</p>
@@ -324,54 +327,50 @@ details.pre .bd p:last-child{margin:0}
   <h2>讀完選一個，猜錯沒關係</h2>
 
   <div class="q" id="q0">
-    <div class="q-src">111 年會考自然科 第 31 題（原題）</div>
-    <div class="q-body">有一個帶電的離子含有 X、Y、Z 三種粒子（質子、電子、中子，未依照順序排列），且 X、Y、Z 的粒子數目依序為 N<sub>X</sub>、N<sub>Y</sub>、N<sub>Z</sub>。已知 <strong>X 粒子的質量最小</strong>，關於此離子的說明，下列何者最合理？</div>
-    <div class="opts" data-q="0" data-ans="C">
-      <button class="opt" data-k="A"><span class="k">A</span><span>若為陽離子，且 N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub>，則 Z 為質子</span></button>
-      <button class="opt" data-k="B"><span class="k">B</span><span>若為陽離子，且 N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub>，則 Z 為電子</span></button>
-      <button class="opt" data-k="C"><span class="k">C</span><span>若為陰離子，且 N<sub>X</sub>＝N<sub>Y</sub>＞N<sub>Z</sub>，則 Z 為質子</span></button>
-      <button class="opt" data-k="D"><span class="k">D</span><span>若為陰離子，且 N<sub>X</sub>＞N<sub>Y</sub>＝N<sub>Z</sub>，則 Z 為電子</span></button>
+    <div class="q-src">本站改寫題（依康軒課本 6-3；非會考原題）</div>
+    <div class="q-body">某一個原子含有 X、Y、Z 三種粒子（質子、電子、中子，未依照順序排列），粒子數目依序為 N<sub>X</sub>、N<sub>Y</sub>、N<sub>Z</sub>。已知 <strong>X 粒子的質量最小</strong>，而且 N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub>。下列推論何者最合理？</div>
+    <div class="opts" data-q="0" data-ans="A">
+      <button class="opt" data-k="A"><span class="k">A</span><span>Z 為質子，Y 為中子</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>Z 為中子，Y 為質子</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>Y 為電子，Z 為質子</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>X 為質子，Z 為電子</span></button>
     </div>
-    <p class="pct-note" id="pn0">選項右邊的百分比＝111 年全國考生選這個選項的比例（官方試題分析）。</p>
     <div class="fb" id="fb0"></div>
   </div>
-  <p class="dim" style="font-size:14.5px">看不懂「陽離子」「陰離子」沒關係，等一下你會親手做出來。先憑感覺選。</p>
+  <p class="dim" style="font-size:14.5px">還不確定三種粒子誰是誰沒關係，等一下你會親手組出來。先憑感覺選。</p>
 </section>
 
-<!-- ══ 2 全國 ══ -->
+<!-- ══ 2 道耳頓 ══ -->
 <section class="locked-zone" id="z2">
-  <div class="step">STEP 2　全國怎麼選</div>
-  <h2>四個選項，三個錯的被選得幾乎一樣多</h2>
+  <div class="step">STEP 2　先回到兩百年前</div>
+  <h2>道耳頓說：一切物質都由原子組成</h2>
+  <span class="book">📖 康軒課本 6-3 化合物與原子概念的發展 p.177–179</span>
 
-  <div class="card">
-    <div class="dist" id="dist"></div>
-    <p class="dim" style="font-size:14px;margin:14px 0 0">
-      資料：國家教育研究院 111 年國中教育會考自然科官方試題分析（全體考生；通過率 0.4476、鑑別度 0.43）。<br>
-      <span>「通過率」＝答對的人佔幾成；「鑑別度」越高，代表這題越能分出真的懂和只是猜對的人。</span></p>
+  <p>兩千多年前，希臘哲學家德謨克利特就猜「物質是由不可分割的小粒子——原子組成的」，但那只是推論。十八世紀，科學家發現：經過加熱、照光或通電還能<strong>再分解</strong>的純物質叫<strong>化合物</strong>（例如水分解成氫和氧）；用一般化學方法<strong>無法再分解</strong>的純物質叫<strong>元素</strong>。</p>
+  <p>西元 1803 年，英國的道耳頓提出<strong>原子說</strong>，把原子、元素、化合物連在一起：</p>
+  <div class="card" style="font-size:16px">
+    <p style="margin:0 0 8px">① 一切物質都是由微小粒子所組成，這種<strong>不可再分割</strong>的粒子稱為原子。</p>
+    <p style="margin:0 0 8px">② <strong>相同元素</strong>的原子，質量與性質均相同；不同元素的原子，質量與性質均不相同。</p>
+    <p style="margin:0 0 8px">③ <strong>化合物</strong>是由不同種類的原子，以<strong>固定比例</strong>所結合而成（例如二氧化碳：碳：氧＝1：2）。</p>
+    <p style="margin:0">④ 化學反應只是原子間以新的方式<strong>重新結合</strong>，在反應過程中，原子的種類與數目均不會改變。</p>
   </div>
-
-  <div class="note">
-    <p><b>錯的三個選項各拿到 15%～20%，這代表什麼？</b></p>
-    <p style="margin-top:10px">如果大家都有同一個誤會，錯的人會擠在同一個選項。但這題沒有——<em>錯的人平均分散</em>，看起來像是很多人根本不知道怎麼下手，只好用猜的。</p>
-    <p style="margin-top:10px">而選 B 和選 D 的人加起來有 <strong>35.52%</strong>。這兩個選項有一個共同點，等一下你會發現：<strong>它們和題目第一句線索直接打架</strong>。</p>
-  </div>
-
-  <p>先不要看解答。我們自己來組幾個原子。</p>
+  <p>原子小到什麼程度？把金原子放大 2 億倍，大約才一顆網球大；再把網球放大 2 億倍，才是地球大小（圖 6-16）。</p>
+  <p class="dim">可是，原子真的是最小、不能再分的嗎？第 ① 點後來被推翻了。先自己組一個原子看看。</p>
 </section>
 
 <!-- ══ 3 動手拆 ══ -->
 <section class="locked-zone" id="z3">
   <div class="step">STEP 3　自己組一個原子</div>
   <h2>三種粒子，各管一件事</h2>
-  <span class="book">📖 康軒課本 6-3 化合物與原子概念的發展 p.177 起</span>
+  <span class="book">📖 康軒課本 6-3 原子的結構 p.180–181</span>
 
-  <p>原子的中間有一團<strong>原子核</strong>，裡面是<span style="color:#c2410c;font-weight:700">質子（帶正電）</span>和<span style="color:#6f685c;font-weight:700">中子（不帶電）</span>；外面有<span style="color:#2f6fd0;font-weight:700">電子（帶負電）</span>在繞。</p>
+  <p>原子的中間有一團<strong>原子核</strong>，裡面是<span style="color:#c2410c;font-weight:700">質子（帶正電）</span>和<span style="color:#6f685c;font-weight:700">中子（不帶電）</span>；外面有<span style="color:#2f6fd0;font-weight:700">電子（帶負電）</span>受原子核吸引、繞著原子核運動。</p>
   <p><strong>按按鈕，一次加一顆或拿掉一顆</strong>，看右邊（手機在下面）的四個數字，哪個會動、哪個不會動。</p>
 
   <div class="lab">
     <div class="lab-t">實驗室 A ── 原子組裝台</div>
     <div class="atom-box">
-      <svg id="atomSvg" viewBox="0 0 300 270" role="img" aria-label="原子示意圖：中間原子核、外圈電子"></svg>
+      <svg id="atomSvg" viewBox="0 0 300 270" role="img" aria-label="原子示意圖：中間原子核、外圍電子"></svg>
       <div class="ctrls">
         <div class="crow"><span class="dot" style="background:#e0523f"></span><span class="nm">質子<small>帶正電（＋）</small></span>
           <button data-p="p" data-d="-1" aria-label="質子減一">−</button><span class="ct" id="cp">6</span><button data-p="p" data-d="1" aria-label="質子加一">＋</button></div>
@@ -387,12 +386,12 @@ details.pre .bd p:last-child{margin:0}
       <div class="pill"><div class="lb">是哪一種元素</div><div class="vl" id="rEl">碳</div></div>
       <div class="pill"><div class="lb">原子序</div><div class="vl" id="rZ">6</div></div>
       <div class="pill"><div class="lb">質量數</div><div class="vl" id="rA">12</div></div>
-      <div class="pill"><div class="lb">帶電</div><div class="vl" id="rQ">不帶電</div></div>
+      <div class="pill"><div class="lb">整個帶電嗎</div><div class="vl" id="rQ">不帶電</div></div>
     </div>
     <p class="dim" style="font-size:12.5px;margin:6px 0 0">「原子序」「質量數」這兩個詞先不用懂，看它們跟著誰變就好。</p>
 
     <div class="massbar">
-      <div>重量都在哪裡？（整個粒子的質量，分成原子核和電子兩段）</div>
+      <div>重量都在哪裡？（整個原子的質量，分成原子核和電子兩段）</div>
       <div class="mtrack"><div class="mn" id="mN" style="width:100%"></div><div class="me" id="mE" style="width:0"></div></div>
       <div id="mTxt"></div>
     </div>
@@ -400,9 +399,9 @@ details.pre .bd p:last-child{margin:0}
     <div class="chips">
       <button class="chip" data-preset="H">氫原子</button>
       <button class="chip" data-preset="C12">碳原子</button>
-      <button class="chip" data-preset="C14">另一種碳（多 2 個中子）</button>
+      <button class="chip" data-preset="Be">鈹原子</button>
+      <button class="chip" data-preset="O">氧原子</button>
       <button class="chip" data-preset="Na">鈉原子</button>
-      <button class="chip" data-preset="Cl-">氯多一個電子</button>
     </div>
     <div class="verdict" id="labA"></div>
   </div>
@@ -412,7 +411,7 @@ details.pre .bd p:last-child{margin:0}
     <div class="opts" data-q="1" data-ans="C">
       <button class="opt" data-k="A"><span class="k">A</span><span>是哪一種元素（例如碳變成氮）</span></button>
       <button class="opt" data-k="B"><span class="k">B</span><span>質量數</span></button>
-      <button class="opt" data-k="C"><span class="k">C</span><span>帶電</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>整個帶不帶電</span></button>
       <button class="opt" data-k="D"><span class="k">D</span><span>原子序</span></button>
     </div>
     <div class="fb" id="fb1"></div>
@@ -432,13 +431,13 @@ details.pre .bd p:last-child{margin:0}
   </div>
 
   <div class="locked-zone" id="z3c">
-    <p>再看一次組裝台下面那條「重量都在哪裡」：藍色那段（電子）細到幾乎看不見。<strong>一顆電子的質量，大約只有一顆質子的 1836 分之 1</strong>；質子和中子則差不多重。</p>
+    <p>再看一次組裝台下面那條「重量都在哪裡」：藍色那段（電子）細到幾乎看不見。課本說：電子很輕，<strong>質子與中子的質量非常接近，大約是電子的 1836 倍</strong>，整個原子的質量幾乎都集中在原子核（圖 6-18）。</p>
     <div class="q" id="q3">
-      <div class="q-src">回到原題</div>
-      <div class="q-body">題目說「X 粒子的質量最小」。所以 X 是電子。<br>光憑這一句，原題的哪兩個選項<strong>可以直接刪掉</strong>？</div>
+      <div class="q-src">回到 STEP 1 那一題</div>
+      <div class="q-body">題目說「X 粒子的質量最小」。所以 X 是電子。<br>光憑這一句，那一題的哪兩個選項<strong>可以直接刪掉</strong>？</div>
       <div class="opts" data-q="3" data-ans="B">
-        <button class="opt" data-k="A"><span class="k">A</span><span>選項 (A) 和 (C)</span></button>
-        <button class="opt" data-k="B"><span class="k">B</span><span>選項 (B) 和 (D)</span></button>
+        <button class="opt" data-k="A"><span class="k">A</span><span>選項 (A) 和 (B)</span></button>
+        <button class="opt" data-k="B"><span class="k">B</span><span>選項 (C) 和 (D)</span></button>
         <button class="opt" data-k="C"><span class="k">C</span><span>選項 (A) 和 (D)</span></button>
         <button class="opt" data-k="D"><span class="k">D</span><span>一個都刪不掉，一定要算</span></button>
       </div>
@@ -450,16 +449,16 @@ details.pre .bd p:last-child{margin:0}
 <!-- ══ 4 剩下兩個 + 命名 ══ -->
 <section class="locked-zone" id="z4">
   <div class="step">STEP 4　剩下兩個，組出來看</div>
-  <h2>選項 (A) 說它是陽離子，組出來卻不帶電</h2>
+  <h2>選項 (B) 組出來，正負電對不起來</h2>
 
-  <p>刪掉 (B)、(D) 之後，剩下 (A) 和 (C)。兩個都說 <strong>Z 是質子</strong>（X 是電子，所以剩下的 Y 就是中子）。<br>把它們的數目真的組出來看看。<strong>點下面的選項。</strong></p>
+  <p>刪掉 (C)、(D) 之後，剩下 (A) 和 (B)。X 是電子，Y 和 Z 一個是質子、一個是中子。<br>把它們的數目真的組出來看看。<strong>點下面的選項。</strong></p>
 
   <div class="lab">
     <div class="lab-t">實驗室 B ── 四個選項逐一組組看</div>
     <div class="chips" id="optChips">
-      <button class="chip" data-o="A">選項 (A)</button>
+      <button class="chip on" data-o="A">選項 (A)</button>
       <button class="chip" data-o="B">選項 (B)</button>
-      <button class="chip on" data-o="C">選項 (C)</button>
+      <button class="chip" data-o="C">選項 (C)</button>
       <button class="chip" data-o="D">選項 (D)</button>
     </div>
     <div class="atom-box">
@@ -470,53 +469,50 @@ details.pre .bd p:last-child{margin:0}
   </div>
 
   <h3>現在才給名字</h3>
-  <p>你剛剛親手發現的三件事，課本各給了一個名字：</p>
+  <p>你剛剛親手發現的三件事，課本各給了一個名字或說法（p.180–183）：</p>
   <div class="scroll">
   <table>
-    <tr><th>你發現的事</th><th>課本的名字</th><th>算法</th></tr>
+    <tr><th>你發現的事</th><th>課本的說法</th><th>算法</th></tr>
     <tr><td>質子幾個，決定它是哪一種元素</td><td><b>原子序</b></td><td>原子序 ＝ 質子數</td></tr>
     <tr><td>原子幾乎全部的重量都在原子核</td><td><b>質量數</b></td><td>質量數 ＝ 質子數 ＋ 中子數</td></tr>
-    <tr><td>質子和電子一樣多，就不帶電</td><td><b>原子</b>（中性）</td><td>電子數 ＝ 質子數</td></tr>
-    <tr><td>電子比質子<b>少</b>，多出正電</td><td><b>陽離子</b></td><td>帶正電</td></tr>
-    <tr><td>電子比質子<b>多</b>，多出負電</td><td><b>陰離子</b></td><td>帶負電</td></tr>
+    <tr><td>原子內的質子和電子一樣多，正負抵消</td><td>原子保持<b>電中性</b></td><td>電子數 ＝ 質子數</td></tr>
   </table>
   </div>
-  <p>課本寫元素的方式，是把質量數放在左上角、原子序放在左下角，例如 <span class="nuc" style="font-size:22px"><span class="lr"><span>12</span><span>6</span></span>C</span>（碳：6 個質子、6 個中子）。離子再把帶的電寫在右上角，例如 <span class="nuc" style="font-size:22px"><span class="lr"><span>19</span><span>9</span></span>F<span class="ch">−</span></span>（氟離子）。</p>
+  <p>課本寫原子種類的方式，是把<strong>質量數放在左上角、原子序放在左下角</strong>（圖 6-19），例如 <span class="nuc" style="font-size:22px"><span class="lr"><span>9</span><span>4</span></span>Be</span>（鈹：4 個質子、5 個中子、4 個電子）。</p>
 
   <div class="quote">
-    <p><strong>那原題答案是哪一個？</strong></p>
-    <p style="margin-top:10px">X 最輕 → X 是電子 → 刪掉 (B)、(D)。<br>
-    (A)：電子數 N<sub>X</sub>＝質子數 N<sub>Z</sub> → 正負抵消 → <strong>不帶電</strong>，卻說自己是陽離子 → 自相矛盾。<br>
-    (C)：電子數 N<sub>X</sub>＞質子數 N<sub>Z</sub> → 負電比較多 → <strong>陰離子</strong> ✓<br>
-    答案 <strong>C</strong>。全程沒有算任何一個數字。</p>
+    <p><strong>那 STEP 1 的答案是哪一個？</strong></p>
+    <p style="margin-top:10px">X 最輕 → X 是電子 → 刪掉 (C)、(D)。<br>
+    原子不帶電 → 電子數＝質子數 → 和 X 一樣多的 Z 就是<strong>質子</strong>，剩下的 Y 是中子 → (A) ✓<br>
+    (B) 說 Z 是中子：那質子數 N<sub>Y</sub> 比電子數 N<sub>X</sub> 多，正電比較多，就不是不帶電的原子了 ✗<br>
+    答案 <strong>A</strong>。全程沒有算任何一個數字。</p>
   </div>
 
   <div class="aside">
     <p><strong>記法：</strong>三種粒子各管一件事——<br>
-    <strong>質子</strong>管「你是誰」（元素）；<strong>質子＋中子</strong>管「你多重」（質量數）；<strong>質子和電子比一比</strong>管「你帶什麼電」。<br>
+    <strong>質子</strong>管「你是誰」（元素、原子序）；<strong>質子＋中子</strong>管「你多重」（質量數）；<strong>質子和電子一樣多</strong>，原子才不帶電。<br>
     中子什麼電都不管，所以題目常常拿它來湊數。</p>
   </div>
 </section>
 
-<!-- ══ 5 變化題：離子 ══ -->
+<!-- ══ 5 質量數與原子序 ══ -->
 <section class="locked-zone" id="z5">
   <div class="step">STEP 5　同一招，換一題</div>
-  <h2>離子只動電子，不動質子</h2>
+  <h2>看左上、左下兩個數字，就能拆出三種粒子</h2>
+  <span class="book">📖 康軒課本 6-3 質量數與原子序的概念 p.182–183</span>
 
-  <p>剛剛組裝台教你的最重要一件事：<strong>帶電改變，只能是電子在變</strong>。質子一變，就不是同一種元素了。</p>
+  <p>以前門得列夫是照原子的<strong>質量</strong>排元素；1913 年英國的莫斯利等科學家認為照質量排不合適，重新定義：<strong>原子序就是原子核中的質子數量</strong>，元素週期表也照原子序排成現在的樣子。</p>
+  <p>所以：同一種元素的原子，質子數一定相同；不同元素的原子，質子數不同。</p>
 
   <div class="q" id="q4">
-    <div class="q-src">114 年會考自然科 第 17 題（原題；表格重新排版）</div>
-    <div class="q-body">已知 Ca 和 Cl 的原子序分別為 20、17，Ca<sup>2+</sup> 和 Cl<sup>−</sup> 的質子數和電子數如表（三），表中 w、x、y、z 的數值大小比較，下列何者正確？
-      <table class="mini"><tr><th></th><th>Ca<sup>2+</sup></th><th>Cl<sup>−</sup></th></tr><tr><th>質子數</th><td>w</td><td>x</td></tr><tr><th>電子數</th><td>y</td><td>z</td></tr></table>
+    <div class="q-src">本站練習題（依康軒例題 6-2 改寫；非會考原題）</div>
+    <div class="q-body">已知鈉原子的表示方式為 <span class="nuc" style="font-size:20px"><span class="lr"><span>23</span><span>11</span></span>Na</span>。鈉原子的質子數、電子數、中子數依序為何？</div>
+    <div class="opts" data-q="4" data-ans="B">
+      <button class="opt" data-k="A"><span class="k">A</span><span>23、11、12</span></button>
+      <button class="opt" data-k="B"><span class="k">B</span><span>11、11、12</span></button>
+      <button class="opt" data-k="C"><span class="k">C</span><span>11、12、11</span></button>
+      <button class="opt" data-k="D"><span class="k">D</span><span>11、11、23</span></button>
     </div>
-    <div class="opts" data-q="4" data-ans="A">
-      <button class="opt" data-k="A"><span class="k">A</span><span>w＞z</span></button>
-      <button class="opt" data-k="B"><span class="k">B</span><span>x＞y</span></button>
-      <button class="opt" data-k="C"><span class="k">C</span><span>x＞z</span></button>
-      <button class="opt" data-k="D"><span class="k">D</span><span>y＞w</span></button>
-    </div>
-    <p class="pct-note" id="pn4">右邊百分比＝114 年全國考生的選答比例（官方試題分析）。</p>
     <div class="fb" id="fb4"></div>
   </div>
 </section>
@@ -525,7 +521,7 @@ details.pre .bd p:last-child{margin:0}
 <section class="locked-zone" id="z6">
   <div class="step">STEP 6　往上一層：原子怎麼組成東西</div>
   <h2>只看兩件事，就能把物質分成三類</h2>
-  <span class="book">📖 康軒課本 6-1 元素的探索 p.164、6-3 p.177</span>
+  <span class="book">📖 康軒課本 6-1 元素的探索 p.165、6-4 物質組成的粒子觀點 p.186</span>
 
   <p>原子組好了，接著它們會一個一個黏成<strong>分子</strong>，再堆成我們看得到的東西。下面每張卡片畫的是那樣東西<strong>放大幾億倍</strong>的樣子（示意圖）。</p>
   <p>幫每張卡片選一個分類。<strong>只要問自己兩個問題：</strong></p>
@@ -539,6 +535,11 @@ details.pre .bd p:last-child{margin:0}
     <div class="sorter" id="sorter"></div>
     <div class="legend" id="legC"></div>
     <div class="verdict" id="labC">點每張卡片下面的按鈕。分錯了可以再按一次別的。</div>
+  </div>
+
+  <div class="card">
+    <p style="margin:0 0 6px"><strong>氧氣和臭氧：同一種元素，兩種東西</strong>　<span class="book" style="display:inline">📖 p.171</span></p>
+    <p style="margin:0">氧氣 O<sub>2</sub> 和臭氧 O<sub>3</sub> 都只有氧原子，都是元素，可是性質不一樣（氧氣無色無臭，臭氧有臭味）。碳也一樣：<strong>鑽石</strong>是立體結構、<strong>石墨</strong>是層狀的平面結構，還有奈米碳管、碳 60。這類<strong>由同種元素以不同的結構方式組成的物質</strong>，稱為<b>同素異形體</b>。</p>
   </div>
 
   <div class="q" id="q5">
@@ -558,14 +559,21 @@ details.pre .bd p:last-child{margin:0}
 
   <div class="locked-zone" id="z6b">
     <h3>化學式裡的兩種數字</h3>
-    <span class="book">📖 康軒課本 6-4 分子與化學式 p.184</span>
+    <span class="book">📖 康軒課本 6-4 分子與化學式 p.184–188</span>
     <p>把分子寫成文字，就是<strong>化學式</strong>。例如水分子是 1 個氧原子加 2 個氫原子，寫成 H<sub>2</sub>O。</p>
+    <p>分子是能表現純物質化學性質的<strong>最小粒子</strong>（亞佛加厥提出）。課本的化學式書寫原則（p.187–188）：</p>
+    <div class="card" style="font-size:15.5px">
+      <p style="margin:0 0 6px">① 元素在符號右下角標原子數目，<strong>1 可以省略</strong>：氦 He、氫 H<sub>2</sub>；金屬由許多原子堆積而成，只寫元素符號，例如鎂 Mg。</p>
+      <p style="margin:0 0 6px">② 分子由數種原子組成，要註明原子的<strong>種類與數目</strong>：水 H<sub>2</sub>O。</p>
+      <p style="margin:0 0 6px">③ 金屬與非金屬組成的化合物，<strong>金屬符號在前</strong>：NaCl；中文名稱順序相反，叫「氯化鈉」。</p>
+      <p style="margin:0">④ 含有氧的化合物，一般把<strong>氧寫在後面</strong>：二氧化錳 MnO<sub>2</sub>。</p>
+    </div>
     <p>化學式裡會出現<strong>兩種位置的數字</strong>，它們數的東西完全不一樣。點下面的化學式，看圖數數看。</p>
 
     <div class="lab">
       <div class="lab-t">實驗室 D ── 化學式數數看</div>
       <div class="chips" id="fChips"></div>
-      <div class="fin"><input id="fInput" placeholder="自己打，例如 2H2O、NH3" aria-label="輸入化學式" maxlength="16"><button id="fGo">畫出來</button></div>
+      <div class="fin"><input id="fInput" placeholder="自己打，例如 2H2O、CO2" aria-label="輸入化學式" maxlength="16"><button id="fGo">畫出來</button></div>
       <div class="fbig" id="fBig"></div>
       <svg id="fSvg" viewBox="0 0 320 120" role="img" aria-label="化學式的分子示意圖"></svg>
       <div class="legend" id="legD"></div>
@@ -596,8 +604,13 @@ details.pre .bd p:last-child{margin:0}
 <section class="locked-zone" id="z7">
   <div class="step">STEP 7　週期表：把元素照質子數排隊</div>
   <h2>為什麼同一直行的元素，脾氣很像？</h2>
-  <span class="book">📖 康軒課本 6-2 元素週期表 p.172</span>
+  <span class="book">📖 康軒課本 6-2 元素週期表 p.172–176</span>
 
+  <div class="card">
+    <p style="margin:0 0 6px"><strong>課本的示範實驗：鈉、鉀、鐵丟進水裡</strong>（p.172–173）</p>
+    <p style="margin:0">鈉和鉀質地軟、用小刀就切得開，丟進水裡<strong>反應劇烈</strong>，加入酚酞後溶液變<strong>紅色</strong>（鹼性）；鐵質地較硬，和水沒有明顯反應、溶液不變色。所以鈉、鉀可以先歸為一類，鐵歸為另一類。鈉、鉀容易和氧氣、水反應，要泡在<strong>礦物油</strong>裡保存。⚠ 鈉、鉀與水反應激烈，不可太靠近觀察。</p>
+    <p style="margin:8px 0 0">後來科學家把元素依質量排列，發現<strong>每隔 7 種元素</strong>就出現性質相似的元素，像音階一樣（圖 6-12）；1869 年門得列夫發表週期表，還預測了四種未知元素。</p>
+  </div>
   <p>你在組裝台上一顆一顆加質子，元素就從氫、氦、鋰⋯⋯一路換下去。<strong>週期表就是把這條隊伍，每隔一段就折一次行</strong>，折得剛剛好，讓性質相像的元素上下對齊。</p>
   <p>橫的一列叫<strong>週期</strong>，直的一行叫<strong>族</strong>。<strong>點上面的族號、左邊的週期號，或任何一格元素。</strong></p>
 
@@ -622,25 +635,16 @@ details.pre .bd p:last-child{margin:0}
   </div>
 
   <div class="locked-zone" id="z7b">
-    <p>再來一題：週期表的一格裡寫了哪些情報？哪些<strong>沒寫</strong>？</p>
+    <p>再來一題：橫的、直的分別叫什麼？誰和誰脾氣像？</p>
     <div class="q" id="q8">
-      <div class="q-src">113 年會考自然科 第 4 題（原題；附圖重繪）</div>
-      <div class="q-body">圖（三）為元素週期表的一部分，<strong>無法</strong>從圖中知道下列何項資訊？<br>
-        <div class="pt-mini">
-          <div class="x"></div><div><small>2</small> <b>He</b>氦<br><small>4.003</small></div>
-          <div><small>9</small> <b>F</b>氟<br><small>19.00</small></div><div><small>10</small> <b>Ne</b>氖<br><small>20.18</small></div>
-          <div><small>17</small> <b>Cl</b>氯<br><small>35.45</small></div><div><small>18</small> <b>Ar</b>氬<br><small>39.95</small></div>
-          <div><small>35</small> <b>Br</b>溴<br><small>79.90</small></div><div><small>36</small> <b>Kr</b>氪<br><small>83.80</small></div>
-        </div>
-        <div class="dim" style="font-size:13.5px">（每格左上小字＝原子序，下方數字＝原子量）</div>
-      </div>
+      <div class="q-src">本站練習題（依康軒例題 6-1 改寫；非會考原題）</div>
+      <div class="q-body">下列有關現代元素週期表的敘述，何者正確？</div>
       <div class="opts" data-q="8" data-ans="C">
-        <button class="opt" data-k="A"><span class="k">A</span><span>氯原子與氬原子的質子數分別為多少</span></button>
-        <button class="opt" data-k="B"><span class="k">B</span><span>氖原子與氪原子是否有相似的化學性質</span></button>
-        <button class="opt" data-k="C"><span class="k">C</span><span>氦原子與氪原子在自然界中含量何者比較多</span></button>
-        <button class="opt" data-k="D"><span class="k">D</span><span>1 莫耳的氯氣（Cl<sub>2</sub>）與 1 莫耳的溴（Br<sub>2</sub>）何者質量比較大</span></button>
+        <button class="opt" data-k="A"><span class="k">A</span><span>週期表中的橫列稱為「族」，縱行稱為「週期」</span></button>
+        <button class="opt" data-k="B"><span class="k">B</span><span>同一週期的元素，化學性質相似</span></button>
+        <button class="opt" data-k="C"><span class="k">C</span><span>現代週期表依原子序排列；鈉、鉀同屬第 1 族，化學性質相似</span></button>
+        <button class="opt" data-k="D"><span class="k">D</span><span>現代週期表和門得列夫一樣，完全依原子的質量排列</span></button>
       </div>
-      <p class="pct-note" id="pn8">右邊百分比＝113 年全國考生的選答比例（官方試題分析）。</p>
       <div class="fb" id="fb8"></div>
     </div>
   </div>
@@ -692,10 +696,10 @@ details.pre .bd p:last-child{margin:0}
   <div class="done">
     <div class="step">結案</div>
     <h2>三種粒子，各管一件事</h2>
-    <p style="text-align:left">這一課從頭到尾只有一個關鍵：<strong>先認出誰是誰，題目就自己解開了</strong>。電子最輕；質子決定元素；質子和電子比一比，決定帶什麼電；中子只管重量。</p>
+    <p style="text-align:left">這一課從頭到尾只有一個關鍵：<strong>先認出誰是誰，題目就自己解開了</strong>。電子最輕；質子決定元素（原子序）；原子裡質子和電子一樣多，所以不帶電；中子只管重量（質量數＝質子數＋中子數）。</p>
     <p style="text-align:left">往上一層也是同一個道理：先看粒子一不一樣（純物質還是混合物），再看粒子裡有幾種原子（元素還是化合物）。週期表則是把元素照質子數排好，讓同族的脾氣上下對齊。</p>
     <p style="text-align:left">如果只留一句話帶走：</p>
-    <p class="big" style="text-align:left">看到「帶電」，先比質子和電子；看到「最輕」，那就是電子。</p>
+    <p class="big" style="text-align:left">原子不帶電：質子數＝電子數；看到「最輕」，那就是電子。</p>
 
     <div style="text-align:left">
       <div class="aside">
@@ -706,7 +710,7 @@ details.pre .bd p:last-child{margin:0}
         <a href="wave.html" style="color:var(--accent)">第 3 章</a> →
         <a href="light.html" style="color:var(--accent)">第 4 章</a> →
         <a href="heat.html" style="color:var(--accent)">第 5 章</a> → 這一課（第 6 章）。</p>
-        <p style="margin-top:10px">想照課本頁碼複習，可以到<a href="book.html" style="color:var(--accent);font-weight:700">課本地圖</a>。第 6 章在康軒課本：6-1 p.164、6-2 p.172、6-3 p.177、6-4 p.184。</p>
+        <p style="margin-top:10px">想照課本頁碼複習，可以到<a href="book.html" style="color:var(--accent);font-weight:700">課本地圖</a>。第 6 章在康軒課本：6-1 p.164、6-2 p.172、6-3 p.177、6-4 p.184。正式實驗 6-1 和這一章的動手活動，在<a href="lab.html" style="color:var(--accent);font-weight:700">動手做實驗室</a>。</p>
       </div>
     </div>
     <button class="reset" id="rst">清除進度，重新開始</button>
@@ -831,20 +835,17 @@ try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
 
 /* 官方試題分析「全體」各選項百分比（只放有官方數據的原題） */
 const PCT={
-  0:{A:19.56,B:20.17,C:44.76,D:15.35},   // 111-31
-  4:{A:65.80,B:11.62,C:11.58,D:10.85},   // 114-17
   5:{A:68.50,B:11.81,C:9.38,D:10.21},    // 114-04
   7:{A:5.74,B:74.02,C:13.78,D:6.39},     // 115-03
-  8:{A:7.48,B:8.93,C:70.57,D:12.93},     // 113-04
   9:{A:58.70,B:14.85,C:13.54,D:12.81}    // 112-12
 };
 
 const FB={
  0:{
-  A:["你和 19.56% 的考生選了同一個","<p>選項 (A) 說：Z 是質子，而且 N<sub>X</sub>＝N<sub>Z</sub>。</p><p>先記住題目第一句：<strong>X 最輕</strong>。等一下你會在組裝台上看到，最輕的是電子。那 (A) 就是在說「<em>電子數＝質子數</em>」——正電和負電一樣多，會怎樣？</p><p>往下拉，自己組一次就知道它哪裡怪。</p>"],
-  B:["你和 20.17% 的考生選了同一個——這是最多人選的錯誤答案","<p>選項 (B) 說 Z 是電子。</p><p>但題目第一句就說了：<strong>X 的質量最小</strong>。三種粒子裡最輕的是電子——所以 <em>X 已經是電子了</em>，Z 不可能也是電子。</p><p>選 (B) 和 (D) 的人加起來 35.52%，都是沒用上第一句線索。等一下組裝台會讓你看到，電子到底有多輕。</p>"],
-  C:["答對了——全國只有 44.76% 的人選這個","<p>先別走。這題錯的三個選項各有 15%～20% 的人選，看起來很多人是用猜的。</p><p>等一下你會在組裝台上，<em>一步一步把錯的三個選項拆掉</em>。知道別人怎麼錯，比自己答對更有用。</p>"],
-  D:["你和 15.35% 的考生選了同一個","<p>選項 (D) 說 Z 是電子。</p><p>但題目第一句：<strong>X 的質量最小</strong>。三種粒子裡最輕的是電子，所以 <em>X 已經是電子了</em>，Z 不可能也是。</p><p>選 (B) 和 (D) 的人加起來 35.52%，都是沒用上第一句線索。往下拉，先去看看電子有多輕。</p>"]},
+  A:["答對了","<p>X 最輕 → X 是電子。原子<strong>不帶電</strong>，所以電子數＝質子數 → 和 X 一樣多的 Z 是質子，Y 是中子。</p><p>等一下在組裝台上，你會親手確認這兩步。</p>"],
+  B:["差一步","<p>你已經沒有把 X 當成質子或中子，很好。</p><p>但如果 Z 是中子，質子就是 Y，而 N<sub>Y</sub> 比電子數 N<sub>X</sub> 多——正電比負電多，整個會<strong>帶正電</strong>。可是題目說這是一個<em>原子</em>。往下拉，組一次就知道。</p>"],
+  C:["Y 不會是電子","<p>題目第一句：<strong>X 的質量最小</strong>。三種粒子裡最輕的是電子——所以 <em>X 已經是電子了</em>，Y 不可能也是電子。</p><p>往下拉，先去看看電子有多輕。</p>"],
+  D:["X 不會是質子","<p>題目說 X <strong>質量最小</strong>。質子和中子差不多重，電子才是輕得多的那一個。所以 X 是電子，不是質子。</p><p>往下拉，在組裝台上看看「重量都在哪裡」。</p>"]},
  1:{
   A:["元素沒有變","<p>回組裝台看「是哪一種元素」那一格：按電子＋之後，它還是同一個元素。</p><p>決定元素的不是電子。<strong>下一題就要找出是誰。</strong></p>"],
   B:["質量數沒有動","<p>電子太輕了，輕到「質量數」根本不算它。質量數只數原子核裡的粒子。</p><p>看看組裝台下面那條「重量都在哪裡」——藍色那段細到幾乎看不見。</p>"],
@@ -852,19 +853,19 @@ const FB={
   D:["原子序沒有動","<p>回組裝台看：按「電子＋」，原子序那一格一動也不動。</p><p>原子序跟著誰變？試試看按另外兩排的按鈕。</p>"]},
  2:{
   A:["電子只會改變帶電","<p>剛剛已經試過：加電子，元素不會換，只會多一個負電。</p><p>試試按「質子 ＋」，看「是哪一種元素」那格。</p>"],
-  B:["中子改變的是重量","<p>按「中子 ＋」：元素不變、帶電不變，<strong>只有質量數變了</strong>。</p><p>同一種元素、中子數不同的原子，叫做<em>同位素</em>（組裝台上的「另一種碳」就是）。它們還是同一種元素。</p>"],
+  B:["中子改變的是重量","<p>按「中子 ＋」：元素不變、帶電不變，<strong>只有質量數變了</strong>。</p><p>中子數多一個少一個，它<em>還是同一種元素</em>，只是比較重或比較輕。</p>"],
   C:["對，質子就是元素的身分證","<p>質子多一個，碳（6 個質子）就變成氮（7 個）；再多一個變成氧（8 個）。</p><p><em>元素是誰，只看質子有幾個</em>。所以課本把質子的數目叫做「原子序」——它就是元素在週期表上排第幾號。</p>"],
   D:["只有一種會","<p>試著只按「電子 ＋」或只按「中子 ＋」：元素那格都沒變。</p><p>只有按「質子」的時候，元素才會換掉。</p>"]},
  3:{
-  A:["再看一次 (A) 和 (C)","<p>(A) 和 (C) 都說 <strong>Z 是質子</strong>——沒有和「X 是電子」打架。</p><p>打架的是說「<strong>Z 是電子</strong>」的那兩個：X 已經是電子了，Z 就不可能也是電子。</p>"],
-  B:["對，(B) 和 (D) 直接出局","<p>(B) 和 (D) 都說 <strong>Z 是電子</strong>。但 X 最輕，X 才是電子，<em>電子的位置已經被 X 坐走了</em>。</p><p>這兩個選項一共有 <strong>35.52%</strong> 的考生選——他們很可能是沒用上第一句線索。</p><p>剩下 (A) 和 (C)，下一段把它們真的組出來。</p>"],
-  C:["(A) 沒有和線索打架","<p>(A) 說 Z 是質子，這和「X 是電子」不衝突。(A) 錯在別的地方，下一段會組給你看。</p><p>先找說「<strong>Z 是電子</strong>」的選項——X 已經是電子了。</p>"],
-  D:["其實可以刪","<p>這題一個數字都不用算。題目說「X 最輕」→ X 就是電子。</p><p>那說「<strong>Z 是電子</strong>」的選項，就和題目自己打架了。找找看是哪兩個。</p>"]},
+  A:["(A) 和 (B) 都沒有和線索打架","<p>(A)、(B) 都把 X 當電子（沒說 X 是別的），也沒有把 Y 或 Z 說成電子。</p><p>和「X 是電子」打架的，是說「<strong>Y 是電子</strong>」或「<strong>X 是質子</strong>」的那兩個。</p>"],
+  B:["對，(C) 和 (D) 直接出局","<p>(C) 說 Y 是電子、(D) 說 X 是質子。但 X 最輕，X 才是電子——<em>電子的位置已經被 X 坐走了</em>。</p><p>剩下 (A) 和 (B)，下一段把它們真的組出來。</p>"],
+  C:["(A) 沒有和線索打架","<p>(A) 說 Z 是質子、Y 是中子，和「X 是電子」不衝突。</p><p>先找和線索打架的：說「<strong>Y 是電子</strong>」或「<strong>X 是質子</strong>」的選項。</p>"],
+  D:["其實可以刪","<p>這題一個數字都不用算。題目說「X 最輕」→ X 就是電子。</p><p>那說別人是電子、或說 X 是質子的選項，就和題目自己打架了。找找看是哪兩個。</p>"]},
  4:{
-  A:["答對了，w＞z","<p>原子序就是質子數：<strong>w＝20、x＝17</strong>。變成離子時<em>質子不動</em>。</p><p>Ca<sup>2+</sup> 帶 2 個正電 → 電子比質子少 2 個 → y＝18。<br>Cl<sup>−</sup> 帶 1 個負電 → 電子比質子多 1 個 → z＝18。</p><p>所以 w(20)＞z(18) ✓。</p>"],
-  B:["x 是 17，y 是 18","<p>Cl 的原子序 17 → 質子 x＝17，變成離子也不會改。</p><p>Ca<sup>2+</sup> 少了 2 個電子：20 − 2 ＝ <strong>y＝18</strong>。所以 x＜y。</p><p>會選這個，常常是以為「離子的質子數也會變」。<em>記住組裝台：質子一變，元素就換了。</em></p>"],
-  C:["Cl⁻ 的電子比質子多","<p>Cl<sup>−</sup> 帶<strong>負</strong>電 → 負電比較多 → 電子比質子多 1 個：z＝17＋1＝18。</p><p>所以 x(17)＜z(18)。只要問一句「帶負電，是誰比較多？」就不會反過來。</p>"],
-  D:["Ca²⁺ 的電子比質子少","<p>Ca<sup>2+</sup> 帶<strong>正</strong>電 → 正電比較多 → 電子比質子少 2 個：y＝20−2＝18。</p><p>所以 y(18)＜w(20)。<em>帶正電＝少了電子</em>，不是多了質子。</p>"]},
+  A:["23 是質量數","<p>左上角的 23 是<strong>質量數</strong>（質子＋中子），不是質子數。質子數看<strong>左下角</strong>的原子序：11。</p>"],
+  B:["答對了","<p>左下角 11 ＝ 原子序 ＝ <strong>質子數 11</strong>；原子不帶電 → <strong>電子數 11</strong>；左上角 23 ＝ 質量數 → 中子數 ＝ 23 − 11 ＝ <strong>12</strong>。</p>"],
+  C:["電子數要等於質子數","<p>原子保持電中性：<strong>電子數 ＝ 質子數 ＝ 11</strong>。中子才是 23 − 11 ＝ 12。</p>"],
+  D:["中子數要減掉質子","<p>質量數 23 ＝ 質子數 ＋ 中子數，所以中子數 ＝ 23 − 11 ＝ <strong>12</strong>，不是 23。</p>"]},
  5:{
   A:["答對了","<p>笑氣（化學式 N<sub>2</sub>O）是化合物，含<strong>氮、氧兩種</strong>原子；硫磺是元素，只有<strong>硫一種</strong>。</p><p>這就是分類台的第二個問題：<em>粒子裡有幾種原子</em>。元素一定只有一種。</p>"],
   B:["反過來了","<p>元素只由<strong>一種</strong>原子組成，硫磺裡全部都是硫原子。化合物至少有兩種——笑氣有氮和氧。</p><p>所以是笑氣＞硫磺。會選反，可能是把「原子的<strong>個數</strong>」和「原子的<strong>種類</strong>」搞混了。</p>"],
@@ -881,13 +882,13 @@ const FB={
   C:["你和 13.78% 的考生選了同一個——這是最多人選的錯誤答案","<p>「物理性質」是熔點、沸點、密度這類，不用發生反應就量得到的。這些在同一族裡<strong>差很多</strong>：氦大約 −269°C 才變液體，氪大約 −153°C 就變了。</p><p>同族元素相似的是<em>化學性質</em>（反應的脾氣），不是物理性質。</p>"],
   D:["鈍氣是單獨一顆原子","<p>氧氣是 O<sub>2</sub>（兩顆黏在一起），但鈍氣不愛和任何原子黏，連自己人都不黏，所以是<strong>一顆一顆單獨存在</strong>的。</p><p>回分類台想一想：空氣那張卡片裡的紫色小球，就是單獨的氬原子。</p>"]},
  8:{
-  A:["左上角就寫了","<p>每一格左上的小數字是原子序，原子序＝質子數：<strong>氯 17、氬 18</strong>。可以知道。</p>"],
-  B:["看位置就知道","<p>氖和氪在<strong>同一直行（第 18 族）</strong>，同族元素的化學性質相似。可以知道。</p><p>這正是週期表最有用的地方：看位置就能猜脾氣。</p>"],
-  C:["對，表上沒有「含量」","<p>週期表每格寫的是：原子序、元素符號、名稱、原子量。<strong>自然界裡有多少，表上沒寫</strong>。</p><p>考這題是要你分清楚：週期表能告訴你什麼、不能告訴你什麼。</p>"],
-  D:["你和 12.93% 的考生選了同一個——這是最多人選的錯誤答案","<p>「莫耳」九年級才會學，看不懂沒關係。只要知道：<strong>每格下面的數字（原子量）越大，原子越重</strong>。</p><p>溴 79.90 比氯 35.45 重，所以一樣多的 Br<sub>2</sub> 一定比 Cl<sub>2</sub> 重——<em>表上的數字就能比</em>。</p><p>會選這個，多半是看到「莫耳」就覺得「表上沒有」。題目裡看不懂的詞，不一定是答案。</p>"]},
+  A:["反了","<p><strong>橫列是週期</strong>（共 7 個週期），<strong>縱行是族</strong>（第 1～18 族）。</p>"],
+  B:["同週期的脾氣不像","<p>同一週期從左到右，從金屬一路變成非金屬、最右邊是鈍氣，脾氣差很多。<strong>化學性質相似的是同一族</strong>（直的那一行）。</p>"],
+  C:["對","<p>現代週期表照<strong>原子序</strong>（質子數）排；鈉、鉀都在第 1 族（鹼金屬），都容易和水反應，化學性質相似。</p>"],
+  D:["門得列夫才是照質量排","<p>門得列夫 1869 年的週期表主要依<strong>質量</strong>排；現代週期表改依<strong>原子序</strong>排。所以表上偶爾會出現前一格比後一格重的地方（例如氬比鉀重）。</p>"]},
  9:{
   A:["對","<p>電子比原子小、從原子裡跑出來——那原子就<strong>可以再分</strong>了。道耳頓「原子不可再分割」這一句，第一個被推翻。</p>"],
-  B:["你和 14.85% 的考生選了同一個——這是最多人選的錯誤答案","<p>這一句後來確實也被修改了，但<strong>不是因為電子</strong>。</p><p>推翻它的是後來發現的<em>同位素</em>：同一種元素的原子，質量可以不一樣（組裝台上那兩種碳）。再後來找到中子，才知道差別就在中子數。</p><p>題目問的是「因為<strong>電子</strong>的發現」，要找跟「原子能不能再分」有關的那一句。</p>"],
+  B:["你和 14.85% 的考生選了同一個——這是最多人選的錯誤答案","<p>這一句<strong>和電子的發現沒有直接關係</strong>。</p><p>題目問的是「因為<strong>電子</strong>的發現」：電子是從原子裡分出來的更小粒子，直接衝擊的是「原子不可再分割」這一句。</p><p>題目問的是「因為<strong>電子</strong>的發現」，要找跟「原子能不能再分」有關的那一句。</p>"],
   C:["這一句沒有被電子推翻","<p>不同元素的原子確實不一樣——它們的質子數就不一樣。電子的發現沒有改變這一點。</p>"],
   D:["這一句到現在都還成立","<p>化學反應確實是原子重新排列組合，原子本身不會消失也不會變成別種。這一句一直沒被推翻。</p>"]}
 };
@@ -906,7 +907,7 @@ function unlock(id){
   }
 }
 function gate(){
-  if(state.q0!==undefined){unlock("z2");unlock("z3");drawDist()}
+  if(state.q0!==undefined){unlock("z2");unlock("z3")}
   if(state.q1!==undefined){unlock("z3b")}
   if(state.q2!==undefined){unlock("z3c")}
   if(state.q3!==undefined){unlock("z4");unlock("z5")}
@@ -950,25 +951,6 @@ function reveal(qi,k,ans,box,scroll){
   if(scroll)setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
 }
 
-let distDone=false;
-function drawDist(){
-  if(distDone)return;distDone=true;
-  const box=document.getElementById("dist");
-  const rows=[
-    {k:"C",v:44.76,c:"#3f6d3a",t:"正確答案（陰離子，Z 是質子）"},
-    {k:"B",v:20.17,c:"#c2410c",t:"說 Z 是電子（但 X 才是最輕的）"},
-    {k:"A",v:19.56,c:"#d98a5f",t:"陽離子，Z 是質子"},
-    {k:"D",v:15.35,c:"#c2410c",t:"說 Z 是電子（但 X 才是最輕的）"}
-  ];
-  box.innerHTML=rows.map(r=>
-    '<div class="dbar"><span class="dk">'+r.k+'</span>'+
-    '<div class="dtrack"><div class="dfill" data-w="'+r.v+'" style="background:'+r.c+'"></div></div>'+
-    '<span class="dv">'+r.v.toFixed(2)+'%</span></div>'+
-    '<div style="font-size:12px;color:var(--ink2);margin:-4px 0 10px 34px">'+r.t+'</div>'
-  ).join("");
-  setTimeout(()=>{box.querySelectorAll(".dfill").forEach(d=>d.style.width=d.dataset.w+"%")},80);
-}
-
 /* ══ 共用：元素資料（原子序 1～20） ══ */
 const EL=["","氫H","氦He","鋰Li","鈹Be","硼B","碳C","氮N","氧O","氟F","氖Ne","鈉Na","鎂Mg","鋁Al","矽Si","磷P","硫S","氯Cl","氬Ar","鉀K","鈣Ca"];
 function elName(p){return p>=1&&p<=20?EL[p].charAt(0):(p===0?"（沒有）":"?")}
@@ -976,10 +958,10 @@ function elSym(p){return p>=1&&p<=20?EL[p].slice(1):"?"}
 function chargeStr(q){if(q===0)return "";const a=Math.abs(q);return (a>1?a:"")+(q>0?"+":"−")}
 function notation(p,n,e){
   if(p<1)return "";
-  return '<span class="nuc"><span class="lr"><span>'+(p+n)+'</span><span>'+p+'</span></span>'+elSym(p)+(p!==e?'<span class="ch">'+chargeStr(p-e)+'</span>':'')+'</span>';
+  return '<span class="nuc"><span class="lr"><span>'+(p+n)+'</span><span>'+p+'</span></span>'+elSym(p)+'</span>';
 }
 
-/* ══ 共用：畫原子（原子核＋電子殼層示意） ══ */
+/* ══ 共用：畫原子（原子核＋外圍電子示意） ══ */
 function atomSVG(p,n,e){
   const cx=150,cy=135;let s="";
   const R=[54,78,100,122],CAP=[2,8,8,99];
@@ -996,7 +978,7 @@ function atomSVG(p,n,e){
     if(list[i]==="p")s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5" fill="#e0523f" stroke="#fff" stroke-width=".8"/><text x="'+x.toFixed(1)+'" y="'+(y+2.6).toFixed(1)+'" text-anchor="middle" font-size="7.5" fill="#fff" font-weight="700">+</text>';
     else s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5" fill="#9a9488" stroke="#fff" stroke-width=".8"/>';
   }
-  /* 電子：依 2、8、8、其餘 排在殼層上 */
+  /* 電子：分圈排在原子核外圍（示意） */
   let left=e;
   for(let i=0;i<4&&left>0;i++){
     const k=Math.min(CAP[i],left);left-=k;
@@ -1012,12 +994,12 @@ function atomSVG(p,n,e){
 /* ══ 實驗室 A：原子組裝台 ══ */
 const A={p:6,n:6,e:6,last:"preset",preset:"C12"};
 const LIM={p:[0,20],n:[0,24],e:[0,22]};
-const PRE={H:[1,0,1],C12:[6,6,6],C14:[6,8,6],Na:[11,12,11],"Cl-":[17,18,18]};
+const PRE={H:[1,0,1],C12:[6,6,6],Be:[4,5,4],O:[8,8,8],Na:[11,12,11]};
 function qText(p,e){
   const q=p-e;
-  if(q===0)return "質子 "+p+" 個、電子 "+e+" 個，正負剛好抵消 → <strong>不帶電</strong>（中性原子）。";
-  if(q>0)return "質子 "+p+" 個、電子只有 "+e+" 個 → 正電多了 "+q+" 個 → <strong>帶正電</strong>。";
-  return "電子 "+e+" 個、質子只有 "+p+" 個 → 負電多了 "+(-q)+" 個 → <strong>帶負電</strong>。";
+  if(q===0)return "質子 "+p+" 個、電子 "+e+" 個，正負剛好抵消 → <strong>不帶電</strong>，這才是課本說的原子（電中性）。";
+  if(q>0)return "質子 "+p+" 個、電子只有 "+e+" 個 → 正電多了 "+q+" 個 → 整個<strong>帶正電</strong>，不是電中性的原子了。把電子補回 "+p+" 個。";
+  return "電子 "+e+" 個、質子只有 "+p+" 個 → 負電多了 "+(-q)+" 個 → 整個<strong>帶負電</strong>，不是電中性的原子了。把電子調回 "+p+" 個。";
 }
 function labA(){
   const {p,n,e}=A;
@@ -1029,7 +1011,7 @@ function labA(){
   document.getElementById("rZ").textContent=p;
   document.getElementById("rA").textContent=p+n;
   const q=p-e;
-  document.getElementById("rQ").textContent=q===0?"不帶電":(q>0?"＋"+q:"−"+(-q));
+  document.getElementById("rQ").textContent=q===0?"不帶電":(q>0?"多 "+q+" 個正電":"多 "+(-q)+" 個負電");
   document.getElementById("nucNote").innerHTML=notation(p,n,e);
   /* 質量條：質子、中子各算 1，電子算 1/1836 */
   const mN=p+n, mE=e/1836, tot=mN+mE;
@@ -1043,8 +1025,8 @@ function labA(){
   if(A.last==="p")msg="你動了<strong>質子</strong>：元素直接換成了「"+elName(p)+"」，原子序也跟著變成 "+p+"。<em>質子一變，就是另一種元素。</em><br>";
   else if(A.last==="n")msg="你動了<strong>中子</strong>：還是「"+elName(p)+"」、帶電也沒變，<em>只有質量數變了</em>（變成 "+(p+n)+"）。<br>";
   else if(A.last==="e")msg="你動了<strong>電子</strong>：元素沒變、質量數也沒變（電子太輕，不算進質量數），<em>只有帶電改變了</em>。<br>";
-  else if(A.preset==="C14")msg="這也是碳！質子一樣 6 個，只是中子多了 2 個（質量數 14）。同一種元素、中子數不同，叫做<em>同位素</em>。<br>";
-  else if(A.preset==="Cl-")msg="氯原子本來 17 個電子，多抓了 1 個 → 變成 18 個。<em>還是氯</em>（質子還是 17），但帶負電了。<br>";
+  else if(A.preset==="Be")msg="這就是課本圖 6-19 的 <sup>9</sup><sub>4</sub>Be：質子 4、中子 5、電子 4，質量數 4＋5＝9。<br>";
+  else if(A.preset==="Na")msg="課本例題 6-2 的 <sup>23</sup><sub>11</sub>Na：質子 11、電子 11、中子 23−11＝12。<br>";
   v.className=p!==e?"verdict":"verdict good";  /* 帶電不是錯，用中性藍色 */
   v.innerHTML=msg+qText(p,e);
 }
@@ -1064,19 +1046,19 @@ labA();
 
 /* ══ 實驗室 B：原題四個選項組組看 ══ */
 const OPT={
-  A:{ok:false,info:"陽離子，N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub><br>X＝電子、Z＝質子、Y＝中子<br>舉例：電子 5、質子 5、中子 6",p:5,n:6,e:5,
-     v:"組出來是 <strong>硼原子</strong>：質子 5、電子 5，正負剛好抵消 → <strong>不帶電</strong>。<br>可是選項說它是<em>陽離子</em>（帶正電）。不管數字換成多少，只要電子數＝質子數，就一定不帶電 → <strong>(A) 自相矛盾 ✗</strong>"},
-  B:{ok:false,info:"陽離子，說 Z 是電子<br>但 X 最輕，X 已經是電子",
-     v:"<strong>組不出來。</strong>一個粒子裡只有一種電子，X 已經佔了「電子」這個位置，Z 不能也是電子。<br>題目第一句就把它刪掉了 → <strong>(B) ✗</strong>"},
-  C:{ok:true,info:"陰離子，N<sub>X</sub>＝N<sub>Y</sub>＞N<sub>Z</sub><br>X＝電子、Z＝質子、Y＝中子<br>舉例：電子 10、中子 10、質子 9",p:9,n:10,e:10,
-     v:"組出來是 <strong>氟離子</strong> <span style='font-family:serif;font-weight:700'><sup>19</sup>F<sup>−</sup></span>：質子 9、電子 10 → 電子多 1 個 → <strong>帶負電，是陰離子</strong>。和選項說的完全一樣 → <strong>(C) ✓</strong><br>這不是隨便湊的：氟離子真的就是 9 個質子、10 個中子、10 個電子。"},
-  D:{ok:false,info:"陰離子，說 Z 是電子<br>但 X 最輕，X 已經是電子",
-     v:"<strong>組不出來。</strong>和 (B) 一樣：X 最輕，X 才是電子，Z 不可能也是電子 → <strong>(D) ✗</strong>"}
+  A:{ok:true,info:"N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub><br>X＝電子、Z＝質子、Y＝中子<br>舉例：電子 4、質子 4、中子 5",p:4,n:5,e:4,
+     v:"組出來是 <strong>鈹原子</strong>：質子 4、電子 4，正負剛好抵消 → <strong>不帶電</strong>，是一個原子 ✓<br>這不是隨便湊的：課本圖 6-19 的鈹原子就是 4 個質子、5 個中子、4 個電子 → <strong>(A) ✓</strong>"},
+  B:{ok:false,info:"N<sub>Y</sub>＞N<sub>X</sub>＝N<sub>Z</sub><br>X＝電子、Z＝中子、Y＝質子<br>舉例：電子 4、中子 4、質子 5",p:5,n:4,e:4,
+     v:"組出來：質子 5、電子只有 4 → 正電多 1 個 → <strong>整個帶正電</strong>。<br>可是題目說這是一個<em>原子</em>（原子不帶電）。只要質子數比電子數多，就對不起來 → <strong>(B) ✗</strong>"},
+  C:{ok:false,info:"說 Y 是電子<br>但 X 最輕，X 已經是電子",
+     v:"<strong>組不出來。</strong>X 已經佔了「電子」這個位置，Y 不能也是電子。<br>題目第一句就把它刪掉了 → <strong>(C) ✗</strong>"},
+  D:{ok:false,info:"說 X 是質子<br>但 X 最輕，最輕的是電子",
+     v:"<strong>組不出來。</strong>質子和中子差不多重，最輕的是電子，所以 X 一定是電子，不會是質子 → <strong>(D) ✗</strong>"}
 };
 function labB(o){
   const d=OPT[o], svg=document.getElementById("atomSvg2");
   document.querySelectorAll("#optChips .chip").forEach(c=>c.classList.toggle("on",c.dataset.o===o));
-  svg.innerHTML=d.p!==undefined?atomSVG(d.p,d.n,d.e):'<text x="150" y="130" text-anchor="middle" font-size="40" fill="#c2410c">✗</text><text x="150" y="160" text-anchor="middle" font-size="13" fill="#5c5349">電子已經是 X 了</text>';
+  svg.innerHTML=d.p!==undefined?atomSVG(d.p,d.n,d.e):'<text x="150" y="130" text-anchor="middle" font-size="40" fill="#c2410c">✗</text><text x="150" y="160" text-anchor="middle" font-size="13" fill="#5c5349">最輕的電子已經是 X 了</text>';
   document.getElementById("optInfo").innerHTML="<div class='card' style='margin:0;padding:14px 16px'>"+d.info+(d.p!==undefined?"<div style='margin-top:8px;text-align:center'>"+notation(d.p,d.n,d.e)+"</div>":"")+"</div>";
   const v=document.getElementById("labB");v.className="verdict "+(d.ok?"good":"bad");v.innerHTML=d.v;
 }
@@ -1155,7 +1137,7 @@ function renderSorter(){
 renderSorter();
 
 /* ══ 實驗室 D：化學式數數看 ══ */
-const FCHIPS=["O2","O3","H2O","2H2O","CO2","3CO2","CH4","NH3","H2O2","C6H12O6"];
+const FCHIPS=["H2","O2","O3","H2O","2H2O","CO2","3CO2","NaCl","MgO","HCl"];   // 取自課本表 6-2 常見物質的化學式
 const SUBS="₀₁₂₃₄₅₆₇₈₉";
 function subNum(s){return s.replace(/\d/g,d=>SUBS[+d])}
 function parseF(str){
@@ -1170,7 +1152,7 @@ function parseF(str){
 function labD(str){
   const r=parseF(str), v=document.getElementById("labD");
   document.querySelectorAll("#fChips .chip").forEach(c=>c.classList.toggle("on",c.dataset.f===str));
-  if(!r||r.err){v.className="verdict bad";v.innerHTML=r&&r.err?r.err:"看不懂這個化學式。請用元素符號加數字，例如 2H2O、CO2、NH3。";return}
+  if(!r||r.err){v.className="verdict bad";v.innerHTML=r&&r.err?r.err:"看不懂這個化學式。請用元素符號加數字，例如 2H2O、CO2、NaCl。";return}
   const {coef,parts,body}=r;
   /* 大字：係數紅、右下小數字藍 */
   document.getElementById("fBig").innerHTML=(coef>1?'<span class="cf">'+coef+'</span>':'')+
