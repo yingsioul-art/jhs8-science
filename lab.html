@@ -1924,7 +1924,8 @@ LABS.push({id: "heat", ch: "ch5", icon: "♨️", title: "實驗 5-2 熱量與�
     <div class="row" id="hbtn" style="margin-top:8px"></div>
     <div id="hq"></div><div id="hfb"></div>
     <h3>📋 記錄表（溫度 ℃）</h3><div id="htab"></div>
-    <h3>📈 加熱時間與上升溫度關係圖</h3><div class="simview"><svg viewBox="0 0 360 230" id="hgr"></svg></div></div>`;
+    <h3>📈 加熱時間與上升溫度關係圖</h3><div class="simview"><svg viewBox="0 0 360 230" id="hgr"></svg></div>
+    <div id="hres"></div></div>`;
   const card = pane.querySelector(".hand"), svg = pane.querySelector("#hsv");
   const hist = [], cur = () => JSON.stringify(S);
   const track = fn => (...a) => { const pre = cur(); const r = fn(...a); if(pre !== cur()) hist.push(pre); ctl.upd(); return r; };
@@ -1984,7 +1985,48 @@ LABS.push({id: "heat", ch: "ch5", icon: "♨️", title: "實驗 5-2 熱量與�
     if(S.phase === "done") B.push(`<button class="btn ghost" data-b="again">🔁 再做一次</button>`);
     handBtns(pane.querySelector("#hbtn"), B.join(""), actT);
     if(msg !== undefined) pane.querySelector("#hfb").innerHTML = msg;
-    question(); table(); graph(); ctl.upd();
+    question(); table(); graph(); result(); ctl.upd();
+  }
+  /* 課本 p.143 分析與結論（圖 5-8～5-10）：平常收合，做完實驗自動展開；直線＝課本圖，圓點＝自己量的 */
+  const RES = [
+    {h: "假設 1　改變加熱時間（熱量多寡）", ks: ["w100"], fig: "圖 5-8　以同一穩定熱源加熱 100 g 的水。",
+      t: "在步驟❸中，我們以穩定熱源供給熱量，加熱 100 公克的水時，加熱時間越久，代表提供熱量越多，水吸收的熱量也越多，水溫上升的度數也就越高，且兩者成正比的關係（圖 5-8）。由此可知，<b>加熱同一個物質時，上升溫度與物質吸收的熱量成正比。</b>"},
+    {h: "假設 2　改變物質質量（質量大小）", ks: ["w100", "w200"], fig: "圖 5-9　比較加熱不同質量的水。",
+      t: "將步驟❹與步驟❸的實驗結果比較，可以發現當加熱時間相同時（即提供的熱量相同），100 公克水溫度上升的速度較 200 公克水快，且 100 公克水上升的溫度是 200 公克水的 2 倍（圖 5-9）。由此可知，<b>吸收相同熱量時，相同物質的上升溫度與質量大小成反比。</b>"},
+    {h: "假設 3　改變物質種類（物質差異）", ks: ["gly", "w100"], fig: "圖 5-10　比較加熱相同質量的水與甘油。",
+      t: "比較步驟❺與步驟❸的實驗結果，可以觀察到，加熱質量皆為 100 公克的水與甘油時，甘油的溫度上升較同質量的水快（圖 5-10）。換言之，相同質量的水與甘油，若上升溫度相同，則甘油所需的熱量會比水少。由此可知，<b>吸收相同熱量時，相同質量的不同物質所產生的溫度變化會不一樣。</b>"}];
+  const COL = {w100: "#1c7ed6", w200: "#e03131", gly: "#2f9e44"};
+  const rise = k => { const r = S.rec[k]; return r && r[5] !== undefined ? r[5] - r[0] : null; };
+  function resGraph(ks){
+    const X = m => 40 + m * 44, Y = d => 170 - d * 3.4;
+    let g = `<path d="M40 14 V170 H280" stroke="var(--ink)" fill="none"/><text x="8" y="10" font-size="10" fill="var(--sub)">上升溫度 ΔT（℃）</text><text x="280" y="192" font-size="10" text-anchor="end" fill="var(--sub)">加熱時間（分）</text>`;
+    for(let m = 1; m <= 5; m++) g += `<text x="${X(m)}" y="182" font-size="10" text-anchor="middle" fill="var(--sub)">${m}</text>`;
+    for(let d = 5; d <= 45; d += 5) g += `<text x="34" y="${Y(d) + 4}" font-size="9" text-anchor="end" fill="var(--sub)">${d}</text><line x1="40" x2="270" y1="${Y(d)}" y2="${Y(d)}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
+    ks.forEach(k => {
+      const e = MAT[k][1] * 5;
+      g += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(5)}" y2="${Y(e)}" stroke="${COL[k]}" stroke-width="2.5"/><text x="${X(5) + 4}" y="${Y(e) + 4}" font-size="11" fill="${COL[k]}" font-weight="700">${MAT[k][0].replace("公克", " g ")}</text>`;
+      const r = S.rec[k];
+      if(r) r.forEach((v, m) => { if(v !== undefined && m) g += `<circle cx="${X(m)}" cy="${Y(Math.min(45, v - r[0]))}" r="4" fill="var(--card)" stroke="${COL[k]}" stroke-width="2"/>`; });
+    });
+    return `<svg viewBox="0 0 330 196" style="max-width:420px;width:100%">${g}</svg>`;
+  }
+  function resMine(i){
+    const f = k => rise(k) === null ? null : rise(k).toFixed(1);
+    if(i === 0) return f("w100") ? `你量到：100 公克水加熱 1～5 分鐘的點幾乎排成一條<b>通過原點的直線</b>，5 分鐘上升 ${f("w100")} ℃。` : "";
+    if(i === 1) return f("w100") && f("w200") ? `你量到：5 分鐘時 100 公克水上升 ${f("w100")} ℃、200 公克水上升 ${f("w200")} ℃，約 <b>${(rise("w100") / rise("w200")).toFixed(1)} 倍</b>。` : "";
+    return f("w100") && f("gly") ? `你量到：5 分鐘時 100 公克甘油上升 ${f("gly")} ℃、100 公克水上升 ${f("w100")} ℃，<b>甘油升得比水多</b>。` : "";
+  }
+  function result(){
+    const box = pane.querySelector("#hres"), done = S.phase === "done", key = done + JSON.stringify(S.rec);
+    if(box._k === key) return;
+    const open = done || (box.querySelector("details") || {}).open;
+    box._k = key;
+    box.innerHTML = `<details class="card" style="margin:12px 0;padding:12px"${open ? " open" : ""}><summary style="cursor:pointer;font-weight:700">📖 實驗結果與結論（課本 p.143 分析與結論）${done ? "" : "<span class=\"muted\" style=\"font-weight:400\">——做完實驗再打開對答案</span>"}</summary>
+      <p class="muted" style="margin:6px 0 0">直線＝課本的結果圖；空心圓點＝你這次量到的數據（還沒做的材料就只有直線）。</p>
+      ${RES.map((x, i) => { const mine = resMine(i); return `<div style="border-top:1px solid var(--line);margin-top:12px;padding-top:10px">
+        <h4 style="margin:0 0 6px">${x.h}</h4>${resGraph(x.ks)}<p class="muted" style="margin:2px 0 8px;font-size:.9em">▲ ${x.fig}</p>
+        <p style="margin:0">${x.t}</p>${mine ? `<p style="margin:8px 0 0;padding:8px 10px;border-radius:8px;background:var(--line)">🧪 ${mine}</p>` : ""}</div>`; }).join("")}
+    </details>`;
   }
   function balance(){
     const rd = S.bal ? (S.tared ? S.g : 102.4 + S.g) : 0;
