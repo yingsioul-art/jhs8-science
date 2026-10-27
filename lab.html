@@ -225,6 +225,54 @@ function handCtl(card, o){
 }
 
 
+/* 器材托盤自動排版：選項方塊太多或字太長時自動換行（2026-10-27 使用者要求「太多就換行」）
+   規則：畫面最上方（translate 的 y ≤ 20）的 g[data-it] 方塊視為托盤；
+   方塊寬度至少容納文字；排一列放不下或互相重疊時，改成多列，多出來的列往上加高畫面，原本的實驗座標不變。
+   用 MutationObserver 監看所有 svg 重畫，各實驗不必改程式。 */
+function handTrayFit(svg){
+  if(!svg.dataset.vb0){ const v = svg.getAttribute("viewBox"); if(!v) return; svg.dataset.vb0 = v; }
+  const [vx, vy, vw, vh] = svg.dataset.vb0.split(/[\s,]+/).map(Number);
+  const tiles = [...svg.children].filter(g => {
+    if(g.tagName !== "g" || !g.dataset.it) return false;
+    const m = /translate\(\s*([-\d.]+)[\s,]+([-\d.]+)\s*\)/.exec(g.getAttribute("transform") || "");
+    const r = g.querySelector(":scope > rect");
+    if(!m || !r || +m[2] > 20 || +r.getAttribute("height") < 26) return false;
+    g._x = +m[1]; g._y = +m[2]; g._r = r; return true;
+  });
+  if(!tiles.length){ if(svg.getAttribute("viewBox") !== svg.dataset.vb0) svg.setAttribute("viewBox", svg.dataset.vb0); return; }
+  // 方塊加寬到容納文字
+  tiles.forEach(g => {
+    let w = +g._r.getAttribute("width");
+    g.querySelectorAll(":scope > text").forEach(t => { try { w = Math.max(w, t.getComputedTextLength() + 10); } catch(e){} });
+    g._r.setAttribute("width", w); g._r.setAttribute("x", -w / 2); g._w = w;
+  });
+  tiles.sort((a, b) => a._x - b._x);
+  const PAD = 4, GAP = 6, avail = vw - PAD * 2;
+  const bad = tiles.some((g, i) => g._x - g._w / 2 < vx || g._x + g._w / 2 > vx + vw || (i && tiles[i - 1]._x + tiles[i - 1]._w / 2 + 2 > g._x - g._w / 2));
+  if(!bad){ if(svg.getAttribute("viewBox") !== svg.dataset.vb0) svg.setAttribute("viewBox", svg.dataset.vb0); return; }
+  const rows = [[]]; let used = 0;
+  tiles.forEach(g => { const add = (rows[rows.length - 1].length ? GAP : 0) + g._w; if(used + add > avail && rows[rows.length - 1].length){ rows.push([g]); used = g._w; } else { rows[rows.length - 1].push(g); used += add; } });
+  const y0 = Math.min(...tiles.map(g => g._y)), rowH = Math.max(...tiles.map(g => +g._r.getAttribute("height"))) + 8, extra = (rows.length - 1) * rowH;
+  rows.forEach((row, i) => {
+    const tot = row.reduce((s, g) => s + g._w, 0) + GAP * (row.length - 1);
+    let x = vx + (vw - tot) / 2;
+    const y = y0 - extra + i * rowH;
+    row.forEach(g => { g.setAttribute("transform", `translate(${x + g._w / 2} ${y + (g._y - y0)})`); x += g._w + GAP; });
+  });
+  const nv = `${vx} ${vy - extra} ${vw} ${vh + extra}`;
+  if(svg.getAttribute("viewBox") !== nv) svg.setAttribute("viewBox", nv);
+}
+if(typeof MutationObserver !== "undefined") new MutationObserver(recs => {
+  const set = new Set();
+  recs.forEach(r => {
+    const t = r.target;
+    if(t.nodeType !== 1) return;
+    if(t.tagName === "svg") set.add(t); else if(t.closest) { const s = t.closest("svg"); if(s) set.add(s); }
+    r.addedNodes.forEach(n => { if(n.nodeType === 1 && n.querySelectorAll) n.querySelectorAll("svg").forEach(s => set.add(s)); });
+  });
+  set.forEach(s => { if(s.closest(".hand, .lab, .sim") && s.querySelector("g[data-it]")) handTrayFit(s); });
+}).observe(document.documentElement, {childList: true, subtree: true});
+
 /* ═════ 緒論 實驗器材、熱源、容器、藥品的使用（課本 p.5–8） ═════
    一關一關把器材拖到正確的地方；每關的規則照課本原文（_課本實驗轉錄_其餘實驗.md）。
    康軒酒精燈的酒精量是 1/2～2/3（七上南一是 1/3～2/3），這裡照康軒。
