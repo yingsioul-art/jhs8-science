@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>透鏡作圖｜光線為什麼這樣走</title>
+<style>
+:root{
+  --paper:#faf7f0; --ink:#2b2622; --ink2:#5c5349; --line:#ded5c6;
+  --accent:#c2410c; --accent-soft:#fff1e7;
+  --blue:#1d5b79; --blue-soft:#e8f1f5;
+  --green:#3f6d3a; --green-soft:#eef4ec;
+  --warn:#8a6d1f; --warn-soft:#fdf6e0;
+  --r1:#d64545; --r2:#2563eb; --r3:#15803d; --img:#7c3aed; --obj:#ea580c;
+  --shadow:0 1px 2px rgba(43,38,34,.06),0 8px 24px rgba(43,38,34,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  font-size:17px;line-height:1.85;letter-spacing:.01em}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 120px}
+header{padding:28px 0 24px;border-bottom:2px solid var(--ink);margin-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.22em;color:var(--accent);font-weight:700;margin-bottom:12px}
+h1{font-size:32px;line-height:1.3;margin:0 0 12px}
+.sub{color:var(--ink2);font-size:15.5px;margin:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.tag{font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:99px;color:var(--ink2);background:#fff}
+section{padding:40px 0;border-bottom:1px solid var(--line)}
+.step{font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin-bottom:10px}
+h2{font-size:24px;line-height:1.4;margin:0 0 18px}
+h3{font-size:19px;margin:28px 0 10px}
+p{margin:0 0 16px}
+.dim{color:var(--ink2)}
+em{font-style:normal;background:linear-gradient(transparent 62%,#ffd9a8 62%);font-weight:600;padding:0 1px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin:20px 0;box-shadow:var(--shadow)}
+.note{background:var(--blue-soft);border:1px solid #cfe0e8;border-radius:12px;padding:16px 18px;margin:20px 0;font-size:16px}
+.note p:last-child,.card p:last-child{margin:0}
+.big{font-size:20px;font-weight:700;line-height:1.6;margin:18px 0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.chip{padding:7px 14px;border:1.5px solid var(--line);background:#fff;border-radius:99px;cursor:pointer;
+  font-size:14.5px;font-family:inherit;color:var(--ink2)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn{padding:9px 16px;border:1.5px solid var(--line);background:#fff;border-radius:12px;cursor:pointer;
+  font-size:15px;font-family:inherit;color:var(--ink)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.btn[disabled]{opacity:.4;cursor:default}
+svg{max-width:100%;height:auto;display:block}
+.stage{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;touch-action:none}
+.cap{font-size:13.5px;color:var(--ink2);margin:6px 0 0;text-align:center}
+input[type=range]{width:100%;accent-color:var(--accent);height:26px}
+.sl{display:flex;justify-content:space-between;font-size:13.5px;color:var(--ink2);margin-top:10px}
+.readout{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.row{padding:8px 12px;background:#fff;border:1px solid var(--line);border-radius:9px}
+.row .lb{font-size:12.5px;color:var(--ink2);display:block}
+.row .vl{font-weight:700;font-size:16.5px}
+.row.wide{grid-column:1/-1}
+.row.hi{background:var(--accent-soft);border-color:#f0c9ae}
+.row.hi .vl{color:var(--accent)}
+.why{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--green-soft);border:1px solid #c8dcc4;font-size:15.5px;line-height:1.75}
+.steptext{margin-top:12px;padding:14px 16px;border-radius:10px;background:var(--warn-soft);border:1px dashed #e0cf9a;font-size:16px;line-height:1.8;min-height:84px}
+.steptext b.n{display:inline-block;background:var(--ink);color:#fff;border-radius:6px;padding:0 8px;margin-right:6px;font-size:14px}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.rules{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:680px){.rules{grid-template-columns:1fr 1fr}}
+.rule{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.rule h4{margin:0 0 4px;font-size:16.5px}
+.rule .do{font-weight:700;margin:8px 0 4px}
+.rule .bc{font-size:15px;color:var(--ink2);margin:0 0 6px;line-height:1.75}
+.rule .mn{display:inline-block;font-size:14px;background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:2px 10px;font-weight:700}
+.rule .rp{float:right;font-size:13px;border:1px solid var(--line);background:#fff;border-radius:99px;padding:2px 10px;cursor:pointer;font-family:inherit;color:var(--ink2)}
+.k1{color:var(--r1)}.k2{color:var(--r2)}.k3{color:var(--r3)}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px;background:#fff;border:1px solid var(--line)}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f4efe6;font-size:13.5px}
+.scroll{overflow-x:auto;margin:16px 0}
+.scroll table{min-width:520px;margin:0}
+ul.pl{padding-left:1.2em;margin:0 0 16px}
+ul.pl li{margin-bottom:8px}
+.q{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:18px;margin:18px 0}
+.q-body{font-size:16.5px;margin-bottom:12px}
+.opt{display:block;width:100%;text-align:left;padding:11px 14px;margin-bottom:8px;border:1.5px solid var(--line);
+  border-radius:11px;background:#fff;font-size:15.5px;font-family:inherit;color:inherit;cursor:pointer;line-height:1.6}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.wrong{border-color:#d64545;background:#fde8e8}
+.fb{display:none;margin-top:8px;padding-top:10px;border-top:1px solid var(--line);font-size:15.5px}
+.fb.show{display:block}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.dr{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .9s ease forwards}
+.fd{opacity:0;animation:fadein .5s ease forwards}
+footer{padding:30px 0;color:var(--ink2);font-size:13px;text-align:center}
+</style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<a class="th-home" href="index.html">← 回首頁</a>
+<div class="wrap">
+
+<header>
+  <div class="kicker">八年級上 · 第 4 章 光 · 透鏡與成像</div>
+  <h1>透鏡作圖：<br>光線為什麼這樣走？</h1>
+  <p class="sub">作圖不用背一大堆圖。只要懂<strong>一個原則、兩條光線</strong>，五種位置的成像自己就會跑出來。下面的蠟燭可以用手指拖拖看。</p>
+  <div class="meta">
+    <span class="tag">課本例題 4-5、4-6</span>
+    <span class="tag">學習單「透鏡的成像」</span>
+    <span class="tag">拖拉作圖台</span>
+    <span class="tag">約 20 分鐘</span>
+  </div>
+</header>
+
+<!-- ═══ 一、總原則 ═══ -->
+<section>
+  <div class="step">第一站 · 總原則</div>
+  <h2>光穿過透鏡，一律往「比較厚的那一邊」彎</h2>
+  <p>這是所有透鏡光線的源頭，比三條特殊光線更重要：</p>
+  <ul class="pl">
+    <li><strong>凸透鏡中間厚、邊緣薄</strong>：光往中間（主軸）彎，所以光會<em>聚起來</em>。</li>
+    <li><strong>凹透鏡中間薄、邊緣厚</strong>：光往外面彎，所以光會<em>散開</em>。</li>
+    <li>這就像三稜鏡：光穿過玻璃，會往玻璃厚的那一邊偏。</li>
+  </ul>
+  <p>下面讓一排平行光（像太陽光）射進透鏡，看它們最後跑去哪裡。</p>
+  <div class="chips" id="fcChips">
+    <button class="chip on" data-t="convex">凸透鏡</button>
+    <button class="chip" data-t="concave">凹透鏡</button>
+  </div>
+  <div class="stage"><svg id="fcSvg" viewBox="0 0 600 260"></svg></div>
+  <p class="cap" id="fcCap"></p>
+  <div class="note">
+    <p><b>焦點就是這樣來的：</b></p>
+    <ul class="pl" style="margin:6px 0 0">
+      <li>凸透鏡：平行光被聚到<strong>另一側</strong>的一點，這一點叫焦點。拿放大鏡對著太陽燒紙，紙要放在焦點上。</li>
+      <li>凹透鏡：平行光散開了，聚不起來。但把散開的光<strong>往回（往左）延長</strong>，會交在<strong>同一側</strong>的一點，好像光是從那裡發出來的，這一點就是凹透鏡的焦點。</li>
+      <li>透鏡左右兩邊各有一個焦點，離透鏡一樣遠，這個距離叫<strong>焦距</strong>（寫成 f）。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ 二、光線走向原則 ═══ -->
+<section>
+  <div class="step">第二站 · 三條特殊光線的走向原則</div>
+  <h2>為什麼只挑這三條光？</h2>
+  <ul class="pl">
+    <li>蠟燭火焰頂端會往四面八方發出無數條光線，畫不完。</li>
+    <li>我們只挑<strong>走法一定知道</strong>的光線來畫。兩條線交在哪裡，火焰頂端的像就在哪裡。</li>
+    <li>所以這三條不是要死背的規則，而是「最好預測的三條光」。<strong>畫圖時只要畫兩條就夠</strong>，第三條拿來驗算。</li>
+  </ul>
+
+  <div class="note">
+    <p><b>實線和虛線怎麼分：</b></p>
+    <ul class="pl" style="margin:6px 0 0">
+      <li><strong>實線</strong>：光真的走過的路。</li>
+      <li><strong>虛線</strong>：光沒有真的走到，是眼睛把光「往回延長」想像出來的路。</li>
+      <li>實線交到的像叫<strong>實像</strong>（可以用紙屏接到）；虛線交到的像叫<strong>虛像</strong>（紙屏接不到，只能用眼睛看）。</li>
+    </ul>
+  </div>
+
+  <h3>凸透鏡的三條光</h3>
+  <div class="rules">
+    <div class="rule"><button class="rp" data-rp="c1">再播一次</button>
+      <h4 class="k1">① 平行主軸的光</h4>
+      <svg id="r-c1" viewBox="0 0 400 190"></svg>
+      <p class="do">平行主軸射進來，折射後通過<u>另一側</u>的焦點。</p>
+      <p class="bc">為什麼：這就是焦點的定義。凸透鏡把平行光聚到另一側的焦點（第一站看過了）。</p>
+      <span class="mn">平行進、過焦出</span>
+    </div>
+    <div class="rule"><button class="rp" data-rp="c2">再播一次</button>
+      <h4 class="k2">② 通過鏡心的光</h4>
+      <svg id="r-c2" viewBox="0 0 400 190"></svg>
+      <p class="do">通過鏡心，直直穿過去，方向不變。</p>
+      <p class="bc">為什麼：鏡心那一小塊前後兩面幾乎平行，像一片很薄的平玻璃。光進去偏一點、出來又偏回來，薄到可以當作沒有偏。</p>
+      <span class="mn">中心直直穿</span>
+    </div>
+    <div class="rule"><button class="rp" data-rp="c3">再播一次</button>
+      <h4 class="k3">③ 通過焦點的光</h4>
+      <svg id="r-c3" viewBox="0 0 400 190"></svg>
+      <p class="do">先通過<u>同一側</u>（物體這側）的焦點再射到透鏡，折射後變成平行主軸。</p>
+      <p class="bc">為什麼：把第①條倒過來走。光的路線可以反過來走：光能從 A 走到 B，就能沿原路從 B 走回 A。</p>
+      <span class="mn">過焦進、平行出（①倒過來）</span>
+    </div>
+  </div>
+
+  <h3>凹透鏡的三條光</h3>
+  <div class="rules">
+    <div class="rule"><button class="rp" data-rp="v1">再播一次</button>
+      <h4 class="k1">① 平行主軸的光</h4>
+      <svg id="r-v1" viewBox="0 0 400 190"></svg>
+      <p class="do">平行主軸射進來，折射後往外散開；把它<u>往回用虛線延長</u>，會通過<u>同一側</u>的焦點。</p>
+      <p class="bc">為什麼：凹透鏡邊緣厚，把光往外撥。散開的光好像是從左邊焦點發出來的。<strong>和凸透鏡相反：凸透鏡是另一側、凹透鏡是同一側。</strong></p>
+      <span class="mn">平行進、散開像從同側焦點來</span>
+    </div>
+    <div class="rule"><button class="rp" data-rp="v2">再播一次</button>
+      <h4 class="k2">② 通過鏡心的光</h4>
+      <svg id="r-v2" viewBox="0 0 400 190"></svg>
+      <p class="do">通過鏡心，直直穿過去，方向不變。</p>
+      <p class="bc">為什麼：和凸透鏡一樣，鏡心像一片很薄的平玻璃。</p>
+      <span class="mn">中心直直穿（凸凹都一樣）</span>
+    </div>
+    <div class="rule"><button class="rp" data-rp="v3">再播一次</button>
+      <h4 class="k3">③ 朝另一側焦點射去的光</h4>
+      <svg id="r-v3" viewBox="0 0 400 190"></svg>
+      <p class="do">對準<u>另一側</u>的焦點射過去，碰到透鏡後變成平行主軸。</p>
+      <p class="bc">為什麼：把凹透鏡的第①條倒過來走。</p>
+      <span class="mn">瞄對面焦點、平行出</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="big" style="margin-top:0">一句話總結</p>
+    <ul class="pl" style="margin:0">
+      <li><span class="k2"><strong>鏡心那條</strong></span>：凸、凹透鏡都直直穿，最好畫，每題都先畫它。</li>
+      <li><span class="k1"><strong>平行那條</strong></span>：凸透鏡折向<strong>另一側</strong>焦點；凹透鏡散開，虛線往回接到<strong>同一側</strong>焦點。</li>
+      <li><span class="k3"><strong>焦點那條</strong></span>：就是平行那條倒過來走，可以不畫，拿來驗算。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ 三、作圖台 ═══ -->
+<section id="sim">
+  <div class="step">第三站 · 拖拉作圖台</div>
+  <h2>拖蠟燭，看像怎麼跑</h2>
+  <p>用手指（或滑鼠）<strong>拖橘色的蠟燭箭頭</strong>左右移動，也可以按下面的位置按鈕直接跳過去。</p>
+  <div class="chips" id="typeChips">
+    <button class="chip on" data-t="convex">凸透鏡</button>
+    <button class="chip" data-t="concave">凹透鏡</button>
+  </div>
+  <div class="chips" id="modeChips">
+    <button class="chip on" data-m="free">自由拖拉</button>
+    <button class="chip" data-m="step">照四步驟一步一步畫</button>
+  </div>
+  <div class="stage"><svg id="sv" viewBox="0 0 800 380"></svg></div>
+  <p class="cap"><span class="k1">紅＝平行那條</span>　<span class="k2">藍＝鏡心那條</span>　<span class="k3">綠＝焦點那條</span>　<span style="color:var(--img)">紫＝像</span>　虛線＝往回延長</p>
+
+  <div id="stepBox" style="display:none">
+    <div class="steptext" id="stepText"></div>
+    <div class="ctrl">
+      <button class="btn" id="stPrev">← 上一步</button>
+      <button class="btn pri" id="stNext">下一步 →</button>
+      <button class="btn" id="stReset">重來</button>
+    </div>
+  </div>
+
+  <div id="freeBox">
+    <div class="ctrl" id="presets"></div>
+    <div class="ctrl">
+      <label style="font-size:15px"><input type="checkbox" id="cbR3"> 顯示第三條（焦點那條）驗算</label>
+      <label style="font-size:15px"><input type="checkbox" id="cbTri"> 顯示「誰遠誰大」的兩個三角形</label>
+    </div>
+  </div>
+
+  <div class="sl"><span>蠟燭位置（也可以用滑桿）</span><span id="uLab"></span></div>
+  <input type="range" id="uRange" min="20" max="390" step="1">
+  <div class="sl"><span>焦距長短（透鏡越凸，焦距越短）</span><span id="fLab"></span></div>
+  <input type="range" id="fRange" min="70" max="150" step="1" value="100">
+
+  <div class="readout">
+    <div class="row hi wide"><span class="lb">蠟燭在哪一區</span><span class="vl" id="oZone"></span></div>
+    <div class="row wide"><span class="lb">像在哪裡</span><span class="vl" id="oPos"></span></div>
+    <div class="row"><span class="lb">實像還是虛像</span><span class="vl" id="oReal"></span></div>
+    <div class="row"><span class="lb">正立還是倒立</span><span class="vl" id="oUp"></span></div>
+    <div class="row wide"><span class="lb">放大、縮小還是等大</span><span class="vl" id="oSize"></span></div>
+  </div>
+  <div class="why" id="oWhy"></div>
+</section>
+
+<!-- ═══ 四、為什麼位置不同成像不同 ═══ -->
+<section>
+  <div class="step">第四站 · 為什麼位置不同，像就不同</div>
+  <h2>透鏡折彎光線的力氣是固定的</h2>
+  <p>同一個透鏡，彎光的程度不會變。變的是<strong>光射進來時張得多開</strong>：</p>
+  <ul class="pl">
+    <li><strong>蠟燭很遠</strong>：光到透鏡時幾乎是平行的，透鏡很快就聚起來，像在焦點附近，又小。</li>
+    <li><strong>蠟燭越靠近</strong>：光射進來張得越開，透鏡要花更長的距離才聚得起來，所以<em>像越跑越遠、越變越大</em>。</li>
+    <li><strong>蠟燭剛好在焦點上</strong>：折射後的光剛好全部平行，永遠交不到，所以<em>不成像</em>。</li>
+    <li><strong>蠟燭在焦距內</strong>：光張得太開，透鏡折完還在散開，右邊交不到。眼睛把光往回看，好像是從左邊一個更大的東西發出來的，所以是<em>正立、放大、虛像</em>，也就是放大鏡。</li>
+    <li><strong>凹透鏡</strong>：只會把光往外撥，不管蠟燭放哪裡，右邊永遠交不到，所以<em>永遠是正立、縮小、虛像</em>，像在同一側、透鏡和焦點之間。</li>
+  </ul>
+
+  <h3>大小怎麼判斷：誰離透鏡遠，誰就大</h3>
+  <ul class="pl">
+    <li>看藍色鏡心那條直線：它把蠟燭和像各切出一個三角形，兩個三角形形狀一樣（相似三角形）。</li>
+    <li>所以<strong>像距比物距長，像就比較大；像距比物距短，像就比較小</strong>。</li>
+    <li>蠟燭在 2 倍焦距上時，像也在另一側的 2 倍焦距上，兩邊一樣遠，所以<strong>等大</strong>。這就是 2 倍焦距是分界線的原因。</li>
+    <li>回到作圖台勾「顯示誰遠誰大的兩個三角形」就看得到。</li>
+  </ul>
+
+  <h3>正立還是倒立：實倒虛正</h3>
+  <ul class="pl">
+    <li>實像是光真的穿過主軸交叉形成的，上面的光跑到下面，所以<strong>實像一定倒立</strong>。</li>
+    <li>虛像是往回延長看到的，光沒有交叉，所以<strong>虛像一定正立</strong>。</li>
+  </ul>
+
+  <h3>焦距不同，為什麼成像不同</h3>
+  <ul class="pl">
+    <li>判斷成像要看「<strong>蠟燭離透鏡是焦距的幾倍</strong>」，不是看幾公分。</li>
+    <li>例子：蠟燭都放在透鏡前 15 公分。焦距 10 公分的透鏡，15 公分是 1.5 倍焦距，成<strong>倒立放大實像</strong>；焦距 20 公分的透鏡，15 公分在焦距內，成<strong>正立放大虛像</strong>。</li>
+    <li>在作圖台把蠟燭停住不動，只拉「焦距長短」滑桿，就會看到蠟燭所在的區域跟著變。</li>
+    <li>透鏡越凸，彎光的力氣越大，焦距就越短。</li>
+  </ul>
+
+  <h3>整理表（和課本觀念速記對照）</h3>
+  <div class="scroll"><table>
+    <tr><th>透鏡</th><th>蠟燭位置</th><th>像的位置</th><th>像的性質</th></tr>
+    <tr><td rowspan="6">凸透鏡</td><td>2 倍焦距外</td><td>另一側，焦距與 2 倍焦距之間</td><td>倒立、縮小、實像</td></tr>
+    <tr><td>2 倍焦距上</td><td>另一側，2 倍焦距上</td><td>倒立、等大、實像</td></tr>
+    <tr><td>焦距與 2 倍焦距之間</td><td>另一側，2 倍焦距外</td><td>倒立、放大、實像</td></tr>
+    <tr><td>焦點上</td><td colspan="2">光折射後平行，不成像</td></tr>
+    <tr><td>焦距內</td><td>同一側（鏡前）</td><td>正立、放大、虛像</td></tr>
+    <tr><td>（無窮遠）</td><td>另一側焦點上</td><td>一個點</td></tr>
+    <tr><td>凹透鏡</td><td>任何位置</td><td>同一側，透鏡與焦點之間</td><td>正立、縮小、虛像</td></tr>
+  </table></div>
+
+  <div class="card">
+    <p class="big" style="margin-top:0">四句口訣</p>
+    <ul class="pl" style="margin:0">
+      <li><strong>物近、像遠、像變大</strong>：蠟燭從遠處往焦點靠近時，實像越跑越遠、越變越大。</li>
+      <li><strong>誰遠誰大</strong>：像距比物距長就放大，短就縮小，一樣長就等大。</li>
+      <li><strong>實倒虛正</strong>：實像倒立，虛像正立。</li>
+      <li><strong>焦點不成像，焦內放大鏡；凹透鏡永遠正立縮小虛像。</strong></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ 五、常見錯誤 ═══ -->
+<section>
+  <div class="step">第五站 · 最常畫錯的地方</div>
+  <h2>畫完先檢查這四件事</h2>
+  <ul class="pl">
+    <li><strong>凹透鏡畫成凸透鏡的走法</strong>：凹透鏡的光到右邊是散開的，不會交叉，右邊不可能出現倒立的像。像一定畫在左邊、透鏡和焦點之間，是一支小的正立箭頭。</li>
+    <li><strong>平行那條光通過錯的焦點</strong>：凸透鏡通過<strong>另一側</strong>的焦點；凹透鏡的虛線延長通過<strong>同一側</strong>的焦點。</li>
+    <li><strong>虛像忘了用虛線</strong>：往回延長的線一定畫虛線，像的箭頭也畫虛線，才看得出是虛像。</li>
+    <li><strong>光線沒有畫箭頭方向</strong>：光從蠟燭出發、往右走，每段都標箭頭，才不會把延長線和真的光弄混。</li>
+  </ul>
+</section>
+
+<!-- ═══ 六、小測驗 ═══ -->
+<section>
+  <div class="step">第六站 · 自我檢查</div>
+  <h2>六題，確認真的懂了</h2>
+  <div id="quiz"></div>
+  <button class="btn" id="qReset">全部重來</button>
+</section>
+
+<footer>八上自然自學站 · 第 4 章 光 · 透鏡作圖<br><a href="index.html">回首頁</a> · <a href="light.html">光學單元「你為什麼看得見這本書」</a> · <a href="review-ch4.html">第 4 章段考練習</a></footer>
+</div>
+
+<script>
+(function(){
+var NS="http://www.w3.org/2000/svg";
+var C={r1:"#d64545",r2:"#2563eb",r3:"#15803d",img:"#7c3aed",obj:"#ea580c",lens:"#7fb6d8",axis:"#8a8173",ink:"#2b2622"};
+function el(tag,attrs,parent,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e;}
+// 從 p 沿 dir 方向延長到畫框邊緣
+function toEdge(p,d,W,H){var ts=[];if(d[0]>0)ts.push((W-p[0])/d[0]);if(d[0]<0)ts.push(-p[0]/d[0]);if(d[1]>0)ts.push((H-p[1])/d[1]);if(d[1]<0)ts.push(-p[1]/d[1]);var t=Math.min.apply(null,ts.length?ts:[0]);return [p[0]+d[0]*t,p[1]+d[1]*t];}
+// 畫線段（可虛線、可加中間箭頭、可動畫）
+function seg(g,a,b,color,o){o=o||{};var w=o.w||2.4;
+  var at={x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:color,"stroke-width":w,"stroke-linecap":"round"};
+  if(o.dash){at["stroke-dasharray"]="7 6";}
+  if(o.anim&&!o.dash){var pth=el("path",{d:"M"+a[0]+" "+a[1]+"L"+b[0]+" "+b[1],stroke:color,"stroke-width":w,fill:"none",pathLength:1,"class":"dr",style:"animation-delay:"+(o.delay||0)+"s"},g);}
+  else{var ln=el("line",at,g);if(o.anim){ln.setAttribute("class","fd");ln.style.animationDelay=(o.delay||0)+"s";}}
+  if(o.arrow){var len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(len>30){var t=o.at||0.5,mx=a[0]+(b[0]-a[0])*t,my=a[1]+(b[1]-a[1])*t,ux=(b[0]-a[0])/len,uy=(b[1]-a[1])/len,s=o.as||9;
+    var pts=[[mx+ux*s,my+uy*s],[mx-ux*s*0.6-uy*s*0.6,my-uy*s*0.6+ux*s*0.6],[mx-ux*s*0.6+uy*s*0.6,my-uy*s*0.6-ux*s*0.6]];
+    var tri=el("polygon",{points:pts.map(function(q){return q[0].toFixed(1)+","+q[1].toFixed(1)}).join(" "),fill:color},g);
+    if(o.anim){tri.setAttribute("class","fd");tri.style.animationDelay=((o.delay||0)+0.5)+"s";}}}
+}
+// 畫透鏡外形
+function lens(g,x,y,hh,type){
+  var w=type==="convex"?14:12,d;
+  if(type==="convex"){d="M"+x+" "+(y-hh)+" Q"+(x+w*2)+" "+y+" "+x+" "+(y+hh)+" Q"+(x-w*2)+" "+y+" "+x+" "+(y-hh)+"Z";}
+  else{d="M"+(x-w)+" "+(y-hh)+" L"+(x+w)+" "+(y-hh)+" Q"+(x+2)+" "+y+" "+(x+w)+" "+(y+hh)+" L"+(x-w)+" "+(y+hh)+" Q"+(x-2)+" "+y+" "+(x-w)+" "+(y-hh)+"Z";}
+  el("path",{d:d,fill:"rgba(127,182,216,.28)",stroke:C.lens,"stroke-width":2},g);
+  el("line",{x1:x,y1:y-hh,x2:x,y2:y+hh,stroke:C.lens,"stroke-width":1,"stroke-dasharray":"4 4"},g);
+}
+function axis(g,W,y,x0,f,two){
+  el("line",{x1:0,y1:y,x2:W,y2:y,stroke:C.axis,"stroke-width":1.2},g);
+  var marks=[[x0-f,"F"],[x0+f,"F"]];if(two){marks.push([x0-2*f,"2F"],[x0+2*f,"2F"]);}
+  marks.forEach(function(m){if(m[0]<4||m[0]>W-4)return;el("circle",{cx:m[0],cy:y,r:3.5,fill:C.ink},g);el("text",{x:m[0],y:y+20,"text-anchor":"middle","font-size":14,fill:C.ink,"font-weight":700},g,m[1]);});
+}
+function arrowUp(g,x,yBase,yTop,color,o){o=o||{};var at={x1:x,y1:yBase,x2:x,y2:yTop,stroke:color,"stroke-width":o.w||4,"stroke-linecap":"round"};if(o.dash)at["stroke-dasharray"]="6 5";el("line",at,g);
+  var dir=yTop<yBase?1:-1,s=9;el("polygon",{points:x+","+yTop+" "+(x-s)+","+(yTop+dir*s*1.3)+" "+(x+s)+","+(yTop+dir*s*1.3),fill:o.dash?"#fff":color,stroke:color,"stroke-width":2},g);}
+
+/* ── 第一站：平行光聚焦／散開 ── */
+var fcType="convex";
+function drawFC(){var s=document.getElementById("fcSvg");s.innerHTML="";var W=600,H=260,X=300,Y=130,f=120;var g=el("g",{},s);
+  axis(g,W,Y,X,f,false);lens(g,X,Y,105,fcType);
+  [-80,-45,-15,15,45,80].forEach(function(dy,i){var a=[10,Y+dy],b=[X,Y+dy];seg(g,a,b,C.r1,{anim:true,arrow:true,delay:i*0.08,w:2});
+    if(fcType==="convex"){var F=[X+f,Y];var end=toEdge(b,[F[0]-b[0],F[1]-b[1]],W,H);seg(g,b,end,C.r1,{anim:true,arrow:true,at:0.15,delay:0.6+i*0.08,w:2});}
+    else{var Fn=[X-f,Y];var dd=[b[0]-Fn[0],b[1]-Fn[1]];var end2=toEdge(b,dd,W,H);seg(g,b,end2,C.r1,{anim:true,arrow:true,at:0.4,delay:0.6+i*0.08,w:2});seg(g,b,Fn,C.r1,{dash:true,anim:true,delay:1.4,w:1.4});}
+  });
+  document.getElementById("fcCap").textContent=fcType==="convex"?"凸透鏡：平行光全部聚到另一側的焦點 F。":"凹透鏡：平行光散開；虛線往回延長，全部交在同一側的焦點 F。";
+}
+document.querySelectorAll("#fcChips .chip").forEach(function(b){b.onclick=function(){document.querySelectorAll("#fcChips .chip").forEach(function(x){x.classList.toggle("on",x===b)});fcType=b.dataset.t;drawFC();};});
+
+/* ── 第二站：六張規則圖 ── */
+function drawRule(id){var s=document.getElementById("r-"+id);s.innerHTML="";var W=400,H=190,X=200,Y=105,f=75,h=48,u=150;var type=id[0]==="c"?"convex":"concave",n=id[1];var g=el("g",{},s);
+  axis(g,W,Y,X,f,false);lens(g,X,Y,80,type);arrowUp(g,X-u,Y,Y-h,C.obj,{w:3.5});
+  var P=[X-u,Y-h],col=n==="1"?C.r1:n==="2"?C.r2:C.r3;
+  if(n==="2"){var Cc=[X,Y];seg(g,P,Cc,col,{anim:true,arrow:true});seg(g,Cc,toEdge(Cc,[u,h],W,H),col,{anim:true,arrow:true,delay:.8,at:.4});return;}
+  if(type==="convex"){
+    if(n==="1"){var Q=[X,Y-h];seg(g,P,Q,col,{anim:true,arrow:true});seg(g,Q,toEdge(Q,[f,h],W,H),col,{anim:true,arrow:true,delay:.8,at:.3});el("circle",{cx:X+f,cy:Y,r:7,fill:"none",stroke:col,"stroke-width":2,"class":"fd",style:"animation-delay:1.3s"},g);}
+    else{var F1=[X-f,Y],y3=Y-h+h*u/(u-f),Q3=[X,y3];seg(g,P,Q3,col,{anim:true,arrow:true,at:.35});seg(g,Q3,[W,y3],col,{anim:true,arrow:true,delay:.8});el("circle",{cx:F1[0],cy:Y,r:7,fill:"none",stroke:col,"stroke-width":2,"class":"fd",style:"animation-delay:.5s"},g);}
+  } else {
+    if(n==="1"){var Q1=[X,Y-h],Fn=[X-f,Y];seg(g,P,Q1,col,{anim:true,arrow:true});seg(g,Q1,toEdge(Q1,[f,-h],W,H),col,{anim:true,arrow:true,delay:.8,at:.5});seg(g,Q1,Fn,col,{dash:true,anim:true,delay:1.5,w:1.6});el("circle",{cx:Fn[0],cy:Y,r:7,fill:"none",stroke:col,"stroke-width":2,"class":"fd",style:"animation-delay:1.8s"},g);}
+    else{var F2=[X+f,Y],yv=Y-h+h*u/(u+f),Qv=[X,yv];seg(g,P,Qv,col,{anim:true,arrow:true});seg(g,Qv,F2,col,{dash:true,anim:true,delay:.7,w:1.4});seg(g,Qv,[W,yv],col,{anim:true,arrow:true,delay:.8,at:.6});el("circle",{cx:F2[0],cy:Y,r:7,fill:"none",stroke:col,"stroke-width":2,"class":"fd",style:"animation-delay:.6s"},g);}
+  }
+}
+["c1","c2","c3","v1","v2","v3"].forEach(drawRule);
+document.querySelectorAll(".rp").forEach(function(b){b.onclick=function(){drawRule(b.dataset.rp);};});
+
+/* ── 第三站：作圖台 ── */
+var W=800,H=380,X=400,Y=210,h=70;
+var st={type:"convex",f:100,u:260,mode:"free",step:0,r3:false,tri:false};
+var sv=document.getElementById("sv"),uR=document.getElementById("uRange"),fR=document.getElementById("fRange");
+function snapU(u){var f=st.f,pts=st.type==="convex"?[2*f,f]:[f];for(var i=0;i<pts.length;i++)if(Math.abs(u-pts[i])<7)return pts[i];return Math.max(20,Math.min(390,u));}
+function solve(){var f=st.f,u=st.u;if(st.type==="convex"){if(Math.abs(u-f)<0.5)return {none:true};var v=u*f/(u-f);return {v:v,m:-v/u};}var v2=u*(-f)/(u+f);return {v:v2,m:-v2/u};}
+function zone(){var f=st.f,u=st.u;if(st.type==="concave")return Math.abs(u-f)<0.5?"焦點上":(u>f?"焦距外":"焦距內");
+  if(Math.abs(u-2*f)<0.5)return "2 倍焦距上";if(u>2*f)return "2 倍焦距外";if(Math.abs(u-f)<0.5)return "焦點上";if(u>f)return "焦距與 2 倍焦距之間";return "焦距內";}
+// 虛線只延長到像再多一點點
+function past(a,b){var dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;return [b[0]+dx/L*30,b[1]+dy/L*30];}
+function fmt(x){return (Math.round(x*10)/10).toString();}
+
+function draw(){
+  sv.innerHTML="";var f=st.f,u=st.u,conv=st.type==="convex",g=el("g",{},sv),R=solve(),P=[X-u,Y-h],Cc=[X,Y];
+  // 區域底色（凸透鏡標出五區）
+  if(conv){var zs=[[0,X-2*f,"#fbf3e6"],[X-2*f,X-f,"#eef4ec"],[X-f,X,"#eef1fb"]];zs.forEach(function(z){if(z[1]>z[0])el("rect",{x:Math.max(0,z[0]),y:Y+28,width:z[1]-Math.max(0,z[0]),height:16,fill:z[2]},g);});
+    el("text",{x:Math.max(8,(X-2*f)/2),y:Y+41,"font-size":11,fill:C.axis,"text-anchor":Math.max(8,(X-2*f)/2)<30?"start":"middle"},g,"2倍焦距外");
+    el("text",{x:X-1.5*f,y:Y+41,"font-size":11,fill:C.axis,"text-anchor":"middle"},g,"焦距～2倍焦距");
+    el("text",{x:X-f/2,y:Y+41,"font-size":11,fill:C.axis,"text-anchor":"middle"},g,"焦距內");}
+  axis(g,W,Y,X,f,conv);lens(g,X,Y,150,st.type);
+  var virt=!R.none&&R.v<0, I=R.none?null:[X+R.v,Y-R.m*h];
+  var stepMode=st.mode==="step",sN=st.step;
+  var show1=!stepMode||sN>=1,show2=!stepMode||sN>=2,showImg=!stepMode||sN>=(virt?4:3),showDash=!stepMode||sN>=4;
+  // 相似三角形
+  if(st.tri&&!stepMode&&I&&Math.abs(R.v)<2000){el("polygon",{points:[P,[X-u,Y],Cc].map(function(q){return q.join(",")}).join(" "),fill:"rgba(234,88,12,.15)",stroke:"none"},g);
+    el("polygon",{points:[I,[X+R.v,Y],Cc].map(function(q){return q.join(",")}).join(" "),fill:"rgba(124,58,237,.15)",stroke:"none"},g);}
+  // ① 平行那條
+  if(show1){var Q1=[X,Y-h];seg(g,P,Q1,C.r1,{arrow:true});
+    if(conv){var d1=[f,h];seg(g,Q1,toEdge(Q1,d1,W,H),C.r1,{arrow:true,at:.25});if(virt&&showDash&&I)seg(g,Q1,past(Q1,I),C.r1,{dash:true,w:1.6});}
+    else{var d1c=[f,-h];seg(g,Q1,toEdge(Q1,d1c,W,H),C.r1,{arrow:true,at:.3});if(showDash)seg(g,Q1,[X-f,Y],C.r1,{dash:true,w:1.6});}}
+  // ② 鏡心那條
+  if(show2){seg(g,P,Cc,C.r2,{arrow:true});seg(g,Cc,toEdge(Cc,[u,h],W,H),C.r2,{arrow:true,at:.25});if(conv&&virt&&showDash&&I)seg(g,Cc,past(Cc,I),C.r2,{dash:true,w:1.6});}
+  // ③ 焦點那條（自由模式勾選才畫）
+  if(st.r3&&!stepMode){
+    if(conv){if(Math.abs(u-f)>8){var y3=Y-h+h*u/(u-f);if(Math.abs(y3-Y)<Y-8){var Q3=[X,y3];seg(g,P,Q3,C.r3,{arrow:true,at:.4});seg(g,Q3,[W,y3],C.r3,{arrow:true,at:.4});if(virt&&I)seg(g,Q3,past(Q3,I),C.r3,{dash:true,w:1.6});if(u<f)seg(g,[X-f,Y],P,C.r3,{dash:true,w:1.2});}}}
+    else{var yv=Y-h+h*u/(u+f),Qv=[X,yv];seg(g,P,Qv,C.r3,{arrow:true,at:.4});seg(g,Qv,[X+f,Y],C.r3,{dash:true,w:1.2});seg(g,Qv,[W,yv],C.r3,{arrow:true,at:.4});if(I)seg(g,Qv,past(Qv,I),C.r3,{dash:true,w:1.6});}}
+  // 像
+  if(showImg){
+    if(R.none){el("text",{x:600,y:60,"text-anchor":"middle","font-size":17,fill:C.img,"font-weight":700},g,"折射後全部平行，交不到：不成像");}
+    else if(I[0]<0||I[0]>W||I[1]<-40||I[1]>H+40){el("text",{x:virt?120:680,y:40,"text-anchor":"middle","font-size":15,fill:C.img,"font-weight":700},g,"像在很遠的地方（畫面外）");}
+    else{arrowUp(g,I[0],Y,I[1],C.img,{dash:virt,w:4});el("circle",{cx:I[0],cy:I[1],r:6,fill:"none",stroke:C.img,"stroke-width":2},g);el("text",{x:I[0],y:I[1]<Y?I[1]-14:I[1]+26,"text-anchor":"middle","font-size":14,fill:C.img,"font-weight":700},g,virt?"虛像":"實像");}}
+  // 蠟燭（可拖）
+  var og=el("g",{style:"cursor:grab"},sv);el("rect",{x:X-u-22,y:Y-h-20,width:44,height:h+30,fill:"transparent"},og);arrowUp(og,X-u,Y,Y-h,C.obj,{w:5});
+  el("text",{x:X-u,y:Y-h-16,"text-anchor":"middle","font-size":13,fill:C.obj,"font-weight":700},og,"拖我");
+  readout(R,virt);if(stepMode)stepText(R,virt);
+  uR.value=u;fR.value=f;document.getElementById("uLab").textContent="離透鏡 "+fmt(u/f)+" 倍焦距";document.getElementById("fLab").textContent=f<95?"焦距短（透鏡比較凸）":f>125?"焦距長（透鏡比較扁）":"中等";
+}
+function readout(R,virt){var z=zone(),conv=st.type==="convex";
+  document.getElementById("oZone").textContent=z+"（離透鏡 "+fmt(st.u/st.f)+" 倍焦距）";
+  var pos,real,up,size,why;
+  if(R.none){pos="沒有像";real="—";up="—";size="—";why="蠟燭在焦點上：這就是凸透鏡③焦點那條光的情況，從焦點出來的光折射後全部平行主軸，永遠交不到，所以不成像。";}
+  else{var vv=Math.abs(R.v)/st.f,m=Math.abs(R.m);
+    pos=virt?"同一側（鏡前），離透鏡 "+fmt(vv)+" 倍焦距":"另一側（鏡後），離透鏡 "+fmt(vv)+" 倍焦距";if(vv>40)pos=virt?"同一側，非常遠":"另一側，非常遠";
+    real=virt?"虛像":"實像";up=virt?"正立":"倒立";
+    size=Math.abs(m-1)<0.02?"等大（像距＝物距）":(m>1?"放大 "+fmt(m)+" 倍（像距比物距長）":"縮小成 "+fmt(m)+" 倍（像距比物距短）");
+    if(!conv)why="凹透鏡把光往外撥，右邊的光一定散開、交不到，只能用虛線往回延長，在左邊（透鏡和焦點之間）交到：正立、縮小、虛像。蠟燭放哪裡都一樣。";
+    else if(z==="2 倍焦距外")why="蠟燭離得遠，光射進來不太張開，透鏡很快就聚起來：像落在另一側的焦距與 2 倍焦距之間。像距比物距短，所以縮小；光真的交叉，所以倒立實像。";
+    else if(z==="2 倍焦距上")why="蠟燭在 2 倍焦距上，像剛好也在另一側 2 倍焦距上。兩邊離透鏡一樣遠，所以等大；光真的交叉，所以倒立實像。";
+    else if(z==="焦距與 2 倍焦距之間")why="蠟燭更靠近了，光射進來張得更開，透鏡要花更長距離才聚起來：像跑到另一側 2 倍焦距外。像距比物距長，所以放大；倒立實像。";
+    else why="蠟燭在焦距內，光張得太開，透鏡折完還在散開，右邊交不到。用虛線往回延長，在左邊交到：正立、放大、虛像，這就是放大鏡。";}
+  document.getElementById("oPos").textContent=pos;document.getElementById("oReal").textContent=real;document.getElementById("oUp").textContent=up;document.getElementById("oSize").textContent=size;document.getElementById("oWhy").textContent=why;
+}
+function stepMax(){var R=solve();return (!R.none&&R.v<0)?4:3;}
+function stepText(R,virt){var conv=st.type==="convex",n=st.step,t;
+  var s1=conv?"從蠟燭頂端畫一條<b class='k1'>平行主軸</b>的線到透鏡，再折向<b>另一側</b>的焦點 F，繼續往右延長。":"從蠟燭頂端畫一條<b class='k1'>平行主軸</b>的線到透鏡，折射後往外散開（方向就像從左邊焦點 F 發出來的），繼續往右延長。";
+  var s2="從蠟燭頂端畫一條<b class='k2'>通過鏡心</b>的直線，直直穿過去，不轉彎，也往右延長。";
+  if(n===0)t="<b class='n'>準備</b>畫面上只有蠟燭和透鏡。按「下一步」開始畫。每一題都照同樣四個步驟。";
+  else if(n===1)t="<b class='n'>第 1 步</b>"+s1;
+  else if(n===2)t="<b class='n'>第 2 步</b>"+s2;
+  else if(n===3){if(R.none)t="<b class='n'>第 3 步</b>兩條光在右邊<b>互相平行</b>，永遠交不到；往回延長也平行。所以<b>不成像</b>。完成。";
+    else if(!virt)t="<b class='n'>第 3 步</b>兩條光在右邊<b>交到了</b>，交點就是像的頂端。從交點往主軸畫一支箭頭（光真的交叉，箭頭是倒的）：<b>倒立實像</b>。完成。";
+    else t="<b class='n'>第 3 步</b>看右邊：兩條光<b>越走越開</b>，交不到！這時不能硬畫，要進第 4 步。";}
+  else t="<b class='n'>第 4 步</b>把兩條光<b>往回（往左）用虛線延長</b>，虛線交到的點就是像的頂端，像的箭頭也畫虛線：<b>正立虛像</b>"+(conv?"，而且比蠟燭大（放大鏡）。":"，在透鏡和焦點之間，比蠟燭小。")+"完成。";
+  document.getElementById("stepText").innerHTML=t;
+  document.getElementById("stPrev").disabled=n===0;document.getElementById("stNext").disabled=n>=stepMax();
+}
+// 拖拉
+var dragging=false;
+function svgX(evt){var r=sv.getBoundingClientRect();return (evt.clientX-r.left)*W/r.width;}
+sv.addEventListener("pointerdown",function(e){var x=svgX(e);if(Math.abs(x-(X-st.u))<40){dragging=true;sv.setPointerCapture(e.pointerId);e.preventDefault();}});
+sv.addEventListener("pointermove",function(e){if(!dragging)return;st.u=snapU(X-svgX(e));draw();});
+sv.addEventListener("pointerup",function(){dragging=false;});sv.addEventListener("pointercancel",function(){dragging=false;});
+uR.oninput=function(){st.u=snapU(+uR.value);draw();};
+fR.oninput=function(){st.f=+fR.value;draw();};
+function presets(){var box=document.getElementById("presets");box.innerHTML="";var f=st.f,list=st.type==="convex"?[["2 倍焦距外",Math.min(390,2.6*f)],["2 倍焦距上",2*f],["焦距～2 倍焦距",1.5*f],["焦點上",f],["焦距內",0.6*f]]:[["焦距外",Math.min(390,2.2*f)],["焦距內",0.5*f]];
+  list.forEach(function(p){var b=el("button",{},null);b=document.createElement("button");b.className="btn";b.textContent=p[0];b.onclick=function(){st.u=p[1];draw();};box.appendChild(b);});}
+document.querySelectorAll("#typeChips .chip").forEach(function(b){b.onclick=function(){document.querySelectorAll("#typeChips .chip").forEach(function(x){x.classList.toggle("on",x===b)});st.type=b.dataset.t;st.step=0;presets();draw();};});
+document.querySelectorAll("#modeChips .chip").forEach(function(b){b.onclick=function(){document.querySelectorAll("#modeChips .chip").forEach(function(x){x.classList.toggle("on",x===b)});st.mode=b.dataset.m;st.step=0;
+  document.getElementById("stepBox").style.display=st.mode==="step"?"block":"none";document.getElementById("freeBox").style.display=st.mode==="step"?"none":"block";draw();};});
+document.getElementById("stNext").onclick=function(){if(st.step<stepMax())st.step++;draw();};
+document.getElementById("stPrev").onclick=function(){if(st.step>0)st.step--;draw();};
+document.getElementById("stReset").onclick=function(){st.step=0;draw();};
+document.getElementById("cbR3").onchange=function(e){st.r3=e.target.checked;draw();};
+document.getElementById("cbTri").onchange=function(e){st.tri=e.target.checked;draw();};
+fR.addEventListener("change",presets);
+
+/* ── 第六站：小測驗 ── */
+var Q=[
+ {q:"一條光線平行主軸射進凸透鏡，折射後會怎麼走？",o:["通過同一側（物體這側）的焦點","通過另一側的焦點","直直穿過不轉彎","往外散開"],a:1,e:"焦點的定義就是「平行光被凸透鏡聚起來的那一點」，在另一側。口訣：平行進、過焦出。"},
+ {q:"一條光線平行主軸射進凹透鏡，折射後往外散開。它的虛線延長線會通過哪裡？",o:["另一側的焦點","鏡心","同一側（物體這側）的焦點","2 倍焦距"],a:2,e:"凹透鏡把光往外撥，散開的光好像是從同一側的焦點發出來的。凸透鏡是另一側，凹透鏡是同一側，剛好相反。"},
+ {q:"蠟燭在凸透鏡的 1.5 倍焦距處，像是放大還是縮小？為什麼？",o:["縮小，因為蠟燭在焦點外","放大，因為像在 2 倍焦距外，像距比物距長","等大，因為在焦點附近","不成像"],a:1,e:"誰遠誰大：像跑到另一側 2 倍焦距外，比蠟燭離透鏡遠，所以放大。光真的交叉，所以是倒立放大實像。"},
+ {q:"蠟燭從很遠處慢慢移向凸透鏡的焦點，像會怎樣變？",o:["像越來越近、越來越小","像越來越遠、越來越大","像的位置和大小都不變","像先變大再變小"],a:1,e:"口訣：物近、像遠、像變大。蠟燭越靠近，光射進來張得越開，透鏡要花更長距離才聚起來。"},
+ {q:"蠟燭放在凸透鏡的焦點上，為什麼不成像？",o:["光被透鏡擋住了","折射後的光全部平行主軸，永遠交不到","像太小看不到","像剛好落在透鏡上"],a:1,e:"這就是③焦點那條光：從焦點出發的光，折射後平行主軸。所有光都平行，往前往後都交不到。"},
+ {q:"有人畫凹透鏡成像，把像畫在透鏡右邊、是倒立的箭頭。錯在哪裡？",o:["沒有錯","像應該更大","凹透鏡的光到右邊會散開、不會交叉，像要用虛線往回延長，畫在左邊，正立縮小","像應該畫在 2 倍焦距上"],a:2,e:"這是把凹透鏡畫成凸透鏡的走法。凹透鏡永遠是正立、縮小、虛像，在同一側的透鏡和焦點之間。"}
+];
+function buildQuiz(){var box=document.getElementById("quiz");box.innerHTML="";Q.forEach(function(it,i){var d=document.createElement("div");d.className="q";
+  d.innerHTML="<div class='q-body'><b>第 "+(i+1)+" 題</b>　"+it.q+"</div>";
+  var fb=document.createElement("div");fb.className="fb";
+  it.o.forEach(function(op,j){var b=document.createElement("button");b.className="opt";b.textContent="（"+"ABCD"[j]+"）"+op;
+    b.onclick=function(){if(d.dataset.done)return;if(j===it.a){b.classList.add("right");d.dataset.done=1;fb.innerHTML="✅ 答對了。"+it.e;}else{b.classList.add("wrong");fb.innerHTML="再想想，可以再選一次。提示：回頭看上面的走向原則。";}fb.classList.add("show");if(j===it.a)fb.classList.add("show");};
+    d.appendChild(b);});
+  d.appendChild(fb);box.appendChild(d);});}
+document.getElementById("qReset").onclick=buildQuiz;
+
+drawFC();presets();draw();buildQuiz();
+})();
+</script>
+</body>
+</html>
