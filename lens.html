@@ -104,6 +104,7 @@ footer{padding:30px 0;color:var(--ink2);font-size:13px;text-align:center}
     <span class="tag">課本例題 4-5、4-6</span>
     <span class="tag">學習單「透鏡的成像」</span>
     <span class="tag">拖拉作圖台</span>
+    <span class="tag">任意位置的光怎麼彎</span>
     <span class="tag">約 20 分鐘</span>
   </div>
 </header>
@@ -262,6 +263,58 @@ footer{padding:30px 0;color:var(--ink2);font-size:13px;text-align:center}
   <div class="why" id="oWhy"></div>
 </section>
 
+<!-- ═══ 三之二、打在透鏡任何位置的光 ═══ -->
+<section id="any">
+  <div class="step">第三站之二 · 打在透鏡任何位置的光</div>
+  <h2>光打在透鏡任何地方，怎麼知道它往哪裡彎？</h2>
+  <ul class="pl">
+    <li><strong>不用量角度</strong>：透鏡每個位置轉彎的角度都不一樣，國中也不教怎麼算。</li>
+    <li><strong>改成「找點」</strong>：先找出這條光一定會經過的點，再用尺把「透鏡上的入射點」和「那個點」連起來，轉彎的角度自然就出來了。</li>
+    <li>找點有兩種方法，下面切換看看。<strong>上下拖透鏡上的粉紅色圓點</strong>（或用滑桿），改變光打在透鏡的位置。</li>
+  </ul>
+  <div class="chips" id="anyType">
+    <button class="chip on" data-t="convex">凸透鏡</button>
+    <button class="chip" data-t="concave">凹透鏡</button>
+  </div>
+  <div class="chips" id="anyMode">
+    <button class="chip on" data-m="A">方法一：從蠟燭發出的光</button>
+    <button class="chip" data-m="B">方法二：隨便一條斜斜的光</button>
+  </div>
+  <div class="stage"><svg id="asv" viewBox="0 0 800 380"></svg></div>
+  <p class="cap"><span style="color:#db2777">粉紅＝你選的那條光</span>　<span style="color:#9a9188">灰＝用來找點的輔助線</span>　<span style="color:var(--img)">紫＝要找的那個點</span>　虛線＝往回延長</p>
+  <div class="steptext" id="aText"></div>
+
+  <div class="sl"><span>光打在透鏡的位置（往右拉＝打得越上面）</span><span id="aHLab"></span></div>
+  <input type="range" id="aH" min="-140" max="140" step="1" value="90">
+  <div id="aCtrlA">
+    <div class="sl"><span>蠟燭位置</span><span id="aULab"></span></div>
+    <input type="range" id="aU" min="40" max="390" step="1" value="170">
+    <div class="ctrl"><label style="font-size:15px"><input type="checkbox" id="aFan"> 畫一整把光（打在透鏡各個位置）</label></div>
+  </div>
+  <div id="aCtrlB" style="display:none">
+    <div class="sl"><span>光斜的角度</span><span id="aALab"></span></div>
+    <input type="range" id="aA" min="-25" max="25" step="1" value="10">
+  </div>
+  <div class="ctrl"><label style="font-size:15px"><input type="checkbox" id="aPrism"> 把透鏡切成一疊小三稜鏡來看</label></div>
+
+  <div class="readout">
+    <div class="row"><span class="lb">打在離鏡心多遠（0＝鏡心，10＝邊緣）</span><span class="vl" id="aDist"></span></div>
+    <div class="row hi"><span class="lb">光轉彎了幾度</span><span class="vl" id="aDeg"></span></div>
+  </div>
+  <div class="why" id="aWhy"></div>
+
+  <div class="note">
+    <p><b>轉彎角度的規則（拿來檢查畫得對不對）：</b></p>
+    <ul class="pl" style="margin:6px 0 0">
+      <li><strong>打在鏡心完全不轉彎；越靠近透鏡邊緣，轉彎越大。</strong></li>
+      <li>原因：透鏡可以看成很多片小三稜鏡疊起來。中間那片前後兩面幾乎平行，光不偏；越往邊緣，兩面夾的角越大，光偏得越多。勾上面「把透鏡切成一疊小三稜鏡」就看得到。</li>
+      <li>轉彎多少，主要看<strong>打在離鏡心多遠</strong>，和光從哪個方向來關係不大。用方法二改「光斜的角度」，轉彎度數幾乎不變；改「打的位置」，度數才大變。</li>
+      <li>方向一定朝透鏡厚的那邊：凸透鏡往主軸彎，凹透鏡往外彎。</li>
+      <li>真正算出角度要用折射定律，在透鏡前後兩個表面各算一次，那是高中物理。國中作圖題用這兩個找點方法就畫得出來。</li>
+    </ul>
+  </div>
+</section>
+
 <!-- ═══ 四、為什麼位置不同成像不同 ═══ -->
 <section>
   <div class="step">第四站 · 為什麼位置不同，像就不同</div>
@@ -335,7 +388,7 @@ footer{padding:30px 0;color:var(--ink2);font-size:13px;text-align:center}
 <!-- ═══ 六、小測驗 ═══ -->
 <section>
   <div class="step">第六站 · 自我檢查</div>
-  <h2>六題，確認真的懂了</h2>
+  <h2>八題，確認真的懂了</h2>
   <div id="quiz"></div>
   <button class="btn" id="qReset">全部重來</button>
 </section>
@@ -501,6 +554,84 @@ document.getElementById("cbR3").onchange=function(e){st.r3=e.target.checked;draw
 document.getElementById("cbTri").onchange=function(e){st.tri=e.target.checked;draw();};
 fR.addEventListener("change",presets);
 
+
+/* ── 第三站之二：打在透鏡任何位置的光 ── */
+var an={type:"convex",mode:"A",f:100,u:170,yh:-90,ang:10,fan:false,prism:false};
+var asv=document.getElementById("asv"),GR="#a8a096",PK="#db2777";
+// 在透鏡外形上取點，切成一疊小三稜鏡
+function prismSlices(g,type){var hh=150,w=type==="convex"?14:12,n=10;
+  function bz(p0,pc,p2,t){return [(1-t)*(1-t)*p0[0]+2*t*(1-t)*pc[0]+t*t*p2[0],(1-t)*(1-t)*p0[1]+2*t*(1-t)*pc[1]+t*t*p2[1]];}
+  var R,Lf;
+  if(type==="convex"){R=function(t){return bz([X,Y-hh],[X+w*2,Y],[X,Y+hh],t)};Lf=function(t){return bz([X,Y-hh],[X-w*2,Y],[X,Y+hh],t)};}
+  else{R=function(t){return bz([X+w,Y-hh],[X+2,Y],[X+w,Y+hh],t)};Lf=function(t){return bz([X-w,Y-hh],[X-2,Y],[X-w,Y+hh],t)};}
+  for(var i=0;i<n;i++){var a=i/n,b=(i+1)/n,pts=[Lf(a),R(a),R(b),Lf(b)];
+    el("polygon",{points:pts.map(function(q){return q[0].toFixed(1)+","+q[1].toFixed(1)}).join(" "),fill:i%2?"rgba(29,91,121,.30)":"rgba(29,91,121,.12)",stroke:"#1d5b79","stroke-width":.8},g);}
+}
+function adraw(){
+  asv.innerHTML="";var f=an.f,conv=an.type==="convex",g=el("g",{},asv),Hp=[X,Y+an.yh],Cc=[X,Y],inD,outD,txt;
+  axis(g,W,Y,X,f,conv);lens(g,X,Y,150,an.type);if(an.prism)prismSlices(g,an.type);
+  if(an.mode==="A"){
+    var u=an.u,P=[X-u,Y-h],fs=conv?f:-f,none=conv&&Math.abs(u-f)<4,v=none?0:u*fs/(u-fs),m=none?0:-v/u,I=none?null:[X+v,Y-m*h],virt=!none&&v<0;
+    // 灰色：兩條特殊光線先找像
+    var Q1=[X,Y-h];seg(g,P,Q1,GR,{w:1.5});
+    if(conv){seg(g,Q1,toEdge(Q1,[f,h],W,H),GR,{w:1.5});if(virt)seg(g,Q1,past(Q1,I),GR,{dash:true,w:1.2});}
+    else{seg(g,Q1,toEdge(Q1,[f,-h],W,H),GR,{w:1.5});seg(g,Q1,[X-f,Y],GR,{dash:true,w:1.2});}
+    seg(g,P,Cc,GR,{w:1.5});seg(g,Cc,toEdge(Cc,[u,h],W,H),GR,{w:1.5});if(conv&&virt)seg(g,Cc,past(Cc,I),GR,{dash:true,w:1.2});
+    var via=function(hy,color,w,main){var Hh=[X,hy],od;
+      if(none)od=[u,h];else if(!virt)od=[I[0]-Hh[0],I[1]-Hh[1]];else od=[Hh[0]-I[0],Hh[1]-I[1]];
+      if(od[0]<0)od=[-od[0],-od[1]];
+      seg(g,P,Hh,color,{w:w,arrow:main});seg(g,Hh,toEdge(Hh,od,W,H),color,{w:w,arrow:main,at:.3});
+      if(virt)seg(g,Hh,I,color,{dash:true,w:Math.max(1.2,w-1)});
+      return [[Hh[0]-P[0],Hh[1]-P[1]],od];};
+    if(an.fan){for(var k=-130;k<=130;k+=26){if(Math.abs(k-an.yh)>6)via(Y+k,"rgba(219,39,119,.35)",1.4,false);}}
+    var d=via(Hp[1],PK,2.8,true);inD=d[0];outD=d[1];
+    arrowUp(g,X-u,Y,Y-h,C.obj,{w:5});
+    if(I&&I[0]>0&&I[0]<W&&I[1]>-30&&I[1]<H+30){arrowUp(g,I[0],Y,I[1],C.img,{dash:virt,w:3.5});el("circle",{cx:I[0],cy:I[1],r:8,fill:"none",stroke:C.img,"stroke-width":2.5},g);el("text",{x:I[0],y:I[1]<Y?I[1]-14:I[1]+26,"text-anchor":"middle","font-size":14,fill:C.img,"font-weight":700},g,virt?"虛像頂端":"像的頂端");}
+    else if(!none)el("text",{x:virt?120:680,y:36,"text-anchor":"middle","font-size":15,fill:C.img,"font-weight":700},g,"像在很遠的地方（畫面外）");
+    if(none)txt="<b class='n'>方法一</b>蠟燭剛好在焦點上，不成像，找不到像點。這時有另一個規則：<b>從焦點上同一點發出的光，折射後全部互相平行</b>，而且和灰色鏡心那條平行。所以粉紅色那條光折射後，畫成和灰色鏡心線平行就對了。";
+    else if(!virt)txt="<b class='n'>方法一</b>同一點發出的光，最後都會經過同一個像點。<br>1. 先用灰色兩條特殊光線（平行那條、鏡心那條）找出<b style='color:var(--img)'>像的頂端</b>。<br>2. 粉紅色那條光，從火焰頂端畫到透鏡上你選的位置。<br>3. 從那個位置用尺連到像的頂端，就是它折射後的路。";
+    else txt="<b class='n'>方法一</b>同一點發出的光，折射後都好像是從同一個虛像點發出來的。<br>1. 先用灰色兩條特殊光線找出<b style='color:var(--img)'>虛像的頂端</b>（往回延長的虛線交點）。<br>2. 粉紅色那條光，從火焰頂端畫到透鏡上你選的位置。<br>3. 從虛像頂端經過那個位置畫一條直線：透鏡右邊那段畫實線（光真的走過），透鏡左邊回到虛像那段畫虛線。";
+  } else {
+    var sl=Math.tan(an.ang*Math.PI/180),st0=toEdge(Hp,[-1,-sl],W,H);
+    seg(g,st0,Hp,PK,{w:2.8,arrow:true});inD=[1,sl];
+    var hs=toEdge(Cc,[-1,-sl],W,H),he=toEdge(Cc,[1,sl],W,H);seg(g,hs,he,GR,{w:1.5});
+    var fx=conv?X+f:X-f,Pt=[fx,Y+(conv?sl*f:-sl*f)];
+    el("line",{x1:fx,y1:10,x2:fx,y2:H-10,stroke:C.img,"stroke-width":1.3,"stroke-dasharray":"5 5"},g);
+    el("text",{x:fx+6,y:24,"font-size":13,fill:C.img,"font-weight":700},g,"焦點那條直線");
+    if(conv){outD=[Pt[0]-Hp[0],Pt[1]-Hp[1]];seg(g,Hp,toEdge(Hp,outD,W,H),PK,{w:2.8,arrow:true,at:.25});}
+    else{outD=[Hp[0]-Pt[0],Hp[1]-Pt[1]];seg(g,Hp,toEdge(Hp,outD,W,H),PK,{w:2.8,arrow:true,at:.3});seg(g,Hp,Pt,PK,{dash:true,w:1.6});}
+    el("circle",{cx:Pt[0],cy:Pt[1],r:8,fill:"none",stroke:C.img,"stroke-width":2.5},g);
+    txt=conv?"<b class='n'>方法二</b>互相平行的光，穿過凸透鏡後會聚在<b>另一側焦點那條直線</b>上的同一點。<br>1. 通過另一側的焦點，畫一條垂直主軸的直線（紫色虛線）。<br>2. 畫一條和粉紅色光<b>平行</b>、穿過鏡心的灰色輔助線。它穿過鏡心不轉彎，碰到紫色虛線上的一點（紫色圈）。<br>3. 從透鏡上的入射點連到紫色圈，就是折射後的路。"
+      :"<b class='n'>方法二</b>互相平行的光，穿過凹透鏡後散開，好像都是從<b>同一側（左邊）焦點那條直線</b>上的同一點發出來的。<br>1. 通過左邊的焦點，畫一條垂直主軸的直線（紫色虛線）。<br>2. 畫一條和粉紅色光<b>平行</b>、穿過鏡心的灰色輔助線，它碰到紫色虛線上的一點（紫色圈）。<br>3. 從紫色圈經過入射點畫一條直線：透鏡右邊那段是折射後的光（實線），紫色圈到入射點那段畫虛線。";
+  }
+  // 拖拉把手
+  el("circle",{cx:Hp[0],cy:Hp[1],r:10,fill:"#fff",stroke:PK,"stroke-width":3,style:"cursor:ns-resize"},asv);
+  el("text",{x:Hp[0]+16,y:Hp[1]+(an.yh<0?-12:22),"font-size":13,fill:PK,"font-weight":700},asv,"上下拖我");
+  var deg=Math.abs((Math.atan2(outD[1],outD[0])-Math.atan2(inD[1],inD[0]))*180/Math.PI);if(deg>180)deg=360-deg;
+  var dist=Math.abs(an.yh)/15;
+  document.getElementById("aText").innerHTML=txt;
+  document.getElementById("aDist").textContent=Math.abs(an.yh)<3?"0（打在鏡心）":(Math.round(dist*10)/10)+(an.yh<0?"（主軸上方）":"（主軸下方）");
+  document.getElementById("aDeg").textContent=(Math.round(deg*10)/10)+" 度";
+  document.getElementById("aWhy").textContent=Math.abs(an.yh)<3?"打在鏡心：鏡心那一片前後兩面平行，光直直穿過，轉彎 0 度。":
+    (dist>7?"打在靠近邊緣的地方，這裡的小三稜鏡最斜，所以轉彎最大。拉回鏡心看看，度數會一路變小。":dist>3?"打在鏡心和邊緣中間，轉彎中等。往邊緣拉，度數會變大；往鏡心拉，度數會變小。":"打在靠近鏡心的地方，這裡的小三稜鏡很平，只轉彎一點點。")+(conv?"凸透鏡讓光往主軸彎。":"凹透鏡讓光往外彎。");
+  document.getElementById("aH").value=-an.yh;document.getElementById("aHLab").textContent=an.yh<0?"主軸上方":"主軸下方";
+  document.getElementById("aULab").textContent="離透鏡 "+fmt(an.u/an.f)+" 倍焦距";document.getElementById("aALab").textContent=(an.ang>0?"往右下斜 ":an.ang<0?"往右上斜 ":"平行主軸 ")+Math.abs(an.ang)+" 度";
+}
+var aDrag=false;
+function asvY(e){var r=asv.getBoundingClientRect();return (e.clientY-r.top)*H/r.height;}
+function asvX(e){var r=asv.getBoundingClientRect();return (e.clientX-r.left)*W/r.width;}
+function setYH(e){an.yh=Math.max(-140,Math.min(140,Math.round(asvY(e)-Y)));adraw();}
+asv.addEventListener("pointerdown",function(e){if(Math.abs(asvX(e)-X)<60){aDrag=true;asv.setPointerCapture(e.pointerId);setYH(e);e.preventDefault();}});
+asv.addEventListener("pointermove",function(e){if(aDrag)setYH(e);});
+asv.addEventListener("pointerup",function(){aDrag=false;});asv.addEventListener("pointercancel",function(){aDrag=false;});
+document.getElementById("aH").oninput=function(e){an.yh=-(+e.target.value);adraw();};
+document.getElementById("aU").oninput=function(e){var u=+e.target.value;if(an.type==="convex"&&Math.abs(u-an.f)<6)u=an.f;an.u=u;adraw();};
+document.getElementById("aA").oninput=function(e){an.ang=+e.target.value;adraw();};
+document.getElementById("aFan").onchange=function(e){an.fan=e.target.checked;adraw();};
+document.getElementById("aPrism").onchange=function(e){an.prism=e.target.checked;adraw();};
+document.querySelectorAll("#anyType .chip").forEach(function(b){b.onclick=function(){document.querySelectorAll("#anyType .chip").forEach(function(x){x.classList.toggle("on",x===b)});an.type=b.dataset.t;adraw();};});
+document.querySelectorAll("#anyMode .chip").forEach(function(b){b.onclick=function(){document.querySelectorAll("#anyMode .chip").forEach(function(x){x.classList.toggle("on",x===b)});an.mode=b.dataset.m;
+  document.getElementById("aCtrlA").style.display=an.mode==="A"?"block":"none";document.getElementById("aCtrlB").style.display=an.mode==="B"?"block":"none";adraw();};});
 /* ── 第六站：小測驗 ── */
 var Q=[
  {q:"一條光線平行主軸射進凸透鏡，折射後會怎麼走？",o:["通過同一側（物體這側）的焦點","通過另一側的焦點","直直穿過不轉彎","往外散開"],a:1,e:"焦點的定義就是「平行光被凸透鏡聚起來的那一點」，在另一側。口訣：平行進、過焦出。"},
@@ -508,6 +639,8 @@ var Q=[
  {q:"蠟燭在凸透鏡的 1.5 倍焦距處，像是放大還是縮小？為什麼？",o:["縮小，因為蠟燭在焦點外","放大，因為像在 2 倍焦距外，像距比物距長","等大，因為在焦點附近","不成像"],a:1,e:"誰遠誰大：像跑到另一側 2 倍焦距外，比蠟燭離透鏡遠，所以放大。光真的交叉，所以是倒立放大實像。"},
  {q:"蠟燭從很遠處慢慢移向凸透鏡的焦點，像會怎樣變？",o:["像越來越近、越來越小","像越來越遠、越來越大","像的位置和大小都不變","像先變大再變小"],a:1,e:"口訣：物近、像遠、像變大。蠟燭越靠近，光射進來張得越開，透鏡要花更長距離才聚起來。"},
  {q:"蠟燭放在凸透鏡的焦點上，為什麼不成像？",o:["光被透鏡擋住了","折射後的光全部平行主軸，永遠交不到","像太小看不到","像剛好落在透鏡上"],a:1,e:"這就是③焦點那條光：從焦點出發的光，折射後平行主軸。所有光都平行，往前往後都交不到。"},
+ {q:"同樣是平行主軸的光，一條打在凸透鏡靠近邊緣的地方，一條打在靠近鏡心的地方。哪一條轉彎比較大？",o:["靠近鏡心的那條","靠近邊緣的那條","兩條一樣大","都不轉彎"],a:1,e:"透鏡像一疊小三稜鏡，越往邊緣那片越斜，光偏得越多。兩條光最後都要到焦點，邊緣那條離主軸比較遠，所以要切得比較陡。打在鏡心則完全不轉彎。"},
+ {q:"光打在凸透鏡上一個不是特殊光線的位置，要怎麼畫出它折射後的路？",o:["用量角器量 30 度","先找出它一定會經過的點（例如像點，或焦點那條直線上的點），再用尺連過去","照原方向直直畫過去","一律畫到另一側焦點"],a:1,e:"國中不量角度，改用找點：從蠟燭發出的光一定經過像點；隨便一條斜光，就畫一條和它平行、穿過鏡心的輔助線，找出它碰到焦點那條直線的點。"},
  {q:"有人畫凹透鏡成像，把像畫在透鏡右邊、是倒立的箭頭。錯在哪裡？",o:["沒有錯","像應該更大","凹透鏡的光到右邊會散開、不會交叉，像要用虛線往回延長，畫在左邊，正立縮小","像應該畫在 2 倍焦距上"],a:2,e:"這是把凹透鏡畫成凸透鏡的走法。凹透鏡永遠是正立、縮小、虛像，在同一側的透鏡和焦點之間。"}
 ];
 function buildQuiz(){var box=document.getElementById("quiz");box.innerHTML="";Q.forEach(function(it,i){var d=document.createElement("div");d.className="q";
@@ -519,7 +652,7 @@ function buildQuiz(){var box=document.getElementById("quiz");box.innerHTML="";Q.
   d.appendChild(fb);box.appendChild(d);});}
 document.getElementById("qReset").onclick=buildQuiz;
 
-drawFC();presets();draw();buildQuiz();
+drawFC();presets();draw();adraw();buildQuiz();
 })();
 </script>
 </body>
